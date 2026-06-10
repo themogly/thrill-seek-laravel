@@ -49,8 +49,8 @@ class CourseReminder extends Model
     {
         return $this->sent_at === null
             && $this->courseDate !== null
-            && $this->courseDate->starts_on->isFuture()
-            && now()->toDateString() >= $this->courseDate->starts_on->copy()->subDays($this->days_before)->toDateString();
+            && $this->courseDate->start_date->isFuture()
+            && now()->toDateString() >= $this->courseDate->start_date->copy()->subDays($this->days_before)->toDateString();
     }
 
     /**

@@ -143,8 +143,8 @@ class PublicAffBookingTest extends TestCase
 
         return CourseDate::factory()->create(array_merge([
             'product_id' => $product->id,
-            'starts_on' => now()->addMonth()->toDateString(),
-            'ends_on' => now()->addMonth()->addDays(4)->toDateString(),
+            'start_date' => now()->addMonth()->toDateString(),
+            'end_date' => now()->addMonth()->addDays(4)->toDateString(),
             'location_id' => Location::factory()->create(['name' => 'Seville, Spain'])->id,
             'capacity' => 8,
         ], $overrides));

@@ -50,7 +50,7 @@ class StartAffCheckout
                 'customer_id' => $customerRecord->id,
                 'status' => BookingStatus::PendingPayment,
                 'course_date_id' => $lockedCourse->id,
-                'scheduled_at' => $lockedCourse->starts_on->copy()->setTime(8, 0),
+                'scheduled_at' => $lockedCourse->start_date->copy()->setTime(8, 0),
                 'price_pence' => (int) $lockedCourse->effective_price_pence,
                 'customer_details' => [
                     'date_of_birth' => $customer['date_of_birth'],

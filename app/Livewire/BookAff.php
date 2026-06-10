@@ -155,14 +155,14 @@ class BookAff extends Component
 
     public function getCourseProperty(): ?CourseDate
     {
-        return $this->courseDateId === null ? null : CourseDate::with('product')->find($this->courseDateId);
+        return $this->courseDateId === null ? null : CourseDate::with(['product', 'location'])->find($this->courseDateId);
     }
 
     /** @return EloquentCollection<int, CourseDate> */
     public function getCoursesProperty(): EloquentCollection
     {
         return CourseDate::upcomingOpen()
-            ->with('product')
+            ->with(['product', 'location'])
             ->get()
             ->filter(fn (CourseDate $course): bool => $course->isBookable())
             ->values();

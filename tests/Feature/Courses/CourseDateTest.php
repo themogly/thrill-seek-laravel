@@ -59,7 +59,7 @@ class CourseDateTest extends TestCase
 
     public function test_past_and_non_open_courses_are_not_bookable(): void
     {
-        $past = CourseDate::factory()->create(['starts_on' => now()->subWeek()->toDateString()]);
+        $past = CourseDate::factory()->create(['start_date' => now()->subWeek()->toDateString()]);
         $cancelled = CourseDate::factory()->create(['status' => CourseDateStatus::Cancelled]);
 
         $this->assertFalse($past->isBookable());
@@ -78,8 +78,8 @@ class CourseDateTest extends TestCase
             ->fillForm([
                 'product_id' => $product->id,
                 'location_id' => $location->id,
-                'starts_on' => now()->addMonth()->toDateString(),
-                'ends_on' => now()->addMonth()->addDays(4)->toDateString(),
+                'start_date' => now()->addMonth()->toDateString(),
+                'end_date' => now()->addMonth()->addDays(4)->toDateString(),
                 'capacity' => 8,
                 'status' => CourseDateStatus::Open->value,
             ])

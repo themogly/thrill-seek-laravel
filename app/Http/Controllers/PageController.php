@@ -38,7 +38,7 @@ class PageController extends Controller
         return view('pages.aff', [
             'products' => $this->content->affProducts(),
             // Live query (not cached): remaining places must always be current.
-            'courseDates' => CourseDate::upcomingOpen()->with('product')->get(),
+            'courseDates' => CourseDate::upcomingOpen()->with(['product', 'location'])->get(),
         ]);
     }
 

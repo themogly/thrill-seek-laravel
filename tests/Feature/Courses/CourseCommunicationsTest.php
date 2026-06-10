@@ -116,7 +116,7 @@ class CourseCommunicationsTest extends TestCase
     public function test_due_reminders_send_once_and_never_double_send(): void
     {
         Queue::fake();
-        $course = CourseDate::factory()->create(['starts_on' => now()->addDays(5)->toDateString()]);
+        $course = CourseDate::factory()->create(['start_date' => now()->addDays(5)->toDateString()]);
         Booking::factory()->count(3)->create(['course_date_id' => $course->id]);
 
         // Default reminder is 7 days before — already due at 5 days out.
@@ -140,9 +140,9 @@ class CourseCommunicationsTest extends TestCase
     public function test_reminders_for_far_future_or_cancelled_courses_do_not_send(): void
     {
         Queue::fake();
-        CourseDate::factory()->create(['starts_on' => now()->addMonths(3)->toDateString()]);
+        CourseDate::factory()->create(['start_date' => now()->addMonths(3)->toDateString()]);
         $cancelled = CourseDate::factory()->create([
-            'starts_on' => now()->addDays(3)->toDateString(),
+            'start_date' => now()->addDays(3)->toDateString(),
             'status' => CourseDateStatus::Cancelled,
         ]);
         Booking::factory()->create(['course_date_id' => $cancelled->id]);

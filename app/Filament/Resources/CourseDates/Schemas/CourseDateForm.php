@@ -6,16 +6,32 @@ namespace App\Filament\Resources\CourseDates\Schemas;
 
 use App\Enums\CourseDateStatus;
 use App\Enums\ProductType;
+use App\Models\CourseDate;
 use App\Models\Product;
+use App\Support\DateClash;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Carbon;
 
 class CourseDateForm
 {
+    /** Inclusive day count between two form dates, or null while incomplete. */
+    private static function dayCount(mixed $start, mixed $end): ?int
+    {
+        if (blank($start) || blank($end)) {
+            return null;
+        }
+
+        $days = (int) Carbon::parse($start)->startOfDay()->diffInDays(Carbon::parse($end)->startOfDay(), false) + 1;
+
+        return $days > 0 ? $days : null;
+    }
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -39,13 +55,46 @@ class CourseDateForm
                             ->searchable()
                             ->preload()
                             ->required(),
-                        DatePicker::make('starts_on')
+                        DatePicker::make('start_date')
                             ->label('Starts')
+                            ->live()
                             ->required(),
-                        DatePicker::make('ends_on')
+                        DatePicker::make('end_date')
                             ->label('Ends')
-                            ->helperText('Leave empty for single-day events.')
-                            ->afterOrEqual('starts_on'),
+                            ->live()
+                            ->required()
+                            ->helperText(function (Get $get): string {
+                                $days = self::dayCount($get('start_date'), $get('end_date'));
+
+                                return $days === null
+                                    ? 'Courses run for at least '.CourseDate::MIN_DURATION_DAYS.' days.'
+                                    : "Course length: {$days} day(s).";
+                            })
+                            ->rule(fn (Get $get) => function (string $attribute, mixed $value, \Closure $fail) use ($get): void {
+                                $days = self::dayCount($get('start_date'), $value);
+
+                                if ($days !== null && $days < CourseDate::MIN_DURATION_DAYS) {
+                                    $fail('AFF courses must run for at least '.CourseDate::MIN_DURATION_DAYS." days — this range is only {$days} day(s).");
+                                }
+                            })
+                            ->rule(fn (Get $get, ?CourseDate $record) => function (string $attribute, mixed $value, \Closure $fail) use ($get): void {
+                                $start = $get('start_date');
+                                $locationId = $get('location_id');
+
+                                if (blank($start) || blank($value) || blank($locationId)) {
+                                    return;
+                                }
+
+                                $clash = DateClash::tandemDateWithinRange(
+                                    Carbon::parse($start),
+                                    Carbon::parse($value),
+                                    (int) $locationId,
+                                );
+
+                                if ($clash !== null) {
+                                    $fail(DateClash::describeTandemDate($clash));
+                                }
+                            }),
                         TextInput::make('capacity')
                             ->label('Places')
                             ->numeric()

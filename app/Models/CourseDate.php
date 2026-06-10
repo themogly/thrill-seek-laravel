@@ -20,13 +20,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * A scheduled AFF course: a start/end date at a location with limited
- * places. Price and deposit fall back to the linked product when no
- * override is set.
+ * A scheduled AFF course: a multi-day date range (minimum 5 days) at a
+ * location with limited places. Price and deposit fall back to the linked
+ * product when no override is set.
  *
  * @property CourseDateStatus $status
- * @property Carbon $starts_on
- * @property Carbon|null $ends_on
+ * @property Carbon $start_date
+ * @property Carbon $end_date
  */
 #[ObservedBy(CourseDateObserver::class)]
 class CourseDate extends Model
@@ -34,11 +34,14 @@ class CourseDate extends Model
     /** @use HasFactory<CourseDateFactory> */
     use HasFactory;
 
+    /** AFF courses run for at least this many days (inclusive). */
+    public const MIN_DURATION_DAYS = 5;
+
     protected $fillable = [
         'product_id',
         'location_id',
-        'starts_on',
-        'ends_on',
+        'start_date',
+        'end_date',
         'price_pence',
         'deposit_pence',
         'capacity',
@@ -49,8 +52,8 @@ class CourseDate extends Model
     protected function casts(): array
     {
         return [
-            'starts_on' => 'date',
-            'ends_on' => 'date',
+            'start_date' => 'date',
+            'end_date' => 'date',
             'price_pence' => 'integer',
             'deposit_pence' => 'integer',
             'capacity' => 'integer',
@@ -167,18 +170,28 @@ class CourseDate extends Model
     }
 
     /**
+     * Inclusive length of the course in days.
+     *
+     * @return Attribute<int, never>
+     */
+    protected function durationDays(): Attribute
+    {
+        return Attribute::make(get: fn (): int => (int) $this->start_date->diffInDays($this->end_date) + 1);
+    }
+
+    /**
      * @return Attribute<string, never>
      */
     protected function dateRangeLabel(): Attribute
     {
         return Attribute::make(get: function (): string {
-            if ($this->ends_on === null || $this->ends_on->equalTo($this->starts_on)) {
-                return $this->starts_on->format('j F Y');
+            if ($this->end_date->equalTo($this->start_date)) {
+                return $this->start_date->format('j F Y');
             }
 
-            return $this->starts_on->format('j')
+            return $this->start_date->format('j')
                 .'–'
-                .$this->ends_on->format('j F Y');
+                .$this->end_date->format('j F Y');
         });
     }
 
@@ -186,7 +199,7 @@ class CourseDate extends Model
     {
         return $this->status === CourseDateStatus::Open
             && $this->remaining_places > 0
-            && $this->starts_on->isFuture()
+            && $this->start_date->isFuture()
             && $this->effective_deposit_pence !== null;
     }
 
@@ -200,7 +213,7 @@ class CourseDate extends Model
     {
         return $query
             ->where('status', CourseDateStatus::Open)
-            ->whereDate('starts_on', '>=', now()->toDateString())
-            ->orderBy('starts_on');
+            ->whereDate('start_date', '>=', now()->toDateString())
+            ->orderBy('start_date');
     }
 }

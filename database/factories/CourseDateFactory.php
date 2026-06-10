@@ -23,8 +23,8 @@ class CourseDateFactory extends Factory
 
         return [
             'product_id' => Product::factory()->aff(),
-            'starts_on' => $start->format('Y-m-d'),
-            'ends_on' => (clone $start)->modify('+4 days')->format('Y-m-d'),
+            'start_date' => $start->format('Y-m-d'),
+            'end_date' => (clone $start)->modify('+4 days')->format('Y-m-d'),
             'location_id' => Location::factory(),
             'price_pence' => null,
             'deposit_pence' => null,

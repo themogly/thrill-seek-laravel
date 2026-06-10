@@ -8,6 +8,7 @@ use App\Filament\Resources\TandemDates\Pages\CreateTandemDate;
 use App\Filament\Resources\TandemDates\Pages\EditTandemDate;
 use App\Filament\Resources\TandemDates\Pages\ListTandemDates;
 use App\Models\TandemDate;
+use App\Support\DateClash;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -16,6 +17,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -23,6 +25,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use UnitEnum;
 
 class TandemDateResource extends Resource
@@ -51,7 +54,20 @@ class TandemDateResource extends Resource
             DateTimePicker::make('starts_at')
                 ->label('Date & time')
                 ->seconds(false)
-                ->required(),
+                ->required()
+                ->rule(fn (Get $get, ?TandemDate $record) => function (string $attribute, mixed $value, \Closure $fail) use ($get): void {
+                    $locationId = $get('location_id');
+
+                    if (blank($value) || blank($locationId)) {
+                        return;
+                    }
+
+                    $clash = DateClash::courseCoveringDay(Carbon::parse($value), (int) $locationId);
+
+                    if ($clash !== null) {
+                        $fail(DateClash::describeCourse($clash));
+                    }
+                }),
             TextInput::make('capacity')
                 ->label('Capacity')
                 ->helperText('How many jumpers this slot can take.')

@@ -18,11 +18,14 @@ class CourseDatesTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->defaultSort('starts_on')
+            ->defaultSort('start_date')
             ->columns([
                 TextColumn::make('date_range_label')
                     ->label('Dates')
-                    ->sortable(['starts_on']),
+                    ->sortable(['start_date']),
+                TextColumn::make('duration_days')
+                    ->label('Days')
+                    ->suffix(' days'),
                 TextColumn::make('location.name')
                     ->label('Location')
                     ->searchable()
@@ -51,7 +54,7 @@ class CourseDatesTable
                 Filter::make('upcoming')
                     ->label('Upcoming only')
                     ->default()
-                    ->query(fn (Builder $query): Builder => $query->whereDate('starts_on', '>=', now()->toDateString())),
+                    ->query(fn (Builder $query): Builder => $query->whereDate('start_date', '>=', now()->toDateString())),
             ])
             ->recordActions([
                 EditAction::make(),

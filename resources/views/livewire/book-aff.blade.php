@@ -26,6 +26,7 @@
                         >
                             <span>
                                 <span class="block font-display text-2xl uppercase text-secondary">{{ $course->date_range_label }}</span>
+                                <span class="block text-xs font-bold uppercase tracking-wide text-muted-foreground">{{ $course->duration_days }}-day course</span>
                                 <span class="mt-1 flex items-center gap-1.5 text-sm font-bold uppercase tracking-wide text-primary">
                                     <x-icon name="map-pin" class="h-4 w-4" /> {{ $course->location->name }}
                                 </span>
@@ -111,7 +112,7 @@
             <dl class="mt-6 space-y-3 text-sm">
                 <div class="flex justify-between gap-4">
                     <dt class="text-muted-foreground">Course</dt>
-                    <dd class="font-semibold text-secondary">{{ $course->date_range_label }}</dd>
+                    <dd class="font-semibold text-secondary">{{ $course->date_range_label }} ({{ $course->duration_days }} days)</dd>
                 </div>
                 <div class="flex justify-between gap-4">
                     <dt class="text-muted-foreground">Location</dt>

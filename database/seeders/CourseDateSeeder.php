@@ -21,14 +21,14 @@ class CourseDateSeeder extends Seeder
 
         $dates = [
             [
-                'starts_on' => now()->addMonth()->next('Monday')->toDateString(),
-                'ends_on' => now()->addMonth()->next('Monday')->addDays(4)->toDateString(),
+                'start_date' => now()->addMonth()->next('Monday')->toDateString(),
+                'end_date' => now()->addMonth()->next('Monday')->addDays(4)->toDateString(),
                 'location_id' => Location::where('slug', 'seville-spain')->value('id'),
                 'capacity' => 8,
             ],
             [
-                'starts_on' => now()->addMonths(2)->next('Monday')->toDateString(),
-                'ends_on' => now()->addMonths(2)->next('Monday')->addDays(4)->toDateString(),
+                'start_date' => now()->addMonths(2)->next('Monday')->toDateString(),
+                'end_date' => now()->addMonths(2)->next('Monday')->addDays(4)->toDateString(),
                 'location_id' => Location::where('slug', 'seville-spain')->value('id'),
                 'capacity' => 8,
             ],
