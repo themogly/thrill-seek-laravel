@@ -1,10 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Hall of Fame — G-Force Skydiving')
-@section('description', 'Celebrating our students and graduates — the G-Force Hall of Fame.')
+@inject('pages', 'App\Settings\SimplePagesSettings')
+
+@section('title', $pages->hall_of_fame_seo_title)
+@section('description', $pages->hall_of_fame_seo_description)
 
 @section('content')
-    <x-site.page-hero title="Hall of Fame" subtitle="The students, graduates and coaches that make G-Force what it is." />
+    <x-site.page-hero :title="$pages->hall_of_fame_hero_title" :subtitle="$pages->hall_of_fame_hero_subtitle" />
     <x-site.section>
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             @foreach ($entries as $g)

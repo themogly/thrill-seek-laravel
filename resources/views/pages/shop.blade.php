@@ -1,10 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Shop — G-Force Skydiving Merch')
-@section('description', 'G-Force Skydiving merch: t-shirts, tech tops, jumpsuits, buffs and more.')
+@inject('pages', 'App\Settings\SimplePagesSettings')
+
+@section('title', $pages->shop_seo_title)
+@section('description', $pages->shop_seo_description)
 
 @section('content')
-    <x-site.page-hero title="Shop" subtitle="Kit up. Look the part. Repping G-Force on the dropzone." />
+    <x-site.page-hero :title="$pages->shop_hero_title" :subtitle="$pages->shop_hero_subtitle" />
     <x-site.section>
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             @foreach ($items as $p)

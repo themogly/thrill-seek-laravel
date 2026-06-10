@@ -1,10 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Testimonials — G-Force Skydiving')
-@section('description', 'Real reviews from G-Force tandem students and AFF graduates.')
+@inject('pages', 'App\Settings\SimplePagesSettings')
+
+@section('title', $pages->testimonials_seo_title)
+@section('description', $pages->testimonials_seo_description)
 
 @section('content')
-    <x-site.page-hero title="Testimonials" subtitle="Real stories from the people who've jumped with us." />
+    <x-site.page-hero :title="$pages->testimonials_hero_title" :subtitle="$pages->testimonials_hero_subtitle" />
     <x-site.section>
         <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             @foreach ($testimonials as $t)
