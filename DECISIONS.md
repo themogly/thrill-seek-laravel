@@ -149,3 +149,19 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
 - **Tooling caveat** — the local pint/phpstan/phpunit wrappers do not propagate
   failure exit codes, so `&&`-chained commit commands can commit on red. One duplicate
   commit was squashed after this bit once; always read the JSON output.
+
+# Round 2
+
+## Tooling fix (first task)
+
+- **The wrappers were never broken** — re-diagnosis showed laravel/pao (the
+  agent-output formatter on these binaries) passes exit codes through correctly;
+  last session's "swallowed failures" came from piping tool output through
+  `| tail -n`, which makes the shell report tail's exit status. Fix: a committed
+  `composer check` script (pint --test → phpstan → full suite) that aborts on the
+  first failure; verified to exit 1 on a deliberately broken file and 0 when clean.
+  CLAUDE.md's caveat corrected.
+- **Redis installed via Homebrew** — the environment declared Redis enabled, but no
+  server or binaries existed; `brew install redis` + `brew services start redis`
+  fulfils the stated environment. predis is the PHP client (the phpredis extension
+  is not loaded in the local PHP).

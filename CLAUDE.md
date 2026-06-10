@@ -54,9 +54,11 @@ that manages all site content, enquiries, payments and bookings.
 - `php artisan test` — full suite green, no skips. Feature tests for HTTP/Livewire
   flows, unit tests for actions/support classes, Filament resource tests. Mock Stripe
   via the `StripeCheckout` service binding; use `Mail::fake()` — tests never hit real APIs.
-- `./vendor/bin/pint` and `./vendor/bin/phpstan analyse` (Larastan level 6) clean.
-  Note: the local wrapper tools do NOT propagate failure exit codes — read the JSON
-  output, don't trust `&&` chains.
+- **Gate every commit with `composer check`** (pint --test → phpstan → full test
+  suite; aborts on first failure with a real exit code). The tools themselves
+  propagate exit codes fine — last session's "swallowed failures" were caused by
+  piping their output through `| tail`, which makes the shell return tail's status.
+  Never pipe a command whose exit code you depend on.
 - Migrations + factories + seeders for every model; conventional commits.
 - After touching anything content-related, verify the public pages still render
   identically (tests assert seeded content; smoke-test key routes return 200 twice —
