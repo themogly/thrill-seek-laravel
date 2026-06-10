@@ -19,6 +19,20 @@ class EmailTemplateSeeder extends Seeder
                 'body' => "Hi {{ name }},\n\nThanks for getting in touch with G-Force Skydiving — we've received your enquiry and one of the team will come back to you shortly.\n\nYour reference is {{ reference }}. Keep it handy if you call or email us.\n\nBlue skies,\nThe G-Force team",
                 'variables' => ['name', 'reference', 'product'],
             ],
+            [
+                'key' => 'payment_link',
+                'name' => 'Payment link',
+                'subject' => 'Complete your payment — G-Force Skydiving ({{ reference }})',
+                'body' => "Hi {{ name }},\n\nHere's your secure payment link for {{ description }} ({{ amount }}):\n\n{{ link }}\n\nThe link takes you to Stripe, our payment provider. Once you've paid, you'll get a confirmation email straight away.\n\nAny questions, just reply to this email.\n\nBlue skies,\nThe G-Force team",
+                'variables' => ['name', 'amount', 'description', 'link', 'reference'],
+            ],
+            [
+                'key' => 'payment_received',
+                'name' => 'Payment received (customer confirmation)',
+                'subject' => 'Payment received — G-Force Skydiving ({{ reference }})',
+                'body' => "Hi {{ name }},\n\nThank you! We've received your payment of {{ amount }} for {{ product }}.\n\nYour booking reference is {{ reference }}. {{ balance_note }}\n\nWe'll be in touch to arrange your jump date if we haven't already.\n\nBlue skies,\nThe G-Force team",
+                'variables' => ['name', 'amount', 'product', 'reference', 'balance_note'],
+            ],
         ];
 
         foreach ($templates as $template) {

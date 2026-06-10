@@ -51,6 +51,34 @@ class EnquiryInfolist
                                 ->mapWithKeys(fn ($value, $key) => [Str::headline((string) $key) => $value])
                                 ->all()),
                     ]),
+                Section::make('Payments')
+                    ->visible(fn (Enquiry $record): bool => $record->payments()->exists())
+                    ->components([
+                        RepeatableEntry::make('payments')
+                            ->hiddenLabel()
+                            ->components([
+                                TextEntry::make('formatted_amount')
+                                    ->hiddenLabel()
+                                    ->weight('bold'),
+                                TextEntry::make('purpose')
+                                    ->hiddenLabel()
+                                    ->badge()
+                                    ->color('gray'),
+                                TextEntry::make('method')
+                                    ->hiddenLabel()
+                                    ->badge()
+                                    ->color('gray'),
+                                TextEntry::make('status')
+                                    ->hiddenLabel()
+                                    ->badge(),
+                                TextEntry::make('paid_at')
+                                    ->hiddenLabel()
+                                    ->dateTime()
+                                    ->placeholder('Not paid yet')
+                                    ->color('gray'),
+                            ])
+                            ->columns(5),
+                    ]),
                 Section::make('Conversation')
                     ->components([
                         RepeatableEntry::make('messages')

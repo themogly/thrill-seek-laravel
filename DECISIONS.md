@@ -79,3 +79,24 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
   wrapped in a try/catch (missing RESEND_API_KEY just logs); locally MAIL_MAILER=log.
 - **Spam control** — honeypot field (silently pretends success) + 5 submissions per
   10 minutes per IP across all enquiry forms.
+
+## Phase 4 — Payments
+
+- **stripe/stripe-php over Cashier** — Cashier is built around subscriptions and
+  customer billing; this business takes one-off Checkout payments with custom amounts,
+  which the bare SDK models directly. `StripeCheckout` wraps the SDK so tests mock one
+  seam and the SDK never leaks into actions.
+- **Booking model created in Phase 4** (a phase early) — the webhook must convert paid
+  enquiries into bookings, so the model/migration land here; the Filament resource,
+  availability and calendar follow in Phase 5.
+- **Booking price capture** — deposit/balance payments price the booking at the
+  product's full price (instalments against it); full/custom payments price the
+  booking at the amount paid (covers coaching and add-on-inclusive tandems).
+- **Webhook idempotency** — Stripe retries deliveries; an already-paid payment is
+  acknowledged and skipped, so retries can't double-convert or double-email.
+- **Payment success/cancelled pages are minimal static Blade pages** built from the
+  existing design components; they are new pages (nothing to preserve) and carry no
+  content worth a settings group.
+- **Pay-online cards on tandem/AFF pages still show the placeholder toast** — real
+  public self-checkout (without an enquiry) would change the public flow; payments are
+  currently admin-initiated via links, which matches the enquiry-first business model.

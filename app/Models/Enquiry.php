@@ -11,10 +11,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
  * @property EnquiryStatus $status
+ * @property Carbon|null $preferred_date
  */
 class Enquiry extends Model
 {
@@ -69,6 +72,18 @@ class Enquiry extends Model
     public function messages(): HasMany
     {
         return $this->hasMany(EnquiryMessage::class)->orderBy('created_at')->orderBy('id');
+    }
+
+    /** @return HasMany<Payment, $this> */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class)->latest();
+    }
+
+    /** @return HasOne<Booking, $this> */
+    public function booking(): HasOne
+    {
+        return $this->hasOne(Booking::class);
     }
 
     public function isUnread(): bool

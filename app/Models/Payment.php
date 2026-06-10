@@ -1,0 +1,83 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Models;
+
+use App\Enums\PaymentMethod;
+use App\Enums\PaymentPurpose;
+use App\Enums\PaymentStatus;
+use App\Support\Money;
+use Database\Factories\PaymentFactory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+/**
+ * @property PaymentPurpose $purpose
+ * @property PaymentMethod $method
+ * @property PaymentStatus $status
+ */
+class Payment extends Model
+{
+    /** @use HasFactory<PaymentFactory> */
+    use HasFactory;
+
+    protected $fillable = [
+        'enquiry_id',
+        'booking_id',
+        'purpose',
+        'method',
+        'status',
+        'amount_pence',
+        'description',
+        'reference',
+        'stripe_checkout_session_id',
+        'stripe_payment_intent_id',
+        'paid_at',
+        'created_by',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'purpose' => PaymentPurpose::class,
+            'method' => PaymentMethod::class,
+            'status' => PaymentStatus::class,
+            'amount_pence' => 'integer',
+            'paid_at' => 'datetime',
+        ];
+    }
+
+    /** @return BelongsTo<Enquiry, $this> */
+    public function enquiry(): BelongsTo
+    {
+        return $this->belongsTo(Enquiry::class);
+    }
+
+    /** @return BelongsTo<Booking, $this> */
+    public function booking(): BelongsTo
+    {
+        return $this->belongsTo(Booking::class);
+    }
+
+    /** @return BelongsTo<User, $this> */
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * @return Attribute<string, never>
+     */
+    protected function formattedAmount(): Attribute
+    {
+        return Attribute::make(get: fn (): string => Money::formatPence($this->amount_pence));
+    }
+
+    public function isPaid(): bool
+    {
+        return $this->status === PaymentStatus::Paid;
+    }
+}

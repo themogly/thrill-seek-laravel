@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\StripeWebhookController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PageController::class, 'home'])->name('home');
@@ -13,6 +14,11 @@ Route::get('/hall-of-fame', [PageController::class, 'hallOfFame'])->name('hall-o
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::get('/privacy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/terms', [PageController::class, 'terms'])->name('terms');
+
+Route::view('/payment/success', 'pages.payment-success')->name('payment.success');
+Route::view('/payment/cancelled', 'pages.payment-cancelled')->name('payment.cancelled');
+
+Route::post('/webhooks/stripe', StripeWebhookController::class)->name('webhooks.stripe');
 
 Route::get('/sitemap.xml', function () {
     $entries = [
