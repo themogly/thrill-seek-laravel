@@ -321,3 +321,10 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
   `App\ViewModels\PaymentSuccessPage` (the repo had no page-class convention yet —
   this establishes it; see Rule 5). Every other controller method already just
   resolves and returns.
+- **Rule 3 — webhooks**: the controller was already a thin verify-and-dispatch
+  shell, but both event branches lived as private methods inside
+  `HandleStripeWebhook`. They are now `HandleCheckoutSessionCompleted` and
+  `HandleCheckoutSessionExpired` Actions (shared session→payment lookup in
+  `Actions\Concerns\ResolvesCheckoutPayment`), with `HandleStripeWebhook`
+  reduced to the event-type match. Both events were already covered by
+  StripeWebhookTest / DirectBookingWebhookTest, which pinned the behaviour.
