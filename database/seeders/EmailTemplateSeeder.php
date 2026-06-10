@@ -34,6 +34,13 @@ class EmailTemplateSeeder extends Seeder
                 'variables' => ['name', 'reference', 'product', 'old_date', 'new_date'],
             ],
             [
+                'key' => 'gift_voucher',
+                'name' => 'Gift voucher',
+                'subject' => 'Your G-Force Skydiving gift voucher ({{ code }})',
+                'body' => "Hi {{ name }},\n\nHere's your gift voucher for {{ recipient }} — {{ amount }} towards {{ product }}.\n\nVoucher code: {{ code }}\nValid until: {{ expires }}\n\nGift message: {{ message }}\n\nTo book, just email {{ contact_email }} quoting the voucher code.\n\nBlue skies,\nThe G-Force team",
+                'variables' => ['name', 'recipient', 'code', 'amount', 'product', 'expires', 'message', 'contact_email'],
+            ],
+            [
                 'key' => 'payment_received',
                 'name' => 'Payment received (customer confirmation)',
                 'subject' => 'Payment received — G-Force Skydiving ({{ reference }})',
