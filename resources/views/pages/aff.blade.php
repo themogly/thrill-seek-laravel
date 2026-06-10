@@ -1,32 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'AFF Course — Become a Licensed Skydiver | G-Force')
-@section('description', 'Accelerated Freefall course Levels 1–8 for £1,750. British Skydiving / USPA recognised. Train in Spain with G-Force.')
+@inject('page', 'App\Settings\AffPageSettings')
 
-@php
-    $bullets = [
-        'Full UK ground school: equipment, safety, emergency drills, canopy control',
-        'Levels 1–8 freefall progression with two instructors',
-        '10 consolidation jumps to A Licence',
-        'All equipment and instruction included',
-    ];
-    $info = [
-        ['icon' => 'map-pin', 'title' => 'Location', 'body' => 'Spain — sunny, reliable weather, world-class dropzone.'],
-        ['icon' => 'plane', 'title' => 'Travel', 'body' => 'Flights from Birmingham or Bristol, group accommodation arranged, shared car hire.'],
-        ['icon' => 'graduation-cap', 'title' => 'Example dates', 'body' => '8–12 June — limited group sizes for personalised coaching.'],
-    ];
-@endphp
+@section('title', $page->seo_title)
+@section('description', $page->seo_description)
 
 @section('content')
-    <x-site.page-hero title="Accelerated Freefall" subtitle="Beginner to A Licence — fully qualified to skydive solo, anywhere in the world." />
+    <x-site.page-hero :title="$page->hero_title" :subtitle="$page->hero_subtitle" />
 
     <x-site.section>
         <div class="grid gap-12 lg:grid-cols-2">
-            <img src="/images/aff.jpg" alt="AFF training" class="aspect-[4/5] rounded-2xl object-cover shadow-deep" loading="lazy" width="1280" height="896" />
+            <img src="{{ $page->imageUrl($page->intro_image) }}" alt="AFF training" class="aspect-[4/5] rounded-2xl object-cover shadow-deep" loading="lazy" width="1280" height="896" />
             <div>
-                <x-site.section-heading eyebrow="The course" title="From your first jump to a Licence" lead="A British Skydiving / USPA recognised programme delivered by ex-military instructors." />
+                <x-site.section-heading :eyebrow="$page->intro_eyebrow" :title="$page->intro_title" :lead="$page->intro_lead" />
                 <ul class="space-y-3">
-                    @foreach ($bullets as $b)
+                    @foreach ($page->bullets as $b)
                         <li class="flex items-start gap-2"><x-icon name="check" class="mt-1 h-5 w-5 flex-shrink-0 text-primary" /><span>{{ $b }}</span></li>
                     @endforeach
                 </ul>
@@ -38,11 +26,10 @@
     <section class="border-y bg-card">
         <div class="mx-auto max-w-7xl px-4 py-14 lg:px-8">
             <div class="mx-auto max-w-2xl text-center">
-                <p class="text-sm font-bold uppercase tracking-[0.3em] text-primary">Train with confidence</p>
-                <h2 class="mt-2 font-display text-3xl uppercase tracking-wide text-secondary md:text-4xl">You're in safe hands</h2>
+                <p class="text-sm font-bold uppercase tracking-[0.3em] text-primary">{{ $page->trust_eyebrow }}</p>
+                <h2 class="mt-2 font-display text-3xl uppercase tracking-wide text-secondary md:text-4xl">{{ $page->trust_title }}</h2>
                 <p class="mt-4 text-muted-foreground">
-                    Our AFF programme is delivered by ex-military instructors with decades of experience and the highest
-                    recognised certifications. Before you book, here's what stands behind every jump.
+                    {{ $page->trust_body }}
                 </p>
             </div>
             <x-site.trust-grid />
@@ -51,7 +38,7 @@
 
     <section class="bg-muted">
         <div class="mx-auto max-w-7xl px-4 py-20 lg:px-8">
-            <x-site.section-heading eyebrow="Pricing" title="Investment" />
+            <x-site.section-heading :eyebrow="$page->pricing_eyebrow" :title="$page->pricing_title" />
             <div class="grid gap-6 md:grid-cols-2">
                 <x-site.price-card title="AFF Course Levels 1–8" price="£1,750" :features="['All equipment', 'All instruction', 'Ground school', 'Levels 1–8']" :highlight="true" />
                 <x-site.price-card title="Consolidation Jumps" price="£600" :features="['10 jumps for A Licence', 'Solo progression', 'Coach support']" />
@@ -67,9 +54,9 @@
     </section>
 
     <x-site.section>
-        <x-site.section-heading eyebrow="Where & When" title="Train in the sun" lead="Our courses run in Spain — guaranteed jumpable weather, an unforgettable trip." />
+        <x-site.section-heading :eyebrow="$page->info_eyebrow" :title="$page->info_title" :lead="$page->info_lead" />
         <div class="grid gap-6 md:grid-cols-3">
-            @foreach ($info as $card)
+            @foreach ($page->info_cards as $card)
                 <div class="rounded-2xl border bg-card p-6">
                     <div class="text-primary"><x-icon :name="$card['icon']" /></div>
                     <h4 class="mt-2 font-display text-xl uppercase text-secondary">{{ $card['title'] }}</h4>

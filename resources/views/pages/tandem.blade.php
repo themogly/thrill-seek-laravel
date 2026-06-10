@@ -1,19 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'Tandem Skydive from 15,000ft — G-Force Skydiving')
-@section('description', 'Book a G-Force Buzz Tandem Skydive from £260. The highest tandem in the UK at 15,000ft. Devon, Swansea and Hinton.')
-@section('og_title', 'Tandem Skydive — G-Force')
-@section('og_description', 'Highest tandem in the UK at 15,000ft.')
+@inject('page', 'App\Settings\TandemPageSettings')
+
+@section('title', $page->seo_title)
+@section('description', $page->seo_description)
+@section('og_title', $page->og_title)
+@section('og_description', $page->og_description)
 
 @php
-    $bullets = [
-        'Highest tandem skydive in the UK',
-        'Approx 60 seconds of freefall',
-        '5–7 minutes of canopy flight',
-        'Fully briefed by your instructor on the day',
-        'G-Force Buzz tandem rigs',
-    ];
-    $locations = ['Devon', 'Swansea', 'Hinton Midlands'];
     $pricing = [
         ['item' => 'Tandem Skydive', 'price' => '£260', 'note' => 'Paid direct to G-Force'],
         ['item' => 'Outside Camera', 'price' => '£140', 'note' => 'Optional add-on'],
@@ -31,21 +25,21 @@
 @endphp
 
 @section('content')
-    <x-site.page-hero title="Tandem Skydive" subtitle="G-Force Buzz Tandems from £260 — the highest tandem in the UK at 15,000ft." />
+    <x-site.page-hero :title="$page->hero_title" :subtitle="$page->hero_subtitle" />
 
     <x-site.section>
         <div class="grid gap-12 lg:grid-cols-2">
             <div>
-                <x-site.section-heading eyebrow="The jump" title="15,000ft of pure adrenaline" lead="Strapped to a fully qualified G-Force instructor, you'll experience nearly a full minute of freefall and the most breathtaking views in the UK." />
+                <x-site.section-heading :eyebrow="$page->intro_eyebrow" :title="$page->intro_title" :lead="$page->intro_lead" />
                 <ul class="space-y-3">
-                    @foreach ($bullets as $b)
+                    @foreach ($page->bullets as $b)
                         <li class="flex items-start gap-2"><x-icon name="check" class="mt-1 h-5 w-5 flex-shrink-0 text-primary" /><span>{{ $b }}</span></li>
                     @endforeach
                 </ul>
 
-                <h3 class="mt-10 font-display text-2xl uppercase text-secondary">Locations</h3>
+                <h3 class="mt-10 font-display text-2xl uppercase text-secondary">{{ $page->locations_heading }}</h3>
                 <div class="mt-3 grid grid-cols-3 gap-3">
-                    @foreach ($locations as $loc)
+                    @foreach ($page->locations as $loc)
                         <div class="rounded-lg border bg-card p-4 text-center">
                             <x-icon name="map-pin" class="mx-auto h-5 w-5 text-primary" />
                             <p class="mt-1 font-semibold">{{ $loc }}</p>
@@ -53,13 +47,13 @@
                     @endforeach
                 </div>
             </div>
-            <img src="/images/tandem.jpg" alt="Tandem skydive" class="aspect-[4/5] w-full rounded-2xl object-cover shadow-deep" loading="lazy" width="1280" height="896" />
+            <img src="{{ $page->imageUrl($page->intro_image) }}" alt="Tandem skydive" class="aspect-[4/5] w-full rounded-2xl object-cover shadow-deep" loading="lazy" width="1280" height="896" />
         </div>
     </x-site.section>
 
     <section class="bg-muted">
         <div class="mx-auto max-w-7xl px-4 py-20 lg:px-8">
-            <x-site.section-heading eyebrow="Transparent pricing" title="What it costs" />
+            <x-site.section-heading :eyebrow="$page->pricing_eyebrow" :title="$page->pricing_title" />
             <div class="grid gap-8 lg:grid-cols-2">
                 <div class="overflow-hidden rounded-2xl border bg-card">
                     <table class="w-full text-left">
@@ -86,7 +80,7 @@
                         </tbody>
                     </table>
                     <div class="border-t bg-accent/50 p-4 text-sm">
-                        <strong>Charity tandem?</strong> Your sponsorship can cover the £260 jump fee — camera packages must still be paid separately.
+                        <strong>{{ $page->charity_note_title }}</strong> {{ $page->charity_note_body }}
                     </div>
                 </div>
             </div>
