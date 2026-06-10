@@ -304,3 +304,14 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
   server or binaries existed; `brew install redis` + `brew services start redis`
   fulfils the stated environment. predis is the PHP client (the phpredis extension
   is not loaded in the local PHP).
+
+## Consistency pass (chore/consistency)
+
+- **Rule 1 — data access**: the only violations found were Livewire display reads of
+  the tandem product (`BookTandem`, `BuyVoucher`) — now routed through
+  `SiteContent::tandemProduct()`. The three enquiry forms keep a live `Product`
+  lookup because it happens on the write path (attaching the product to a new
+  enquiry), now commented as such. Views contain no inline queries. Spatie
+  settings classes were left as-is: they already carry their own Redis-backed
+  cache and invalidation (`settings:clear-cache`), so wrapping them in
+  `SiteContent` would be a second cache layer for no behaviour gain.

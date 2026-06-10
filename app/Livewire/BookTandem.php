@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use App\Actions\StartTandemCheckout;
-use App\Enums\ProductType;
 use App\Exceptions\BookingUnavailableException;
 use App\Livewire\Concerns\ProtectsAgainstSpam;
 use App\Models\Product;
 use App\Models\TandemDate;
 use App\Models\Voucher;
 use App\Support\Money;
+use App\Support\SiteContent;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Facades\Log;
@@ -208,7 +208,9 @@ class BookTandem extends Component
 
     public function getProductProperty(): ?Product
     {
-        return Product::active()->ofType(ProductType::Tandem)->ordered()->with('addOns')->first();
+        // CMS read: price/add-on config comes from the cached gateway, which
+        // the content observer busts on save, so it is never stale.
+        return app(SiteContent::class)->tandemProduct();
     }
 
     /** @return EloquentCollection<int, TandemDate> */

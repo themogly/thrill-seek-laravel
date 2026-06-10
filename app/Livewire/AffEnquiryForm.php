@@ -45,12 +45,16 @@ class AffEnquiryForm extends Component
         $this->ensureNotRateLimited();
         $validated = $this->validateForToast();
 
+        // Live query (write path): the enquiry is attached to the current
+        // product row, not cached display content.
+        $product = Product::active()->ofType(ProductType::Aff)->ordered()->first();
+
         $createEnquiry->handle([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'phone' => $validated['phone'],
             'message' => $validated['message'] ?: null,
-        ], Product::active()->ofType(ProductType::Aff)->ordered()->first());
+        ], $product);
 
         $this->finish();
     }

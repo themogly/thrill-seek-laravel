@@ -63,6 +63,10 @@ class TandemEnquiryForm extends Component
         $this->ensureNotRateLimited();
         $validated = $this->validateForToast();
 
+        // Live query (write path): the enquiry is attached to the current
+        // product row, not cached display content.
+        $product = Product::active()->ofType(ProductType::Tandem)->ordered()->first();
+
         $createEnquiry->handle([
             'name' => $validated['name'],
             'email' => $validated['email'],
@@ -76,7 +80,7 @@ class TandemEnquiryForm extends Component
                 'weight_kg' => $validated['weight'],
                 'sex' => $validated['sex'],
             ],
-        ], Product::active()->ofType(ProductType::Tandem)->ordered()->first());
+        ], $product);
 
         $this->finish();
     }

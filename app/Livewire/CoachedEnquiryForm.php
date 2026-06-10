@@ -62,6 +62,10 @@ class CoachedEnquiryForm extends Component
         $this->ensureNotRateLimited();
         $validated = $this->validateForToast();
 
+        // Live query (write path): the enquiry is attached to the current
+        // product row, not cached display content.
+        $product = Product::active()->ofType(ProductType::Coaching)->ordered()->first();
+
         $createEnquiry->handle([
             'name' => $validated['name'],
             'email' => $validated['email'],
@@ -72,7 +76,7 @@ class CoachedEnquiryForm extends Component
                 'jump_count' => $validated['jumps'],
                 'licence' => $validated['licence'] ?: 'None yet',
             ],
-        ], Product::active()->ofType(ProductType::Coaching)->ordered()->first());
+        ], $product);
 
         $this->finish();
     }

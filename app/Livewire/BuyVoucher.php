@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use App\Actions\StartVoucherCheckout;
-use App\Enums\ProductType;
 use App\Livewire\Concerns\ProtectsAgainstSpam;
 use App\Models\Product;
+use App\Support\SiteContent;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
@@ -77,7 +77,9 @@ class BuyVoucher extends Component
 
     public function getProductProperty(): ?Product
     {
-        return Product::active()->ofType(ProductType::Tandem)->ordered()->first();
+        // CMS read: the voucher price mirrors the tandem product's display
+        // price, so it comes from the cached gateway like any page content.
+        return app(SiteContent::class)->tandemProduct();
     }
 
     public function render(): View
