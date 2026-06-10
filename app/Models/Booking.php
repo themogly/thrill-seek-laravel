@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\BookingPaymentState;
 use App\Enums\BookingStatus;
 use App\Enums\PaymentStatus;
 use App\Observers\BookingObserver;
@@ -42,6 +43,7 @@ class Booking extends Model
         'status',
         'scheduled_at',
         'availability_slot_id',
+        'course_date_id',
         'price_pence',
         'customer_details',
         'notes',
@@ -123,6 +125,30 @@ class Booking extends Model
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    /** @return BelongsTo<CourseDate, $this> */
+    public function courseDate(): BelongsTo
+    {
+        return $this->belongsTo(CourseDate::class);
+    }
+
+    /**
+     * Derived payment position (unpaid / deposit paid / paid in full).
+     *
+     * @return Attribute<BookingPaymentState, never>
+     */
+    protected function paymentState(): Attribute
+    {
+        return Attribute::make(get: function (): BookingPaymentState {
+            if ($this->total_paid_pence === 0) {
+                return BookingPaymentState::Unpaid;
+            }
+
+            return $this->hasOutstandingBalance()
+                ? BookingPaymentState::DepositPaid
+                : BookingPaymentState::PaidInFull;
+        });
     }
 
     /** @return HasMany<Payment, $this> */

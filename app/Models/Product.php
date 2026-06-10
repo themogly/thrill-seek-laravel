@@ -71,6 +71,12 @@ class Product extends Model
         return $this->hasMany(ProductAddOn::class)->orderBy('sort_order')->orderBy('id');
     }
 
+    /** @return HasMany<CourseDate, $this> */
+    public function courseDates(): HasMany
+    {
+        return $this->hasMany(CourseDate::class);
+    }
+
     /**
      * Exact price, e.g. "£260" or "£1,750".
      *

@@ -1,0 +1,40 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Database\Seeders;
+
+use App\Models\CourseDate;
+use App\Models\Product;
+use Illuminate\Database\Seeder;
+
+class CourseDateSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $course = Product::where('slug', 'aff-course')->first();
+
+        if ($course === null || CourseDate::query()->exists()) {
+            return;
+        }
+
+        $dates = [
+            [
+                'starts_on' => now()->addMonth()->next('Monday')->toDateString(),
+                'ends_on' => now()->addMonth()->next('Monday')->addDays(4)->toDateString(),
+                'location' => 'Seville, Spain',
+                'capacity' => 8,
+            ],
+            [
+                'starts_on' => now()->addMonths(2)->next('Monday')->toDateString(),
+                'ends_on' => now()->addMonths(2)->next('Monday')->addDays(4)->toDateString(),
+                'location' => 'Ocaña, Spain',
+                'capacity' => 8,
+            ],
+        ];
+
+        foreach ($dates as $date) {
+            $course->courseDates()->create($date);
+        }
+    }
+}
