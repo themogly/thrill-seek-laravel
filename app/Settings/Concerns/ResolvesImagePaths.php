@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Settings\Concerns;
 
 use Illuminate\Support\Facades\Storage;

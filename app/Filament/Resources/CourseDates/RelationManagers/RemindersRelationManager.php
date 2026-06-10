@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Filament\Resources\CourseDates\RelationManagers;
 
 use App\Models\CourseReminder;

@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Filament\Resources\ShopItems\Schemas;
 
 use Filament\Forms\Components\TextInput;

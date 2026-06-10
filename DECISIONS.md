@@ -341,3 +341,9 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
   of them. Page view-models have their own home: `App\ViewModels`, established by
   `PaymentSuccessPage` (Rule 2). Convention: one class per page that needs
   assembly logic, named `<Thing>Page`, exposing `viewData(...)` for the view.
+- **Rule 6 — strict_types**: all 265 `declare(strict_types=1)` statements removed
+  (app, database, routes, tests, config, bootstrap) and the decision pinned in
+  `pint.json` with `"declare_strict_types": false` so Pint can never reintroduce
+  it. Full suite re-run after removal — no behaviour change surfaced (the
+  codebase's full type-hints keep coercion at the edges). The CLAUDE.md
+  instruction now states the inverse rule.

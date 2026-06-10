@@ -55,7 +55,9 @@ that manages all site content, enquiries, payments and bookings.
   the request.
 - **Never cache Eloquent objects** — Laravel 13's cache refuses to unserialize PHP
   objects (`cache.serializable_classes = false`). Settings caching is fine (plain values).
-- New PHP files: `declare(strict_types=1)`, full type-hints.
+- **No `declare(strict_types=1)`** — vanilla Laravel conventions, enforced by
+  `pint.json` (`declare_strict_types: false`). Full parameter and return
+  type-hints are still required everywhere.
 
 ## Quality bar (enforced before every commit)
 - `php artisan test` — full suite green, no skips. Feature tests for HTTP/Livewire

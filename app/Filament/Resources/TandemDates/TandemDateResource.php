@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Filament\Resources\TandemDates;
 
 use App\Filament\Resources\TandemDates\Pages\CreateTandemDate;

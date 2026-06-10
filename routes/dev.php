@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 use App\Enums\MessageDirection;
 use App\Mail\CourseMessageMail;
 use App\Mail\EnquiryAdminNotification;
