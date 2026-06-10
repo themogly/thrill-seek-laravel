@@ -334,3 +334,10 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
   forms, voucher purchase, newsletter island in the footer layout) and there is no
   hand-rolled fetch/XHR anywhere in views or resources/js. No conversions, so no
   visual re-verification was needed.
+- **Rule 5 — Support folder**: kept as `App\Support`. Its six classes are genuine
+  cross-cutting utilities (Money, SiteIcons, TemplateRenderer, the SiteContent
+  cache gateway, the ImageOptimization registry, the DateClash domain rule) — none
+  assemble data for a specific page, so a rename to ViewModels would mislabel all
+  of them. Page view-models have their own home: `App\ViewModels`, established by
+  `PaymentSuccessPage` (Rule 2). Convention: one class per page that needs
+  assembly logic, named `<Thing>Page`, exposing `viewData(...)` for the view.
