@@ -11,18 +11,7 @@
 
     <x-site.section>
         <div class="grid gap-12 lg:grid-cols-[2fr_1fr]">
-            <form x-data="contactForm" @submit.prevent="submit" class="rounded-2xl border bg-card p-8 shadow-sm">
-                <h2 class="font-display text-2xl uppercase text-secondary">{{ $pages->contact_form_heading }}</h2>
-                <div class="mt-6 grid gap-4 sm:grid-cols-2">
-                    <div class="space-y-2"><x-ui.label for="c-name">Name</x-ui.label><x-ui.input id="c-name" name="name" required maxlength="100" /></div>
-                    <div class="space-y-2"><x-ui.label for="c-email">Email</x-ui.label><x-ui.input id="c-email" name="email" type="email" required maxlength="255" /></div>
-                    <div class="space-y-2 sm:col-span-2"><x-ui.label for="c-phone">Phone (optional)</x-ui.label><x-ui.input id="c-phone" name="phone" type="tel" maxlength="30" /></div>
-                    <div class="space-y-2 sm:col-span-2"><x-ui.label for="c-msg">Message</x-ui.label><x-ui.textarea id="c-msg" name="message" rows="6" required maxlength="2000" /></div>
-                </div>
-                <x-ui.button type="submit" x-bind:disabled="sending" class="mt-6 bg-primary text-primary-foreground hover:bg-primary/90">
-                    <x-icon name="send" class="mr-2 h-4 w-4" /> <span x-text="sending ? 'Sending...' : 'Send Message'">Send Message</span>
-                </x-ui.button>
-            </form>
+            <livewire:contact-form />
 
             <div class="space-y-6">
                 <div class="rounded-2xl bg-secondary p-6 text-secondary-foreground shadow-deep">

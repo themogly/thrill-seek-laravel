@@ -96,28 +96,7 @@
             @endif
 
             {{-- Enquiry form --}}
-            <form x-data="enquiryForm({ delay: 600 })" @submit.prevent="submit" class="rounded-2xl border bg-card p-8 shadow-sm">
-                <h3 class="font-display text-2xl uppercase text-secondary">Booking Enquiry</h3>
-                <p class="mt-1 text-sm text-muted-foreground">We'll confirm availability and next steps.</p>
-                <div class="mt-6 grid gap-4 sm:grid-cols-2">
-                    <div class="space-y-2"><x-ui.label for="date">Preferred date</x-ui.label><x-ui.input id="date" name="date" type="date" required /></div>
-                    <div class="space-y-2"><x-ui.label for="name">Full name</x-ui.label><x-ui.input id="name" name="name" required /></div>
-                    <div class="space-y-2 sm:col-span-2"><x-ui.label for="address">Address</x-ui.label><x-ui.input id="address" name="address" required /></div>
-                    <div class="space-y-2"><x-ui.label for="postcode">Postcode</x-ui.label><x-ui.input id="postcode" name="postcode" required /></div>
-                    <div class="space-y-2"><x-ui.label for="dob">Date of birth</x-ui.label><x-ui.input id="dob" name="dob" type="date" required /></div>
-                    <div class="space-y-2"><x-ui.label for="phone">Phone</x-ui.label><x-ui.input id="phone" name="phone" type="tel" required /></div>
-                    <div class="space-y-2"><x-ui.label for="email">Email</x-ui.label><x-ui.input id="email" name="email" type="email" required /></div>
-                    <div class="space-y-2"><x-ui.label for="height">Height (cm)</x-ui.label><x-ui.input id="height" name="height" type="number" required /></div>
-                    <div class="space-y-2"><x-ui.label for="weight">Weight (kg)</x-ui.label><x-ui.input id="weight" name="weight" type="number" required /></div>
-                    <div class="space-y-2">
-                        <x-ui.label id="sex-label">Sex</x-ui.label>
-                        <x-ui.select name="sex" placeholder="Select" aria-labelledby="sex-label" :options="['male' => 'Male', 'female' => 'Female', 'other' => 'Other']" />
-                    </div>
-                </div>
-                <x-ui.button type="submit" x-bind:disabled="submitting" class="mt-6 w-full bg-secondary text-secondary-foreground hover:bg-secondary/90">
-                    <span x-text="submitting ? 'Sending...' : 'Send Enquiry'">Send Enquiry</span>
-                </x-ui.button>
-            </form>
+            <livewire:tandem-enquiry-form />
         </div>
     </x-site.section>
 @endsection

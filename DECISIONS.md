@@ -46,3 +46,36 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
 - **Image uploads in settings/edit forms are "keep current when empty"** — FileUpload
   fields dehydrate only when filled, so saving a form without re-uploading never wipes
   a seeded bundled-path image.
+
+## Phase 2 — Products
+
+- **Money is integer pence everywhere** (`Money::formatPence` for display). Merch shop
+  items keep a free-text price label ("£15 – £30") because they are display-only.
+- **AFF deposit seeded at £300** — the original site never states a deposit amount;
+  £300 is a sensible placeholder the admin can change on the product.
+- **Tandem fees modelled as non-purchasable add-ons** — P6 insurance and the rebooking
+  fee share the pricing table with camera packages, so they are ProductAddOn rows with
+  `purchasable = false`; only purchasable add-ons can be attached to payments later.
+- **Consolidation Jumps is a second `aff` product** — it is a price card on the AFF
+  page, not a separate type. The deposit flow targets whichever AFF product has a
+  deposit amount set.
+
+## Phase 3 — Enquiries
+
+- **Forms stay visually identical** — the fake Alpine handlers were replaced by
+  Livewire components whose root element is the original `<form>` markup; success and
+  error feedback still go through the site's existing `window.toast`.
+- **Toast-based validation errors** — the design has no inline error markup, so server
+  validation failures dispatch a toast (matching the original client-side behaviour);
+  browser `required` attributes remain the first line of validation.
+- **Custom select binds via `x-init` watcher** — the WAI-ARIA select stores its value
+  in Alpine state; a `$watch -> $wire.set` hook syncs it to Livewire without touching
+  the component's markup or rebuilding JS assets.
+- **Outbound-only threading** — admin replies are stored as EnquiryMessage records and
+  emailed via Resend with reply-to set to the site address. Inbound email ingestion
+  (Resend inbound webhooks + domain setup) is out of scope; customer replies arrive in
+  the owner's normal inbox, and the enquiry reference in every subject links them back.
+- **Email sending never blocks an enquiry** — mailables are queued and the queueing is
+  wrapped in a try/catch (missing RESEND_API_KEY just logs); locally MAIL_MAILER=log.
+- **Spam control** — honeypot field (silently pretends success) + 5 submissions per
+  10 minutes per IP across all enquiry forms.

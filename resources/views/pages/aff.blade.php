@@ -81,16 +81,7 @@
             />
 
             {{-- AFF enquiry --}}
-            <form x-data="enquiryForm()" @submit.prevent="submit" class="rounded-2xl border bg-card p-8 shadow-sm">
-                <h3 class="font-display text-2xl uppercase text-secondary">AFF Enquiry</h3>
-                <div class="mt-6 grid gap-4">
-                    <div class="space-y-2"><x-ui.label for="aff-name">Full name</x-ui.label><x-ui.input id="aff-name" name="name" required /></div>
-                    <div class="space-y-2"><x-ui.label for="aff-email">Email</x-ui.label><x-ui.input id="aff-email" name="email" type="email" required /></div>
-                    <div class="space-y-2"><x-ui.label for="aff-phone">Phone</x-ui.label><x-ui.input id="aff-phone" name="phone" type="tel" required /></div>
-                    <div class="space-y-2"><x-ui.label for="aff-msg">Anything we should know?</x-ui.label><x-ui.textarea id="aff-msg" name="message" rows="4" /></div>
-                </div>
-                <x-ui.button type="submit" class="mt-6 w-full bg-secondary text-secondary-foreground hover:bg-secondary/90">Send Enquiry</x-ui.button>
-            </form>
+            <livewire:aff-enquiry-form />
         </div>
     </x-site.section>
 @endsection
