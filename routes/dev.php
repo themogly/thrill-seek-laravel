@@ -12,6 +12,7 @@ use App\Models\CourseDate;
 use App\Models\CourseMessage;
 use App\Models\EmailTemplate;
 use App\Models\Enquiry;
+use App\Models\Location;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Voucher;
@@ -83,7 +84,9 @@ function devMailPreviews(): array
             return new PaymentReceivedAdminNotification($payment, $b);
         },
         'course-message' => function () {
-            $course = CourseDate::factory()->create(['location' => 'Seville, Spain']);
+            $course = CourseDate::factory()->create([
+                'location_id' => Location::factory()->create(['name' => 'Seville, Spain'])->id,
+            ]);
             $message = CourseMessage::factory()->create([
                 'course_date_id' => $course->id,
                 'subject' => 'Kit list and arrival details',
