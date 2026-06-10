@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Models\Concerns\FlushesContentCache;
 use Database\Factories\HallOfFameEntryFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -15,7 +14,7 @@ use Illuminate\Support\Facades\Storage;
 class HallOfFameEntry extends Model
 {
     /** @use HasFactory<HallOfFameEntryFactory> */
-    use FlushesContentCache, HasFactory;
+    use HasFactory;
 
     protected $fillable = [
         'name',
@@ -53,10 +52,5 @@ class HallOfFameEntry extends Model
     public function scopeOrdered(Builder $query): Builder
     {
         return $query->orderBy('sort_order')->orderBy('id');
-    }
-
-    protected static function contentCacheKeys(): array
-    {
-        return ['hall_of_fame'];
     }
 }

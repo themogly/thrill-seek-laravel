@@ -11,7 +11,6 @@ use App\Models\Instructor;
 use App\Models\Product;
 use App\Models\ShopItem;
 use App\Models\Testimonial;
-use App\Support\ContentCache;
 use Illuminate\Contracts\View\View;
 
 class PageController extends Controller
@@ -19,30 +18,24 @@ class PageController extends Controller
     public function home(): View
     {
         return view('pages.home', [
-            'instructors' => ContentCache::remember('instructors', fn () => Instructor::ordered()->get()),
-            'testimonials' => ContentCache::remember('testimonials.featured', fn () => Testimonial::featured()->ordered()->limit(3)->get()),
-            'galleryImages' => ContentCache::remember('gallery_images', fn () => GalleryImage::ordered()->get()),
-            'services' => ContentCache::remember('products.home', fn () => Product::active()->where('featured_on_home', true)->ordered()->get()),
+            'instructors' => Instructor::ordered()->get(),
+            'testimonials' => Testimonial::featured()->ordered()->limit(3)->get(),
+            'galleryImages' => GalleryImage::ordered()->get(),
+            'services' => Product::active()->where('featured_on_home', true)->ordered()->get(),
         ]);
     }
 
     public function tandem(): View
     {
         return view('pages.tandem', [
-            'product' => ContentCache::remember(
-                'products.tandem',
-                fn () => Product::active()->ofType(ProductType::Tandem)->ordered()->with('addOns')->first(),
-            ),
+            'product' => Product::active()->ofType(ProductType::Tandem)->ordered()->with('addOns')->first(),
         ]);
     }
 
     public function aff(): View
     {
         return view('pages.aff', [
-            'products' => ContentCache::remember(
-                'products.aff',
-                fn () => Product::active()->ofType(ProductType::Aff)->ordered()->get(),
-            ),
+            'products' => Product::active()->ofType(ProductType::Aff)->ordered()->get(),
         ]);
     }
 
@@ -54,21 +47,21 @@ class PageController extends Controller
     public function shop(): View
     {
         return view('pages.shop', [
-            'items' => ContentCache::remember('shop_items', fn () => ShopItem::ordered()->get()),
+            'items' => ShopItem::ordered()->get(),
         ]);
     }
 
     public function testimonials(): View
     {
         return view('pages.testimonials', [
-            'testimonials' => ContentCache::remember('testimonials.all', fn () => Testimonial::ordered()->get()),
+            'testimonials' => Testimonial::ordered()->get(),
         ]);
     }
 
     public function hallOfFame(): View
     {
         return view('pages.hall-of-fame', [
-            'entries' => ContentCache::remember('hall_of_fame', fn () => HallOfFameEntry::ordered()->get()),
+            'entries' => HallOfFameEntry::ordered()->get(),
         ]);
     }
 

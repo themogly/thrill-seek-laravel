@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Models\Concerns\FlushesContentCache;
 use Database\Factories\TestimonialFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -14,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 class Testimonial extends Model
 {
     /** @use HasFactory<TestimonialFactory> */
-    use FlushesContentCache, HasFactory;
+    use HasFactory;
 
     protected $fillable = [
         'name',
@@ -63,10 +62,5 @@ class Testimonial extends Model
     public function scopeFeatured(Builder $query): Builder
     {
         return $query->where('featured', true);
-    }
-
-    protected static function contentCacheKeys(): array
-    {
-        return ['testimonials.featured', 'testimonials.all'];
     }
 }

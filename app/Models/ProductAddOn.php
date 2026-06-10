@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Models\Concerns\FlushesContentCache;
 use App\Support\Money;
 use Database\Factories\ProductAddOnFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -20,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ProductAddOn extends Model
 {
     /** @use HasFactory<ProductAddOnFactory> */
-    use FlushesContentCache, HasFactory;
+    use HasFactory;
 
     protected $fillable = [
         'product_id',
@@ -52,10 +51,5 @@ class ProductAddOn extends Model
     protected function formattedPrice(): Attribute
     {
         return Attribute::make(get: fn (): string => Money::formatPence($this->price_pence));
-    }
-
-    protected static function contentCacheKeys(): array
-    {
-        return ['products.home', 'products.tandem', 'products.aff'];
     }
 }

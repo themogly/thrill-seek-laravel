@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\ProductType;
-use App\Models\Concerns\FlushesContentCache;
 use App\Support\Money;
 use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -21,7 +20,7 @@ use Illuminate\Support\Facades\Storage;
 class Product extends Model
 {
     /** @use HasFactory<ProductFactory> */
-    use FlushesContentCache, HasFactory;
+    use HasFactory;
 
     protected $fillable = [
         'name',
@@ -156,10 +155,5 @@ class Product extends Model
     public function scopeOrdered(Builder $query): Builder
     {
         return $query->orderBy('sort_order')->orderBy('id');
-    }
-
-    protected static function contentCacheKeys(): array
-    {
-        return ['products.home', 'products.tandem', 'products.aff'];
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\FlushesContentCache;
 use Database\Factories\InstructorFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -13,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 class Instructor extends Model
 {
     /** @use HasFactory<InstructorFactory> */
-    use FlushesContentCache, HasFactory;
+    use HasFactory;
 
     protected $fillable = [
         'name',
@@ -49,10 +48,5 @@ class Instructor extends Model
     public function scopeOrdered(Builder $query): Builder
     {
         return $query->orderBy('sort_order')->orderBy('id');
-    }
-
-    protected static function contentCacheKeys(): array
-    {
-        return ['instructors'];
     }
 }

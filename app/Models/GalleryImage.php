@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Models\Concerns\FlushesContentCache;
 use Database\Factories\GalleryImageFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -15,7 +14,7 @@ use Illuminate\Support\Facades\Storage;
 class GalleryImage extends Model
 {
     /** @use HasFactory<GalleryImageFactory> */
-    use FlushesContentCache, HasFactory;
+    use HasFactory;
 
     protected $fillable = [
         'image',
@@ -52,10 +51,5 @@ class GalleryImage extends Model
     public function scopeOrdered(Builder $query): Builder
     {
         return $query->orderBy('sort_order')->orderBy('id');
-    }
-
-    protected static function contentCacheKeys(): array
-    {
-        return ['gallery_images'];
     }
 }
