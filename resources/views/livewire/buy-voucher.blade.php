@@ -7,7 +7,7 @@
         </div>
     @else
         <form wire:submit="pay" class="border-2 border-secondary bg-card p-6 sm:p-8">
-            <div class="flex flex-col gap-4 rounded-xl bg-secondary p-6 text-secondary-foreground sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex flex-col gap-4 border-t-4 border-primary bg-secondary p-6 text-secondary-foreground sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <p class="text-xs font-bold uppercase tracking-wide opacity-80">The gift</p>
                     <p class="font-display text-3xl uppercase">{{ $product->name }}</p>

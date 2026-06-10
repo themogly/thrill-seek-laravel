@@ -22,7 +22,7 @@
                         <button
                             type="button"
                             wire:click="chooseCourse({{ $course->id }})"
-                            class="group flex flex-col gap-4 rounded-2xl border bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:flex-row sm:items-center sm:justify-between"
+                            class="group flex flex-col gap-4 border-2 border-border bg-card p-6 text-left transition-colors hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:flex-row sm:items-center sm:justify-between"
                         >
                             <span>
                                 <span class="block font-display text-2xl uppercase text-secondary">{{ $course->date_range_label }}</span>

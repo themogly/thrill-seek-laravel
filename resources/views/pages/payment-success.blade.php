@@ -7,9 +7,9 @@
         <x-site.page-hero title="You're Booked!" subtitle="Payment received — check your inbox for the confirmation." />
         <x-site.section>
             <div class="mx-auto max-w-xl">
-                <div class="rounded-2xl border bg-card p-6 shadow-sm sm:p-8">
+                <div class="border-2 border-secondary bg-card p-6 sm:p-8">
                     <div class="flex items-center gap-3">
-                        <span class="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-glow">
+                        <span class="flex h-12 w-12 items-center justify-center bg-primary text-primary-foreground">
                             <x-icon name="check" class="h-6 w-6" />
                         </span>
                         <div>
@@ -53,7 +53,7 @@
                         @endif
                     </dl>
                 </div>
-                <div class="mt-8 rounded-2xl bg-secondary p-6 text-secondary-foreground sm:p-8">
+                <div class="mt-8 border-t-4 border-primary bg-secondary p-6 text-secondary-foreground sm:p-8">
                     <h2 class="font-display text-2xl uppercase">What happens next</h2>
                     <ul class="mt-4 space-y-3 text-sm opacity-95">
                         <li class="flex items-start gap-2"><x-icon name="check" class="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" /> A confirmation email with your reference is on its way.</li>

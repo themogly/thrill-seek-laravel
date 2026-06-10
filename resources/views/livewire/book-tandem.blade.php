@@ -29,7 +29,7 @@
                             <button
                                 type="button"
                                 wire:click="chooseSlot({{ $jumpSlot->id }})"
-                                class="group rounded-2xl border bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                class="group border-2 border-border bg-card p-6 text-left transition-colors hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             >
                                 <p class="font-display text-2xl uppercase text-secondary">{{ $jumpSlot->starts_at->format('D j M') }}</p>
                                 <p class="mt-1 text-sm font-bold uppercase tracking-wide text-primary">{{ $jumpSlot->starts_at->format('H:i') }}</p>
@@ -99,7 +99,7 @@
                     <h4 class="font-display text-xl uppercase text-secondary">Make it unforgettable</h4>
                     <div class="mt-3 grid gap-3 sm:grid-cols-2">
                         @foreach ($product->addOns->where('purchasable', true) as $addOn)
-                            <label class="flex cursor-pointer items-center justify-between gap-3 rounded-xl border bg-background p-4 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                            <label class="flex cursor-pointer items-center justify-between gap-3 border-2 border-border bg-background p-4 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
                                 <span class="flex items-center gap-3">
                                     <input type="checkbox" value="{{ $addOn->id }}" wire:model.live="addOnIds" class="h-5 w-5 rounded border-input text-primary focus:ring-ring" />
                                     <span class="font-semibold text-secondary">{{ $addOn->name }}</span>
@@ -177,7 +177,7 @@
             </dl>
 
             @unless ($appliedVoucher)
-                <div class="mt-6 rounded-xl border bg-background p-4">
+                <div class="mt-6 border-2 border-border bg-background p-4">
                     <label for="bt-voucher" class="text-sm font-bold uppercase tracking-wide text-secondary">Got a gift voucher?</label>
                     <div class="mt-2 flex gap-2">
                         <x-ui.input id="bt-voucher" wire:model="voucherCode" placeholder="GV-XXXXXXXX" class="flex-1 uppercase" />
