@@ -347,3 +347,30 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
   it. Full suite re-run after removal — no behaviour change surfaced (the
   codebase's full type-hints keep coercion at the edges). The CLAUDE.md
   instruction now states the inverse rule.
+
+## Round 5B — bold redesign (design/bold-redesign)
+
+- Started from main after merging Round 5A and the consistency pass.
+- **Design direction** (no reference images existed in design-review/references):
+  the owner's written critique is the brief — sharp editorial language, radius 0,
+  rules/borders for structure, navy bands, freed photography, typographic stats,
+  Bebas pushed harder. Decorative shadows/glows/gradient washes removed from the
+  public site; the sticky header keeps a functional shadow.
+- **Coach photos**: the brief asks the section to be designed around real
+  photography with placeholders seeded. Three distinct portrait crops were derived
+  from the bundled brand photography (public/images/instructors/) and seeded as
+  bundled paths — the owner replaces them through the existing admin upload. The
+  Instructor::photo_url accessor gained the same bundled-path handling every other
+  image model already had.
+- **Voucher PDF**: dompdf (barryvdh/laravel-dompdf) over spatie/laravel-pdf — the
+  latter needs headless Chrome on the server; dompdf is pure PHP. Helvetica is the
+  closest bundled face to the display type; the brand look comes from the navy
+  band/scale/tracking. Generated at purchase fail-soft (a PDF failure logs and the
+  voucher still issues; the render test is the guard against template errors),
+  stored on the private local disk, attached to the gift email, admin re-download
+  regenerates for admin-issued vouchers.
+- **Email theme**: published only the markdown theme CSS (gforce.css) rather than
+  all vendor mail views — smallest surface that restyles every mailable.
+- **Screenshot harness** now emulates prefers-reduced-motion (entrance reveals
+  otherwise sit at opacity 0 in full-page captures); reveals verified by hand.
+- Tests pinning old markup needed no changes — none asserted card chrome.
