@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Observers\SiteContentObserver;
 use App\Support\Money;
 use Database\Factories\ProductAddOnFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * (camera packages) and fixed fees shown for transparency (insurance,
  * rebooking). Only purchasable add-ons can be included in payments.
  */
+#[ObservedBy(SiteContentObserver::class)]
 class ProductAddOn extends Model
 {
     /** @use HasFactory<ProductAddOnFactory> */

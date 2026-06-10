@@ -165,6 +165,21 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
   they manage spatie settings groups, not models, which the brief explicitly allows.
   Every resource and settings page now declares an explicit `navigationSort`.
 
+## Part B — infrastructure
+
+- **Content cache stores raw attribute arrays, never objects** — `SiteContent`
+  caches `getAttributes()` rows and rehydrates via `Model::hydrate()` on read, so
+  casts, accessors and (for the tandem product) a manually re-attached add-ons
+  relation all work while the cache payload stays object-free. A dedicated test
+  walks every cached payload and fails on any PHP object. `SiteContentObserver`
+  (registered via `#[ObservedBy]` on each content model) busts the affected keys
+  on save/delete.
+- **Horizon access** — `/horizon` uses `['web','auth']` middleware plus a
+  `viewHorizon` gate allowing any authenticated user (the users table is admins
+  only); guests are redirected to the panel login via `redirectGuestsTo`.
+- **`composer dev` now runs Horizon** instead of `queue:listen`, since Redis is the
+  default queue connection.
+
 ## Tooling fix (first task)
 
 - **The wrappers were never broken** — re-diagnosis showed laravel/pao (the

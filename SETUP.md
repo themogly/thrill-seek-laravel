@@ -3,6 +3,12 @@
 Laravel 12-skeleton app on Laravel 13 / PHP 8.3 with a Blade/Tailwind/Alpine frontend,
 Livewire 4 forms and a Filament v5 admin panel at `/admin`.
 
+## Requirements
+
+- PHP 8.3, Composer, Node 20+
+- **Redis** — the cache and queue stores. Locally: `brew install redis && brew services
+  start redis`. The PHP client is predis (composer dependency); no PHP extension needed.
+
 ## First run
 
 ```bash
@@ -23,7 +29,8 @@ factory default). Change it immediately for anything public-facing.
 | `STRIPE_SECRET` | Stripe secret key (sk_…) — used to create Checkout sessions. |
 | `STRIPE_WEBHOOK_SECRET` | Signing secret (whsec_…) for the webhook endpoint below. |
 | `SETTINGS_CACHE_ENABLED` | `true` — caches site settings; busts automatically on save. |
-| `QUEUE_CONNECTION` | `database` (default). All email and webhook side-effects are queued. |
+| `CACHE_STORE` / `QUEUE_CONNECTION` | `redis` (default). All email and webhook side-effects are queued. |
+| `REDIS_HOST` / `REDIS_PORT` / `REDIS_CLIENT` | Redis connection; client is `predis`. |
 
 Missing Stripe/Resend keys never break the site: enquiries still store, admin actions
 surface a clear notification, and failures are logged.
@@ -42,18 +49,38 @@ are idempotent.
 
 For local testing: `stripe listen --forward-to localhost:8000/webhooks/stripe`.
 
-## Queues & scheduler
+## Queues, Horizon & scheduler
+
+Queues run on Redis under **Laravel Horizon**. The dashboard lives at `/horizon`
+(linked from the admin sidebar under “System”) and requires an admin login.
 
 ```bash
-php artisan queue:work            # or: composer dev (serves, queue, logs, vite)
+php artisan horizon               # or: composer dev (serves, horizon, logs, vite)
 php artisan schedule:work         # runs bookings:send-reminders daily at 09:00
 ```
 
-In production run a `queue:work` supervisor process and add the standard cron entry:
+In production run Horizon under Supervisor and add the standard scheduler cron entry:
+
+```ini
+; /etc/supervisor/conf.d/horizon.conf
+[program:horizon]
+process_name=%(program_name)s
+command=php /path/to/artisan horizon
+autostart=true
+autorestart=true
+user=www-data
+redirect_stderr=true
+stdout_logfile=/path/to/storage/logs/horizon.log
+stopwaitsecs=3600
+```
 
 ```
 * * * * * php /path/to/artisan schedule:run >> /dev/null 2>&1
 ```
+
+On macOS (launchd) the equivalent is a LaunchAgent plist running
+`php artisan horizon` with `KeepAlive: true`. After every deploy run
+`php artisan horizon:terminate` so Horizon restarts with the new code.
 
 ## Day-to-day commands
 

@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\ProductType;
+use App\Observers\SiteContentObserver;
 use App\Support\Money;
 use Database\Factories\ProductFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,6 +19,7 @@ use Illuminate\Support\Facades\Storage;
 /**
  * @property ProductType $type
  */
+#[ObservedBy(SiteContentObserver::class)]
 class Product extends Model
 {
     /** @use HasFactory<ProductFactory> */
