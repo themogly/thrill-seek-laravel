@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\HallOfFameEntry;
 use App\Models\Instructor;
 use App\Models\Testimonial;
 use App\Support\ContentCache;
@@ -48,7 +49,9 @@ class PageController extends Controller
 
     public function hallOfFame(): View
     {
-        return view('pages.hall-of-fame');
+        return view('pages.hall-of-fame', [
+            'entries' => ContentCache::remember('hall_of_fame', fn () => HallOfFameEntry::ordered()->get()),
+        ]);
     }
 
     public function contact(): View
