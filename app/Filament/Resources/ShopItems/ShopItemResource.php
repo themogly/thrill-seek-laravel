@@ -25,6 +25,8 @@ class ShopItemResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Site content';
 
+    protected static ?int $navigationSort = 15;
+
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Schema $schema): Schema

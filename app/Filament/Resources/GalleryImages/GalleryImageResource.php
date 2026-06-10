@@ -25,6 +25,8 @@ class GalleryImageResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Site content';
 
+    protected static ?int $navigationSort = 14;
+
     protected static ?string $modelLabel = 'gallery image';
 
     protected static ?string $pluralModelLabel = 'gallery';

@@ -24,6 +24,8 @@ class EnquiryResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Bookings & sales';
 
+    protected static ?int $navigationSort = 1;
+
     protected static ?string $recordTitleAttribute = 'reference';
 
     public static function getNavigationBadge(): ?string

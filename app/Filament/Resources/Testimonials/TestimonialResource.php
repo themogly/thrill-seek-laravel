@@ -25,6 +25,8 @@ class TestimonialResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Site content';
 
+    protected static ?int $navigationSort = 12;
+
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Schema $schema): Schema

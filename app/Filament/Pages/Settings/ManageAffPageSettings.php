@@ -22,6 +22,8 @@ class ManageAffPageSettings extends SettingsPage
 
     protected static ?string $navigationLabel = 'AFF page';
 
+    protected static ?int $navigationSort = 4;
+
     protected static ?string $title = 'AFF page';
 
     protected static ?string $slug = 'settings/aff';

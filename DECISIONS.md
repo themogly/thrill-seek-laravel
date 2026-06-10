@@ -152,6 +152,19 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
 
 # Round 2
 
+## Part A — fixes
+
+- **Calendar root cause** — the panel served Filament's precompiled CSS, which lacks
+  the Tailwind utilities used by custom panel views; the month grid rendered as an
+  unstyled stack. Fixed with a real panel theme compiled by the app's Vite/Tailwind v4
+  build (`resources/css/filament/admin/theme.css`, `@source` over `app/Filament` and
+  `resources/views/filament`). Any future custom panel view gets working utilities.
+- **Pages-folder audit** — the calendar was the only model-managing page; it is now a
+  page of the Bookings resource (`/admin/bookings/calendar`) with its own sidebar item
+  via `BookingResource::getNavigationItems()`. The settings pages remain custom pages:
+  they manage spatie settings groups, not models, which the brief explicitly allows.
+  Every resource and settings page now declares an explicit `navigationSort`.
+
 ## Tooling fix (first task)
 
 - **The wrappers were never broken** — re-diagnosis showed laravel/pao (the

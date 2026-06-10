@@ -2,32 +2,32 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Pages;
+namespace App\Filament\Resources\Bookings\Pages;
 
 use App\Enums\BookingStatus;
+use App\Filament\Resources\Bookings\BookingResource;
 use App\Models\AvailabilitySlot;
 use App\Models\Booking;
 use BackedEnum;
-use Filament\Pages\Page;
+use Filament\Resources\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Url;
-use UnitEnum;
 
 class BookingCalendar extends Page
 {
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalendar;
+    protected static string $resource = BookingResource::class;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Bookings & sales';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalendar;
 
     protected static ?string $navigationLabel = 'Calendar';
 
+    protected static ?int $navigationSort = 3;
+
     protected static ?string $title = 'Booking calendar';
 
-    protected static ?string $slug = 'calendar';
-
-    protected string $view = 'filament.pages.booking-calendar';
+    protected string $view = 'filament.resources.bookings.pages.booking-calendar';
 
     #[Url]
     public string $month = '';

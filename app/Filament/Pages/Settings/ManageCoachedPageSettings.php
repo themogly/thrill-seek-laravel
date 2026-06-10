@@ -20,6 +20,8 @@ class ManageCoachedPageSettings extends SettingsPage
 
     protected static ?string $navigationLabel = 'Coached skills page';
 
+    protected static ?int $navigationSort = 5;
+
     protected static ?string $title = 'Coached skills page';
 
     protected static ?string $slug = 'settings/coached';

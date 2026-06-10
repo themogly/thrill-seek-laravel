@@ -19,6 +19,8 @@ class ManageSimplePagesSettings extends SettingsPage
 
     protected static ?string $navigationLabel = 'Other pages';
 
+    protected static ?int $navigationSort = 6;
+
     protected static ?string $title = 'Other pages';
 
     protected static ?string $slug = 'settings/pages';

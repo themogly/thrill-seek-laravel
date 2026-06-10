@@ -30,6 +30,8 @@ class CustomerResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Bookings & sales';
 
+    protected static ?int $navigationSort = 7;
+
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function canCreate(): bool

@@ -21,6 +21,8 @@ class ManageGeneralSettings extends SettingsPage
 
     protected static ?string $navigationLabel = 'General';
 
+    protected static ?int $navigationSort = 1;
+
     protected static ?string $title = 'General settings';
 
     protected static ?string $slug = 'settings/general';

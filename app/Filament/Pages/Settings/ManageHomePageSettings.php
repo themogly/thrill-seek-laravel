@@ -22,6 +22,8 @@ class ManageHomePageSettings extends SettingsPage
 
     protected static ?string $navigationLabel = 'Home page';
 
+    protected static ?int $navigationSort = 2;
+
     protected static ?string $title = 'Home page';
 
     protected static ?string $slug = 'settings/home';

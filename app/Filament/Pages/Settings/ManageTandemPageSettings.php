@@ -20,6 +20,8 @@ class ManageTandemPageSettings extends SettingsPage
 
     protected static ?string $navigationLabel = 'Tandem page';
 
+    protected static ?int $navigationSort = 3;
+
     protected static ?string $title = 'Tandem page';
 
     protected static ?string $slug = 'settings/tandem';

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Bookings;
 
+use App\Filament\Resources\Bookings\Pages\BookingCalendar;
 use App\Filament\Resources\Bookings\Pages\CreateBooking;
 use App\Filament\Resources\Bookings\Pages\EditBooking;
 use App\Filament\Resources\Bookings\Pages\ListBookings;
@@ -24,6 +25,8 @@ class BookingResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalendarDays;
 
     protected static string|UnitEnum|null $navigationGroup = 'Bookings & sales';
+
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $recordTitleAttribute = 'reference';
 
@@ -46,8 +49,21 @@ class BookingResource extends Resource
     {
         return [
             'index' => ListBookings::route('/'),
+            'calendar' => BookingCalendar::route('/calendar'),
             'create' => CreateBooking::route('/create'),
             'edit' => EditBooking::route('/{record}/edit'),
+        ];
+    }
+
+    /**
+     * The calendar is part of this resource; give it its own sidebar entry
+     * directly under "Bookings".
+     */
+    public static function getNavigationItems(): array
+    {
+        return [
+            ...parent::getNavigationItems(),
+            ...BookingCalendar::getNavigationItems(),
         ];
     }
 }

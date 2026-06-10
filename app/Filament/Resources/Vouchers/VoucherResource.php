@@ -41,6 +41,8 @@ class VoucherResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Bookings & sales';
 
+    protected static ?int $navigationSort = 6;
+
     protected static ?string $recordTitleAttribute = 'code';
 
     public static function form(Schema $schema): Schema

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Bookings;
 
 use App\Enums\BookingStatus;
-use App\Filament\Pages\BookingCalendar;
+use App\Filament\Resources\Bookings\Pages\BookingCalendar;
 use App\Models\AvailabilitySlot;
 use App\Models\Booking;
 use App\Models\User;
@@ -78,7 +78,7 @@ class BookingCalendarTest extends TestCase
 
     public function test_calendar_page_renders_the_grid_with_the_compiled_panel_theme(): void
     {
-        $response = $this->get('/admin/calendar');
+        $response = $this->get('/admin/bookings/calendar');
 
         $response->assertOk();
         // The month grid markup is present…
