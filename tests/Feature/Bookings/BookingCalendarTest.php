@@ -7,6 +7,8 @@ namespace Tests\Feature\Bookings;
 use App\Enums\BookingStatus;
 use App\Filament\Resources\Bookings\Pages\BookingCalendar;
 use App\Models\Booking;
+use App\Models\CourseDate;
+use App\Models\Location;
 use App\Models\TandemDate;
 use App\Models\User;
 use Livewire\Livewire;
@@ -86,6 +88,46 @@ class BookingCalendarTest extends TestCase
         // …and the panel loads the Vite-compiled theme that contains those
         // utilities (the calendar rendered unstyled before the theme existed).
         $response->assertSee('build/assets/theme-');
+    }
+
+    public function test_courses_span_their_full_range_with_distinct_styling(): void
+    {
+        $location = Location::factory()->create(['name' => 'Seville, Spain']);
+        $start = now()->addMonth()->startOfMonth()->addDays(2);
+        CourseDate::factory()->create([
+            'location_id' => $location->id,
+            'start_date' => $start->toDateString(),
+            'end_date' => $start->copy()->addDays(4)->toDateString(),
+        ]);
+
+        $page = Livewire::test(BookingCalendar::class, ['month' => $start->format('Y-m')]);
+
+        // The course appears on all five days of its range.
+        $coursesByDay = $page->instance()->coursesByDay;
+        for ($i = 0; $i < 5; $i++) {
+            $this->assertTrue($coursesByDay->has($start->copy()->addDays($i)->format('Y-m-d')));
+        }
+
+        $page->assertSee('AFF · Seville, Spain')->assertSee('AFF&nbsp;cont.', false);
+    }
+
+    public function test_the_location_filter_narrows_everything(): void
+    {
+        $devon = Location::factory()->create(['name' => 'Devon']);
+        $swansea = Location::factory()->create(['name' => 'Swansea']);
+        $date = now()->addMonth()->startOfMonth()->setTime(9, 0);
+
+        TandemDate::factory()->create(['location_id' => $devon->id, 'starts_at' => $date, 'capacity' => 4]);
+        TandemDate::factory()->create(['location_id' => $swansea->id, 'starts_at' => $date->copy()->addDay(), 'capacity' => 2]);
+
+        // The dropdown always lists every location, so assert on the slot
+        // chips (distinct capacities) rather than the location names.
+        Livewire::test(BookingCalendar::class, ['month' => $date->format('Y-m')])
+            ->assertSee('4/4 free')
+            ->assertSee('2/2 free')
+            ->set('locationId', $devon->id)
+            ->assertSee('4/4 free')
+            ->assertDontSee('2/2 free');
     }
 
     public function test_cancelled_bookings_are_hidden_from_the_calendar(): void
