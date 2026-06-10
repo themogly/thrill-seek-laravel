@@ -117,3 +117,35 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
 - **Reschedule sets status `rescheduled`** and optionally emails the customer via the
   editable booking_rescheduled template; the admin promotes it back to confirmed once
   the customer is happy.
+
+## Phase 6 — Extras
+
+- **Vouchers are admin-issued, not publicly purchasable** — public voucher checkout
+  would add a new public purchase flow (design change); the owner creates a voucher
+  (typically after a payment-link sale or phone order), emails it via the editable
+  gift_voucher template, and redeems it against a booking. Redemption creates a paid
+  Payment with the new `voucher` method, so balances stay consistent.
+- **Voucher "expired" is derived, not stored** — the stored status only tracks the
+  admin-controlled lifecycle (active/redeemed/cancelled); a date comparison decides
+  expired at display/redemption time, so no scheduled job can forget to flip it.
+- **Booking confirmation emails fire from an observer** on the status transition to
+  confirmed — including after a reschedule, which intentionally re-confirms the new date.
+- **Reminders are once-only via timestamps** (`reminder_sent_at`,
+  `balance_reminder_sent_at`) — jump reminders 7 days out, balance reminders 14 days
+  out, sent by `bookings:send-reminders` scheduled daily at 09:00.
+- **Customers dedupe on lowercased email** via `Customer::resolve()`; existing records
+  gain missing phone numbers but names are never overwritten by later submissions.
+- **Activity log is dirty-only on key fields** of bookings and payments (status,
+  amounts, schedule) — an audit trail without logging every touch.
+
+## Final review
+
+- **Eloquent object caching removed** — final smoke testing found every public page
+  500ing on its second request: Laravel 13's cache refuses to unserialize PHP objects
+  (`cache.serializable_classes = false`, gadget-chain hardening) and the test suite
+  missed it because tests use the array cache store. Rather than weaken the security
+  default, pages query directly (a handful of indexed reads) and only the spatie
+  settings cache (plain values) remains.
+- **Tooling caveat** — the local pint/phpstan/phpunit wrappers do not propagate
+  failure exit codes, so `&&`-chained commit commands can commit on red. One duplicate
+  commit was squashed after this bit once; always read the JSON output.

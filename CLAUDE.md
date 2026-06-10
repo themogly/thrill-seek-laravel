@@ -1,33 +1,63 @@
 # Project: thrill-seek-laravel
 
 ## What this is
-A Laravel app: a Blade/Tailwind frontend ported from a Lovable React app, now being made
-content-manageable via a Filament admin panel.
+A Laravel app for a skydiving instructor business (G-Force Skydiving): a Blade/Tailwind
+frontend ported from a Lovable React app, with a Filament v5 admin panel at `/admin`
+that manages all site content, enquiries, payments and bookings.
 - Source app (reference only, do not modify): `../thrill-seek-co` (Vite + React + TS + Tailwind + shadcn/ui).
-- This app: Laravel 12 + Blade + Tailwind + Alpine.js + Livewire, with **Filament v5** for the admin panel.
-- The frontend port is DONE and verified. Do not redesign it — preserve the existing look and animations.
+- Stack: Laravel 13 + Blade + Tailwind + Alpine.js + Livewire 4 + Filament v5,
+  spatie/laravel-settings, spatie/laravel-activitylog, stripe/stripe-php, resend/resend-laravel.
+- The frontend design is DONE and verified. Do not redesign it — preserve the existing
+  look, Tailwind classes and animations exactly. Content is dynamic; markup is sacred.
 
-## Current phase: make content manageable (CMS)
-Goal: turn hardcoded Blade content into database-backed records editable through a Filament admin panel at `/admin`. Do not change the visual design while doing this.
+## What's built (see DECISIONS.md for the why, SETUP.md for ops)
+- **CMS**: every public page reads from settings groups (`app/Settings`, one Filament
+  settings page per site page under “Site content”) or content models (Instructor,
+  Testimonial, HallOfFameEntry, ShopItem, GalleryImage). Seeders reproduce the original
+  static content exactly.
+- **Products** (`tandem` / `aff` / `coaching` enum): pricing in integer pence, AFF
+  deposits, add-ons (purchasable extras vs display-only fees), weight charges. Home
+  cards, tandem pricing tables and AFF price cards read from these.
+- **Enquiries**: Livewire forms (contact/tandem/AFF) with honeypot + rate limiting;
+  Filament inbox with unread badges, message threads, replies via Resend.
+- **Payments**: admin sends Stripe Checkout links or records bank transfers from an
+  enquiry; the signature-verified `/webhooks/stripe` endpoint converts paid enquiries
+  into bookings; AFF deposit/balance tracking.
+- **Bookings**: Filament resource, availability slots with capacity, custom month-grid
+  calendar page, reschedule action with customer email.
+- **Extras**: gift vouchers (redeemable as payments), editable email templates,
+  automated confirmation/reminder emails (`bookings:send-reminders`, scheduled daily),
+  dashboard stats, activity log on bookings/payments, customers deduped by email.
 
-### Step 1 — Content audit (do this first, report before coding)
-Go through every page and list which content should be editable vs. stay static. Group editable content into logical models (e.g. tours/activities, testimonials, gallery images, FAQs, hero/section copy, site settings). Propose a schema for each (fields + types) and wait for approval before creating migrations.
+## Conventions (match these exactly — no second ways of doing things)
+- Money is **integer pence**; format with `App\Support\Money::formatPence()`.
+- Statuses are string-backed **enums** in `app/Enums` implementing Filament's
+  `HasLabel`/`HasColor`.
+- Business logic lives in **`app/Actions`** classes with a `handle()` method;
+  controllers and Filament actions stay thin.
+- Filament resources follow the generated layout: `Resource` + `Schemas/*Form` +
+  `Tables/*Table` + `Pages/*`. Public-content resources go in the “Site content”
+  nav group; sales resources in “Bookings & sales”.
+- Settings classes use spatie/laravel-settings; array properties document shapes with
+  `@phpstan-var` ONLY (a `@var` tag breaks spatie's docblock reflector).
+- Images are plain `FileUpload`s to the public disk; stored values are either bundled
+  paths (`/images/x.jpg`) or upload paths, resolved by `image_url` accessors /
+  `imageUrl()` helpers. No medialibrary.
+- Customer-facing automated emails go through editable `EmailTemplate` records +
+  `TemplatedMail`; all mail is queued and wrapped so failures log instead of breaking
+  the request.
+- **Never cache Eloquent objects** — Laravel 13's cache refuses to unserialize PHP
+  objects (`cache.serializable_classes = false`). Settings caching is fine (plain values).
+- New PHP files: `declare(strict_types=1)`, full type-hints.
 
-### Step 2 — Data layer
-For each approved content type: create a migration + Eloquent model. Add an ordering column where display order matters. Seed with the *current* static content so pages look identical after the refactor.
-
-### Step 3 — Filament resources
-One Filament resource per model (`make:filament-resource X --generate`). Configure forms (correct field types, image uploads via FileUpload, rich text where needed), table columns, and reordering. Keep the admin UX simple and labelled for a non-technical editor.
-
-### Step 4 — Refactor Blade to be dynamic
-Replace hardcoded content in the Blade views with data from the models (controllers pass the records; views loop over them). The rendered output must match the current static pages exactly. Preserve all Tailwind classes and animations.
-
-## Constraints
-- Do not alter the frontend design, layout, or animations — only swap static content for dynamic data.
-- Filament bundles Livewire/Alpine/Tailwind; don't reconfigure the existing frontend build to accommodate it.
-- Keep auth limited to the admin panel; no public-facing accounts unless asked.
-
-## Workflow expectations
-- Before each step, produce a short plan and wait for approval.
-- Work one content type at a time end-to-end (model -> resource -> Blade refactor) so each is reviewable.
-- After each content type, confirm the public page still looks pixel-identical to before.
+## Quality bar (enforced before every commit)
+- `php artisan test` — full suite green, no skips. Feature tests for HTTP/Livewire
+  flows, unit tests for actions/support classes, Filament resource tests. Mock Stripe
+  via the `StripeCheckout` service binding; use `Mail::fake()` — tests never hit real APIs.
+- `./vendor/bin/pint` and `./vendor/bin/phpstan analyse` (Larastan level 6) clean.
+  Note: the local wrapper tools do NOT propagate failure exit codes — read the JSON
+  output, don't trust `&&` chains.
+- Migrations + factories + seeders for every model; conventional commits.
+- After touching anything content-related, verify the public pages still render
+  identically (tests assert seeded content; smoke-test key routes return 200 twice —
+  first-request-only bugs exist).
