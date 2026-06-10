@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Vouchers;
 
+use App\Actions\GenerateVoucherPdf;
 use App\Actions\RedeemVoucher;
 use App\Enums\VoucherStatus;
 use App\Filament\Resources\Bookings\BookingResource;
@@ -28,6 +29,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use UnitEnum;
 
 class VoucherResource extends Resource
@@ -132,6 +135,21 @@ class VoucherResource extends Resource
                     ->options(VoucherStatus::class),
             ])
             ->recordActions([
+                Action::make('downloadPdf')
+                    ->label('Download PDF')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->action(function (Voucher $record, GenerateVoucherPdf $generatePdf): StreamedResponse {
+                        // Regenerate on demand so admin-issued vouchers (which
+                        // never went through the purchase pipeline) get one too.
+                        if ($record->pdf_path === null || ! Storage::disk('local')->exists($record->pdf_path)) {
+                            $generatePdf->handle($record);
+                        }
+
+                        return Storage::disk('local')->download(
+                            $record->refresh()->pdf_path,
+                            'G-Force-Gift-Voucher-'.$record->code.'.pdf',
+                        );
+                    }),
                 Action::make('sendEmail')
                     ->label('Email voucher')
                     ->icon('heroicon-o-envelope')

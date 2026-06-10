@@ -8,9 +8,11 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * The gift voucher email — designed as a present, not a receipt: code
@@ -39,5 +41,23 @@ class VoucherGiftMail extends Mailable implements ShouldQueue
                 'bookingUrl' => route('book.tandem'),
             ],
         );
+    }
+
+    /**
+     * The printable voucher PDF, when it was generated successfully.
+     *
+     * @return array<int, Attachment>
+     */
+    public function attachments(): array
+    {
+        if ($this->voucher->pdf_path === null || ! Storage::disk('local')->exists($this->voucher->pdf_path)) {
+            return [];
+        }
+
+        return [
+            Attachment::fromStorageDisk('local', $this->voucher->pdf_path)
+                ->as('G-Force-Gift-Voucher-'.$this->voucher->code.'.pdf')
+                ->withMime('application/pdf'),
+        ];
     }
 }

@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Mail;
 
 class IssuePurchasedVoucher
 {
+    public function __construct(private readonly GenerateVoucherPdf $generatePdf) {}
+
     /**
      * A voucher purchase has been paid: create the voucher from the
      * payment's metadata and email it to the purchaser. Idempotent — a
@@ -36,6 +38,17 @@ class IssuePurchasedVoucher
             'source' => 'online',
             'payment_id' => $payment->id,
         ]);
+
+        // The printable voucher rides along on the gift email; a PDF failure
+        // must never block issuing the voucher itself.
+        try {
+            $this->generatePdf->handle($voucher);
+        } catch (\Throwable $e) {
+            Log::error('Failed to generate voucher PDF', [
+                'voucher_id' => $voucher->id,
+                'exception' => $e->getMessage(),
+            ]);
+        }
 
         try {
             if ($voucher->purchaser_email !== '') {

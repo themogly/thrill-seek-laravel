@@ -39,6 +39,7 @@ class Voucher extends Model
         'redeemed_at',
         'booking_id',
         'payment_id',
+        'pdf_path',
     ];
 
     protected function casts(): array
