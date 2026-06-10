@@ -171,18 +171,7 @@
         <div class="mx-auto max-w-3xl px-4 text-center">
             <h2 class="font-display text-4xl uppercase tracking-wide md:text-5xl">{{ $home->newsletter_title }}</h2>
             <p class="mt-3 text-lg opacity-95">{{ $home->newsletter_subtitle }}</p>
-            <form x-data="newsletterForm()" @submit.prevent="submit" class="mt-8 flex flex-col gap-3 sm:flex-row">
-                <x-ui.input
-                    type="email"
-                    required
-                    x-model="email"
-                    placeholder="you@example.com"
-                    class="h-12 flex-1 border-white/20 bg-white/10 text-white placeholder:text-white/60"
-                />
-                <x-ui.button type="submit" size="lg" class="h-12 bg-secondary text-secondary-foreground hover:bg-secondary/90">
-                    Subscribe
-                </x-ui.button>
-            </form>
+            <livewire:newsletter-signup variant="banner" />
         </div>
     </section>
 

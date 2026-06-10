@@ -25,12 +25,11 @@
                         <a href="{{ $general->facebook_url }}" target="_blank" rel="noreferrer" aria-label="Facebook" class="rounded-full bg-primary p-2 text-primary-foreground"><x-icon name="facebook" class="h-4 w-4" /></a>
                     </div>
                 </div>
-                <form x-data="newsletterForm({ message: 'Subscribed!' })" @submit.prevent="submit" class="rounded-2xl border bg-card p-6 shadow-sm">
+                <div class="rounded-2xl border bg-card p-6 shadow-sm">
                     <h3 class="font-display text-xl uppercase text-secondary">{{ $pages->contact_newsletter_heading }}</h3>
                     <p class="mt-1 text-sm text-muted-foreground">{{ $pages->contact_newsletter_text }}</p>
-                    <x-ui.input class="mt-4" type="email" x-model="email" placeholder="you@example.com" required />
-                    <x-ui.button type="submit" class="mt-3 w-full bg-secondary text-secondary-foreground hover:bg-secondary/90">Subscribe</x-ui.button>
-                </form>
+                    <livewire:newsletter-signup variant="card" />
+                </div>
             </div>
         </div>
     </x-site.section>
