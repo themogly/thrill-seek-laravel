@@ -74,7 +74,14 @@ class ManageCoachedPageSettings extends SettingsPage
                         ->disk('public')
                         ->directory('pages')
                         ->dehydrated(fn (?string $state): bool => filled($state)),
-                    TextInput::make('button_label')->label('Button text (links to Contact)')->required()->maxLength(100),
+                    TextInput::make('button_label')->label('Button text (scrolls to the enquiry form)')->required()->maxLength(100),
+                ]),
+            Section::make('Coaching enquiry section')
+                ->columns(3)
+                ->components([
+                    TextInput::make('enquiry_eyebrow')->label('Small line')->required()->maxLength(255),
+                    TextInput::make('enquiry_title')->label('Heading')->required()->maxLength(255),
+                    TextInput::make('enquiry_lead')->label('Lead text')->required()->maxLength(500),
                 ]),
         ]);
     }

@@ -91,6 +91,12 @@ class ManageTandemPageSettings extends SettingsPage
                     TextInput::make('charity_note_title')->label('Bold lead-in')->required()->maxLength(255),
                     TextInput::make('charity_note_body')->label('Text')->required()->maxLength(500),
                 ]),
+            Section::make('Gift voucher box')
+                ->components([
+                    TextInput::make('gift_title')->label('Heading')->required()->maxLength(255),
+                    Textarea::make('gift_body')->label('Text')->rows(2)->required(),
+                    TextInput::make('gift_button_label')->label('Button text (links to Contact)')->required()->maxLength(100),
+                ]),
         ]);
     }
 }

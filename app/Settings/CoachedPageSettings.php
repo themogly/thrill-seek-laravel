@@ -34,6 +34,12 @@ class CoachedPageSettings extends Settings
 
     public string $button_label;
 
+    public string $enquiry_eyebrow;
+
+    public string $enquiry_title;
+
+    public string $enquiry_lead;
+
     public static function group(): string
     {
         return 'coached_page';

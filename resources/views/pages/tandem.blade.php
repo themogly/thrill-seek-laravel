@@ -99,4 +99,16 @@
             <livewire:tandem-enquiry-form />
         </div>
     </x-site.section>
+
+    {{-- GIFT VOUCHERS --}}
+    <x-site.section>
+        <div class="rounded-3xl bg-secondary p-10 text-center text-secondary-foreground shadow-deep lg:p-16">
+            <x-icon name="sparkles" class="mx-auto h-10 w-10 text-primary" />
+            <h2 class="mt-4 font-display text-4xl uppercase tracking-wide md:text-5xl">{{ $page->gift_title }}</h2>
+            <p class="mx-auto mt-3 max-w-xl text-lg opacity-90">{{ $page->gift_body }}</p>
+            <x-ui.button href="/contact" size="lg" class="mt-8 bg-primary text-primary-foreground hover:bg-primary/90">
+                {{ $page->gift_button_label }}
+            </x-ui.button>
+        </div>
+    </x-site.section>
 @endsection

@@ -21,10 +21,20 @@
                         <li class="flex items-center gap-2"><x-icon name="target" class="h-5 w-5 text-primary" />{{ $b }}</li>
                     @endforeach
                 </ul>
-                <x-ui.button href="/contact" size="lg" class="mt-8 bg-primary text-primary-foreground hover:bg-primary/90">
+                <x-ui.button href="#enquiry" size="lg" class="mt-8 bg-primary text-primary-foreground hover:bg-primary/90">
                     {{ $page->button_label }}
                 </x-ui.button>
             </div>
         </div>
     </x-site.section>
+
+    {{-- COACHING ENQUIRY --}}
+    <section id="enquiry" class="bg-muted">
+        <div class="mx-auto max-w-7xl px-4 py-16 lg:px-8 lg:py-24">
+            <x-site.section-heading :eyebrow="$page->enquiry_eyebrow" :title="$page->enquiry_title" :lead="$page->enquiry_lead" />
+            <div class="mx-auto max-w-3xl">
+                <livewire:coached-enquiry-form />
+            </div>
+        </div>
+    </section>
 @endsection

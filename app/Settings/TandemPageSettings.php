@@ -49,6 +49,12 @@ class TandemPageSettings extends Settings
 
     public string $charity_note_body;
 
+    public string $gift_title;
+
+    public string $gift_body;
+
+    public string $gift_button_label;
+
     public static function group(): string
     {
         return 'tandem_page';
