@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Enums\PaymentStatus;
-use App\Models\Booking;
 use App\Models\CourseDate;
-use App\Models\Payment;
 use App\Support\SiteContent;
+use App\ViewModels\PaymentSuccessPage;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
@@ -88,29 +86,12 @@ class PageController extends Controller
      * show the customer their booking (or a processing note while the
      * webhook catches up).
      */
-    public function paymentSuccess(Request $request): View
+    public function paymentSuccess(Request $request, PaymentSuccessPage $page): View
     {
-        $payment = null;
-        $booking = null;
-
-        if (is_string($sessionId = $request->query('session_id')) && $sessionId !== '') {
-            $payment = Payment::with(['booking.product', 'booking.courseDate', 'booking.tandemDate'])
-                ->where('stripe_checkout_session_id', $sessionId)
-                ->first();
-            $booking = $payment?->booking;
-        } elseif (is_string($reference = $request->query('booking')) && $reference !== '') {
-            // Voucher-covered bookings skip Stripe entirely; the unguessable
-            // booking reference acts as the claim check.
-            $booking = Booking::with(['product', 'courseDate', 'tandemDate'])
-                ->where('reference', strtoupper($reference))
-                ->first();
-            $payment = $booking?->payments()->where('status', PaymentStatus::Paid)->latest('id')->first();
-        }
-
-        return view('pages.payment-success', [
-            'payment' => $payment,
-            'booking' => $booking,
-        ]);
+        return view('pages.payment-success', $page->viewData(
+            $request->query('session_id'),
+            $request->query('booking'),
+        ));
     }
 
     public function contact(): View

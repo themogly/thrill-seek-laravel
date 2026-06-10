@@ -315,3 +315,9 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
   settings classes were left as-is: they already carry their own Redis-backed
   cache and invalidation (`settings:clear-cache`), so wrapping them in
   `SiteContent` would be a second cache layer for no behaviour gain.
+- **Rule 2 — controllers**: `PageController::paymentSuccess()` was the only method
+  with inline lookup logic; both resolution paths and their precedence were pinned
+  by `PaymentSuccessResolutionTest` first, then the logic moved to
+  `App\ViewModels\PaymentSuccessPage` (the repo had no page-class convention yet —
+  this establishes it; see Rule 5). Every other controller method already just
+  resolves and returns.
