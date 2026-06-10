@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\Filament\Pages\Settings;
 
 use App\Settings\GeneralSettings;
+use App\Support\SiteIcons;
 use BackedEnum;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -99,6 +102,20 @@ class ManageGeneralSettings extends SettingsPage
                         ->label('Copyright line')
                         ->required()
                         ->maxLength(255),
+                ]),
+            Section::make('Trust badges')
+                ->description('The four cards shown in the “Why jump with us” strip on the home and AFF pages.')
+                ->components([
+                    Repeater::make('trust_items')
+                        ->hiddenLabel()
+                        ->columns(3)
+                        ->components([
+                            Select::make('icon')->options(SiteIcons::options())->required(),
+                            TextInput::make('value')->label('Big text')->required()->maxLength(100),
+                            TextInput::make('label')->label('Caption')->required()->maxLength(255),
+                        ])
+                        ->reorderable()
+                        ->minItems(1),
                 ]),
         ]);
     }

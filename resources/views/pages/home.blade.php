@@ -1,5 +1,8 @@
 @extends('layouts.app')
 
+@inject('home', 'App\Settings\HomePageSettings')
+@inject('general', 'App\Settings\GeneralSettings')
+
 @section('title', 'G-Force Skydiving — One Life. One Adventure. Live It.')
 @section('description', 'UK-based skydiving school offering tandem jumps, AFF courses and advanced coaching. Book your jump today.')
 
@@ -9,27 +12,13 @@
         ['title' => 'AFF Course', 'desc' => 'Become a licensed skydiver. Levels 1–8 with full kit and instruction.', 'img' => '/images/aff.jpg', 'to' => '/aff', 'price' => '£1,750'],
         ['title' => 'Coached Skills', 'desc' => '1-to-1 advanced flying coaching from world-class instructors.', 'img' => '/images/coached.jpg', 'to' => '/coached', 'price' => 'from £60'],
     ];
-
-    $stats = [
-        ['icon' => 'plane', 'value' => '15k ft', 'label' => 'Highest UK Tandem'],
-        ['icon' => 'users', 'value' => '30+ yrs', 'label' => 'Combined Experience'],
-        ['icon' => 'award', 'value' => 'BS / USPA', 'label' => 'Certified'],
-    ];
-
-    $instaImages = ['/images/tandem.jpg', '/images/aff.jpg', '/images/coached.jpg', '/images/hero-skydive.jpg', '/images/tandem.jpg', '/images/aff.jpg'];
-
-    $fbPosts = [
-        ['t' => 'AFF Course in Spain — June 8–12', 'd' => 'Limited spots left. Sun, blue skies and 8 jumps to A-licence.'],
-        ['t' => 'Charity Tandem Day at Devon', 'd' => 'Raise money for your cause and jump from 15,000ft.'],
-        ['t' => 'New G-Force Buzz tandems available', 'd' => 'Upgrade your booking with our latest kit.'],
-    ];
 @endphp
 
 @section('content')
     {{-- HERO --}}
     <section class="relative isolate flex min-h-[88vh] items-center justify-center overflow-hidden">
         <img
-            src="/images/hero-skydive.jpg"
+            src="{{ $home->imageUrl($home->hero_image) }}"
             alt="Skydivers in freefall above mountain landscape"
             class="absolute inset-0 h-full w-full object-cover"
             width="1920"
@@ -37,19 +26,19 @@
         />
         <div class="absolute inset-0 bg-hero-gradient"></div>
         <div class="relative z-10 mx-auto max-w-5xl px-4 text-center text-white">
-            <p class="mb-4 text-sm font-bold uppercase tracking-[0.4em] text-primary">G-Force Skydiving</p>
+            <p class="mb-4 text-sm font-bold uppercase tracking-[0.4em] text-primary">{{ $home->hero_eyebrow }}</p>
             <h1 class="font-display text-5xl uppercase tracking-wider drop-shadow-lg md:text-8xl">
-                One Life. <span class="text-primary">One Adventure.</span> Live It.
+                {{ $home->hero_title_1 }} <span class="text-primary">{{ $home->hero_title_highlight }}</span> {{ $home->hero_title_2 }}
             </h1>
             <p class="mx-auto mt-6 max-w-2xl text-lg opacity-95 md:text-xl">
-                Jump with the UK's most experienced skydiving coaches. Military trained. BS &amp; USPA certified.
+                {{ $home->hero_subtitle }}
             </p>
             <div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
                 <x-ui.button href="/tandem" size="lg" class="bg-primary text-primary-foreground shadow-glow hover:bg-primary/90">
-                    Book a Tandem <x-icon name="arrow-right" class="ml-2 h-4 w-4" />
+                    {{ $home->hero_cta_primary_label }} <x-icon name="arrow-right" class="ml-2 h-4 w-4" />
                 </x-ui.button>
                 <x-ui.button href="/aff" size="lg" variant="outline" class="border-white bg-white/10 text-white backdrop-blur hover:bg-white/20">
-                    Learn to Skydive
+                    {{ $home->hero_cta_secondary_label }}
                 </x-ui.button>
             </div>
         </div>
@@ -60,7 +49,7 @@
 
     {{-- SERVICES --}}
     <x-site.section>
-        <x-site.section-heading eyebrow="What we do" title="Three Ways to Fly" lead="From a once-in-a-lifetime tandem to a full skydiving licence." />
+        <x-site.section-heading :eyebrow="$home->services_eyebrow" :title="$home->services_title" :lead="$home->services_lead" />
         <div class="grid gap-6 md:grid-cols-3">
             @foreach ($services as $s)
                 <a href="{{ $s['to'] }}" class="group relative overflow-hidden rounded-2xl bg-card shadow-deep transition-transform hover:-translate-y-1">
@@ -86,15 +75,13 @@
     <section class="bg-secondary text-secondary-foreground">
         <div class="mx-auto grid max-w-7xl gap-12 px-4 py-20 lg:grid-cols-2 lg:px-8 lg:py-28">
             <div>
-                <p class="text-sm font-bold uppercase tracking-[0.3em] text-primary">Our Story</p>
-                <h2 class="mt-3 font-display text-4xl uppercase tracking-wide md:text-5xl">Established 2017. Built on experience.</h2>
+                <p class="text-sm font-bold uppercase tracking-[0.3em] text-primary">{{ $home->about_eyebrow }}</p>
+                <h2 class="mt-3 font-display text-4xl uppercase tracking-wide md:text-5xl">{{ $home->about_title }}</h2>
                 <p class="mt-6 text-lg opacity-90">
-                    G-Force Skydiving was founded by ex-military jumpers with a passion for sharing the sport safely. With
-                    over 30 years of combined experience, our team holds both British Skydiving and USPA certifications,
-                    and operates across the UK and Europe.
+                    {{ $home->about_body }}
                 </p>
                 <div class="mt-8 grid grid-cols-3 gap-4">
-                    @foreach ($stats as $stat)
+                    @foreach ($home->about_stats as $stat)
                         <div>
                             <div class="text-primary"><x-icon :name="$stat['icon']" /></div>
                             <p class="mt-2 font-display text-2xl">{{ $stat['value'] }}</p>
@@ -104,8 +91,8 @@
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-4">
-                <img src="/images/tandem.jpg" alt="" class="aspect-[3/4] rounded-2xl object-cover shadow-deep" loading="lazy" width="1280" height="896" />
-                <img src="/images/aff.jpg" alt="" class="mt-8 aspect-[3/4] rounded-2xl object-cover shadow-deep" loading="lazy" width="1280" height="896" />
+                <img src="{{ $home->imageUrl($home->about_image_1) }}" alt="" class="aspect-[3/4] rounded-2xl object-cover shadow-deep" loading="lazy" width="1280" height="896" />
+                <img src="{{ $home->imageUrl($home->about_image_2) }}" alt="" class="mt-8 aspect-[3/4] rounded-2xl object-cover shadow-deep" loading="lazy" width="1280" height="896" />
             </div>
         </div>
     </section>
@@ -113,15 +100,15 @@
     {{-- TRUST STRIP --}}
     <section class="border-y bg-card">
         <div class="mx-auto max-w-7xl px-4 py-14 lg:px-8">
-            <p class="text-center text-sm font-bold uppercase tracking-[0.3em] text-primary">Why jump with us</p>
-            <h2 class="mt-2 text-center font-display text-3xl uppercase tracking-wide text-secondary md:text-4xl">Trusted. Certified. Experienced.</h2>
+            <p class="text-center text-sm font-bold uppercase tracking-[0.3em] text-primary">{{ $home->trust_eyebrow }}</p>
+            <h2 class="mt-2 text-center font-display text-3xl uppercase tracking-wide text-secondary md:text-4xl">{{ $home->trust_title }}</h2>
             <x-site.trust-grid />
         </div>
     </section>
 
     {{-- TEAM --}}
     <x-site.section>
-        <x-site.section-heading eyebrow="Meet the team" title="The Coaches" lead="The people you'll fly with." />
+        <x-site.section-heading :eyebrow="$home->team_eyebrow" :title="$home->team_title" :lead="$home->team_lead" />
         <div class="grid gap-6 md:grid-cols-3">
             @foreach ($instructors as $instructor)
                 <div class="group rounded-2xl border bg-card p-8 text-center shadow-sm transition-all hover:shadow-glow">
@@ -146,25 +133,25 @@
             <div class="grid gap-12 lg:grid-cols-2">
                 <div>
                     <h2 class="font-display text-3xl uppercase tracking-wide text-secondary flex items-center gap-3"><x-icon name="instagram" class="text-primary" /> Instagram</h2>
-                    <p class="mt-2 text-muted-foreground">Follow @gforceskydiving for jumps from the weekend.</p>
+                    <p class="mt-2 text-muted-foreground">{{ $home->instagram_caption }}</p>
                     <div class="mt-6 grid grid-cols-3 gap-2">
-                        @foreach ($instaImages as $src)
-                            <a href="https://instagram.com" target="_blank" rel="noreferrer" class="group relative aspect-square overflow-hidden rounded-md bg-secondary">
-                                <img src="{{ $src }}" alt="Instagram post" class="h-full w-full object-cover transition-transform group-hover:scale-110" loading="lazy" />
+                        @foreach ($galleryImages as $galleryImage)
+                            <a href="{{ $general->instagram_url }}" target="_blank" rel="noreferrer" class="group relative aspect-square overflow-hidden rounded-md bg-secondary">
+                                <img src="{{ $galleryImage->image_url }}" alt="{{ $galleryImage->alt_text }}" class="h-full w-full object-cover transition-transform group-hover:scale-110" loading="lazy" />
                                 <div class="absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/40"></div>
                             </a>
                         @endforeach
                     </div>
-                    <p class="mt-3 text-xs text-muted-foreground">Live Instagram feed connects via Meta Graph API — ask to enable.</p>
+                    <p class="mt-3 text-xs text-muted-foreground">{{ $home->instagram_note }}</p>
                 </div>
                 <div>
                     <h2 class="font-display text-3xl uppercase tracking-wide text-secondary flex items-center gap-3"><x-icon name="facebook" class="text-primary" /> Facebook</h2>
-                    <p class="mt-2 text-muted-foreground">See our latest news and jump days.</p>
+                    <p class="mt-2 text-muted-foreground">{{ $home->facebook_caption }}</p>
                     <div class="mt-6 space-y-3">
-                        @foreach ($fbPosts as $p)
-                            <a href="https://facebook.com" target="_blank" rel="noreferrer" class="block rounded-lg border bg-card p-4 transition-colors hover:border-primary">
-                                <p class="font-semibold text-secondary">{{ $p['t'] }}</p>
-                                <p class="text-sm text-muted-foreground">{{ $p['d'] }}</p>
+                        @foreach ($home->facebook_posts as $p)
+                            <a href="{{ $general->facebook_url }}" target="_blank" rel="noreferrer" class="block rounded-lg border bg-card p-4 transition-colors hover:border-primary">
+                                <p class="font-semibold text-secondary">{{ $p['title'] }}</p>
+                                <p class="text-sm text-muted-foreground">{{ $p['description'] }}</p>
                             </a>
                         @endforeach
                     </div>
@@ -175,7 +162,7 @@
 
     {{-- TESTIMONIALS --}}
     <x-site.section>
-        <x-site.section-heading eyebrow="Real reviews" title="Voices from the Sky" />
+        <x-site.section-heading :eyebrow="$home->testimonials_eyebrow" :title="$home->testimonials_title" />
         <div class="grid gap-6 md:grid-cols-3">
             @foreach ($testimonials as $t)
                 <figure class="rounded-2xl border bg-card p-6 shadow-sm">
@@ -190,8 +177,8 @@
     {{-- NEWSLETTER --}}
     <section class="bg-fire-gradient py-20 text-white">
         <div class="mx-auto max-w-3xl px-4 text-center">
-            <h2 class="font-display text-4xl uppercase tracking-wide md:text-5xl">Stay in the loop</h2>
-            <p class="mt-3 text-lg opacity-95">Course dates, jump days and member offers — direct to your inbox.</p>
+            <h2 class="font-display text-4xl uppercase tracking-wide md:text-5xl">{{ $home->newsletter_title }}</h2>
+            <p class="mt-3 text-lg opacity-95">{{ $home->newsletter_subtitle }}</p>
             <form x-data="newsletterForm()" @submit.prevent="submit" class="mt-8 flex flex-col gap-3 sm:flex-row">
                 <x-ui.input
                     type="email"
@@ -211,10 +198,10 @@
     <x-site.section>
         <div class="rounded-3xl bg-secondary p-10 text-center text-secondary-foreground shadow-deep lg:p-16">
             <x-icon name="shield" class="mx-auto h-10 w-10 text-primary" />
-            <h2 class="mt-4 font-display text-4xl uppercase tracking-wide md:text-5xl">Ready to Jump?</h2>
-            <p class="mx-auto mt-3 max-w-xl text-lg opacity-90">Get in touch — we'll answer any question and help you pick the right experience.</p>
+            <h2 class="mt-4 font-display text-4xl uppercase tracking-wide md:text-5xl">{{ $home->cta_title }}</h2>
+            <p class="mx-auto mt-3 max-w-xl text-lg opacity-90">{{ $home->cta_subtitle }}</p>
             <x-ui.button href="/contact" size="lg" class="mt-8 bg-primary text-primary-foreground hover:bg-primary/90">
-                Contact Us
+                {{ $home->cta_button_label }}
             </x-ui.button>
         </div>
     </x-site.section>

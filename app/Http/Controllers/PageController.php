@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\GalleryImage;
 use App\Models\HallOfFameEntry;
 use App\Models\Instructor;
 use App\Models\ShopItem;
@@ -18,6 +19,7 @@ class PageController extends Controller
         return view('pages.home', [
             'instructors' => ContentCache::remember('instructors', fn () => Instructor::ordered()->get()),
             'testimonials' => ContentCache::remember('testimonials.featured', fn () => Testimonial::featured()->ordered()->limit(3)->get()),
+            'galleryImages' => ContentCache::remember('gallery_images', fn () => GalleryImage::ordered()->get()),
         ]);
     }
 

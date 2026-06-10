@@ -30,6 +30,9 @@ class GeneralSettings extends Settings
 
     public string $footer_copyright;
 
+    /** @phpstan-var array<int, array{icon: string, value: string, label: string}> */
+    public array $trust_items;
+
     public static function group(): string
     {
         return 'general';
