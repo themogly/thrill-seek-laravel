@@ -14,6 +14,7 @@ use App\Models\Booking;
 use App\Models\Customer;
 use App\Models\Payment;
 use App\Models\Product;
+use App\Models\Voucher;
 use App\Services\StripeCheckout;
 use Illuminate\Support\Facades\DB;
 
@@ -22,11 +23,19 @@ class StartTandemCheckout
     /** How long a held place survives without payment. */
     public const HOLD_MINUTES = 30;
 
-    public function __construct(private readonly StripeCheckout $stripe) {}
+    public function __construct(
+        private readonly StripeCheckout $stripe,
+        private readonly RedeemVoucher $redeemVoucher,
+        private readonly ConfirmHeldBooking $confirmHeldBooking,
+    ) {}
 
     /**
      * Hold a place on the slot (inside a lock so concurrent customers cannot
-     * overbook), then send the customer to Stripe for the full amount.
+     * overbook), then send the customer to Stripe for whatever a voucher
+     * doesn't cover. A voucher covering the whole amount books immediately
+     * with no Stripe round-trip; a partial voucher is only consumed when
+     * the card payment succeeds (webhook), so an abandoned checkout never
+     * burns it.
      *
      * @param  array{
      *     name: string, email: string, phone: string, date_of_birth: string,
@@ -34,10 +43,13 @@ class StartTandemCheckout
      *     emergency_contact_phone: string, medical_notes?: string|null,
      * }  $customer
      * @param  list<int>  $addOnIds  selected purchasable add-on ids
-     * @return array{booking: Booking, checkout_url: string}
+     * @return array{booking: Booking, checkout_url: string|null}
      */
-    public function handle(AvailabilitySlot $slot, Product $product, array $customer, array $addOnIds = []): array
+    public function handle(AvailabilitySlot $slot, Product $product, array $customer, array $addOnIds = [], ?Voucher $voucher = null): array
     {
+        if ($voucher !== null && ! $voucher->isRedeemable()) {
+            throw new BookingUnavailableException('That voucher code is no longer valid — remove it or contact us.');
+        }
         $addOns = $product->addOns()
             ->where('purchasable', true)
             ->whereIn('id', $addOnIds)
@@ -75,13 +87,25 @@ class StartTandemCheckout
             ]);
         });
 
+        $voucherCoverage = $voucher === null ? 0 : min($voucher->amount_pence, $totalPence);
+        $duePence = $totalPence - $voucherCoverage;
+
+        // Fully covered: redeem and confirm on the spot — nothing to charge.
+        if ($voucher !== null && $duePence === 0) {
+            $this->redeemVoucher->handle($voucher, $booking);
+            $this->confirmHeldBooking->handle($booking->payments()->latest('id')->firstOrFail());
+
+            return ['booking' => $booking->refresh(), 'checkout_url' => null];
+        }
+
         $payment = Payment::create([
             'booking_id' => $booking->id,
             'purpose' => PaymentPurpose::TandemFull,
             'method' => PaymentMethod::Stripe,
             'status' => PaymentStatus::Pending,
-            'amount_pence' => $totalPence,
+            'amount_pence' => $duePence,
             'description' => $product->name.($addOns->isNotEmpty() ? ' + '.$addOns->pluck('name')->implode(', ') : ''),
+            'metadata' => $voucher === null ? null : ['voucher_id' => $voucher->id],
         ]);
 
         try {

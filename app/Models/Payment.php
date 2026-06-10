@@ -20,6 +20,7 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property PaymentPurpose $purpose
  * @property PaymentMethod $method
  * @property PaymentStatus $status
+ * @property array<string, mixed>|null $metadata
  */
 class Payment extends Model
 {
@@ -35,6 +36,7 @@ class Payment extends Model
         'amount_pence',
         'description',
         'reference',
+        'metadata',
         'stripe_checkout_session_id',
         'stripe_payment_intent_id',
         'paid_at',
@@ -48,6 +50,7 @@ class Payment extends Model
             'method' => PaymentMethod::class,
             'status' => PaymentStatus::class,
             'amount_pence' => 'integer',
+            'metadata' => 'array',
             'paid_at' => 'datetime',
         ];
     }

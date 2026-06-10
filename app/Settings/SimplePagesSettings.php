@@ -68,6 +68,16 @@ class SimplePagesSettings extends Settings
 
     public string $booking_aff_hero_subtitle;
 
+    public string $voucher_seo_title;
+
+    public string $voucher_seo_description;
+
+    public string $voucher_hero_title;
+
+    public string $voucher_hero_subtitle;
+
+    public string $voucher_intro;
+
     public string $privacy_title;
 
     public string $privacy_body;

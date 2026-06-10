@@ -6,15 +6,14 @@ namespace App\Filament\Resources\Vouchers;
 
 use App\Actions\RedeemVoucher;
 use App\Enums\VoucherStatus;
+use App\Filament\Resources\Bookings\BookingResource;
 use App\Filament\Resources\Vouchers\Pages\CreateVoucher;
 use App\Filament\Resources\Vouchers\Pages\EditVoucher;
 use App\Filament\Resources\Vouchers\Pages\ListVouchers;
-use App\Mail\TemplatedMail;
+use App\Mail\VoucherGiftMail;
 use App\Models\Booking;
-use App\Models\EmailTemplate;
 use App\Models\User;
 use App\Models\Voucher;
-use App\Settings\GeneralSettings;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
@@ -118,6 +117,17 @@ class VoucherResource extends Resource
                     ->label('Expires')
                     ->date()
                     ->sortable(),
+                TextColumn::make('source')
+                    ->label('Source')
+                    ->badge()
+                    ->formatStateUsing(fn (string $state): string => $state === 'online' ? 'Bought online' : 'Admin issued')
+                    ->color(fn (string $state): string => $state === 'online' ? 'info' : 'gray'),
+                TextColumn::make('booking.reference')
+                    ->label('Redeemed against')
+                    ->url(fn (Voucher $record): ?string => $record->booking_id === null
+                        ? null
+                        : BookingResource::getUrl('edit', ['record' => $record->booking_id]))
+                    ->placeholder('—'),
             ])
             ->filters([
                 SelectFilter::make('status')
@@ -131,19 +141,7 @@ class VoucherResource extends Resource
                     ->requiresConfirmation()
                     ->modalDescription(fn (Voucher $record): string => "Send the voucher email to {$record->purchaser_email}?")
                     ->action(function (Voucher $record): void {
-                        Mail::to($record->purchaser_email)->queue(new TemplatedMail(
-                            EmailTemplate::findByKey('gift_voucher'),
-                            [
-                                'name' => $record->purchaser_name,
-                                'recipient' => $record->recipient_name ?? 'the lucky recipient',
-                                'code' => $record->code,
-                                'amount' => $record->formatted_amount,
-                                'product' => $record->product->name ?? 'a G-Force experience',
-                                'expires' => $record->expires_at->format('j F Y'),
-                                'message' => (string) $record->message,
-                                'contact_email' => app(GeneralSettings::class)->email,
-                            ],
-                        ));
+                        Mail::to($record->purchaser_email)->queue(new VoucherGiftMail($record));
 
                         Notification::make()->success()->title('Voucher emailed')->send();
                     }),
@@ -179,6 +177,18 @@ class VoucherResource extends Resource
                             ->title('Voucher redeemed')
                             ->body("{$record->formatted_amount} applied to {$booking->reference}.")
                             ->send();
+                    }),
+                Action::make('revoke')
+                    ->label('Revoke')
+                    ->icon('heroicon-o-no-symbol')
+                    ->color('danger')
+                    ->visible(fn (Voucher $record): bool => $record->status === VoucherStatus::Active)
+                    ->requiresConfirmation()
+                    ->modalDescription(fn (Voucher $record): string => "Cancel voucher {$record->code}? It can no longer be redeemed.")
+                    ->action(function (Voucher $record): void {
+                        $record->update(['status' => VoucherStatus::Cancelled]);
+
+                        Notification::make()->success()->title('Voucher revoked')->send();
                     }),
                 EditAction::make(),
             ])

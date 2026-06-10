@@ -140,11 +140,39 @@
                         <dd class="font-semibold text-secondary">{{ $addOn->formatted_price }}</dd>
                     </div>
                 @endforeach
+                @if ($appliedVoucher)
+                    <div class="flex justify-between gap-4">
+                        <dt class="text-muted-foreground">Total</dt>
+                        <dd class="font-semibold text-secondary">{{ $formattedTotal }}</dd>
+                    </div>
+                    <div class="flex justify-between gap-4">
+                        <dt class="flex items-center gap-2 text-muted-foreground">
+                            Gift voucher {{ $appliedVoucher->code }}
+                            <button type="button" wire:click="removeVoucher" class="text-xs font-bold uppercase text-destructive hover:underline">Remove</button>
+                        </dt>
+                        <dd class="font-semibold text-secondary">−{{ $appliedVoucher->formatted_amount }}</dd>
+                    </div>
+                @endif
                 <div class="flex justify-between gap-4 border-t pt-3">
                     <dt class="font-display text-lg uppercase text-secondary">Total due now</dt>
-                    <dd class="font-display text-2xl text-primary">{{ $formattedTotal }}</dd>
+                    <dd class="font-display text-2xl text-primary">{{ $formattedDue }}</dd>
                 </div>
             </dl>
+
+            @unless ($appliedVoucher)
+                <div class="mt-6 rounded-xl border bg-background p-4">
+                    <label for="bt-voucher" class="text-sm font-bold uppercase tracking-wide text-secondary">Got a gift voucher?</label>
+                    <div class="mt-2 flex gap-2">
+                        <x-ui.input id="bt-voucher" wire:model="voucherCode" placeholder="GV-XXXXXXXX" class="flex-1 uppercase" />
+                        <x-ui.button type="button" wire:click="applyVoucher" variant="outline" class="border-input text-secondary hover:bg-accent" wire:loading.attr="disabled">
+                            Apply
+                        </x-ui.button>
+                    </div>
+                    @if ($voucherMessage)
+                        <p class="mt-2 text-sm font-medium text-destructive" role="alert">{{ $voucherMessage }}</p>
+                    @endif
+                </div>
+            @endunless
 
             <p class="mt-4 text-xs text-muted-foreground">
                 P6 third-party insurance and any weight surcharge are paid at the dropzone on the day.
@@ -166,10 +194,18 @@
             @endif
 
             <x-ui.button wire:click="pay" size="lg" class="mt-6 w-full bg-primary text-primary-foreground hover:bg-primary/90" wire:loading.attr="disabled">
-                <span wire:loading.remove wire:target="pay">Pay {{ $formattedTotal }} securely with Stripe</span>
-                <span wire:loading wire:target="pay">Taking you to secure payment…</span>
+                <span wire:loading.remove wire:target="pay">
+                    @if ($duePence === 0)
+                        Book now — nothing to pay
+                    @else
+                        Pay {{ $formattedDue }} securely with Stripe
+                    @endif
+                </span>
+                <span wire:loading wire:target="pay">{{ $duePence === 0 ? 'Confirming your booking…' : 'Taking you to secure payment…' }}</span>
             </x-ui.button>
-            <p class="mt-3 text-center text-xs text-muted-foreground">Card payments are handled by Stripe — we never see your card details.</p>
+            @if ($duePence > 0)
+                <p class="mt-3 text-center text-xs text-muted-foreground">Card payments are handled by Stripe — we never see your card details.</p>
+            @endif
         </div>
     @endif
 </div>

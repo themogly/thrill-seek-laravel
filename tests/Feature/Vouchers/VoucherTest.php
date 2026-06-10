@@ -9,7 +9,7 @@ use App\Enums\PaymentMethod;
 use App\Enums\VoucherStatus;
 use App\Filament\Resources\Vouchers\Pages\CreateVoucher;
 use App\Filament\Resources\Vouchers\Pages\ListVouchers;
-use App\Mail\TemplatedMail;
+use App\Mail\VoucherGiftMail;
 use App\Models\Booking;
 use App\Models\User;
 use App\Models\Voucher;
@@ -94,8 +94,7 @@ class VoucherTest extends TestCase
         Livewire::test(ListVouchers::class)
             ->callTableAction('sendEmail', $voucher);
 
-        Mail::assertQueued(TemplatedMail::class, fn (TemplatedMail $mail) => $mail->hasTo($voucher->purchaser_email)
-            && str_contains($mail->renderedBody, $voucher->code)
-            && str_contains($mail->renderedBody, '£260'));
+        Mail::assertQueued(VoucherGiftMail::class, fn (VoucherGiftMail $mail) => $mail->hasTo($voucher->purchaser_email)
+            && $mail->voucher->is($voucher));
     }
 }

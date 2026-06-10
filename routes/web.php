@@ -17,6 +17,7 @@ Route::get('/terms', [PageController::class, 'terms'])->name('terms');
 
 Route::get('/book/tandem', [PageController::class, 'bookTandem'])->name('book.tandem');
 Route::get('/book/aff', [PageController::class, 'bookAff'])->name('book.aff');
+Route::get('/vouchers', [PageController::class, 'vouchers'])->name('vouchers');
 
 Route::get('/payment/success', [PageController::class, 'paymentSuccess'])->name('payment.success');
 Route::view('/payment/cancelled', 'pages.payment-cancelled')->name('payment.cancelled');
@@ -30,6 +31,7 @@ Route::get('/sitemap.xml', function () {
         ['path' => '/aff', 'priority' => '0.9'],
         ['path' => '/book/tandem', 'priority' => '0.9'],
         ['path' => '/book/aff', 'priority' => '0.9'],
+        ['path' => '/vouchers', 'priority' => '0.8'],
         ['path' => '/coached', 'priority' => '0.8'],
         ['path' => '/shop', 'priority' => '0.7'],
         ['path' => '/testimonials', 'priority' => '0.6'],

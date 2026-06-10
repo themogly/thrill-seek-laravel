@@ -37,8 +37,10 @@ class Voucher extends Model
         'message',
         'expires_at',
         'status',
+        'source',
         'redeemed_at',
         'booking_id',
+        'payment_id',
     ];
 
     protected function casts(): array

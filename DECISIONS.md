@@ -163,6 +163,27 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
   snapshot (name/email/booking) per message and Horizon shows per-job failures.
   Documented as the "cheap" trade-off the brief allows.
 
+## Part B — public vouchers
+
+- **Voucher created at webhook time, not checkout time** — the purchase intent
+  (purchaser/recipient/message) travels on the payment's new `metadata` column, so
+  an abandoned checkout leaves nothing to clean up; issuing is idempotent against
+  webhook retries via the `payment_id` link.
+- **Partial redemption consumes the voucher only when the card payment succeeds**
+  (voucher_id in the Stripe payment's metadata). If the voucher was spent elsewhere
+  between checkout start and webhook, the booking confirms with an outstanding
+  balance for the admin to chase rather than failing the customer's payment —
+  logged as a warning.
+- **Atomic redemption claim** — RedeemVoucher flips `active → redeemed` with a
+  conditional UPDATE; a second concurrent redemption finds zero affected rows and
+  throws, so a voucher can never be double-spent (tested with a stale instance).
+- **The voucher email is a designed mailable, not an editable template** — the gift
+  layout (code panel, personal message quote, redeem button) doesn't survive
+  free-text templating; the unused gift_voucher template row is removed by the
+  seeder. The admin "Email voucher" action uses the same mailable (one pathway).
+- **Printable/PDF voucher deferred** — would add a dompdf dependency for a
+  nice-to-have; the email IS the voucher (code is what matters). Logged as future work.
+
 # Round 2
 
 ## Part A — fixes

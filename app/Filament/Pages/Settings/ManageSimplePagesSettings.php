@@ -85,6 +85,15 @@ class ManageSimplePagesSettings extends SettingsPage
                     TextInput::make('booking_aff_seo_title')->label('SEO page title')->required()->maxLength(255),
                     Textarea::make('booking_aff_seo_description')->label('SEO description')->rows(2)->required(),
                 ]),
+            Section::make('Gift voucher page')
+                ->columns(2)
+                ->components([
+                    TextInput::make('voucher_hero_title')->label('Heading')->required()->maxLength(255),
+                    TextInput::make('voucher_hero_subtitle')->label('Text under the heading')->required()->maxLength(500),
+                    TextInput::make('voucher_seo_title')->label('SEO page title')->required()->maxLength(255),
+                    Textarea::make('voucher_seo_description')->label('SEO description')->rows(2)->required(),
+                    Textarea::make('voucher_intro')->label('Intro text above the form')->rows(2)->required()->columnSpanFull(),
+                ]),
             Section::make('Privacy policy')
                 ->components([
                     TextInput::make('privacy_title')->label('Heading')->required()->maxLength(255),

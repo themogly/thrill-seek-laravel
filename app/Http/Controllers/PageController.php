@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Enums\PaymentStatus;
+use App\Models\Booking;
 use App\Models\CourseDate;
 use App\Models\Payment;
 use App\Support\SiteContent;
@@ -76,6 +78,11 @@ class PageController extends Controller
         return view('pages.book-aff');
     }
 
+    public function vouchers(): View
+    {
+        return view('pages.vouchers');
+    }
+
     /**
      * Stripe redirects here with the Checkout session id, so the page can
      * show the customer their booking (or a processing note while the
@@ -84,16 +91,25 @@ class PageController extends Controller
     public function paymentSuccess(Request $request): View
     {
         $payment = null;
+        $booking = null;
 
         if (is_string($sessionId = $request->query('session_id')) && $sessionId !== '') {
             $payment = Payment::with(['booking.product', 'booking.courseDate', 'booking.availabilitySlot'])
                 ->where('stripe_checkout_session_id', $sessionId)
                 ->first();
+            $booking = $payment?->booking;
+        } elseif (is_string($reference = $request->query('booking')) && $reference !== '') {
+            // Voucher-covered bookings skip Stripe entirely; the unguessable
+            // booking reference acts as the claim check.
+            $booking = Booking::with(['product', 'courseDate', 'availabilitySlot'])
+                ->where('reference', strtoupper($reference))
+                ->first();
+            $payment = $booking?->payments()->where('status', PaymentStatus::Paid)->latest('id')->first();
         }
 
         return view('pages.payment-success', [
             'payment' => $payment,
-            'booking' => $payment?->booking,
+            'booking' => $booking,
         ]);
     }
 

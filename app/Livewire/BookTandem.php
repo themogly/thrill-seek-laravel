@@ -10,6 +10,7 @@ use App\Exceptions\BookingUnavailableException;
 use App\Livewire\Concerns\ProtectsAgainstSpam;
 use App\Models\AvailabilitySlot;
 use App\Models\Product;
+use App\Models\Voucher;
 use App\Support\Money;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -42,6 +43,12 @@ class BookTandem extends Component
 
     /** @var list<int> */
     public array $addOnIds = [];
+
+    public string $voucherCode = '';
+
+    public ?int $appliedVoucherId = null;
+
+    public string $voucherMessage = '';
 
     public bool $terms = false;
 
@@ -104,6 +111,47 @@ class BookTandem extends Component
         $this->step = 3;
     }
 
+    public function applyVoucher(): void
+    {
+        $voucher = Voucher::where('code', strtoupper(trim($this->voucherCode)))->first();
+
+        if ($voucher === null || ! $voucher->isRedeemable()) {
+            $this->appliedVoucherId = null;
+            $this->voucherMessage = $voucher === null
+                ? "We don't recognise that code — check it and try again."
+                : 'That voucher is '.strtolower($voucher->display_status->getLabel()).'.';
+
+            return;
+        }
+
+        $this->appliedVoucherId = $voucher->id;
+        $this->voucherMessage = '';
+    }
+
+    public function removeVoucher(): void
+    {
+        $this->reset('voucherCode', 'appliedVoucherId', 'voucherMessage');
+    }
+
+    public function getAppliedVoucherProperty(): ?Voucher
+    {
+        if ($this->appliedVoucherId === null) {
+            return null;
+        }
+
+        $voucher = Voucher::find($this->appliedVoucherId);
+
+        return $voucher?->isRedeemable() === true ? $voucher : null;
+    }
+
+    public function getDuePenceProperty(): int
+    {
+        $voucher = $this->getAppliedVoucherProperty();
+        $coverage = $voucher === null ? 0 : min($voucher->amount_pence, $this->getTotalPenceProperty());
+
+        return $this->getTotalPenceProperty() - $coverage;
+    }
+
     public function pay(StartTandemCheckout $startCheckout): void
     {
         if ($this->isSpam()) {
@@ -133,7 +181,7 @@ class BookTandem extends Component
                 'emergency_contact_name' => $this->emergency_contact_name,
                 'emergency_contact_phone' => $this->emergency_contact_phone,
                 'medical_notes' => $this->medical_notes,
-            ], $this->addOnIds);
+            ], $this->addOnIds, $this->getAppliedVoucherProperty());
         } catch (BookingUnavailableException $e) {
             $this->unavailableMessage = $e->getMessage();
             $this->slotId = null;
@@ -144,6 +192,13 @@ class BookTandem extends Component
             Log::error('Tandem checkout could not start', ['exception' => $e->getMessage()]);
 
             $this->paymentErrorMessage = 'Online payment is temporarily unavailable. Nothing has been charged — please call us or send an enquiry and we\'ll book you in.';
+
+            return;
+        }
+
+        // A voucher covering the full amount books instantly — no Stripe.
+        if ($result['checkout_url'] === null) {
+            $this->redirect(route('payment.success', ['booking' => $result['booking']->reference]));
 
             return;
         }
@@ -197,6 +252,9 @@ class BookTandem extends Component
             'selectedSlot' => $slots->firstWhere('id', $this->slotId)
                 ?? AvailabilitySlot::find($this->slotId),
             'formattedTotal' => $this->getFormattedTotalProperty(),
+            'appliedVoucher' => $this->getAppliedVoucherProperty(),
+            'duePence' => $this->getDuePenceProperty(),
+            'formattedDue' => Money::formatPence($this->getDuePenceProperty()),
         ]);
     }
 }
