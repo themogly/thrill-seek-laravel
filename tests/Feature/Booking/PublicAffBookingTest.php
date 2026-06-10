@@ -11,6 +11,7 @@ use App\Enums\PaymentPurpose;
 use App\Livewire\BookAff;
 use App\Models\Booking;
 use App\Models\CourseDate;
+use App\Models\Location;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Services\StripeCheckout;
@@ -44,7 +45,7 @@ class PublicAffBookingTest extends TestCase
         $response = $this->get('/aff');
 
         $response->assertOk();
-        $response->assertSee($course->location);
+        $response->assertSee($course->location->name);
         $response->assertSee('8 places left');
         $response->assertSee('/book/aff?course='.$course->id, false);
     }
@@ -144,7 +145,7 @@ class PublicAffBookingTest extends TestCase
             'product_id' => $product->id,
             'starts_on' => now()->addMonth()->toDateString(),
             'ends_on' => now()->addMonth()->addDays(4)->toDateString(),
-            'location' => 'Seville, Spain',
+            'location_id' => Location::factory()->create(['name' => 'Seville, Spain'])->id,
             'capacity' => 8,
         ], $overrides));
     }

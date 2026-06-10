@@ -45,6 +45,7 @@ class SendBookingReminders extends Command
                 'reference' => $booking->reference,
                 'product' => $booking->product->name ?? 'your jump',
                 'date' => (string) $booking->scheduled_at?->format('l j F Y, H:i'),
+                'location' => $booking->locationName() ?? 'to be confirmed',
             ]));
 
             $booking->forceFill(['reminder_sent_at' => now()])->saveQuietly();

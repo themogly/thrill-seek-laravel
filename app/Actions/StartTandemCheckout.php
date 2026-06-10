@@ -9,11 +9,11 @@ use App\Enums\PaymentMethod;
 use App\Enums\PaymentPurpose;
 use App\Enums\PaymentStatus;
 use App\Exceptions\BookingUnavailableException;
-use App\Models\AvailabilitySlot;
 use App\Models\Booking;
 use App\Models\Customer;
 use App\Models\Payment;
 use App\Models\Product;
+use App\Models\TandemDate;
 use App\Models\Voucher;
 use App\Services\StripeCheckout;
 use Illuminate\Support\Facades\DB;
@@ -45,7 +45,7 @@ class StartTandemCheckout
      * @param  list<int>  $addOnIds  selected purchasable add-on ids
      * @return array{booking: Booking, checkout_url: string|null}
      */
-    public function handle(AvailabilitySlot $slot, Product $product, array $customer, array $addOnIds = [], ?Voucher $voucher = null): array
+    public function handle(TandemDate $slot, Product $product, array $customer, array $addOnIds = [], ?Voucher $voucher = null): array
     {
         if ($voucher !== null && ! $voucher->isRedeemable()) {
             throw new BookingUnavailableException('That voucher code is no longer valid — remove it or contact us.');
@@ -58,7 +58,7 @@ class StartTandemCheckout
         $totalPence = (int) $product->price_pence + (int) $addOns->sum('price_pence');
 
         $booking = DB::transaction(function () use ($slot, $product, $customer, $addOns, $totalPence): Booking {
-            $lockedSlot = AvailabilitySlot::lockForUpdate()->findOrFail($slot->id);
+            $lockedSlot = TandemDate::lockForUpdate()->findOrFail($slot->id);
 
             if ($lockedSlot->isFull() || $lockedSlot->starts_at->isPast()) {
                 throw new BookingUnavailableException('That date has just filled up — please pick another.');
@@ -73,7 +73,7 @@ class StartTandemCheckout
                 'product_id' => $product->id,
                 'customer_id' => $customerRecord->id,
                 'status' => BookingStatus::PendingPayment,
-                'availability_slot_id' => $lockedSlot->id,
+                'tandem_date_id' => $lockedSlot->id,
                 'scheduled_at' => $lockedSlot->starts_at,
                 'price_pence' => $totalPence,
                 'customer_details' => [

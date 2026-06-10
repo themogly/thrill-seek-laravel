@@ -33,11 +33,12 @@ class CourseDateForm
                                 ->whereNotNull('deposit_pence')
                                 ->value('id'))
                             ->required(),
-                        TextInput::make('location')
+                        Select::make('location_id')
                             ->label('Location')
-                            ->helperText('Shown to customers, e.g. “Seville, Spain”.')
-                            ->required()
-                            ->maxLength(255),
+                            ->relationship('location', 'name', fn ($query) => $query->where('active', true))
+                            ->searchable()
+                            ->preload()
+                            ->required(),
                         DatePicker::make('starts_on')
                             ->label('Starts')
                             ->required(),

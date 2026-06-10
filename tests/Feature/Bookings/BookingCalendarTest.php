@@ -6,8 +6,8 @@ namespace Tests\Feature\Bookings;
 
 use App\Enums\BookingStatus;
 use App\Filament\Resources\Bookings\Pages\BookingCalendar;
-use App\Models\AvailabilitySlot;
 use App\Models\Booking;
+use App\Models\TandemDate;
 use App\Models\User;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -25,7 +25,7 @@ class BookingCalendarTest extends TestCase
     {
         $date = now()->addMonth()->startOfMonth()->setTime(9, 30);
         Booking::factory()->confirmed()->create(['name' => 'Cal Tester', 'scheduled_at' => $date]);
-        AvailabilitySlot::factory()->create(['starts_at' => $date->copy()->setTime(13, 0), 'capacity' => 6]);
+        TandemDate::factory()->create(['starts_at' => $date->copy()->setTime(13, 0), 'capacity' => 6]);
 
         Livewire::test(BookingCalendar::class, ['month' => $date->format('Y-m')])
             ->assertOk()
@@ -48,7 +48,7 @@ class BookingCalendarTest extends TestCase
         $bookingA = Booking::factory()->confirmed()->create(['scheduled_at' => $first->copy()->setTime(9, 0)]);
         $bookingB = Booking::factory()->confirmed()->create(['scheduled_at' => $first->copy()->setTime(14, 0)]);
         $other = Booking::factory()->confirmed()->create(['scheduled_at' => $first->copy()->addDays(3)->setTime(10, 0)]);
-        $slot = AvailabilitySlot::factory()->create(['starts_at' => $first->copy()->setTime(13, 0)]);
+        $slot = TandemDate::factory()->create(['starts_at' => $first->copy()->setTime(13, 0)]);
 
         $page = Livewire::test(BookingCalendar::class, ['month' => $first->format('Y-m')])->instance();
 

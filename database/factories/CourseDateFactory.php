@@ -6,6 +6,7 @@ namespace Database\Factories;
 
 use App\Enums\CourseDateStatus;
 use App\Models\CourseDate;
+use App\Models\Location;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -24,7 +25,7 @@ class CourseDateFactory extends Factory
             'product_id' => Product::factory()->aff(),
             'starts_on' => $start->format('Y-m-d'),
             'ends_on' => (clone $start)->modify('+4 days')->format('Y-m-d'),
-            'location' => fake()->randomElement(['Seville, Spain', 'Ocaña, Spain', 'Devon, UK']),
+            'location_id' => Location::factory(),
             'price_pence' => null,
             'deposit_pence' => null,
             'capacity' => fake()->numberBetween(4, 10),

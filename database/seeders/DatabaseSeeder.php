@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             GalleryImageSeeder::class,
             ProductSeeder::class,
             EmailTemplateSeeder::class,
+            LocationSeeder::class,
             CourseDateSeeder::class,
         ]);
     }

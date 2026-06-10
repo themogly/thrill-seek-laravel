@@ -12,6 +12,7 @@ use App\Filament\Resources\CourseDates\Pages\EditCourseDate;
 use App\Filament\Resources\CourseDates\RelationManagers\BookingsRelationManager;
 use App\Models\Booking;
 use App\Models\CourseDate;
+use App\Models\Location;
 use App\Models\Product;
 use App\Models\User;
 use Livewire\Livewire;
@@ -71,11 +72,12 @@ class CourseDateTest extends TestCase
     {
         $this->actingAs(User::factory()->create());
         $product = Product::factory()->aff()->create();
+        $location = Location::factory()->create(['name' => 'Seville, Spain']);
 
         Livewire::test(CreateCourseDate::class)
             ->fillForm([
                 'product_id' => $product->id,
-                'location' => 'Seville, Spain',
+                'location_id' => $location->id,
                 'starts_on' => now()->addMonth()->toDateString(),
                 'ends_on' => now()->addMonth()->addDays(4)->toDateString(),
                 'capacity' => 8,
@@ -84,7 +86,7 @@ class CourseDateTest extends TestCase
             ->call('create')
             ->assertHasNoFormErrors();
 
-        $this->assertDatabaseHas('course_dates', ['location' => 'Seville, Spain', 'capacity' => 8]);
+        $this->assertDatabaseHas('course_dates', ['location_id' => $location->id, 'capacity' => 8]);
     }
 
     public function test_relation_manager_shows_enrolled_customers_with_payment_state(): void

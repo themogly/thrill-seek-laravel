@@ -6,8 +6,8 @@ namespace App\Filament\Resources\Bookings\Pages;
 
 use App\Enums\BookingStatus;
 use App\Filament\Resources\Bookings\BookingResource;
-use App\Models\AvailabilitySlot;
 use App\Models\Booking;
+use App\Models\TandemDate;
 use BackedEnum;
 use Filament\Resources\Pages\Page;
 use Filament\Support\Icons\Heroicon;
@@ -79,20 +79,20 @@ class BookingCalendar extends Page
     }
 
     /**
-     * Availability slots in the visible month, grouped by day (Y-m-d).
+     * Tandem dates in the visible month, grouped by day (Y-m-d).
      *
-     * @return Collection<int|string, \Illuminate\Database\Eloquent\Collection<int, AvailabilitySlot>>
+     * @return Collection<int|string, \Illuminate\Database\Eloquent\Collection<int, TandemDate>>
      */
     public function getSlotsByDayProperty(): Collection
     {
-        return AvailabilitySlot::query()
+        return TandemDate::query()
             ->whereBetween('starts_at', [
                 $this->monthStart()->copy()->startOfMonth(),
                 $this->monthStart()->copy()->endOfMonth(),
             ])
             ->orderBy('starts_at')
             ->get()
-            ->groupBy(fn (AvailabilitySlot $slot): string => $slot->starts_at->format('Y-m-d'));
+            ->groupBy(fn (TandemDate $slot): string => $slot->starts_at->format('Y-m-d'));
     }
 
     /**

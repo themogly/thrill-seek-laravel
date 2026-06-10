@@ -8,8 +8,8 @@ use App\Actions\StartTandemCheckout;
 use App\Enums\ProductType;
 use App\Exceptions\BookingUnavailableException;
 use App\Livewire\Concerns\ProtectsAgainstSpam;
-use App\Models\AvailabilitySlot;
 use App\Models\Product;
+use App\Models\TandemDate;
 use App\Models\Voucher;
 use App\Support\Money;
 use Illuminate\Contracts\View\View;
@@ -60,7 +60,7 @@ class BookTandem extends Component
     protected function rules(): array
     {
         return [
-            'slotId' => 'required|integer|exists:availability_slots,id',
+            'slotId' => 'required|integer|exists:tandem_dates,id',
             'name' => 'required|string|max:100',
             'email' => 'required|email|max:255',
             'phone' => 'required|string|max:30',
@@ -161,7 +161,7 @@ class BookTandem extends Component
         $this->ensureNotRateLimited();
         $this->validate();
 
-        $slot = AvailabilitySlot::find($this->slotId);
+        $slot = TandemDate::find($this->slotId);
         $product = $this->getProductProperty();
 
         if ($slot === null || $product === null) {
@@ -211,12 +211,13 @@ class BookTandem extends Component
         return Product::active()->ofType(ProductType::Tandem)->ordered()->with('addOns')->first();
     }
 
-    /** @return EloquentCollection<int, AvailabilitySlot> */
+    /** @return EloquentCollection<int, TandemDate> */
     public function getSlotsProperty(): EloquentCollection
     {
-        return AvailabilitySlot::upcoming()
+        return TandemDate::upcoming()
+            ->with('location')
             ->get()
-            ->filter(fn (AvailabilitySlot $slot): bool => ! $slot->isFull())
+            ->filter(fn (TandemDate $slot): bool => ! $slot->isFull())
             ->take(12)
             ->values();
     }
@@ -250,7 +251,7 @@ class BookTandem extends Component
             'product' => $this->getProductProperty(),
             'availableSlots' => $slots,
             'selectedSlot' => $slots->firstWhere('id', $this->slotId)
-                ?? AvailabilitySlot::find($this->slotId),
+                ?? TandemDate::find($this->slotId),
             'formattedTotal' => $this->getFormattedTotalProperty(),
             'appliedVoucher' => $this->getAppliedVoucherProperty(),
             'duePence' => $this->getDuePenceProperty(),

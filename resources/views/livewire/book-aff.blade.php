@@ -27,7 +27,7 @@
                             <span>
                                 <span class="block font-display text-2xl uppercase text-secondary">{{ $course->date_range_label }}</span>
                                 <span class="mt-1 flex items-center gap-1.5 text-sm font-bold uppercase tracking-wide text-primary">
-                                    <x-icon name="map-pin" class="h-4 w-4" /> {{ $course->location }}
+                                    <x-icon name="map-pin" class="h-4 w-4" /> {{ $course->location->name }}
                                 </span>
                                 <span class="mt-2 block text-sm text-muted-foreground">
                                     {{ $course->remaining_places }} {{ Str::plural('place', $course->remaining_places) }} left
@@ -54,7 +54,7 @@
                 </button>
             </div>
             @if ($course)
-                <p class="mt-1 text-sm text-muted-foreground">{{ $course->date_range_label }} — {{ $course->location }}</p>
+                <p class="mt-1 text-sm text-muted-foreground">{{ $course->date_range_label }} — {{ $course->location->name }}</p>
             @endif
 
             <div class="mt-6 grid gap-4 sm:grid-cols-2">
@@ -115,7 +115,7 @@
                 </div>
                 <div class="flex justify-between gap-4">
                     <dt class="text-muted-foreground">Location</dt>
-                    <dd class="font-semibold text-secondary">{{ $course->location }}</dd>
+                    <dd class="font-semibold text-secondary">{{ $course->location->name }}</dd>
                 </div>
                 <div class="flex justify-between gap-4">
                     <dt class="text-muted-foreground">Student</dt>

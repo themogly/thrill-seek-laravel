@@ -150,6 +150,20 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
   failure exit codes, so `&&`-chained commit commands can commit on red. One duplicate
   commit was squashed after this bit once; always read the JSON output.
 
+# Round 5A — dates & locations
+
+- **Starting point**: branch `feature/dates-locations` off main at `10202a3` (Round 4
+  head; both prior feature branches were found fast-forward merged).
+- **AvailabilitySlot renamed to TandemDate** — pure table/column/class renames, safe
+  on live data; the two date concepts (single-day tandem dates vs multi-day AFF
+  courses) were already separate tables, so Part B5 is naming + seam-tightening
+  rather than a structural split.
+- **Location backfill strategy** — the migration itself creates a "Devon" default
+  (the primary UK dropzone inferred from the tandem page content) for existing
+  tandem dates, and lifts every distinct CourseDate location *string* into a
+  Location row before the FK becomes required and the string column drops.
+  Verified against the seeded development database, not just fresh migrations.
+
 # Round 4
 
 ## Branch situation

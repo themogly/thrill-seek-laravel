@@ -6,8 +6,9 @@ namespace App\Filament\Resources\Bookings\Tables;
 
 use App\Actions\RescheduleBooking;
 use App\Enums\BookingStatus;
-use App\Models\AvailabilitySlot;
 use App\Models\Booking;
+use App\Models\Location;
+use App\Models\TandemDate;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DateTimePicker;
@@ -53,6 +54,18 @@ class BookingsTable
             ->filters([
                 SelectFilter::make('status')
                     ->options(BookingStatus::class),
+                SelectFilter::make('location')
+                    ->label('Location')
+                    ->options(fn (): array => Location::orderBy('name')->pluck('name', 'id')->all())
+                    ->query(function (Builder $query, array $data): Builder {
+                        if (blank($data['value'] ?? null)) {
+                            return $query;
+                        }
+
+                        return $query->where(fn (Builder $q) => $q
+                            ->whereHas('tandemDate', fn (Builder $sub) => $sub->where('location_id', $data['value']))
+                            ->orWhereHas('courseDate', fn (Builder $sub) => $sub->where('location_id', $data['value'])));
+                    }),
                 Filter::make('outstanding_balance')
                     ->label('Outstanding balance')
                     ->query(fn (Builder $query): Builder => $query->whereRaw(Booking::outstandingBalanceSql())),
@@ -63,11 +76,11 @@ class BookingsTable
                     ->icon('heroicon-o-arrow-path')
                     ->color('warning')
                     ->form([
-                        Select::make('availability_slot_id')
+                        Select::make('tandem_date_id')
                             ->label('New slot')
-                            ->options(fn (): array => AvailabilitySlot::upcoming()
+                            ->options(fn (): array => TandemDate::upcoming()
                                 ->get()
-                                ->mapWithKeys(fn (AvailabilitySlot $slot): array => [
+                                ->mapWithKeys(fn (TandemDate $slot): array => [
                                     $slot->id => $slot->starts_at->format('D j M Y, H:i')." ({$slot->remaining_capacity} of {$slot->capacity} places left)",
                                 ])
                                 ->all())
@@ -80,8 +93,8 @@ class BookingsTable
                             ->default(true),
                     ])
                     ->action(function (Booking $record, array $data, RescheduleBooking $reschedule): void {
-                        $slot = filled($data['availability_slot_id'] ?? null)
-                            ? AvailabilitySlot::find($data['availability_slot_id'])
+                        $slot = filled($data['tandem_date_id'] ?? null)
+                            ? TandemDate::find($data['tandem_date_id'])
                             : null;
 
                         $newTime = $slot ?? (filled($data['scheduled_at'] ?? null) ? Carbon::parse($data['scheduled_at']) : null);

@@ -17,22 +17,35 @@
                     <x-ui.button href="/contact" class="mt-6 bg-primary text-primary-foreground hover:bg-primary/90">Get in touch</x-ui.button>
                 </div>
             @else
-                <div class="grid gap-4 sm:grid-cols-2">
-                    @foreach ($availableSlots as $jumpSlot)
-                        <button
-                            type="button"
-                            wire:click="chooseSlot({{ $jumpSlot->id }})"
-                            class="group rounded-2xl border bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                        >
-                            <p class="font-display text-2xl uppercase text-secondary">{{ $jumpSlot->starts_at->format('D j M') }}</p>
-                            <p class="mt-1 text-sm font-bold uppercase tracking-wide text-primary">{{ $jumpSlot->starts_at->format('H:i') }}</p>
-                            <p class="mt-3 text-sm text-muted-foreground">
-                                {{ $jumpSlot->remaining_capacity }} {{ Str::plural('place', $jumpSlot->remaining_capacity) }} left
-                                @if ($jumpSlot->notes) · {{ $jumpSlot->notes }} @endif
-                            </p>
-                        </button>
-                    @endforeach
-                </div>
+                @php $byLocation = $availableSlots->groupBy(fn ($s) => $s->location->name); @endphp
+                @foreach ($byLocation as $locationName => $locationSlots)
+                    @if ($byLocation->count() > 1)
+                        <h3 class="mb-3 mt-8 flex items-center gap-1.5 font-display text-xl uppercase text-secondary first:mt-0">
+                            <x-icon name="map-pin" class="h-5 w-5 text-primary" /> {{ $locationName }}
+                        </h3>
+                    @endif
+                    <div class="grid gap-4 sm:grid-cols-2 @if(! $loop->last) mb-2 @endif">
+                        @foreach ($locationSlots as $jumpSlot)
+                            <button
+                                type="button"
+                                wire:click="chooseSlot({{ $jumpSlot->id }})"
+                                class="group rounded-2xl border bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            >
+                                <p class="font-display text-2xl uppercase text-secondary">{{ $jumpSlot->starts_at->format('D j M') }}</p>
+                                <p class="mt-1 text-sm font-bold uppercase tracking-wide text-primary">{{ $jumpSlot->starts_at->format('H:i') }}</p>
+                                @if ($byLocation->count() === 1)
+                                    <p class="mt-1 flex items-center gap-1 text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                                        <x-icon name="map-pin" class="h-3.5 w-3.5" /> {{ $locationName }}
+                                    </p>
+                                @endif
+                                <p class="mt-3 text-sm text-muted-foreground">
+                                    {{ $jumpSlot->remaining_capacity }} {{ Str::plural('place', $jumpSlot->remaining_capacity) }} left
+                                    @if ($jumpSlot->notes) · {{ $jumpSlot->notes }} @endif
+                                </p>
+                            </button>
+                        @endforeach
+                    </div>
+                @endforeach
             @endif
         </div>
     @endif
@@ -48,7 +61,7 @@
             </div>
             @if ($selectedSlot)
                 <p class="mt-1 text-sm text-muted-foreground">
-                    Jumping {{ $selectedSlot->starts_at->format('l j F Y \a\t H:i') }}
+                    Jumping {{ $selectedSlot->starts_at->format('l j F Y \a\t H:i') }} — {{ $selectedSlot->location->name }}
                 </p>
             @endif
 
@@ -124,6 +137,10 @@
                 <div class="flex justify-between gap-4">
                     <dt class="text-muted-foreground">Jump date</dt>
                     <dd class="font-semibold text-secondary">{{ $selectedSlot?->starts_at->format('l j F Y, H:i') ?? '—' }}</dd>
+                </div>
+                <div class="flex justify-between gap-4">
+                    <dt class="text-muted-foreground">Location</dt>
+                    <dd class="font-semibold text-secondary">{{ $selectedSlot?->location->name ?? '—' }}</dd>
                 </div>
                 <div class="flex justify-between gap-4">
                     <dt class="text-muted-foreground">Jumper</dt>

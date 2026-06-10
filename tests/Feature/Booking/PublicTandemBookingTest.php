@@ -7,11 +7,11 @@ namespace Tests\Feature\Booking;
 use App\Enums\BookingStatus;
 use App\Enums\PaymentStatus;
 use App\Livewire\BookTandem;
-use App\Models\AvailabilitySlot;
 use App\Models\Booking;
 use App\Models\Customer;
 use App\Models\Payment;
 use App\Models\Product;
+use App\Models\TandemDate;
 use App\Services\StripeCheckout;
 use Database\Seeders\EmailTemplateSeeder;
 use Database\Seeders\ProductSeeder;
@@ -38,11 +38,11 @@ class PublicTandemBookingTest extends TestCase
 
     public function test_the_booking_page_renders_open_slots(): void
     {
-        $slot = AvailabilitySlot::factory()->create([
+        $slot = TandemDate::factory()->create([
             'starts_at' => now()->addWeeks(2)->setTime(9, 0),
             'capacity' => 4,
         ]);
-        AvailabilitySlot::factory()->create(['starts_at' => now()->subWeek()]); // past — hidden
+        TandemDate::factory()->create(['starts_at' => now()->subWeek()]); // past — hidden
 
         $response = $this->get('/book/tandem');
 
@@ -53,7 +53,7 @@ class PublicTandemBookingTest extends TestCase
 
     public function test_a_customer_can_book_and_is_sent_to_stripe(): void
     {
-        $slot = AvailabilitySlot::factory()->create([
+        $slot = TandemDate::factory()->create([
             'starts_at' => now()->addWeeks(2)->setTime(9, 0),
             'capacity' => 4,
         ]);
@@ -68,7 +68,7 @@ class PublicTandemBookingTest extends TestCase
 
         $booking = Booking::sole();
         $this->assertSame(BookingStatus::PendingPayment, $booking->status);
-        $this->assertSame($slot->id, $booking->availability_slot_id);
+        $this->assertSame($slot->id, $booking->tandem_date_id);
         $this->assertTrue($booking->scheduled_at->equalTo($slot->starts_at));
         $this->assertSame(26000, $booking->price_pence);
         $this->assertSame('80', $booking->customer_details['weight_kg']);
@@ -86,7 +86,7 @@ class PublicTandemBookingTest extends TestCase
 
     public function test_purchasable_add_ons_are_priced_into_the_total(): void
     {
-        $slot = AvailabilitySlot::factory()->create(['starts_at' => now()->addWeeks(2), 'capacity' => 4]);
+        $slot = TandemDate::factory()->create(['starts_at' => now()->addWeeks(2), 'capacity' => 4]);
         $product = Product::where('slug', 'tandem-skydive')->firstOrFail();
         $camera = $product->addOns()->where('name', 'Outside Camera')->firstOrFail();
 
@@ -103,7 +103,7 @@ class PublicTandemBookingTest extends TestCase
 
     public function test_non_purchasable_fees_cannot_be_selected_as_add_ons(): void
     {
-        $slot = AvailabilitySlot::factory()->create(['starts_at' => now()->addWeeks(2), 'capacity' => 4]);
+        $slot = TandemDate::factory()->create(['starts_at' => now()->addWeeks(2), 'capacity' => 4]);
         $product = Product::where('slug', 'tandem-skydive')->firstOrFail();
         $insurance = $product->addOns()->where('name', 'P6 Third Party Insurance')->firstOrFail();
 
@@ -118,7 +118,7 @@ class PublicTandemBookingTest extends TestCase
 
     public function test_capacity_is_enforced_when_two_customers_race_for_the_last_place(): void
     {
-        $slot = AvailabilitySlot::factory()->create(['starts_at' => now()->addWeeks(2), 'capacity' => 1]);
+        $slot = TandemDate::factory()->create(['starts_at' => now()->addWeeks(2), 'capacity' => 1]);
 
         $this->fillDetails(Livewire::test(BookTandem::class)->call('chooseSlot', $slot->id))
             ->call('continueToReview')
@@ -144,7 +144,7 @@ class PublicTandemBookingTest extends TestCase
 
     public function test_under_18s_are_rejected(): void
     {
-        $slot = AvailabilitySlot::factory()->create(['starts_at' => now()->addWeeks(2), 'capacity' => 4]);
+        $slot = TandemDate::factory()->create(['starts_at' => now()->addWeeks(2), 'capacity' => 4]);
 
         $this->fillDetails(
             Livewire::test(BookTandem::class)->call('chooseSlot', $slot->id),
@@ -161,7 +161,7 @@ class PublicTandemBookingTest extends TestCase
             $mock->shouldReceive('createSession')->andThrow(new \RuntimeException('No API key provided.'));
         });
 
-        $slot = AvailabilitySlot::factory()->create(['starts_at' => now()->addWeeks(2), 'capacity' => 4]);
+        $slot = TandemDate::factory()->create(['starts_at' => now()->addWeeks(2), 'capacity' => 4]);
 
         $component = $this->fillDetails(Livewire::test(BookTandem::class)->call('chooseSlot', $slot->id))
             ->call('continueToReview')
@@ -176,7 +176,7 @@ class PublicTandemBookingTest extends TestCase
 
     public function test_honeypot_blocks_bots_without_creating_anything(): void
     {
-        $slot = AvailabilitySlot::factory()->create(['starts_at' => now()->addWeeks(2), 'capacity' => 4]);
+        $slot = TandemDate::factory()->create(['starts_at' => now()->addWeeks(2), 'capacity' => 4]);
 
         $this->fillDetails(Livewire::test(BookTandem::class)->call('chooseSlot', $slot->id))
             ->set('website', 'https://spam.example')

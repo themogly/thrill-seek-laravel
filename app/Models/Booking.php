@@ -42,7 +42,7 @@ class Booking extends Model
         'customer_id',
         'status',
         'scheduled_at',
-        'availability_slot_id',
+        'tandem_date_id',
         'course_date_id',
         'price_pence',
         'customer_details',
@@ -69,11 +69,11 @@ class Booking extends Model
             $booking->reference ??= self::generateReference();
         });
 
-        // Assigning an availability slot schedules the booking; a booking
+        // Assigning a tandem date schedules the booking; a booking
         // still awaiting a date becomes confirmed.
         static::saving(function (self $booking): void {
-            if ($booking->isDirty('availability_slot_id') && $booking->availability_slot_id !== null) {
-                $slot = AvailabilitySlot::find($booking->availability_slot_id);
+            if ($booking->isDirty('tandem_date_id') && $booking->tandem_date_id !== null) {
+                $slot = TandemDate::find($booking->tandem_date_id);
 
                 if ($slot !== null) {
                     $booking->scheduled_at = $slot->starts_at;
@@ -98,7 +98,7 @@ class Booking extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['status', 'scheduled_at', 'price_pence', 'availability_slot_id', 'notes'])
+            ->logOnly(['status', 'scheduled_at', 'price_pence', 'tandem_date_id', 'notes'])
             ->logOnlyDirty()
             ->dontLogEmptyChanges();
     }
@@ -115,10 +115,10 @@ class Booking extends Model
         return $this->belongsTo(Enquiry::class);
     }
 
-    /** @return BelongsTo<AvailabilitySlot, $this> */
-    public function availabilitySlot(): BelongsTo
+    /** @return BelongsTo<TandemDate, $this> */
+    public function tandemDate(): BelongsTo
     {
-        return $this->belongsTo(AvailabilitySlot::class);
+        return $this->belongsTo(TandemDate::class);
     }
 
     /** @return BelongsTo<Customer, $this> */
@@ -181,6 +181,14 @@ class Booking extends Model
     protected function formattedBalanceDue(): Attribute
     {
         return Attribute::make(get: fn (): string => Money::formatPence($this->balance_due_pence));
+    }
+
+    /** The location of the jump/course, for emails and confirmations. */
+    public function locationName(): ?string
+    {
+        return $this->courseDate->location->name
+            ?? $this->tandemDate->location->name
+            ?? null;
     }
 
     public function hasOutstandingBalance(): bool

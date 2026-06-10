@@ -2,30 +2,32 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Resources\AvailabilitySlots;
+namespace App\Filament\Resources\TandemDates;
 
-use App\Filament\Resources\AvailabilitySlots\Pages\CreateAvailabilitySlot;
-use App\Filament\Resources\AvailabilitySlots\Pages\EditAvailabilitySlot;
-use App\Filament\Resources\AvailabilitySlots\Pages\ListAvailabilitySlots;
-use App\Models\AvailabilitySlot;
+use App\Filament\Resources\TandemDates\Pages\CreateTandemDate;
+use App\Filament\Resources\TandemDates\Pages\EditTandemDate;
+use App\Filament\Resources\TandemDates\Pages\ListTandemDates;
+use App\Models\TandemDate;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
 
-class AvailabilitySlotResource extends Resource
+class TandemDateResource extends Resource
 {
-    protected static ?string $model = AvailabilitySlot::class;
+    protected static ?string $model = TandemDate::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClock;
 
@@ -33,13 +35,19 @@ class AvailabilitySlotResource extends Resource
 
     protected static ?int $navigationSort = 5;
 
-    protected static ?string $modelLabel = 'availability slot';
+    protected static ?string $modelLabel = 'tandem date';
 
-    protected static ?string $pluralModelLabel = 'availability';
+    protected static ?string $pluralModelLabel = 'tandem dates';
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
+            Select::make('location_id')
+                ->label('Location')
+                ->relationship('location', 'name', fn ($query) => $query->where('active', true))
+                ->searchable()
+                ->preload()
+                ->required(),
             DateTimePicker::make('starts_at')
                 ->label('Date & time')
                 ->seconds(false)
@@ -63,6 +71,9 @@ class AvailabilitySlotResource extends Resource
         return $table
             ->defaultSort('starts_at')
             ->columns([
+                TextColumn::make('location.name')
+                    ->label('Location')
+                    ->sortable(),
                 TextColumn::make('starts_at')
                     ->label('Date & time')
                     ->dateTime('D j M Y, H:i')
@@ -72,13 +83,17 @@ class AvailabilitySlotResource extends Resource
                 TextColumn::make('remaining_capacity')
                     ->label('Places left')
                     ->badge()
-                    ->color(fn (AvailabilitySlot $record): string => $record->isFull() ? 'danger' : 'success'),
+                    ->color(fn (TandemDate $record): string => $record->isFull() ? 'danger' : 'success'),
                 TextColumn::make('notes')
                     ->label('Notes')
                     ->placeholder('—')
                     ->limit(40),
             ])
             ->filters([
+                SelectFilter::make('location_id')
+                    ->label('Location')
+                    ->relationship('location', 'name')
+                    ->preload(),
                 Filter::make('upcoming')
                     ->label('Upcoming only')
                     ->default()
@@ -97,9 +112,9 @@ class AvailabilitySlotResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListAvailabilitySlots::route('/'),
-            'create' => CreateAvailabilitySlot::route('/create'),
-            'edit' => EditAvailabilitySlot::route('/{record}/edit'),
+            'index' => ListTandemDates::route('/'),
+            'create' => CreateTandemDate::route('/create'),
+            'edit' => EditTandemDate::route('/{record}/edit'),
         ];
     }
 }

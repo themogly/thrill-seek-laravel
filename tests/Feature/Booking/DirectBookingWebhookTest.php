@@ -8,9 +8,9 @@ use App\Enums\BookingStatus;
 use App\Enums\PaymentStatus;
 use App\Mail\PaymentReceivedAdminNotification;
 use App\Mail\TemplatedMail;
-use App\Models\AvailabilitySlot;
 use App\Models\Booking;
 use App\Models\Payment;
+use App\Models\TandemDate;
 use Database\Seeders\EmailTemplateSeeder;
 use Database\Seeders\ProductSeeder;
 use Illuminate\Support\Facades\Mail;
@@ -50,7 +50,7 @@ class DirectBookingWebhookTest extends TestCase
     public function test_expired_checkout_releases_the_hold(): void
     {
         [$booking, $payment] = $this->heldBooking('cs_direct_2');
-        $slot = $booking->availabilitySlot;
+        $slot = $booking->tandemDate;
         $this->assertSame(0, $slot->remaining_capacity);
 
         $this->postWebhook('checkout.session.expired', 'cs_direct_2')->assertNoContent();
@@ -101,11 +101,11 @@ class DirectBookingWebhookTest extends TestCase
     /** @return array{0: Booking, 1: Payment} */
     private function heldBooking(string $sessionId): array
     {
-        $slot = AvailabilitySlot::factory()->create(['starts_at' => now()->addWeeks(2), 'capacity' => 1]);
+        $slot = TandemDate::factory()->create(['starts_at' => now()->addWeeks(2), 'capacity' => 1]);
 
         $booking = Booking::factory()->create([
             'status' => BookingStatus::PendingPayment,
-            'availability_slot_id' => $slot->id,
+            'tandem_date_id' => $slot->id,
             'scheduled_at' => $slot->starts_at,
             'price_pence' => 26000,
         ]);

@@ -31,6 +31,7 @@ class BookingObserver
                     'reference' => $booking->reference,
                     'product' => $booking->product->name ?? 'your jump',
                     'date' => $booking->scheduled_at?->format('l j F Y, H:i') ?? 'to be confirmed',
+                    'location' => $booking->locationName() ?? 'to be confirmed',
                 ],
             ));
         } catch (\Throwable $e) {

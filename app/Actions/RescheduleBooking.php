@@ -6,9 +6,9 @@ namespace App\Actions;
 
 use App\Enums\BookingStatus;
 use App\Mail\TemplatedMail;
-use App\Models\AvailabilitySlot;
 use App\Models\Booking;
 use App\Models\EmailTemplate;
+use App\Models\TandemDate;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -19,15 +19,15 @@ class RescheduleBooking
      * Move a booking to a new slot or ad-hoc date/time and (optionally)
      * email the customer — weather cancellations make this routine.
      */
-    public function handle(Booking $booking, AvailabilitySlot|Carbon $newTime, bool $notifyCustomer = true): Booking
+    public function handle(Booking $booking, TandemDate|Carbon $newTime, bool $notifyCustomer = true): Booking
     {
         $oldDate = $booking->scheduled_at;
 
-        if ($newTime instanceof AvailabilitySlot) {
-            $booking->availability_slot_id = $newTime->id;
+        if ($newTime instanceof TandemDate) {
+            $booking->tandem_date_id = $newTime->id;
             $booking->scheduled_at = $newTime->starts_at;
         } else {
-            $booking->availability_slot_id = null;
+            $booking->tandem_date_id = null;
             $booking->scheduled_at = $newTime;
         }
 

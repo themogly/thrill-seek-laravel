@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Bookings\Schemas;
 
 use App\Enums\BookingStatus;
-use App\Models\AvailabilitySlot;
+use App\Models\TandemDate;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
@@ -49,12 +49,12 @@ class BookingForm
                             ->options(BookingStatus::class)
                             ->default(BookingStatus::PendingDate->value)
                             ->required(),
-                        Select::make('availability_slot_id')
+                        Select::make('tandem_date_id')
                             ->label('Jump slot')
                             ->helperText('Picking a slot sets the date below and confirms the booking.')
-                            ->options(fn (): array => AvailabilitySlot::upcoming()
+                            ->options(fn (): array => TandemDate::upcoming()
                                 ->get()
-                                ->mapWithKeys(fn (AvailabilitySlot $slot): array => [
+                                ->mapWithKeys(fn (TandemDate $slot): array => [
                                     $slot->id => $slot->starts_at->format('D j M Y, H:i')." ({$slot->remaining_capacity} of {$slot->capacity} places left)",
                                 ])
                                 ->all())

@@ -27,12 +27,18 @@
                         @if ($booking->courseDate)
                             <div class="flex justify-between gap-4">
                                 <dt class="text-muted-foreground">Course</dt>
-                                <dd class="font-semibold text-secondary">{{ $booking->courseDate->date_range_label }} — {{ $booking->courseDate->location }}</dd>
+                                <dd class="font-semibold text-secondary">{{ $booking->courseDate->date_range_label }} — {{ $booking->courseDate->location->name }}</dd>
                             </div>
                         @elseif ($booking->scheduled_at)
                             <div class="flex justify-between gap-4">
                                 <dt class="text-muted-foreground">Jump date</dt>
                                 <dd class="font-semibold text-secondary">{{ $booking->scheduled_at->format('l j F Y, H:i') }}</dd>
+                            </div>
+                        @endif
+                        @if ($booking->tandemDate?->location)
+                            <div class="flex justify-between gap-4">
+                                <dt class="text-muted-foreground">Location</dt>
+                                <dd class="font-semibold text-secondary">{{ $booking->tandemDate->location->name }}</dd>
                             </div>
                         @endif
                         <div class="flex justify-between gap-4">

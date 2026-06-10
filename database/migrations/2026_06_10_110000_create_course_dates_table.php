@@ -29,7 +29,7 @@ return new class extends Migration
         Schema::table('bookings', function (Blueprint $table) {
             $table->foreignId('course_date_id')
                 ->nullable()
-                ->after('availability_slot_id')
+                ->after('tandem_date_id')
                 ->constrained()
                 ->nullOnDelete();
         });

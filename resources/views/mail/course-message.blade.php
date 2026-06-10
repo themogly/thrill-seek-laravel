@@ -5,7 +5,7 @@ Hi {{ $recipientName }},
 
 ---
 
-Your course: **{{ $course->date_range_label }} — {{ $course->location }}**
+Your course: **{{ $course->date_range_label }} — {{ $course->location->name }}**
 
 Questions? Just reply to this email.
 

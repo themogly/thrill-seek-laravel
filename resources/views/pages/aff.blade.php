@@ -74,7 +74,7 @@
                                 <div>
                                     <h3 class="font-display text-3xl uppercase text-secondary">{{ $course->date_range_label }}</h3>
                                     <p class="mt-1 flex items-center gap-1.5 text-sm font-bold uppercase tracking-wide text-primary">
-                                        <x-icon name="map-pin" class="h-4 w-4" /> {{ $course->location }}
+                                        <x-icon name="map-pin" class="h-4 w-4" /> {{ $course->location->name }}
                                     </p>
                                 </div>
                                 <span @class([

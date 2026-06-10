@@ -58,7 +58,7 @@ class StartAffCheckout
                     'emergency_contact_name' => $customer['emergency_contact_name'],
                     'emergency_contact_phone' => $customer['emergency_contact_phone'],
                     'experience' => $customer['experience'] ?? '',
-                    'course' => $lockedCourse->date_range_label.' — '.$lockedCourse->location,
+                    'course' => $lockedCourse->date_range_label.' — '.$lockedCourse->location->name,
                 ],
             ]);
         });
@@ -69,7 +69,7 @@ class StartAffCheckout
             'method' => PaymentMethod::Stripe,
             'status' => PaymentStatus::Pending,
             'amount_pence' => (int) $courseDate->effective_deposit_pence,
-            'description' => 'AFF course deposit — '.$courseDate->location.' ('.$courseDate->date_range_label.')',
+            'description' => 'AFF course deposit — '.$courseDate->location->name.' ('.$courseDate->date_range_label.')',
         ]);
 
         try {

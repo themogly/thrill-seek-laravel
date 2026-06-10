@@ -12,10 +12,10 @@ use App\Filament\Resources\Vouchers\Pages\ListVouchers;
 use App\Livewire\BookTandem;
 use App\Livewire\BuyVoucher;
 use App\Mail\VoucherGiftMail;
-use App\Models\AvailabilitySlot;
 use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\Product;
+use App\Models\TandemDate;
 use App\Models\User;
 use App\Models\Voucher;
 use App\Services\StripeCheckout;
@@ -107,7 +107,7 @@ class PublicVoucherPurchaseTest extends TestCase
 
     public function test_a_full_value_voucher_books_a_tandem_without_stripe(): void
     {
-        $slot = AvailabilitySlot::factory()->create(['starts_at' => now()->addWeeks(2), 'capacity' => 2]);
+        $slot = TandemDate::factory()->create(['starts_at' => now()->addWeeks(2), 'capacity' => 2]);
         $voucher = Voucher::factory()->create(['amount_pence' => 26000]);
 
         $component = $this->fillDetails(Livewire::test(BookTandem::class)->call('chooseSlot', $slot->id))
@@ -134,7 +134,7 @@ class PublicVoucherPurchaseTest extends TestCase
 
     public function test_a_partial_voucher_charges_the_remainder_and_redeems_on_webhook(): void
     {
-        $slot = AvailabilitySlot::factory()->create(['starts_at' => now()->addWeeks(2), 'capacity' => 2]);
+        $slot = TandemDate::factory()->create(['starts_at' => now()->addWeeks(2), 'capacity' => 2]);
         $voucher = Voucher::factory()->create(['amount_pence' => 26000]);
         $camera = Product::where('slug', 'tandem-skydive')->firstOrFail()
             ->addOns()->where('name', 'Outside Camera')->firstOrFail();
@@ -169,7 +169,7 @@ class PublicVoucherPurchaseTest extends TestCase
 
     public function test_used_and_expired_codes_are_rejected_in_the_flow(): void
     {
-        $slot = AvailabilitySlot::factory()->create(['starts_at' => now()->addWeeks(2), 'capacity' => 2]);
+        $slot = TandemDate::factory()->create(['starts_at' => now()->addWeeks(2), 'capacity' => 2]);
         $used = Voucher::factory()->create(['status' => VoucherStatus::Redeemed]);
         $expired = Voucher::factory()->expired()->create();
 

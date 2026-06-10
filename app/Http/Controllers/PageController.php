@@ -94,14 +94,14 @@ class PageController extends Controller
         $booking = null;
 
         if (is_string($sessionId = $request->query('session_id')) && $sessionId !== '') {
-            $payment = Payment::with(['booking.product', 'booking.courseDate', 'booking.availabilitySlot'])
+            $payment = Payment::with(['booking.product', 'booking.courseDate', 'booking.tandemDate'])
                 ->where('stripe_checkout_session_id', $sessionId)
                 ->first();
             $booking = $payment?->booking;
         } elseif (is_string($reference = $request->query('booking')) && $reference !== '') {
             // Voucher-covered bookings skip Stripe entirely; the unguessable
             // booking reference acts as the claim check.
-            $booking = Booking::with(['product', 'courseDate', 'availabilitySlot'])
+            $booking = Booking::with(['product', 'courseDate', 'tandemDate'])
                 ->where('reference', strtoupper($reference))
                 ->first();
             $payment = $booking?->payments()->where('status', PaymentStatus::Paid)->latest('id')->first();

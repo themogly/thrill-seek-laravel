@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\BookingStatus;
-use Database\Factories\AvailabilitySlotFactory;
+use Database\Factories\TandemDateFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
@@ -18,12 +19,13 @@ use Illuminate\Support\Carbon;
  *
  * @property Carbon $starts_at
  */
-class AvailabilitySlot extends Model
+class TandemDate extends Model
 {
-    /** @use HasFactory<AvailabilitySlotFactory> */
+    /** @use HasFactory<TandemDateFactory> */
     use HasFactory;
 
     protected $fillable = [
+        'location_id',
         'starts_at',
         'capacity',
         'notes',
@@ -35,6 +37,12 @@ class AvailabilitySlot extends Model
             'starts_at' => 'datetime',
             'capacity' => 'integer',
         ];
+    }
+
+    /** @return BelongsTo<Location, $this> */
+    public function location(): BelongsTo
+    {
+        return $this->belongsTo(Location::class);
     }
 
     /** @return HasMany<Booking, $this> */

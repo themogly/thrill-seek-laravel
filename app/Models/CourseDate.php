@@ -36,9 +36,9 @@ class CourseDate extends Model
 
     protected $fillable = [
         'product_id',
+        'location_id',
         'starts_on',
         'ends_on',
-        'location',
         'price_pence',
         'deposit_pence',
         'capacity',
@@ -62,6 +62,12 @@ class CourseDate extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    /** @return BelongsTo<Location, $this> */
+    public function location(): BelongsTo
+    {
+        return $this->belongsTo(Location::class);
     }
 
     /** @return HasMany<Booking, $this> */

@@ -17,7 +17,7 @@ class CourseDateObserver
         $courseDate->reminders()->create([
             'days_before' => 7,
             'subject' => 'Your AFF course starts soon — what to bring',
-            'body' => "Your course at {$courseDate->location} starts on {$courseDate->starts_on->format('l j F Y')}.\n\n"
+            'body' => "Your course at {$courseDate->location->name} starts on {$courseDate->starts_on->format('l j F Y')}.\n\n"
                 ."A few things before the big week:\n"
                 ."- Bring your logbook and any licence paperwork\n"
                 ."- Comfortable clothes and trainers — kit is provided\n"

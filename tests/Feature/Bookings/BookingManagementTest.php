@@ -8,8 +8,8 @@ use App\Enums\BookingStatus;
 use App\Filament\Resources\Bookings\Pages\CreateBooking;
 use App\Filament\Resources\Bookings\Pages\ListBookings;
 use App\Mail\TemplatedMail;
-use App\Models\AvailabilitySlot;
 use App\Models\Booking;
+use App\Models\TandemDate;
 use App\Models\User;
 use Database\Seeders\EmailTemplateSeeder;
 use Illuminate\Support\Facades\Mail;
@@ -46,10 +46,10 @@ class BookingManagementTest extends TestCase
 
     public function test_assigning_a_slot_schedules_and_confirms_the_booking(): void
     {
-        $slot = AvailabilitySlot::factory()->create(['capacity' => 4]);
+        $slot = TandemDate::factory()->create(['capacity' => 4]);
         $booking = Booking::factory()->create();
 
-        $booking->update(['availability_slot_id' => $slot->id]);
+        $booking->update(['tandem_date_id' => $slot->id]);
 
         $booking->refresh();
         $this->assertTrue($booking->scheduled_at->equalTo($slot->starts_at));
@@ -59,8 +59,8 @@ class BookingManagementTest extends TestCase
 
     public function test_cancelled_bookings_free_up_slot_capacity(): void
     {
-        $slot = AvailabilitySlot::factory()->create(['capacity' => 2]);
-        Booking::factory()->count(2)->create(['availability_slot_id' => $slot->id]);
+        $slot = TandemDate::factory()->create(['capacity' => 2]);
+        Booking::factory()->count(2)->create(['tandem_date_id' => $slot->id]);
 
         $this->assertTrue($slot->refresh()->isFull());
 
@@ -73,11 +73,11 @@ class BookingManagementTest extends TestCase
     public function test_rescheduling_emails_the_customer(): void
     {
         $booking = Booking::factory()->confirmed()->create();
-        $slot = AvailabilitySlot::factory()->create(['capacity' => 4]);
+        $slot = TandemDate::factory()->create(['capacity' => 4]);
 
         Livewire::test(ListBookings::class)
             ->callTableAction('reschedule', $booking, [
-                'availability_slot_id' => $slot->id,
+                'tandem_date_id' => $slot->id,
                 'notify' => true,
             ]);
 

@@ -7,6 +7,7 @@ namespace App\Support;
 use App\Models\GalleryImage;
 use App\Models\HallOfFameEntry;
 use App\Models\Instructor;
+use App\Models\Location;
 use App\Models\Product;
 use App\Settings\AffPageSettings;
 use App\Settings\CoachedPageSettings;
@@ -33,6 +34,7 @@ final class ImageOptimization
         'hall-of-fame' => 960,
         'products' => 1280,
         'pages' => 1920,
+        'locations' => 1280,
         'course-documents' => 0, // never image-optimised
     ];
 
@@ -44,6 +46,7 @@ final class ImageOptimization
         GalleryImage::class => ['image'],
         HallOfFameEntry::class => ['image'],
         Product::class => ['image'],
+        Location::class => ['image'],
     ];
 
     /** @var array<class-string<Settings>, list<string>> */

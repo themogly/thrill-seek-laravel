@@ -23,9 +23,10 @@ class CourseDatesTable
                 TextColumn::make('date_range_label')
                     ->label('Dates')
                     ->sortable(['starts_on']),
-                TextColumn::make('location')
+                TextColumn::make('location.name')
                     ->label('Location')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('formatted_price')
                     ->label('Price'),
                 TextColumn::make('formatted_deposit')
@@ -41,6 +42,10 @@ class CourseDatesTable
                     ->badge(),
             ])
             ->filters([
+                SelectFilter::make('location_id')
+                    ->label('Location')
+                    ->relationship('location', 'name')
+                    ->preload(),
                 SelectFilter::make('status')
                     ->options(CourseDateStatus::class),
                 Filter::make('upcoming')
