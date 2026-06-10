@@ -1,10 +1,12 @@
+@php
+    $forLine = filled($voucher->recipient_name) ? ', for **'.$voucher->recipient_name.'**' : '';
+@endphp
 <x-mail::message>
 # A jump from 15,000ft, wrapped up 🎁
 
 Hi {{ $voucher->purchaser_name }},
 
-Here it is — **{{ $voucher->formatted_amount }}** towards
-{{ $voucher->product->name ?? 'a tandem skydive' }} with G-Force Skydiving@if ($voucher->recipient_name), for **{{ $voucher->recipient_name }}**@endif.
+Here it is — **{{ $voucher->formatted_amount }}** towards {{ $voucher->product->name ?? 'a tandem skydive' }} with G-Force Skydiving{!! $forLine !!}.
 
 <x-mail::panel>
 **Voucher code**

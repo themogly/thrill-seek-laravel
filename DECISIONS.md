@@ -163,6 +163,19 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
   snapshot (name/email/booking) per message and Horizon shows per-job failures.
   Documented as the "cheap" trade-off the brief allows.
 
+## Part D — production-readiness audit
+
+- **`APP_NAME` was still "Laravel"** — it heads every email the system sends; fixed
+  in both env files. SETUP.md now opens with a "production will silently break
+  without these" list: the cron entry, Horizon under Supervisor, BOTH Stripe webhook
+  events (`checkout.session.expired` was missing from the docs — it's the primary
+  abandoned-checkout path), APP_URL/APP_DEBUG, and the settings-cache deploy step.
+- **Email previews are local-only routes** (`/dev/mail`, loaded only in the local
+  environment) rendering every mailable with sample data inside a rolled-back
+  transaction. Screenshotting all 12 caught a Blade syntax error in the voucher
+  gift email that the whole suite missed — queued-mail fakes never render Blade —
+  so a MailRenderTest now renders every designed mailable as a permanent guard.
+
 ## Part B — public vouchers
 
 - **Voucher created at webhook time, not checkout time** — the purchase intent

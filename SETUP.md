@@ -9,6 +9,21 @@ Livewire 4 forms and a Filament v5 admin panel at `/admin`.
 - **Redis** — the cache and queue stores. Locally: `brew install redis && brew services
   start redis`. The PHP client is predis (composer dependency); no PHP extension needed.
 
+## ⚠️ Production will silently break without these
+
+1. **Cron** — `* * * * * php /path/to/artisan schedule:run >> /dev/null 2>&1`.
+   Without it, abandoned-checkout holds are never released, booking/course
+   reminders never send, and balance chasers never go out.
+2. **Horizon under Supervisor** (config below) — all email and webhook
+   side-effects are queued; without a worker nothing sends.
+3. **Stripe webhook** registered for **both** `checkout.session.completed`
+   AND `checkout.session.expired` (expiry releases held places and is the
+   primary abandoned-checkout path).
+4. `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL=https://your-domain`
+   (emails build their links from APP_URL), `APP_NAME="G-Force Skydiving"`
+   (appears in every email header).
+5. After deploys that add settings properties: `php artisan settings:clear-cache`.
+
 ## First run
 
 ```bash
@@ -43,9 +58,11 @@ Register this endpoint in the Stripe dashboard (Developers → Webhooks):
 POST https://your-domain.example/webhooks/stripe
 ```
 
-Subscribe to the `checkout.session.completed` event and copy the signing secret into
-`STRIPE_WEBHOOK_SECRET`. The endpoint is CSRF-exempt and signature-verified; retries
-are idempotent.
+Subscribe to **`checkout.session.completed` and `checkout.session.expired`** and copy
+the signing secret into `STRIPE_WEBHOOK_SECRET`. The endpoint is CSRF-exempt and
+signature-verified; retries are idempotent. Completed sessions confirm bookings /
+issue vouchers; expired sessions release held places immediately (with the
+`bookings:release-expired-holds` scheduled sweep as the safety net).
 
 For local testing: `stripe listen --forward-to localhost:8000/webhooks/stripe`.
 
@@ -56,7 +73,7 @@ Queues run on Redis under **Laravel Horizon**. The dashboard lives at `/horizon`
 
 ```bash
 php artisan horizon               # or: composer dev (serves, horizon, logs, vite)
-php artisan schedule:work         # runs bookings:send-reminders daily at 09:00
+php artisan schedule:work         # reminders (bookings 09:00, courses 09:10) + hold release sweep (15 min)
 ```
 
 In production run Horizon under Supervisor and add the standard scheduler cron entry:
@@ -91,6 +108,8 @@ php artisan test                  # full suite (never commit red)
 ./vendor/bin/pint                 # code style
 ./vendor/bin/phpstan analyse      # static analysis (level 6)
 php artisan bookings:send-reminders   # manual reminder run
+php artisan courses:send-reminders     # manual course-reminder run
+# Local only: /dev/mail lists a rendered preview of every email the system sends
 ```
 
 ## Where things live

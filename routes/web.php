@@ -24,6 +24,10 @@ Route::view('/payment/cancelled', 'pages.payment-cancelled')->name('payment.canc
 
 Route::post('/webhooks/stripe', StripeWebhookController::class)->name('webhooks.stripe');
 
+if (app()->environment('local')) {
+    require __DIR__.'/dev.php';
+}
+
 Route::get('/sitemap.xml', function () {
     $entries = [
         ['path' => '/', 'priority' => '1.0'],
