@@ -36,6 +36,30 @@ that manages all site content, enquiries, payments and bookings.
   automated confirmation/reminder emails (`bookings:send-reminders`, scheduled daily),
   dashboard stats, activity log on bookings/payments, customers deduped by email.
 
+## Architecture rules (one way of doing everything — learn from the named examples)
+1. **Data access**: CMS/display content (page copy, products for display,
+   testimonials, gallery, instructors, shop, hall of fame) is read through the
+   cached `App\Support\SiteContent` gateway; transactional data (availability,
+   course dates / spaces left, bookings, payments, vouchers) is ALWAYS queried
+   live via Eloquent and never cached. Reference: `PageController::aff()` — cached
+   products next to a commented live course-date query. Spatie settings have their
+   own cache and are read directly (`@inject`/`app()`).
+2. **Controllers delegate only**: resolve and return. Content via `SiteContent`,
+   domain data via model scopes, multi-strategy lookups via a view model.
+   Reference: `PageController::paymentSuccess()` + `App\ViewModels\PaymentSuccessPage`.
+3. **Webhooks**: `StripeWebhookController` verifies the signature only;
+   `HandleStripeWebhook` is a pure event-type dispatcher; each event has its own
+   Action. Reference: `App\Actions\HandleCheckoutSessionExpired`.
+4. **Blade by default**: pages are plain Blade rendered by `PageController`;
+   Livewire only where the page talks to the server after load, embedded as an
+   island in a Blade page (reference: `NewsletterSignup` in the footer). Never a
+   full-page Livewire component for static content; never hand-rolled fetch/XHR.
+5. **Namespaces**: `App\Support` is cross-cutting utilities only; page view-models
+   live in `App\ViewModels`, named `<Thing>Page` with a `viewData(...)` method.
+   Business logic stays in `App\Actions` classes with `handle()`.
+6. **No `declare(strict_types=1)`** (pinned by `pint.json`); full parameter and
+   return type-hints required everywhere.
+
 ## Conventions (match these exactly — no second ways of doing things)
 - Money is **integer pence**; format with `App\Support\Money::formatPence()`.
 - Statuses are string-backed **enums** in `app/Enums` implementing Filament's
@@ -55,9 +79,6 @@ that manages all site content, enquiries, payments and bookings.
   the request.
 - **Never cache Eloquent objects** — Laravel 13's cache refuses to unserialize PHP
   objects (`cache.serializable_classes = false`). Settings caching is fine (plain values).
-- **No `declare(strict_types=1)`** — vanilla Laravel conventions, enforced by
-  `pint.json` (`declare_strict_types: false`). Full parameter and return
-  type-hints are still required everywhere.
 
 ## Quality bar (enforced before every commit)
 - `php artisan test` — full suite green, no skips. Feature tests for HTTP/Livewire
