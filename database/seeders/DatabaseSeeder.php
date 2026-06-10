@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             HallOfFameSeeder::class,
             ShopItemSeeder::class,
             GalleryImageSeeder::class,
+            ProductSeeder::class,
         ]);
     }
 }

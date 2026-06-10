@@ -7,23 +7,6 @@
 @section('og_title', $page->og_title)
 @section('og_description', $page->og_description)
 
-@php
-    $pricing = [
-        ['item' => 'Tandem Skydive', 'price' => '£260', 'note' => 'Paid direct to G-Force'],
-        ['item' => 'Outside Camera', 'price' => '£140', 'note' => 'Optional add-on'],
-        ['item' => 'HandCam', 'price' => '£100', 'note' => 'Optional add-on'],
-        ['item' => 'P6 Third Party Insurance', 'price' => '£24.73', 'note' => 'Paid on the day'],
-        ['item' => 'Rebooking Fee', 'price' => '£50', 'note' => 'If you need to reschedule'],
-    ];
-    $weights = [
-        ['Up to 15st', 'Free'],
-        ['15.1 – 16st', '£20'],
-        ['16.1 – 17st', '£40'],
-        ['17.1 – 18st', '£60'],
-        ['18st+', 'Assessment required'],
-    ];
-@endphp
-
 @section('content')
     <x-site.page-hero :title="$page->hero_title" :subtitle="$page->hero_subtitle" />
 
@@ -51,6 +34,7 @@
         </div>
     </x-site.section>
 
+    @if ($product)
     <section class="bg-muted">
         <div class="mx-auto max-w-7xl px-4 py-20 lg:px-8">
             <x-site.section-heading :eyebrow="$page->pricing_eyebrow" :title="$page->pricing_title" />
@@ -61,10 +45,14 @@
                             <tr><th class="p-4">Item</th><th class="p-4">Price</th></tr>
                         </thead>
                         <tbody>
-                            @foreach ($pricing as $p)
+                            <tr class="border-t">
+                                <td class="p-4"><div class="font-semibold">{{ $product->name }}</div><div class="text-xs text-muted-foreground">{{ $product->price_note }}</div></td>
+                                <td class="p-4 font-display text-xl text-primary">{{ $product->formatted_price }}</td>
+                            </tr>
+                            @foreach ($product->addOns as $addOn)
                                 <tr class="border-t">
-                                    <td class="p-4"><div class="font-semibold">{{ $p['item'] }}</div><div class="text-xs text-muted-foreground">{{ $p['note'] }}</div></td>
-                                    <td class="p-4 font-display text-xl text-primary">{{ $p['price'] }}</td>
+                                    <td class="p-4"><div class="font-semibold">{{ $addOn->name }}</div><div class="text-xs text-muted-foreground">{{ $addOn->note }}</div></td>
+                                    <td class="p-4 font-display text-xl text-primary">{{ $addOn->formatted_price }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -74,8 +62,8 @@
                     <div class="bg-secondary p-4 font-display uppercase text-secondary-foreground">Weight charges</div>
                     <table class="w-full text-left">
                         <tbody>
-                            @foreach ($weights as [$w, $p])
-                                <tr class="border-t"><td class="p-4 font-semibold">{{ $w }}</td><td class="p-4 font-display text-primary">{{ $p }}</td></tr>
+                            @foreach ($product->weight_charges ?? [] as $w)
+                                <tr class="border-t"><td class="p-4 font-semibold">{{ $w['band'] }}</td><td class="p-4 font-display text-primary">{{ $w['charge'] }}</td></tr>
                             @endforeach
                         </tbody>
                     </table>
@@ -86,23 +74,26 @@
             </div>
         </div>
     </section>
+    @endif
 
     <x-site.section>
         <div class="grid gap-12 lg:grid-cols-2">
             {{-- Pay card --}}
+            @if ($product)
             <x-site.pay-card
                 eyebrow="Pay online"
                 heading="Book your jump now"
                 body="Secure your tandem skydive with a single online payment. We use Stripe for safe, instant checkout."
-                button="Pay £260 with Stripe"
+                :button="'Pay '.$product->formatted_price.' with Stripe'"
                 toast="Stripe checkout will be enabled once payments are connected."
             >
                 <ul class="mt-6 space-y-2 text-sm">
-                    <li class="flex items-center gap-2"><x-icon name="check" class="h-4 w-4" /> £260 full tandem payment</li>
+                    <li class="flex items-center gap-2"><x-icon name="check" class="h-4 w-4" /> {{ $product->formatted_price }} full tandem payment</li>
                     <li class="flex items-center gap-2"><x-icon name="check" class="h-4 w-4" /> Secure Stripe checkout</li>
                     <li class="flex items-center gap-2"><x-icon name="check" class="h-4 w-4" /> Booking confirmation by email</li>
                 </ul>
             </x-site.pay-card>
+            @endif
 
             {{-- Enquiry form --}}
             <form x-data="enquiryForm({ delay: 600 })" @submit.prevent="submit" class="rounded-2xl border bg-card p-8 shadow-sm">

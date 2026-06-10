@@ -71,10 +71,11 @@ class ManageAffPageSettings extends SettingsPage
                     Textarea::make('trust_body')->label('Text')->rows(3)->required(),
                 ]),
             Section::make('Pricing section heading')
-                ->columns(2)
+                ->columns(3)
                 ->components([
                     TextInput::make('pricing_eyebrow')->label('Small line')->required()->maxLength(255),
                     TextInput::make('pricing_title')->label('Heading')->required()->maxLength(255),
+                    TextInput::make('repeat_pricing_heading')->label('Repeat pricing heading')->required()->maxLength(255),
                 ]),
             Section::make('“Where & when” section')
                 ->components([

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Enums\ProductType;
 use App\Models\GalleryImage;
 use App\Models\HallOfFameEntry;
 use App\Models\Instructor;
+use App\Models\Product;
 use App\Models\ShopItem;
 use App\Models\Testimonial;
 use App\Support\ContentCache;
@@ -20,17 +22,28 @@ class PageController extends Controller
             'instructors' => ContentCache::remember('instructors', fn () => Instructor::ordered()->get()),
             'testimonials' => ContentCache::remember('testimonials.featured', fn () => Testimonial::featured()->ordered()->limit(3)->get()),
             'galleryImages' => ContentCache::remember('gallery_images', fn () => GalleryImage::ordered()->get()),
+            'services' => ContentCache::remember('products.home', fn () => Product::active()->where('featured_on_home', true)->ordered()->get()),
         ]);
     }
 
     public function tandem(): View
     {
-        return view('pages.tandem');
+        return view('pages.tandem', [
+            'product' => ContentCache::remember(
+                'products.tandem',
+                fn () => Product::active()->ofType(ProductType::Tandem)->ordered()->with('addOns')->first(),
+            ),
+        ]);
     }
 
     public function aff(): View
     {
-        return view('pages.aff');
+        return view('pages.aff', [
+            'products' => ContentCache::remember(
+                'products.aff',
+                fn () => Product::active()->ofType(ProductType::Aff)->ordered()->get(),
+            ),
+        ]);
     }
 
     public function coached(): View

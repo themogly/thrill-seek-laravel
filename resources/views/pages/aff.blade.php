@@ -40,16 +40,20 @@
         <div class="mx-auto max-w-7xl px-4 py-20 lg:px-8">
             <x-site.section-heading :eyebrow="$page->pricing_eyebrow" :title="$page->pricing_title" />
             <div class="grid gap-6 md:grid-cols-2">
-                <x-site.price-card title="AFF Course Levels 1–8" price="£1,750" :features="['All equipment', 'All instruction', 'Ground school', 'Levels 1–8']" :highlight="true" />
-                <x-site.price-card title="Consolidation Jumps" price="£600" :features="['10 jumps for A Licence', 'Solo progression', 'Coach support']" />
+                @foreach ($products as $p)
+                    <x-site.price-card :title="$p->name" :price="$p->formatted_price" :features="$p->features ?? []" :highlight="$p->highlight" />
+                @endforeach
             </div>
-            <div class="mt-6 rounded-2xl border bg-card p-6">
-                <h3 class="font-display text-xl text-secondary">Repeat jump pricing</h3>
-                <div class="mt-3 grid gap-2 sm:grid-cols-2">
-                    <div class="rounded-md bg-muted p-3"><span class="font-semibold">Levels 1–3:</span> £210 per jump</div>
-                    <div class="rounded-md bg-muted p-3"><span class="font-semibold">Levels 4–7:</span> £140 per jump</div>
+            @foreach ($products->filter(fn ($p) => filled($p->repeat_pricing)) as $p)
+                <div class="mt-6 rounded-2xl border bg-card p-6">
+                    <h3 class="font-display text-xl text-secondary">{{ $page->repeat_pricing_heading }}</h3>
+                    <div class="mt-3 grid gap-2 sm:grid-cols-2">
+                        @foreach ($p->repeat_pricing as $row)
+                            <div class="rounded-md bg-muted p-3"><span class="font-semibold">{{ $row['label'] }}:</span> {{ $row['value'] }}</div>
+                        @endforeach
+                    </div>
                 </div>
-            </div>
+            @endforeach
         </div>
     </section>
 

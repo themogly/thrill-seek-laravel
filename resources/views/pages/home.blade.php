@@ -6,14 +6,6 @@
 @section('title', 'G-Force Skydiving — One Life. One Adventure. Live It.')
 @section('description', 'UK-based skydiving school offering tandem jumps, AFF courses and advanced coaching. Book your jump today.')
 
-@php
-    $services = [
-        ['title' => 'Tandem Skydive', 'desc' => 'Strap in with a pro and freefall from 15,000ft. Highest tandem in the UK.', 'img' => '/images/tandem.jpg', 'to' => '/tandem', 'price' => 'from £260'],
-        ['title' => 'AFF Course', 'desc' => 'Become a licensed skydiver. Levels 1–8 with full kit and instruction.', 'img' => '/images/aff.jpg', 'to' => '/aff', 'price' => '£1,750'],
-        ['title' => 'Coached Skills', 'desc' => '1-to-1 advanced flying coaching from world-class instructors.', 'img' => '/images/coached.jpg', 'to' => '/coached', 'price' => 'from £60'],
-    ];
-@endphp
-
 @section('content')
     {{-- HERO --}}
     <section class="relative isolate flex min-h-[88vh] items-center justify-center overflow-hidden">
@@ -52,16 +44,16 @@
         <x-site.section-heading :eyebrow="$home->services_eyebrow" :title="$home->services_title" :lead="$home->services_lead" />
         <div class="grid gap-6 md:grid-cols-3">
             @foreach ($services as $s)
-                <a href="{{ $s['to'] }}" class="group relative overflow-hidden rounded-2xl bg-card shadow-deep transition-transform hover:-translate-y-1">
+                <a href="{{ $s->page_path }}" class="group relative overflow-hidden rounded-2xl bg-card shadow-deep transition-transform hover:-translate-y-1">
                     <div class="aspect-[4/3] overflow-hidden">
-                        <img src="{{ $s['img'] }}" alt="{{ $s['title'] }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" width="1280" height="896" />
+                        <img src="{{ $s->image_url }}" alt="{{ $s->name }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" width="1280" height="896" />
                     </div>
                     <div class="p-6">
                         <div class="flex items-center justify-between">
-                            <h3 class="font-display text-2xl uppercase tracking-wide text-secondary">{{ $s['title'] }}</h3>
-                            <span class="text-sm font-bold text-primary">{{ $s['price'] }}</span>
+                            <h3 class="font-display text-2xl uppercase tracking-wide text-secondary">{{ $s->name }}</h3>
+                            <span class="text-sm font-bold text-primary">{{ $s->summary_price_label }}</span>
                         </div>
-                        <p class="mt-2 text-muted-foreground">{{ $s['desc'] }}</p>
+                        <p class="mt-2 text-muted-foreground">{{ $s->summary }}</p>
                         <span class="mt-4 inline-flex items-center text-sm font-bold uppercase text-primary">
                             Explore <x-icon name="arrow-right" class="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
                         </span>

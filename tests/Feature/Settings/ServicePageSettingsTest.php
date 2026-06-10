@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Settings\AffPageSettings;
 use App\Settings\CoachedPageSettings;
 use App\Settings\TandemPageSettings;
+use Database\Seeders\ProductSeeder;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -18,6 +19,8 @@ class ServicePageSettingsTest extends TestCase
 {
     public function test_tandem_page_renders_the_seeded_settings_content(): void
     {
+        $this->seed(ProductSeeder::class);
+
         $this->get('/tandem')
             ->assertOk()
             ->assertSee('Tandem Skydive from 15,000ft — G-Force Skydiving')
