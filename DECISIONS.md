@@ -328,3 +328,9 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
   `Actions\Concerns\ResolvesCheckoutPayment`), with `HandleStripeWebhook`
   reduced to the event-type match. Both events were already covered by
   StripeWebhookTest / DirectBookingWebhookTest, which pinned the behaviour.
+- **Rule 4 — Blade vs Livewire**: audit found zero violations in either direction.
+  All 16 public routes render plain Blade from `PageController`; the only Livewire
+  on the site is genuine server interactivity (booking flows, enquiry/contact
+  forms, voucher purchase, newsletter island in the footer layout) and there is no
+  hand-rolled fetch/XHR anywhere in views or resources/js. No conversions, so no
+  visual re-verification was needed.
