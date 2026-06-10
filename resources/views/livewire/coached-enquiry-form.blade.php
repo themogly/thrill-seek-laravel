@@ -20,7 +20,7 @@
                 id="ce-discipline"
                 wire:model="discipline"
                 required
-                class="flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
+                class="flex h-11 w-full items-center justify-between whitespace-nowrap border-2 border-input bg-transparent px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-ring"
             >
                 <option value="">Pick a discipline</option>
                 @foreach (\App\Livewire\CoachedEnquiryForm::DISCIPLINES as $value => $label)

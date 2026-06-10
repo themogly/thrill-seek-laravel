@@ -10,8 +10,8 @@
     <x-site.section>
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             @foreach ($items as $p)
-                <div class="group rounded-2xl border bg-card p-6 transition-shadow hover:shadow-glow">
-                    <div class="flex aspect-square items-center justify-center rounded-xl bg-fire-gradient text-white">
+                <div class="group border-2 border-border bg-card p-6 transition-colors hover:border-primary" data-reveal>
+                    <div class="band-ink flex aspect-square items-center justify-center text-white">
                         <x-icon name="shopping-bag" class="h-16 w-16 opacity-90" />
                     </div>
                     <div class="mt-4 flex items-start justify-between">

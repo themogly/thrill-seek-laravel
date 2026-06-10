@@ -8,14 +8,14 @@
 @section('content')
     <x-site.page-hero :title="$pages->testimonials_hero_title" :subtitle="$pages->testimonials_hero_subtitle" />
     <x-site.section>
-        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-reveal>
             @foreach ($testimonials as $t)
-                <figure class="rounded-2xl border bg-card p-6 shadow-sm transition-shadow hover:shadow-glow">
-                    <x-icon name="quote" class="h-8 w-8 text-primary" />
-                    <blockquote class="mt-4 text-base">{{ $t->quote }}</blockquote>
-                    <figcaption class="mt-4">
-                        <p class="font-display uppercase text-secondary">{{ $t->name }}</p>
-                        <p class="text-xs uppercase tracking-wide text-muted-foreground">{{ $t->role }}</p>
+                <figure class="border-2 border-border bg-background p-8">
+                    <span aria-hidden="true" class="font-display text-7xl leading-none text-primary">“</span>
+                    <blockquote class="-mt-4 text-base leading-relaxed">{{ $t->quote }}</blockquote>
+                    <figcaption class="mt-5 border-t-2 border-primary pt-3">
+                        <p class="font-display text-xl uppercase text-secondary">{{ $t->name }}</p>
+                        <p class="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">{{ $t->role }}</p>
                     </figcaption>
                 </figure>
             @endforeach

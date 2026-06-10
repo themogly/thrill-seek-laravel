@@ -8,12 +8,12 @@
 @section('content')
     <x-site.page-hero :title="$pages->hall_of_fame_hero_title" :subtitle="$pages->hall_of_fame_hero_subtitle" />
     <x-site.section>
-        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="grid gap-px bg-secondary sm:grid-cols-2 lg:grid-cols-4" data-reveal>
             @foreach ($entries as $g)
-                <div class="group relative aspect-[3/4] overflow-hidden rounded-2xl shadow-deep">
+                <div class="group relative aspect-[3/4] overflow-hidden bg-secondary">
                     <img src="{{ $g->image_url }}" alt="{{ $g->name }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
-                    <div class="absolute inset-0 bg-gradient-to-t from-secondary via-secondary/40 to-transparent"></div>
-                    <div class="absolute bottom-0 p-5 text-white">
+                    <div class="absolute inset-0 bg-photo-scrim"></div>
+                    <div class="absolute bottom-0 w-full border-t-2 border-primary/80 p-5 text-white">
                         <x-icon name="trophy" class="h-5 w-5 text-primary" />
                         <p class="mt-2 font-display text-xl uppercase">{{ $g->name }}</p>
                         <p class="text-sm opacity-90">{{ $g->milestone }}</p>
