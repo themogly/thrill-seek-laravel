@@ -49,9 +49,9 @@ final class ImageOptimization
     /** @var array<class-string<Settings>, list<string>> */
     public const SETTINGS_IMAGE_PROPERTIES = [
         HomePageSettings::class => ['hero_image', 'about_image_1', 'about_image_2'],
-        TandemPageSettings::class => ['intro_image'],
-        AffPageSettings::class => ['intro_image'],
-        CoachedPageSettings::class => ['image'],
+        TandemPageSettings::class => ['intro_image', 'hero_image'],
+        AffPageSettings::class => ['intro_image', 'hero_image'],
+        CoachedPageSettings::class => ['image', 'hero_image'],
     ];
 
     public static function maxDimensionFor(string $path): int

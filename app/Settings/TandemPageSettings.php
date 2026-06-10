@@ -23,6 +23,8 @@ class TandemPageSettings extends Settings
 
     public string $hero_subtitle;
 
+    public string $hero_image;
+
     public string $intro_eyebrow;
 
     public string $intro_title;

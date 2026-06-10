@@ -18,7 +18,7 @@
         />
         <div class="absolute inset-0 bg-hero-gradient"></div>
         <div class="relative z-10 mx-auto max-w-5xl px-4 text-center text-white">
-            <p class="mb-4 text-sm font-bold uppercase tracking-[0.4em] text-primary">{{ $home->hero_eyebrow }}</p>
+            <p class="mb-4 text-sm font-bold uppercase tracking-[0.4em] text-hero-accent drop-shadow-md">{{ $home->hero_eyebrow }}</p>
             <h1 class="font-display text-5xl uppercase tracking-wider drop-shadow-lg md:text-8xl">
                 {{ $home->hero_title_1 }} <span class="text-primary">{{ $home->hero_title_highlight }}</span> {{ $home->hero_title_2 }}
             </h1>
@@ -26,10 +26,10 @@
                 {{ $home->hero_subtitle }}
             </p>
             <div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-                <x-ui.button href="/tandem" size="lg" class="bg-primary text-primary-foreground shadow-glow hover:bg-primary/90">
-                    {{ $home->hero_cta_primary_label }} <x-icon name="arrow-right" class="ml-2 h-4 w-4" />
+                <x-ui.button href="/tandem" size="lg" class="h-14 bg-primary px-10 text-base text-primary-foreground shadow-glow transition-transform hover:scale-105 hover:bg-primary/90">
+                    {{ $home->hero_cta_primary_label }} <x-icon name="arrow-right" class="ml-2 h-5 w-5" />
                 </x-ui.button>
-                <x-ui.button href="/aff" size="lg" variant="outline" class="border-white bg-white/10 text-white backdrop-blur hover:bg-white/20">
+                <x-ui.button href="/aff" size="lg" variant="outline" class="h-14 border-white bg-white/10 px-8 text-base text-white backdrop-blur hover:bg-white/20">
                     {{ $home->hero_cta_secondary_label }}
                 </x-ui.button>
             </div>

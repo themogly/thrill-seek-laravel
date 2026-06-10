@@ -6,7 +6,7 @@
 @section('description', $page->seo_description)
 
 @section('content')
-    <x-site.page-hero :title="$page->hero_title" :subtitle="$page->hero_subtitle" />
+    <x-site.page-hero :title="$page->hero_title" :subtitle="$page->hero_subtitle" :image="$page->imageUrl($page->hero_image)" />
     <x-site.section>
         <div class="grid gap-12 lg:grid-cols-2">
             <img src="{{ $page->imageUrl($page->image) }}" alt="Advanced freefly coaching" class="aspect-[4/5] rounded-2xl object-cover shadow-deep" loading="lazy" width="1280" height="896" />

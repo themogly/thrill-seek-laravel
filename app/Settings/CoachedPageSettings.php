@@ -19,6 +19,8 @@ class CoachedPageSettings extends Settings
 
     public string $hero_subtitle;
 
+    public string $hero_image;
+
     public string $price_eyebrow;
 
     public string $heading;
