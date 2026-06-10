@@ -9,6 +9,7 @@ use App\Enums\PaymentPurpose;
 use App\Mail\PaymentReceivedAdminNotification;
 use App\Mail\TemplatedMail;
 use App\Models\Booking;
+use App\Models\Customer;
 use App\Models\EmailTemplate;
 use App\Models\Payment;
 use App\Settings\GeneralSettings;
@@ -35,6 +36,8 @@ class ConvertEnquiryToBooking
                 'phone' => $enquiry->phone,
                 'product_id' => $enquiry->product_id,
                 'enquiry_id' => $enquiry->id,
+                'customer_id' => $enquiry->customer_id
+                    ?? Customer::resolve($enquiry->email, $enquiry->name, $enquiry->phone)->id,
                 'price_pence' => $this->bookingPrice($payment),
                 'customer_details' => $enquiry->context,
                 'notes' => $enquiry->preferred_date

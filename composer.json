@@ -12,6 +12,7 @@
         "laravel/tinker": "^3.0",
         "livewire/livewire": "^4.3",
         "resend/resend-laravel": "^1.4",
+        "spatie/laravel-activitylog": "^5.0",
         "spatie/laravel-settings": "^3.9",
         "stripe/stripe-php": "^20.2"
     },

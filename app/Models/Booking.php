@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property BookingStatus $status
@@ -24,7 +26,7 @@ use Illuminate\Support\Str;
 class Booking extends Model
 {
     /** @use HasFactory<BookingFactory> */
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'reference',
@@ -33,6 +35,7 @@ class Booking extends Model
         'phone',
         'product_id',
         'enquiry_id',
+        'customer_id',
         'status',
         'scheduled_at',
         'availability_slot_id',
@@ -83,6 +86,14 @@ class Booking extends Model
         return $reference;
     }
 
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['status', 'scheduled_at', 'price_pence', 'availability_slot_id', 'notes'])
+            ->logOnlyDirty()
+            ->dontLogEmptyChanges();
+    }
+
     /** @return BelongsTo<Product, $this> */
     public function product(): BelongsTo
     {
@@ -99,6 +110,12 @@ class Booking extends Model
     public function availabilitySlot(): BelongsTo
     {
         return $this->belongsTo(AvailabilitySlot::class);
+    }
+
+    /** @return BelongsTo<Customer, $this> */
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class);
     }
 
     /** @return HasMany<Payment, $this> */

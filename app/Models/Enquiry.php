@@ -30,6 +30,7 @@ class Enquiry extends Model
         'email',
         'phone',
         'product_id',
+        'customer_id',
         'status',
         'preferred_date',
         'context',
@@ -66,6 +67,12 @@ class Enquiry extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    /** @return BelongsTo<Customer, $this> */
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class);
     }
 
     /** @return HasMany<EnquiryMessage, $this> */

@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property PaymentPurpose $purpose
@@ -22,7 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Payment extends Model
 {
     /** @use HasFactory<PaymentFactory> */
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'enquiry_id',
@@ -79,5 +81,13 @@ class Payment extends Model
     public function isPaid(): bool
     {
         return $this->status === PaymentStatus::Paid;
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['status', 'amount_pence', 'method', 'purpose', 'reference', 'paid_at'])
+            ->logOnlyDirty()
+            ->dontLogEmptyChanges();
     }
 }

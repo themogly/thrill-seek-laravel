@@ -7,6 +7,7 @@ namespace App\Actions;
 use App\Enums\MessageDirection;
 use App\Mail\EnquiryAdminNotification;
 use App\Mail\TemplatedMail;
+use App\Models\Customer;
 use App\Models\EmailTemplate;
 use App\Models\Enquiry;
 use App\Models\Product;
@@ -33,11 +34,14 @@ class CreateEnquiry
     public function handle(array $data, ?Product $product = null): Enquiry
     {
         $enquiry = DB::transaction(function () use ($data, $product): Enquiry {
+            $customer = Customer::resolve($data['email'], $data['name'], $data['phone'] ?? null);
+
             $enquiry = Enquiry::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'phone' => $data['phone'] ?? null,
                 'product_id' => $product?->id,
+                'customer_id' => $customer->id,
                 'preferred_date' => $data['preferred_date'] ?? null,
                 'context' => $data['context'] ?? null,
             ]);
