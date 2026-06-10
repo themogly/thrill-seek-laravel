@@ -27,7 +27,7 @@
         :aria-activedescendant="open && highlighted >= 0 ? $id('select-option', highlighted) : null"
         @click="toggle()"
         @keydown="onKeydown($event)"
-        {{ $attributes->merge(['class' => 'flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background cursor-pointer focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1']) }}
+        {{ $attributes->merge(['class' => 'flex h-11 w-full items-center justify-between whitespace-nowrap border-2 border-input bg-transparent px-3 py-2 text-sm ring-offset-background cursor-pointer focus:border-primary focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1']) }}
     >
         <span x-text="value ? label : placeholder" :class="!value && 'text-muted-foreground'"></span>
         <x-icon name="chevron-down" class="h-4 w-4 opacity-50" />
@@ -40,7 +40,7 @@
         x-transition:enter-end="opacity-100"
         :id="$id('select-listbox')"
         role="listbox"
-        class="absolute z-50 mt-1 max-h-60 w-full min-w-[8rem] overflow-y-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
+        class="absolute z-50 mt-1 max-h-60 w-full min-w-[8rem] overflow-y-auto border-2 border-secondary bg-popover p-1 text-popover-foreground"
     >
         <template x-for="(opt, i) in options" :key="opt.value">
             <li

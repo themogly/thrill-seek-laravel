@@ -2,6 +2,37 @@
 // so it is not imported here. Per the original, all animations are pure Tailwind
 // CSS transitions — no Motion One / intersect wiring is needed.
 
+// Entrance reveals (Round 5B). Progressive enhancement: elements opt in with
+// data-reveal; the .reveal class is only applied once JS runs (and never when
+// the user prefers reduced motion), so content is always visible without it.
+const setupReveals = () => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const targets = document.querySelectorAll('[data-reveal]:not(.reveal)');
+    if (!targets.length) return;
+
+    const observer = new IntersectionObserver(
+        (entries) => {
+            for (const entry of entries) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                    observer.unobserve(entry.target);
+                }
+            }
+        },
+        { rootMargin: '0px 0px -8% 0px' },
+    );
+
+    for (const el of targets) {
+        el.classList.add('reveal');
+        observer.observe(el);
+    }
+};
+
+document.addEventListener('DOMContentLoaded', setupReveals);
+// Livewire morphs can introduce new [data-reveal] nodes.
+document.addEventListener('livewire:navigated', setupReveals);
+
 // Lightweight toast helper replacing sonner. Dispatches a window event that the
 // <x-ui.toaster> Alpine component listens for.
 window.toast = {
