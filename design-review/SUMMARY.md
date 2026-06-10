@@ -1,4 +1,8 @@
-# Design review summary — design/visual-polish
+# Design review summary — design/visual-polish (updated on feature/round-4)
+
+> Round 4 closed the two rows left open below; the table now has no silently
+> ignored entries — everything is closed or consciously deferred in DECISIONS.md
+> (printable voucher PDF is the only deferral).
 
 Evidence: `before/` and `after/` screenshots (1440 / 390, plus 768 and `-hero`
 viewport shots where relevant). Tooling: Playwright driven via Node
@@ -15,10 +19,10 @@ errors and failed requests, and the booking flow was walked interactively on a
 | M2 | No AFF course dates anywhere; deposit was a toast | **Closed** — CourseDate domain + admin (enrolment view with payment states), public course cards on /aff, `/book/aff` deposit flow with balance tracked. |
 | M3 | Fake newsletter forms | **Closed** — NewsletterSubscriber + Livewire component (banner/card variants), admin list. |
 | M4 | Coaching had no enquiry path with context | **Closed** — /coached enquiry form (discipline, jumps, licence, goals) into the existing inbox. |
-| M5 | Vouchers invisible publicly | **Closed** — CMS-editable gift voucher box on /tandem. Full public voucher checkout deliberately not built (admin-issued flow already exists; a public purchase flow is a future piece). |
+| M5 | Vouchers invisible publicly | **Closed (fully, Round 4)** — /vouchers purchase page with Stripe, designed gift email, and code redemption inside the tandem booking flow (full and partial coverage). Printable PDF consciously deferred (DECISIONS.md). |
 | M6 | Generic payment result pages | **Closed** — success page resolves the Stripe session: booking reference, date/course, amount, balance, what-happens-next, processing state; cancelled page returns the customer to the right flow. |
 | M7 | Unbranded 404 | **Closed** — site layout, hero treatment, three useful destinations. |
-| M8 | Course communications / document library (Round 2 Part C6) | **Deliberately left** — admin tooling rather than customer-facing alignment; superseded mid-run by this design brief. Logged in DECISIONS.md; the CourseDate enrolment view (emails/payment states per student) covers the day-one need. |
+| M8 | Course communications / document library (Round 2 Part C6) | **Closed (Round 4)** — message-everyone with attachments (per-recipient queued jobs), reusable document library, idempotent per-course scheduled reminders, full audit trail per course. |
 
 ## Page-by-page
 
