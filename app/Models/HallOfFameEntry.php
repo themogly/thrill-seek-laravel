@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Observers\ImageOptimizationObserver;
 use App\Observers\SiteContentObserver;
 use Database\Factories\HallOfFameEntryFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
-#[ObservedBy(SiteContentObserver::class)]
+#[ObservedBy([SiteContentObserver::class, ImageOptimizationObserver::class])]
 class HallOfFameEntry extends Model
 {
     /** @use HasFactory<HallOfFameEntryFactory> */

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\ProductType;
+use App\Observers\ImageOptimizationObserver;
 use App\Observers\SiteContentObserver;
 use App\Support\Money;
 use Database\Factories\ProductFactory;
@@ -19,7 +20,7 @@ use Illuminate\Support\Facades\Storage;
 /**
  * @property ProductType $type
  */
-#[ObservedBy(SiteContentObserver::class)]
+#[ObservedBy([SiteContentObserver::class, ImageOptimizationObserver::class])]
 class Product extends Model
 {
     /** @use HasFactory<ProductFactory> */

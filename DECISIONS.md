@@ -179,6 +179,18 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
   only); guests are redirected to the panel login via `redirectGuestsTo`.
 - **`composer dev` now runs Horizon** instead of `queue:listen`, since Redis is the
   default queue connection.
+- **intervention/image (GD) only; spatie/image-optimizer skipped** — the optimizer
+  package shells out to system binaries (jpegoptim, pngquant, optipng) that are not
+  installed; GD has native WebP support here, and re-encoding resizes, compresses
+  and strips metadata in one step with no system dependencies.
+- **WebP conversion keeps the original file** as a fallback and rewrites every
+  reference (model attributes and settings properties listed in the
+  `ImageOptimization` registry) to the `.webp` path. Reference rewrites use
+  `saveQuietly` so observers don't loop; the site-content cache is flushed manually.
+- **Round 2 Parts C & D were superseded mid-run** — the Round 3 prompt arrived while
+  Part B4 was in flight. AFF course dates and the public booking flows are built as
+  part of Round 3's frontend–backend alignment (on the design branch) instead of as
+  separate Round 2 features.
 
 ## Tooling fix (first task)
 

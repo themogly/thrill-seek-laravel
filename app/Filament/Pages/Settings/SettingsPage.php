@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Pages\Settings;
 
+use App\Jobs\OptimizeUploadedImage;
+use App\Support\ImageOptimization;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -62,10 +64,26 @@ abstract class SettingsPage extends Page
         $settings->fill($this->form->getState());
         $settings->save();
 
+        $this->queueImageOptimisation($settings);
+
         Notification::make()
             ->success()
             ->title('Saved')
             ->body('Your changes are live on the site.')
             ->send();
+    }
+
+    /** Freshly-uploaded settings images get the same optimisation as model uploads. */
+    private function queueImageOptimisation(Settings $settings): void
+    {
+        $values = $settings->toArray();
+
+        foreach (ImageOptimization::SETTINGS_IMAGE_PROPERTIES[$settings::class] ?? [] as $property) {
+            $path = $values[$property] ?? null;
+
+            if (is_string($path) && ImageOptimization::isOptimisablePath($path)) {
+                OptimizeUploadedImage::dispatch($path);
+            }
+        }
     }
 }
