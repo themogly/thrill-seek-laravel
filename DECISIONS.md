@@ -163,6 +163,18 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
   tandem dates, and lifts every distinct CourseDate location *string* into a
   Location row before the FK becomes required and the string column drops.
   Verified against the seeded development database, not just fresh migrations.
+- **5-day minimum is enforced in validation + a live day count in the form**, not a
+  SQL CHECK — adding a CHECK to an existing SQLite table requires a full table
+  rebuild that Laravel's schema builder doesn't express for this case; the form rule
+  plus tests are the practical guard, documented per the brief's "where practical".
+- **Clash rule scope** — cancelled courses don't block tandem dates; the same day at
+  a *different* location is explicitly allowed (tested). Self-exclusion isn't needed
+  because each direction checks the other table.
+- **Calendar courses render as day-chips spanning the range** (full label on day one,
+  continuation bars after) rather than a true multi-cell spanning element — the
+  month grid is CSS-grid day cells, and per-day chips keep the markup simple while
+  reading clearly as a span. New panel utilities required a theme rebuild (caught by
+  the authenticated Playwright screenshot — chips rendered uncoloured before).
 
 # Round 4
 

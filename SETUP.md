@@ -118,7 +118,7 @@ php artisan courses:send-reminders     # manual course-reminder run
   group): per-page settings screens plus Testimonials, Hall of Fame, Shop items,
   Gallery and Instructors resources.
 - **Sales** — “Bookings & sales” group: Enquiries inbox (reply threads, payment links,
-  bank transfers), Products & pricing, Bookings + calendar, Availability slots,
+  bank transfers), Products & pricing, Bookings + calendar, Tandem dates, AFF courses, Locations,
   Vouchers, Customers, Email templates.
 - **Email templates** — all customer-facing automated emails are editable records with
   `{{ placeholder }}` variables listed on each template's edit screen.

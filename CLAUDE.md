@@ -25,8 +25,13 @@ that manages all site content, enquiries, payments and bookings.
 - **Payments**: admin sends Stripe Checkout links or records bank transfers from an
   enquiry; the signature-verified `/webhooks/stripe` endpoint converts paid enquiries
   into bookings; AFF deposit/balance tracking.
-- **Bookings**: Filament resource, availability slots with capacity, custom month-grid
-  calendar page, reschedule action with customer email.
+- **Bookings**: Filament resource, custom month-grid calendar (tandem dates and
+  spanning AFF courses rendered distinctly, location filter), reschedule action with
+  customer email.
+- **Dates & locations**: `TandemDate` (single-day slot: date/time/capacity) and
+  `CourseDate` (multi-day range, minimum 5 days) are separate models; both belong to
+  a `Location` (first-class table). The two are operationally exclusive per location
+  — `App\Support\DateClash` enforces it in both admin forms, create and edit.
 - **Extras**: gift vouchers (redeemable as payments), editable email templates,
   automated confirmation/reminder emails (`bookings:send-reminders`, scheduled daily),
   dashboard stats, activity log on bookings/payments, customers deduped by email.
