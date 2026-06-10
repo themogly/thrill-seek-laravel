@@ -1,20 +1,18 @@
 <?php
 
-use App\Models\Instructor;
+use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => view('pages.home', [
-    'instructors' => Instructor::ordered()->get(),
-]))->name('home');
-Route::view('/tandem', 'pages.tandem')->name('tandem');
-Route::view('/aff', 'pages.aff')->name('aff');
-Route::view('/coached', 'pages.coached')->name('coached');
-Route::view('/shop', 'pages.shop')->name('shop');
-Route::view('/testimonials', 'pages.testimonials')->name('testimonials');
-Route::view('/hall-of-fame', 'pages.hall-of-fame')->name('hall-of-fame');
-Route::view('/contact', 'pages.contact')->name('contact');
-Route::view('/privacy', 'pages.privacy')->name('privacy');
-Route::view('/terms', 'pages.terms')->name('terms');
+Route::get('/', [PageController::class, 'home'])->name('home');
+Route::get('/tandem', [PageController::class, 'tandem'])->name('tandem');
+Route::get('/aff', [PageController::class, 'aff'])->name('aff');
+Route::get('/coached', [PageController::class, 'coached'])->name('coached');
+Route::get('/shop', [PageController::class, 'shop'])->name('shop');
+Route::get('/testimonials', [PageController::class, 'testimonials'])->name('testimonials');
+Route::get('/hall-of-fame', [PageController::class, 'hallOfFame'])->name('hall-of-fame');
+Route::get('/contact', [PageController::class, 'contact'])->name('contact');
+Route::get('/privacy', [PageController::class, 'privacy'])->name('privacy');
+Route::get('/terms', [PageController::class, 'terms'])->name('terms');
 
 Route::get('/sitemap.xml', function () {
     $entries = [

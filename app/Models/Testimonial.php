@@ -1,43 +1,46 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Models\Concerns\FlushesContentCache;
-use Database\Factories\InstructorFactory;
+use Database\Factories\TestimonialFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 
-class Instructor extends Model
+class Testimonial extends Model
 {
-    /** @use HasFactory<InstructorFactory> */
+    /** @use HasFactory<TestimonialFactory> */
     use FlushesContentCache, HasFactory;
 
     protected $fillable = [
         'name',
         'role',
-        'bio',
-        'photo',
+        'quote',
+        'excerpt',
+        'featured',
         'sort_order',
     ];
 
     protected function casts(): array
     {
         return [
+            'featured' => 'boolean',
             'sort_order' => 'integer',
         ];
     }
 
     /**
-     * Public URL for the uploaded photo, or null when none is set.
+     * The shorter quote used on the home page, falling back to the full quote.
      *
-     * @return Attribute<string|null, never>
+     * @return Attribute<string, never>
      */
-    protected function photoUrl(): Attribute
+    protected function homeQuote(): Attribute
     {
-        return Attribute::make(get: fn (): ?string => $this->photo ? Storage::disk('public')->url($this->photo) : null);
+        return Attribute::make(get: fn (): string => filled($this->excerpt) ? $this->excerpt : $this->quote);
     }
 
     /**
@@ -51,8 +54,19 @@ class Instructor extends Model
         return $query->orderBy('sort_order')->orderBy('id');
     }
 
+    /**
+     * Testimonials highlighted on the home page.
+     *
+     * @param  Builder<self>  $query
+     * @return Builder<self>
+     */
+    public function scopeFeatured(Builder $query): Builder
+    {
+        return $query->where('featured', true);
+    }
+
     protected static function contentCacheKeys(): array
     {
-        return ['instructors'];
+        return ['testimonials.featured', 'testimonials.all'];
     }
 }

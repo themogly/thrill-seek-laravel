@@ -10,12 +10,6 @@
         ['title' => 'Coached Skills', 'desc' => '1-to-1 advanced flying coaching from world-class instructors.', 'img' => '/images/coached.jpg', 'to' => '/coached', 'price' => 'from £60'],
     ];
 
-    $testimonials = [
-        ['name' => 'Sarah M.', 'text' => 'Absolutely life-changing. The team made me feel safe from the moment I arrived.'],
-        ['name' => 'Tom R.', 'text' => 'Did my AFF with G-Force in Spain. Best decision I ever made — incredible coaches.'],
-        ['name' => 'Priya K.', 'text' => 'Tandem from 15,000ft. The view, the rush, the team. 10/10.'],
-    ];
-
     $stats = [
         ['icon' => 'plane', 'value' => '15k ft', 'label' => 'Highest UK Tandem'],
         ['icon' => 'users', 'value' => '30+ yrs', 'label' => 'Combined Experience'],
@@ -186,8 +180,8 @@
             @foreach ($testimonials as $t)
                 <figure class="rounded-2xl border bg-card p-6 shadow-sm">
                     <x-icon name="sparkles" class="h-6 w-6 text-primary" />
-                    <blockquote class="mt-4 text-lg">{{ $t['text'] }}</blockquote>
-                    <figcaption class="mt-4 text-sm font-bold uppercase tracking-wide text-secondary">— {{ $t['name'] }}</figcaption>
+                    <blockquote class="mt-4 text-lg">{{ $t->home_quote }}</blockquote>
+                    <figcaption class="mt-4 text-sm font-bold uppercase tracking-wide text-secondary">— {{ $t->name }}</figcaption>
                 </figure>
             @endforeach
         </div>
