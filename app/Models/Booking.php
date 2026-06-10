@@ -8,15 +8,18 @@ use App\Enums\BookingStatus;
 use App\Enums\PaymentStatus;
 use App\Support\Money;
 use Database\Factories\BookingFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
  * @property BookingStatus $status
+ * @property Carbon|null $scheduled_at
  */
 class Booking extends Model
 {
@@ -32,6 +35,7 @@ class Booking extends Model
         'enquiry_id',
         'status',
         'scheduled_at',
+        'availability_slot_id',
         'price_pence',
         'customer_details',
         'notes',
@@ -51,6 +55,22 @@ class Booking extends Model
     {
         static::creating(function (self $booking): void {
             $booking->reference ??= self::generateReference();
+        });
+
+        // Assigning an availability slot schedules the booking; a booking
+        // still awaiting a date becomes confirmed.
+        static::saving(function (self $booking): void {
+            if ($booking->isDirty('availability_slot_id') && $booking->availability_slot_id !== null) {
+                $slot = AvailabilitySlot::find($booking->availability_slot_id);
+
+                if ($slot !== null) {
+                    $booking->scheduled_at = $slot->starts_at;
+
+                    if ($booking->status === BookingStatus::PendingDate) {
+                        $booking->status = BookingStatus::Confirmed;
+                    }
+                }
+            }
         });
     }
 
@@ -73,6 +93,12 @@ class Booking extends Model
     public function enquiry(): BelongsTo
     {
         return $this->belongsTo(Enquiry::class);
+    }
+
+    /** @return BelongsTo<AvailabilitySlot, $this> */
+    public function availabilitySlot(): BelongsTo
+    {
+        return $this->belongsTo(AvailabilitySlot::class);
     }
 
     /** @return HasMany<Payment, $this> */
@@ -110,5 +136,25 @@ class Booking extends Model
     public function hasOutstandingBalance(): bool
     {
         return $this->balance_due_pence > 0;
+    }
+
+    /**
+     * SQL condition matching bookings whose paid payments do not yet cover
+     * the price; shared by the scope and admin table filters.
+     */
+    public static function outstandingBalanceSql(): string
+    {
+        return "price_pence > coalesce((select sum(amount_pence) from payments where payments.booking_id = bookings.id and payments.status = 'paid'), 0)";
+    }
+
+    /**
+     * Bookings whose paid payments do not yet cover the price.
+     *
+     * @param  Builder<self>  $query
+     * @return Builder<self>
+     */
+    public function scopeWithOutstandingBalance(Builder $query): Builder
+    {
+        return $query->whereRaw(self::outstandingBalanceSql());
     }
 }

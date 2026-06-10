@@ -27,6 +27,13 @@ class EmailTemplateSeeder extends Seeder
                 'variables' => ['name', 'amount', 'description', 'link', 'reference'],
             ],
             [
+                'key' => 'booking_rescheduled',
+                'name' => 'Booking rescheduled',
+                'subject' => 'Your jump has been rescheduled — G-Force Skydiving ({{ reference }})',
+                'body' => "Hi {{ name }},\n\nYour booking for {{ product }} has been rescheduled.\n\nPrevious date: {{ old_date }}\nNew date: {{ new_date }}\n\nYour booking reference is {{ reference }}. If the new date doesn't work for you, just reply to this email and we'll sort it out.\n\nBlue skies,\nThe G-Force team",
+                'variables' => ['name', 'reference', 'product', 'old_date', 'new_date'],
+            ],
+            [
                 'key' => 'payment_received',
                 'name' => 'Payment received (customer confirmation)',
                 'subject' => 'Payment received — G-Force Skydiving ({{ reference }})',

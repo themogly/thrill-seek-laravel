@@ -100,3 +100,20 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
 - **Pay-online cards on tandem/AFF pages still show the placeholder toast** — real
   public self-checkout (without an enquiry) would change the public flow; payments are
   currently admin-initiated via links, which matches the enquiry-first business model.
+
+## Phase 5 — Bookings & calendar
+
+- **Custom Livewire calendar instead of a FullCalendar plugin** —
+  saade/filament-fullcalendar does not resolve against Filament v5, so the panel gets
+  a hand-rolled month-grid page (bookings + slot capacity per day, month navigation,
+  click-through to the booking). No drag-to-reschedule; the table's Reschedule action
+  covers it.
+- **Assigning a slot schedules + confirms** — a model-level saving hook copies the
+  slot's start time onto the booking and promotes `pending_date` to `confirmed`, so
+  the rule holds wherever a booking is updated, not just in one form.
+- **Capacity is informational, not enforced** — slot options show remaining places and
+  cancelled bookings free capacity, but the admin can deliberately overbook (their
+  call on the dropzone). Public-facing booking would need hard enforcement.
+- **Reschedule sets status `rescheduled`** and optionally emails the customer via the
+  editable booking_rescheduled template; the admin promotes it back to confirmed once
+  the customer is happy.
