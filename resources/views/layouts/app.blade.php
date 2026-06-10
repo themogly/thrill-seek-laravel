@@ -1,7 +1,8 @@
+@inject('general', 'App\Settings\GeneralSettings')
 @php
-    $defaultTitle = 'G-Force Skydiving — One Life. One Adventure. Live It.';
-    $defaultDescription = 'Tandem skydives, AFF courses and advanced coaching in the UK and Spain. Military-trained, BS & USPA certified instructors.';
-    $ogImage = 'https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/390eabd9-2dea-4686-bffb-bbf2b761eef3/id-preview-c55e11e8--05e69f77-3e5f-46a1-8301-364b0e237a36.lovable.app-1779138654806.png';
+    $defaultTitle = $general->seo_title;
+    $defaultDescription = $general->seo_description;
+    $ogImage = $general->og_image;
 @endphp
 <!DOCTYPE html>
 <html lang="en">

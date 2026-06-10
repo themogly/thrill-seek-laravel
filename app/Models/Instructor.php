@@ -29,13 +29,22 @@ class Instructor extends Model
         ];
     }
 
-    /** Public URL for the uploaded photo, or null when none is set. */
+    /**
+     * Public URL for the uploaded photo, or null when none is set.
+     *
+     * @return Attribute<string|null, never>
+     */
     protected function photoUrl(): Attribute
     {
-        return Attribute::get(fn () => $this->photo ? Storage::disk('public')->url($this->photo) : null);
+        return Attribute::make(get: fn (): ?string => $this->photo ? Storage::disk('public')->url($this->photo) : null);
     }
 
-    /** Display order used by the public site. */
+    /**
+     * Display order used by the public site.
+     *
+     * @param  Builder<self>  $query
+     * @return Builder<self>
+     */
     public function scopeOrdered(Builder $query): Builder
     {
         return $query->orderBy('sort_order')->orderBy('id');

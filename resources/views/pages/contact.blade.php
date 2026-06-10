@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@inject('general', 'App\Settings\GeneralSettings')
+
 @section('title', 'Contact G-Force Skydiving')
 @section('description', 'Get in touch with G-Force Skydiving. Call +44 (0)7583 155 951 or email info@gforceskydiving.co.uk.')
 
@@ -25,12 +27,12 @@
                 <div class="rounded-2xl bg-secondary p-6 text-secondary-foreground shadow-deep">
                     <h3 class="font-display text-xl uppercase">Direct contact</h3>
                     <ul class="mt-4 space-y-3 text-sm">
-                        <li class="flex items-center gap-3"><x-icon name="phone" class="h-5 w-5 text-primary" /> <a href="tel:+447583155951" class="hover:text-primary">+44 (0)7583 155 951</a></li>
-                        <li class="flex items-center gap-3"><x-icon name="mail" class="h-5 w-5 text-primary" /> <a href="mailto:info@gforceskydiving.co.uk" class="hover:text-primary">info@gforceskydiving.co.uk</a></li>
+                        <li class="flex items-center gap-3"><x-icon name="phone" class="h-5 w-5 text-primary" /> <a href="{{ $general->phoneHref() }}" class="hover:text-primary">{{ $general->phone }}</a></li>
+                        <li class="flex items-center gap-3"><x-icon name="mail" class="h-5 w-5 text-primary" /> <a href="mailto:{{ $general->email }}" class="hover:text-primary">{{ $general->email }}</a></li>
                     </ul>
                     <div class="mt-4 flex gap-3">
-                        <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram" class="rounded-full bg-primary p-2 text-primary-foreground"><x-icon name="instagram" class="h-4 w-4" /></a>
-                        <a href="https://facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook" class="rounded-full bg-primary p-2 text-primary-foreground"><x-icon name="facebook" class="h-4 w-4" /></a>
+                        <a href="{{ $general->instagram_url }}" target="_blank" rel="noreferrer" aria-label="Instagram" class="rounded-full bg-primary p-2 text-primary-foreground"><x-icon name="instagram" class="h-4 w-4" /></a>
+                        <a href="{{ $general->facebook_url }}" target="_blank" rel="noreferrer" aria-label="Facebook" class="rounded-full bg-primary p-2 text-primary-foreground"><x-icon name="facebook" class="h-4 w-4" /></a>
                     </div>
                 </div>
                 <form x-data="newsletterForm({ message: 'Subscribed!' })" @submit.prevent="submit" class="rounded-2xl border bg-card p-6 shadow-sm">
