@@ -7,14 +7,10 @@ that manages all site content, enquiries, payments and bookings.
 - Source app (reference only, do not modify): `../thrill-seek-co` (Vite + React + TS + Tailwind + shadcn/ui).
 - Stack: Laravel 13 + Blade + Tailwind + Alpine.js + Livewire 4 + Filament v5,
   spatie/laravel-settings, spatie/laravel-activitylog, stripe/stripe-php, resend/resend-laravel.
-- **TEMPORARY (design/visual-polish branch only): the pixel-identical preservation
-  rule is suspended.** This session may change spacing, typography, colour usage,
-  layout and animation, and add pages/sections/fields — while keeping brand identity,
-  core business logic (payments, webhooks, conversion, capacity) and CMS-driven
-  content. Revert this note at the end of the session.
-- (Suspended this session — normally: the frontend design is DONE and verified. Do not
-  redesign it — preserve the existing look, Tailwind classes and animations exactly.
-  Content is dynamic; markup is sacred.)
+- The frontend design is established and verified (last revised on the
+  design/visual-polish branch — see design-review/SUMMARY.md). For functional work,
+  preserve the existing look, Tailwind classes and animations; design changes need an
+  explicit design brief.
 
 ## What's built (see DECISIONS.md for the why, SETUP.md for ops)
 - **CMS**: every public page reads from settings groups (`app/Settings`, one Filament
