@@ -192,6 +192,32 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
   part of Round 3's frontend–backend alignment (on the design branch) instead of as
   separate Round 2 features.
 
+## Round 3 — direct booking flows (reverses the enquiry-first decision, per brief)
+
+- **Holds via a `pending_payment` booking status** — the booking is created inside a
+  `lockForUpdate` transaction (capacity re-checked under the lock, so concurrent
+  customers cannot overbook), occupies a place immediately, and is released by the
+  `checkout.session.expired` webhook, by a 45-minute scheduled sweep
+  (`bookings:release-expired-holds`), or instantly if Stripe session creation fails.
+  Stripe sessions are created with their 30-minute minimum expiry.
+- **Booking flow UX**: three steps (pick date/course → details → review & pay) with
+  inline validation (new design components: booking steps/field/notice) — unlike the
+  enquiry forms, which keep their original toast-based feedback.
+- **Direct bookings email a receipt + a booking confirmation** (the confirmation
+  comes from the existing BookingObserver on the pending→confirmed transition) plus
+  the admin notification — same templates the admin flows use.
+- **Empty Stripe keys no longer 500** — StripeClient is bound with a null api_key
+  (array config) so injection never throws; failures surface at call time where the
+  flows catch them, release the hold and show a friendly message. Found by walking
+  the flow in a real browser with no keys set.
+- **Settings cache must be cleared when settings classes gain properties**
+  (`php artisan settings:clear-cache`) — new booking-page settings 500'd against the
+  stale Redis payload until cleared; added to SETUP.md deploy notes.
+- **Reserved Livewire view variable**: `$slots` collides with Livewire 4's slot
+  support (SlotProxy) — booking views receive `$availableSlots` instead, and
+  components pass explicit data from render() (plain Livewire components do not get
+  Filament's `getXProperty` magic).
+
 ## Tooling fix (first task)
 
 - **The wrappers were never broken** — re-diagnosis showed laravel/pao (the

@@ -66,11 +66,11 @@ class SiteContentCacheTest extends TestCase
     public function test_product_changes_bust_the_pages_that_show_them(): void
     {
         $this->seed(ProductSeeder::class);
-        $this->get('/tandem')->assertSee('Pay £260 with Stripe');
+        $this->get('/tandem')->assertSee('£260');
 
         Product::where('slug', 'tandem-skydive')->firstOrFail()->update(['price_pence' => 28000]);
 
-        $this->get('/tandem')->assertSee('Pay £280 with Stripe');
+        $this->get('/tandem')->assertSee('£280');
     }
 
     private function assertObjectFree(mixed $value, string $path): void

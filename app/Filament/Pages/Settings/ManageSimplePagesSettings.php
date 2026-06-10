@@ -69,6 +69,22 @@ class ManageSimplePagesSettings extends SettingsPage
                     TextInput::make('contact_newsletter_heading')->label('Newsletter heading')->required()->maxLength(255),
                     TextInput::make('contact_newsletter_text')->label('Newsletter text')->required()->maxLength(255),
                 ]),
+            Section::make('Tandem booking page')
+                ->columns(2)
+                ->components([
+                    TextInput::make('booking_tandem_hero_title')->label('Heading')->required()->maxLength(255),
+                    TextInput::make('booking_tandem_hero_subtitle')->label('Text under the heading')->required()->maxLength(500),
+                    TextInput::make('booking_tandem_seo_title')->label('SEO page title')->required()->maxLength(255),
+                    Textarea::make('booking_tandem_seo_description')->label('SEO description')->rows(2)->required(),
+                ]),
+            Section::make('AFF booking page')
+                ->columns(2)
+                ->components([
+                    TextInput::make('booking_aff_hero_title')->label('Heading')->required()->maxLength(255),
+                    TextInput::make('booking_aff_hero_subtitle')->label('Text under the heading')->required()->maxLength(500),
+                    TextInput::make('booking_aff_seo_title')->label('SEO page title')->required()->maxLength(255),
+                    Textarea::make('booking_aff_seo_description')->label('SEO description')->rows(2)->required(),
+                ]),
             Section::make('Privacy policy')
                 ->components([
                     TextInput::make('privacy_title')->label('Heading')->required()->maxLength(255),

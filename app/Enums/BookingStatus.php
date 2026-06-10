@@ -9,6 +9,7 @@ use Filament\Support\Contracts\HasLabel;
 
 enum BookingStatus: string implements HasColor, HasLabel
 {
+    case PendingPayment = 'pending_payment';
     case PendingDate = 'pending_date';
     case Confirmed = 'confirmed';
     case Completed = 'completed';
@@ -18,6 +19,7 @@ enum BookingStatus: string implements HasColor, HasLabel
     public function getLabel(): string
     {
         return match ($this) {
+            self::PendingPayment => 'Awaiting payment',
             self::PendingDate => 'Awaiting date',
             self::Confirmed => 'Confirmed',
             self::Completed => 'Completed',
@@ -29,6 +31,7 @@ enum BookingStatus: string implements HasColor, HasLabel
     public function getColor(): string
     {
         return match ($this) {
+            self::PendingPayment => 'gray',
             self::PendingDate => 'warning',
             self::Confirmed => 'success',
             self::Completed => 'info',

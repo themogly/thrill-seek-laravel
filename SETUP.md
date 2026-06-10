@@ -80,7 +80,9 @@ stopwaitsecs=3600
 
 On macOS (launchd) the equivalent is a LaunchAgent plist running
 `php artisan horizon` with `KeepAlive: true`. After every deploy run
-`php artisan horizon:terminate` so Horizon restarts with the new code.
+`php artisan horizon:terminate` so Horizon restarts with the new code, and
+`php artisan settings:clear-cache` if a deploy added settings properties
+(the cached payload otherwise lacks the new keys and pages 500).
 
 ## Day-to-day commands
 

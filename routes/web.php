@@ -15,7 +15,10 @@ Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::get('/privacy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/terms', [PageController::class, 'terms'])->name('terms');
 
-Route::view('/payment/success', 'pages.payment-success')->name('payment.success');
+Route::get('/book/tandem', [PageController::class, 'bookTandem'])->name('book.tandem');
+Route::get('/book/aff', [PageController::class, 'bookAff'])->name('book.aff');
+
+Route::get('/payment/success', [PageController::class, 'paymentSuccess'])->name('payment.success');
 Route::view('/payment/cancelled', 'pages.payment-cancelled')->name('payment.cancelled');
 
 Route::post('/webhooks/stripe', StripeWebhookController::class)->name('webhooks.stripe');
@@ -25,6 +28,8 @@ Route::get('/sitemap.xml', function () {
         ['path' => '/', 'priority' => '1.0'],
         ['path' => '/tandem', 'priority' => '0.9'],
         ['path' => '/aff', 'priority' => '0.9'],
+        ['path' => '/book/tandem', 'priority' => '0.9'],
+        ['path' => '/book/aff', 'priority' => '0.9'],
         ['path' => '/coached', 'priority' => '0.8'],
         ['path' => '/shop', 'priority' => '0.7'],
         ['path' => '/testimonials', 'priority' => '0.6'],

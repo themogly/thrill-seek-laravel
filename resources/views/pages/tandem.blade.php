@@ -81,11 +81,11 @@
             {{-- Pay card --}}
             @if ($product)
             <x-site.pay-card
-                eyebrow="Pay online"
+                eyebrow="Book online"
                 heading="Book your jump now"
-                body="Secure your tandem skydive with a single online payment. We use Stripe for safe, instant checkout."
-                :button="'Pay '.$product->formatted_price.' with Stripe'"
-                toast="Stripe checkout will be enabled once payments are connected."
+                body="Pick a date, tell us about you and pay securely — booked in minutes. We use Stripe for safe, instant checkout."
+                button="Choose a date & book"
+                href="/book/tandem"
             >
                 <ul class="mt-6 space-y-2 text-sm">
                     <li class="flex items-center gap-2"><x-icon name="check" class="h-4 w-4" /> {{ $product->formatted_price }} full tandem payment</li>

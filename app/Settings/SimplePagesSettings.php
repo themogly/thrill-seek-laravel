@@ -52,6 +52,22 @@ class SimplePagesSettings extends Settings
 
     public string $contact_newsletter_text;
 
+    public string $booking_tandem_seo_title;
+
+    public string $booking_tandem_seo_description;
+
+    public string $booking_tandem_hero_title;
+
+    public string $booking_tandem_hero_subtitle;
+
+    public string $booking_aff_seo_title;
+
+    public string $booking_aff_seo_description;
+
+    public string $booking_aff_hero_title;
+
+    public string $booking_aff_hero_subtitle;
+
     public string $privacy_title;
 
     public string $privacy_body;

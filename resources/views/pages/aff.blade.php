@@ -57,6 +57,54 @@
         </div>
     </section>
 
+    {{-- UPCOMING COURSES --}}
+    <x-site.section id="courses">
+        <x-site.section-heading :eyebrow="$page->courses_eyebrow" :title="$page->courses_title" :lead="$page->courses_lead" />
+        @if ($courseDates->isEmpty())
+            <div class="rounded-2xl border bg-card p-8 text-center">
+                <p class="text-lg text-muted-foreground">{{ $page->courses_empty_text }}</p>
+                <x-ui.button href="/contact" class="mt-6 bg-primary text-primary-foreground hover:bg-primary/90">Get in touch</x-ui.button>
+            </div>
+        @else
+            <div class="grid gap-6 md:grid-cols-2">
+                @foreach ($courseDates as $course)
+                    <div class="flex flex-col justify-between gap-6 rounded-2xl border bg-card p-6 shadow-sm transition-shadow hover:shadow-glow sm:p-8">
+                        <div>
+                            <div class="flex items-start justify-between gap-4">
+                                <div>
+                                    <h3 class="font-display text-3xl uppercase text-secondary">{{ $course->date_range_label }}</h3>
+                                    <p class="mt-1 flex items-center gap-1.5 text-sm font-bold uppercase tracking-wide text-primary">
+                                        <x-icon name="map-pin" class="h-4 w-4" /> {{ $course->location }}
+                                    </p>
+                                </div>
+                                <span @class([
+                                    'whitespace-nowrap rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide',
+                                    'bg-primary/10 text-primary' => $course->remaining_places > 2,
+                                    'bg-destructive/10 text-destructive' => $course->remaining_places <= 2,
+                                ])>
+                                    {{ $course->remaining_places }} {{ Str::plural('place', $course->remaining_places) }} left
+                                </span>
+                            </div>
+                            <p class="mt-4 text-muted-foreground">
+                                <span class="font-display text-2xl text-secondary">{{ $course->formatted_price }}</span>
+                                <span class="text-sm"> — secure your place with a {{ $course->formatted_deposit }} deposit</span>
+                            </p>
+                        </div>
+                        @if ($course->isBookable())
+                            <x-ui.button :href="'/book/aff?course='.$course->id" size="lg" class="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+                                Book this course
+                            </x-ui.button>
+                        @else
+                            <x-ui.button href="/contact" size="lg" variant="outline" class="w-full border-input text-secondary hover:bg-accent">
+                                Join the waiting list
+                            </x-ui.button>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        @endif
+    </x-site.section>
+
     <x-site.section>
         <x-site.section-heading :eyebrow="$page->info_eyebrow" :title="$page->info_title" :lead="$page->info_lead" />
         <div class="grid gap-6 md:grid-cols-3">
@@ -74,10 +122,10 @@
         <div class="grid gap-12 lg:grid-cols-2">
             <x-site.pay-card
                 eyebrow="Reserve your spot"
-                heading="Pay AFF deposit"
-                body="Secure your place on the next AFF course with an online deposit via Stripe."
-                button="Pay Deposit with Stripe"
-                toast="Stripe deposit checkout will be enabled once payments are connected."
+                heading="Secure your place"
+                body="Pick a course date, reserve your place with a deposit and start your journey to a licence."
+                button="Choose a course & pay deposit"
+                href="/book/aff"
             />
 
             {{-- AFF enquiry --}}

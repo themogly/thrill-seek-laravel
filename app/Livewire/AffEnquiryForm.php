@@ -6,14 +6,14 @@ namespace App\Livewire;
 
 use App\Actions\CreateEnquiry;
 use App\Enums\ProductType;
-use App\Livewire\Concerns\SubmitsEnquiries;
+use App\Livewire\Concerns\ProtectsAgainstSpam;
 use App\Models\Product;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 class AffEnquiryForm extends Component
 {
-    use SubmitsEnquiries;
+    use ProtectsAgainstSpam;
 
     public string $name = '';
 

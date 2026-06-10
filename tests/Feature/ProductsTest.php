@@ -35,7 +35,8 @@ class ProductsTest extends TestCase
             ->assertSee('Paid direct to G-Force')
             ->assertSeeInOrder(['Outside Camera', '£140', 'HandCam', '£100', 'P6 Third Party Insurance', '£24.73', 'Rebooking Fee', '£50'])
             ->assertSeeInOrder(['Up to 15st', 'Free', '18st+', 'Assessment required'])
-            ->assertSee('Pay £260 with Stripe');
+            ->assertSee('Choose a date &amp; book', false)
+            ->assertSee('/book/tandem');
     }
 
     public function test_aff_page_price_cards_come_from_products(): void
@@ -52,12 +53,12 @@ class ProductsTest extends TestCase
     public function test_price_changes_invalidate_the_cached_pages(): void
     {
         $this->seed(ProductSeeder::class);
-        $this->get('/tandem')->assertSee('Pay £260 with Stripe');
+        $this->get('/tandem')->assertSee('£260');
 
         $product = Product::where('slug', 'tandem-skydive')->firstOrFail();
         $product->update(['price_pence' => 28000]);
 
-        $this->get('/tandem')->assertSee('Pay £280 with Stripe');
+        $this->get('/tandem')->assertSee('£280');
     }
 
     public function test_admin_can_create_a_product(): void

@@ -11,7 +11,7 @@ use Illuminate\Validation\ValidationException;
  * Shared spam protection for the public enquiry forms: a honeypot field
  * (bots fill it, humans never see it) and a per-IP rate limit.
  */
-trait SubmitsEnquiries
+trait ProtectsAgainstSpam
 {
     /** Honeypot — must stay empty. */
     public string $website = '';

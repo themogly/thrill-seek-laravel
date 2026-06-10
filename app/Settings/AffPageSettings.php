@@ -42,6 +42,14 @@ class AffPageSettings extends Settings
 
     public string $repeat_pricing_heading;
 
+    public string $courses_eyebrow;
+
+    public string $courses_title;
+
+    public string $courses_lead;
+
+    public string $courses_empty_text;
+
     public string $info_eyebrow;
 
     public string $info_title;

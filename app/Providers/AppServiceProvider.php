@@ -13,7 +13,16 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(StripeClient::class, function (): StripeClient {
-            return new StripeClient((string) config('services.stripe.secret'));
+            $secret = config('services.stripe.secret');
+
+            // An empty string throws in the StripeClient constructor, which
+            // would 500 any request that merely injects it. A null api_key
+            // (array form) constructs fine and throws AuthenticationException
+            // at call time, where the booking flows catch it and show a
+            // friendly message.
+            return new StripeClient([
+                'api_key' => is_string($secret) && $secret !== '' ? $secret : null,
+            ]);
         });
     }
 

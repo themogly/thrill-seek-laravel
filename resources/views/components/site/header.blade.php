@@ -35,7 +35,7 @@
             @endforeach
         </nav>
         <a
-            href="/tandem"
+            href="/book/tandem"
             class="hidden rounded-md bg-primary px-4 py-2 text-sm font-bold uppercase tracking-wide text-primary-foreground shadow-glow transition-transform hover:scale-105 lg:inline-flex"
         >
             Book Now

@@ -79,6 +79,14 @@ class ManageAffPageSettings extends SettingsPage
                     TextInput::make('pricing_title')->label('Heading')->required()->maxLength(255),
                     TextInput::make('repeat_pricing_heading')->label('Repeat pricing heading')->required()->maxLength(255),
                 ]),
+            Section::make('“Upcoming courses” section')
+                ->columns(2)
+                ->components([
+                    TextInput::make('courses_eyebrow')->label('Small line')->required()->maxLength(255),
+                    TextInput::make('courses_title')->label('Heading')->required()->maxLength(255),
+                    TextInput::make('courses_lead')->label('Lead text')->required()->maxLength(500),
+                    TextInput::make('courses_empty_text')->label('Text when no courses are open')->required()->maxLength(500),
+                ]),
             Section::make('“Where & when” section')
                 ->components([
                     TextInput::make('info_eyebrow')->label('Small line')->required()->maxLength(255),

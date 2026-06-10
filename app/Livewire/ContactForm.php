@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use App\Actions\CreateEnquiry;
-use App\Livewire\Concerns\SubmitsEnquiries;
+use App\Livewire\Concerns\ProtectsAgainstSpam;
 use App\Settings\SimplePagesSettings;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 class ContactForm extends Component
 {
-    use SubmitsEnquiries;
+    use ProtectsAgainstSpam;
 
     public string $name = '';
 
