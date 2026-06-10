@@ -1,26 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Page not found — G-Force Skydiving</title>
-    @fonts
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-<body>
-    <div class="flex min-h-screen items-center justify-center bg-background px-4">
-        <div class="max-w-md text-center">
-            <h1 class="text-7xl font-bold text-foreground">404</h1>
-            <h2 class="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-            <p class="mt-2 text-sm text-muted-foreground">
-                The page you're looking for doesn't exist or has been moved.
-            </p>
-            <div class="mt-6">
-                <a href="/" class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
-                    Go home
-                </a>
+@extends('layouts.app')
+
+@section('title', 'Page not found — G-Force Skydiving')
+
+@section('content')
+    <x-site.page-hero title="Lost in Freefall" subtitle="That page doesn't exist or has moved — but the ground is this way." />
+    <x-site.section>
+        <div class="mx-auto max-w-xl text-center">
+            <p class="font-display text-8xl uppercase text-primary">404</p>
+            <p class="mt-4 text-lg text-muted-foreground">Here's where most people want to land:</p>
+            <div class="mt-8 grid gap-3 sm:grid-cols-3">
+                <x-ui.button href="/book/tandem" class="w-full bg-primary text-primary-foreground hover:bg-primary/90">Book a tandem</x-ui.button>
+                <x-ui.button href="/aff" variant="outline" class="w-full border-input text-secondary hover:bg-accent">AFF courses</x-ui.button>
+                <x-ui.button href="/contact" variant="outline" class="w-full border-input text-secondary hover:bg-accent">Contact us</x-ui.button>
             </div>
         </div>
-    </div>
-</body>
-</html>
+    </x-site.section>
+@endsection
