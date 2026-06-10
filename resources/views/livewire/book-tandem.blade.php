@@ -11,7 +11,7 @@
     @if ($step === 1)
         <div class="mt-8">
             @if ($availableSlots->isEmpty())
-                <div class="rounded-2xl border bg-card p-8 text-center">
+                <div class="border-2 border-secondary bg-card p-8 text-center">
                     <h3 class="font-display text-2xl uppercase text-secondary">No dates online right now</h3>
                     <p class="mt-2 text-muted-foreground">We add jump dates all the time. Send an enquiry and we'll find you a slot.</p>
                     <x-ui.button href="/contact" class="mt-6 bg-primary text-primary-foreground hover:bg-primary/90">Get in touch</x-ui.button>
@@ -52,7 +52,7 @@
 
     {{-- STEP 2: customer details --}}
     @if ($step === 2)
-        <form wire:submit="continueToReview" class="mt-8 rounded-2xl border bg-card p-6 shadow-sm sm:p-8">
+        <form wire:submit="continueToReview" class="mt-8 border-2 border-secondary bg-card p-6 sm:p-8">
             <div class="flex items-center justify-between gap-4">
                 <h3 class="font-display text-2xl uppercase text-secondary">Your details</h3>
                 <button type="button" wire:click="backToStep(1)" class="text-sm font-bold uppercase tracking-wide text-primary hover:underline">
@@ -125,7 +125,7 @@
 
     {{-- STEP 3: review & pay --}}
     @if ($step === 3 && $product)
-        <div class="mt-8 rounded-2xl border bg-card p-6 shadow-sm sm:p-8">
+        <div class="mt-8 border-2 border-secondary bg-card p-6 sm:p-8">
             <div class="flex items-center justify-between gap-4">
                 <h3 class="font-display text-2xl uppercase text-secondary">Review &amp; pay</h3>
                 <button type="button" wire:click="backToStep(2)" class="text-sm font-bold uppercase tracking-wide text-primary hover:underline">

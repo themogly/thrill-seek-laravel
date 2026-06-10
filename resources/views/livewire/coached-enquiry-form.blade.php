@@ -3,7 +3,7 @@
     x-data
     @enquiry-sent.window="window.toast.success($event.detail.message); $dispatch('reset')"
     @enquiry-failed.window="window.toast.error($event.detail.message)"
-    class="rounded-2xl border bg-card p-6 shadow-sm sm:p-8"
+    class="border-2 border-secondary bg-card p-6 sm:p-8"
 >
     <div class="grid gap-4 sm:grid-cols-2">
         <x-booking.field label="Full name" for="ce-name" :error="$errors->first('name')">

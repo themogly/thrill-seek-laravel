@@ -1,12 +1,12 @@
 <div class="mx-auto max-w-3xl">
     @if ($product === null || $product->price_pence === null)
-        <div class="rounded-2xl border bg-card p-8 text-center">
+        <div class="border-2 border-secondary bg-card p-8 text-center">
             <h3 class="font-display text-2xl uppercase text-secondary">Vouchers are taking a breather</h3>
             <p class="mt-2 text-muted-foreground">Get in touch and we'll arrange one directly.</p>
             <x-ui.button href="/contact" class="mt-6 bg-primary text-primary-foreground hover:bg-primary/90">Contact us</x-ui.button>
         </div>
     @else
-        <form wire:submit="pay" class="rounded-2xl border bg-card p-6 shadow-sm sm:p-8">
+        <form wire:submit="pay" class="border-2 border-secondary bg-card p-6 sm:p-8">
             <div class="flex flex-col gap-4 rounded-xl bg-secondary p-6 text-secondary-foreground sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <p class="text-xs font-bold uppercase tracking-wide opacity-80">The gift</p>

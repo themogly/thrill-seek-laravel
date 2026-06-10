@@ -3,7 +3,7 @@
     x-data
     @enquiry-sent.window="window.toast.success($event.detail.message); $dispatch('reset')"
     @enquiry-failed.window="window.toast.error($event.detail.message)"
-    class="rounded-2xl border bg-card p-8 shadow-sm"
+    class="border-2 border-secondary bg-card p-8"
 >
     <h3 class="font-display text-2xl uppercase text-secondary">AFF Enquiry</h3>
     <div class="mt-6 grid gap-4">
