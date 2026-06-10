@@ -9,10 +9,12 @@ class InstructorSeeder extends Seeder
 {
     public function run(): void
     {
+        // Photos are bundled placeholder crops; the owner replaces them with
+        // real portraits through the admin panel.
         $instructors = [
-            ['name' => 'Joby', 'role' => 'Chief Instructor', 'bio' => 'Ex-military jumper with thousands of jumps and decades of teaching.'],
-            ['name' => 'Ricky', 'role' => 'AFF Instructor', 'bio' => 'Specialist in coaching new jumpers from first jump to A licence.'],
-            ['name' => 'Lucy', 'role' => 'Tandem Instructor', 'bio' => 'Bringing energy, safety and unforgettable experiences to every jump.'],
+            ['name' => 'Joby', 'role' => 'Chief Instructor', 'bio' => 'Ex-military jumper with thousands of jumps and decades of teaching.', 'photo' => '/images/instructors/jay.jpg'],
+            ['name' => 'Ricky', 'role' => 'AFF Instructor', 'bio' => 'Specialist in coaching new jumpers from first jump to A licence.', 'photo' => '/images/instructors/ren.jpg'],
+            ['name' => 'Lucy', 'role' => 'Tandem Instructor', 'bio' => 'Bringing energy, safety and unforgettable experiences to every jump.', 'photo' => '/images/instructors/lee.jpg'],
         ];
 
         foreach ($instructors as $i => $data) {

@@ -32,7 +32,10 @@ const browser = await chromium.launch();
 const errors = [];
 
 for (const width of widths) {
-    const page = await browser.newPage({ viewport: { width, height: width < 500 ? 844 : 900 } });
+    // reducedMotion: entrance reveals would otherwise leave below-fold
+    // sections at opacity 0 in full-page captures (the observer never fires
+    // while Playwright stitches). This also verifies the reduced-motion path.
+    const page = await browser.newPage({ viewport: { width, height: width < 500 ? 844 : 900 }, reducedMotion: 'reduce' });
     page.on('console', (msg) => {
         if (msg.type() === 'error') errors.push(`[${width}px console] ${msg.text()}`);
     });

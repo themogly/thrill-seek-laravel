@@ -40,7 +40,15 @@ class Instructor extends Model
      */
     protected function photoUrl(): Attribute
     {
-        return Attribute::make(get: fn (): ?string => $this->photo ? Storage::disk('public')->url($this->photo) : null);
+        return Attribute::make(get: function (): ?string {
+            if (! $this->photo) {
+                return null;
+            }
+
+            return str_starts_with($this->photo, '/')
+                ? $this->photo
+                : Storage::disk('public')->url($this->photo);
+        });
     }
 
     /**
