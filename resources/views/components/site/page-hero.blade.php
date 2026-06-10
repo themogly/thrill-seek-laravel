@@ -14,7 +14,7 @@
     @endif
     <div class="relative mx-auto max-w-6xl px-4 lg:px-8">
         <h1 class="font-display text-6xl uppercase leading-[0.92] tracking-wide md:text-8xl lg:text-9xl">
-            @foreach ($words as $i => $word)<span class="{{ $i === $lastIndex && $lastIndex > 0 ? 'text-hero-accent' : '' }}">{{ $word }} </span>@endforeach
+            @foreach ($words as $i => $word)<span class="{{ $i === $lastIndex && $lastIndex > 0 ? 'text-sky-bright' : '' }}">{{ $word }} </span>@endforeach
         </h1>
         @if ($subtitle)
             <p class="mt-6 max-w-2xl border-l-4 border-primary pl-4 text-lg text-white/90">{{ $subtitle }}</p>

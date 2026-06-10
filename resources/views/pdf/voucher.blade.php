@@ -10,9 +10,9 @@
     @page { margin: 0; }
     body { margin: 0; font-family: Helvetica, sans-serif; color: #0c1330; }
     .band { background: #0a0f23; color: #ffffff; padding: 22px 40px 16px 40px; border-bottom: 5px solid #2f8de4; }
-    .eyebrow { font-size: 11px; letter-spacing: 5px; text-transform: uppercase; color: #7cc4f5; font-weight: bold; margin: 0 0 10px 0; }
+    .eyebrow { font-size: 11px; letter-spacing: 5px; text-transform: uppercase; color: #0ea5e9; font-weight: bold; margin: 0 0 10px 0; }
     h1 { font-size: 34px; line-height: 0.95; text-transform: uppercase; letter-spacing: 1px; margin: 0; font-weight: bold; }
-    h1 .accent { color: #7cc4f5; }
+    h1 .accent { color: #0ea5e9; }
     .body { padding: 18px 40px 0 40px; }
     table { width: 100%; border-collapse: collapse; }
     td { vertical-align: top; }

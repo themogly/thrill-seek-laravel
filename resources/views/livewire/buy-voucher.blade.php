@@ -13,7 +13,7 @@
                     <p class="font-display text-3xl uppercase">{{ $product->name }}</p>
                     <p class="mt-1 text-sm opacity-90">Valid 12 months · transferable · redeemable online</p>
                 </div>
-                <p class="font-display text-4xl text-hero-accent">{{ $product->formatted_price }}</p>
+                <p class="font-display text-4xl text-sky-bright">{{ $product->formatted_price }}</p>
             </div>
 
             <div class="mt-6 grid gap-4 sm:grid-cols-2">

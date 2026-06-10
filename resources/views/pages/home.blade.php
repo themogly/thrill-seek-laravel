@@ -18,12 +18,12 @@
         />
         <div class="absolute inset-0 bg-photo-scrim"></div>
         <div class="relative z-10 mx-auto w-full max-w-7xl px-4 pb-20 pt-40 text-white lg:px-8 lg:pb-28">
-            <p class="mb-5 flex items-center gap-3 text-sm font-bold uppercase tracking-[0.4em] text-hero-accent">
+            <p class="mb-5 flex items-center gap-3 text-sm font-bold uppercase tracking-[0.4em] text-sky-bright">
                 <span class="inline-block h-0.5 w-12 bg-primary"></span>{{ $home->hero_eyebrow }}
             </p>
             <h1 class="font-display text-6xl uppercase leading-[0.88] tracking-wide sm:text-8xl lg:text-[10.5rem]">
                 {{ $home->hero_title_1 }}<br />
-                <span class="text-hero-accent">{{ $home->hero_title_highlight }}</span><br />
+                <span class="text-sky-bright">{{ $home->hero_title_highlight }}</span><br />
                 {{ $home->hero_title_2 }}
             </h1>
             <p class="mt-8 max-w-xl border-l-4 border-primary pl-4 text-lg text-white/90 md:text-xl">
@@ -54,7 +54,7 @@
                     <img src="{{ $s->image_url }}" alt="{{ $s->name }}" class="absolute inset-0 -z-10 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" width="1280" height="896" />
                     <div class="absolute inset-0 -z-10 bg-photo-scrim"></div>
                     <div class="p-7 text-white">
-                        <p class="font-display text-xl text-hero-accent">{{ $s->summary_price_label }}</p>
+                        <p class="font-display text-xl text-sky-bright">{{ $s->summary_price_label }}</p>
                         <h3 class="mt-1 font-display text-4xl uppercase leading-none tracking-wide lg:text-5xl">{{ $s->name }}</h3>
                         <p class="mt-3 max-w-xs text-sm text-white/85">{{ $s->summary }}</p>
                         <span class="mt-5 inline-flex items-center gap-2 border-b-2 border-primary pb-1 text-sm font-bold uppercase tracking-widest">
