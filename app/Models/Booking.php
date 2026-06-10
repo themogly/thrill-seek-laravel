@@ -6,8 +6,10 @@ namespace App\Models;
 
 use App\Enums\BookingStatus;
 use App\Enums\PaymentStatus;
+use App\Observers\BookingObserver;
 use App\Support\Money;
 use Database\Factories\BookingFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,6 +25,7 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property BookingStatus $status
  * @property Carbon|null $scheduled_at
  */
+#[ObservedBy(BookingObserver::class)]
 class Booking extends Model
 {
     /** @use HasFactory<BookingFactory> */
@@ -42,6 +45,8 @@ class Booking extends Model
         'price_pence',
         'customer_details',
         'notes',
+        'reminder_sent_at',
+        'balance_reminder_sent_at',
     ];
 
     protected function casts(): array
@@ -51,6 +56,8 @@ class Booking extends Model
             'scheduled_at' => 'datetime',
             'price_pence' => 'integer',
             'customer_details' => 'array',
+            'reminder_sent_at' => 'datetime',
+            'balance_reminder_sent_at' => 'datetime',
         ];
     }
 

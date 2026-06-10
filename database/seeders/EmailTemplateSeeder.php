@@ -34,6 +34,27 @@ class EmailTemplateSeeder extends Seeder
                 'variables' => ['name', 'reference', 'product', 'old_date', 'new_date'],
             ],
             [
+                'key' => 'booking_confirmed',
+                'name' => 'Booking confirmed',
+                'subject' => 'Your jump is confirmed — G-Force Skydiving ({{ reference }})',
+                'body' => "Hi {{ name }},\n\nGreat news — your booking for {{ product }} is confirmed.\n\nDate: {{ date }}\nReference: {{ reference }}\n\nWe'll send a reminder closer to the day. Any questions in the meantime, just reply to this email.\n\nBlue skies,\nThe G-Force team",
+                'variables' => ['name', 'reference', 'product', 'date'],
+            ],
+            [
+                'key' => 'jump_reminder',
+                'name' => 'Jump reminder',
+                'subject' => 'Your jump is coming up — G-Force Skydiving ({{ reference }})',
+                'body' => "Hi {{ name }},\n\nA quick reminder that your {{ product }} is coming up:\n\nDate: {{ date }}\nReference: {{ reference }}\n\nRemember to check the weather guidance we sent and arrive in good time. See you in the sky!\n\nBlue skies,\nThe G-Force team",
+                'variables' => ['name', 'reference', 'product', 'date'],
+            ],
+            [
+                'key' => 'balance_reminder',
+                'name' => 'Balance due reminder',
+                'subject' => 'Balance due for your booking — G-Force Skydiving ({{ reference }})',
+                'body' => "Hi {{ name }},\n\nYour {{ product }} on {{ date }} has an outstanding balance of {{ balance }}.\n\nReference: {{ reference }}\n\nReply to this email and we'll send a secure payment link, or pay by bank transfer quoting your reference.\n\nBlue skies,\nThe G-Force team",
+                'variables' => ['name', 'reference', 'product', 'balance', 'date'],
+            ],
+            [
                 'key' => 'gift_voucher',
                 'name' => 'Gift voucher',
                 'subject' => 'Your G-Force Skydiving gift voucher ({{ code }})',
