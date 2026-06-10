@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Models\HallOfFameEntry;
 use App\Models\Instructor;
+use App\Models\ShopItem;
 use App\Models\Testimonial;
 use App\Support\ContentCache;
 use Illuminate\Contracts\View\View;
@@ -37,7 +38,9 @@ class PageController extends Controller
 
     public function shop(): View
     {
-        return view('pages.shop');
+        return view('pages.shop', [
+            'items' => ContentCache::remember('shop_items', fn () => ShopItem::ordered()->get()),
+        ]);
     }
 
     public function testimonials(): View
