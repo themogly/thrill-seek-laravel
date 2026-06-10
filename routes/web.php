@@ -1,8 +1,11 @@
 <?php
 
+use App\Models\Instructor;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'pages.home')->name('home');
+Route::get('/', fn () => view('pages.home', [
+    'instructors' => Instructor::ordered()->get(),
+]))->name('home');
 Route::view('/tandem', 'pages.tandem')->name('tandem');
 Route::view('/aff', 'pages.aff')->name('aff');
 Route::view('/coached', 'pages.coached')->name('coached');

@@ -10,12 +10,6 @@
         ['title' => 'Coached Skills', 'desc' => '1-to-1 advanced flying coaching from world-class instructors.', 'img' => '/images/coached.jpg', 'to' => '/coached', 'price' => 'from £60'],
     ];
 
-    $team = [
-        ['name' => 'Joby', 'role' => 'Chief Instructor', 'bio' => 'Ex-military jumper with thousands of jumps and decades of teaching.'],
-        ['name' => 'Ricky', 'role' => 'AFF Instructor', 'bio' => 'Specialist in coaching new jumpers from first jump to A licence.'],
-        ['name' => 'Lucy', 'role' => 'Tandem Instructor', 'bio' => 'Bringing energy, safety and unforgettable experiences to every jump.'],
-    ];
-
     $testimonials = [
         ['name' => 'Sarah M.', 'text' => 'Absolutely life-changing. The team made me feel safe from the moment I arrived.'],
         ['name' => 'Tom R.', 'text' => 'Did my AFF with G-Force in Spain. Best decision I ever made — incredible coaches.'],
@@ -135,14 +129,18 @@
     <x-site.section>
         <x-site.section-heading eyebrow="Meet the team" title="The Coaches" lead="The people you'll fly with." />
         <div class="grid gap-6 md:grid-cols-3">
-            @foreach ($team as $m)
+            @foreach ($instructors as $instructor)
                 <div class="group rounded-2xl border bg-card p-8 text-center shadow-sm transition-all hover:shadow-glow">
-                    <div class="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-fire-gradient text-3xl font-display text-white shadow-glow">
-                        {{ $m['name'][0] }}
-                    </div>
-                    <h3 class="mt-4 font-display text-2xl uppercase text-secondary">{{ $m['name'] }}</h3>
-                    <p class="text-sm font-bold uppercase tracking-wide text-primary">{{ $m['role'] }}</p>
-                    <p class="mt-3 text-muted-foreground">{{ $m['bio'] }}</p>
+                    @if ($instructor->photo)
+                        <img src="{{ $instructor->photo_url }}" alt="{{ $instructor->name }}" class="mx-auto h-24 w-24 rounded-full object-cover shadow-glow" />
+                    @else
+                        <div class="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-fire-gradient text-3xl font-display text-white shadow-glow">
+                            {{ \Illuminate\Support\Str::substr($instructor->name, 0, 1) }}
+                        </div>
+                    @endif
+                    <h3 class="mt-4 font-display text-2xl uppercase text-secondary">{{ $instructor->name }}</h3>
+                    <p class="text-sm font-bold uppercase tracking-wide text-primary">{{ $instructor->role }}</p>
+                    <p class="mt-3 text-muted-foreground">{{ $instructor->bio }}</p>
                 </div>
             @endforeach
         </div>
