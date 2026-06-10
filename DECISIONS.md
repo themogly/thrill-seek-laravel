@@ -150,6 +150,19 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
   failure exit codes, so `&&`-chained commit commands can commit on red. One duplicate
   commit was squashed after this bit once; always read the JSON output.
 
+# Round 4
+
+## Branch situation
+
+- **`design/visual-polish` was found fully merged** (fast-forward; `main` and
+  `origin/design/visual-polish` point at the same commit, local branch deleted), so
+  Round 4 work happens on a new `feature/round-4` branch off main, per the brief.
+- **Per-recipient course-message status is batch-level** — emails are queued
+  Mailables through Laravel's mail layer, which doesn't expose Resend message ids
+  without swapping to direct SDK calls; the audit trail stores the full recipient
+  snapshot (name/email/booking) per message and Horizon shows per-job failures.
+  Documented as the "cheap" trade-off the brief allows.
+
 # Round 2
 
 ## Part A — fixes

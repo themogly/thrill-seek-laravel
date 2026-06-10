@@ -6,10 +6,13 @@ namespace App\Models;
 
 use App\Enums\BookingStatus;
 use App\Enums\CourseDateStatus;
+use App\Observers\CourseDateObserver;
 use App\Support\Money;
 use Database\Factories\CourseDateFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,6 +28,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon $starts_on
  * @property Carbon|null $ends_on
  */
+#[ObservedBy(CourseDateObserver::class)]
 class CourseDate extends Model
 {
     /** @use HasFactory<CourseDateFactory> */
@@ -64,6 +68,31 @@ class CourseDate extends Model
     public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class);
+    }
+
+    /** @return HasMany<CourseMessage, $this> */
+    public function messages(): HasMany
+    {
+        return $this->hasMany(CourseMessage::class)->latest();
+    }
+
+    /** @return HasMany<CourseReminder, $this> */
+    public function reminders(): HasMany
+    {
+        return $this->hasMany(CourseReminder::class)->orderBy('days_before', 'desc');
+    }
+
+    /**
+     * Students who should receive course communications: everyone holding a
+     * place except cancelled bookings and unpaid checkout holds.
+     *
+     * @return Collection<int, Booking>
+     */
+    public function messageableBookings(): Collection
+    {
+        return $this->bookings()
+            ->whereNotIn('status', [BookingStatus::Cancelled, BookingStatus::PendingPayment])
+            ->get();
     }
 
     /** Bookings that occupy a place (anything not cancelled). */

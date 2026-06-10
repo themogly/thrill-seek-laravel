@@ -8,6 +8,8 @@ use App\Filament\Resources\CourseDates\Pages\CreateCourseDate;
 use App\Filament\Resources\CourseDates\Pages\EditCourseDate;
 use App\Filament\Resources\CourseDates\Pages\ListCourseDates;
 use App\Filament\Resources\CourseDates\RelationManagers\BookingsRelationManager;
+use App\Filament\Resources\CourseDates\RelationManagers\MessagesRelationManager;
+use App\Filament\Resources\CourseDates\RelationManagers\RemindersRelationManager;
 use App\Filament\Resources\CourseDates\Schemas\CourseDateForm;
 use App\Filament\Resources\CourseDates\Tables\CourseDatesTable;
 use App\Models\CourseDate;
@@ -46,6 +48,8 @@ class CourseDateResource extends Resource
     {
         return [
             BookingsRelationManager::class,
+            MessagesRelationManager::class,
+            RemindersRelationManager::class,
         ];
     }
 
