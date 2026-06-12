@@ -80,6 +80,21 @@ that manages all site content, enquiries, payments and bookings.
 - **Never cache Eloquent objects** — Laravel 13's cache refuses to unserialize PHP
   objects (`cache.serializable_classes = false`). Settings caching is fine (plain values).
 
+## Design rules (Round 5B/6 — owner-approved; see design-review/round5/SUMMARY.md)
+- **Palette only**: text and UI colours come exclusively from the established brand
+  tokens in `resources/css/app.css` (`primary`, `secondary`, `sky-bright`, `sky-deep`,
+  `ink`, `muted`, `destructive`, …). Never invent a new shade, hex value or oklch —
+  not in views, CSS or PDFs.
+- **Buttons**: every button/CTA renders through `<x-ui.button>` with its three
+  variants — `primary`, `outline` (border-current; adapts to dark bands), `link`
+  (inline text action). Never style a one-off button or pass colour classes to it;
+  don't pass display classes either (`hidden` fights the base `inline-flex` — wrap
+  instead, see the header). The same action looks the same everywhere.
+- **No flat-black hero bands on secondary pages**: `<x-site.page-hero>` without an
+  image renders the compact navy-gradient hero; only tandem/AFF/coached get
+  photographic CMS heroes. Dark `band-ink` sections stay only where already
+  approved (stats, about, newsletter, gift band, footer).
+
 ## Quality bar (enforced before every commit)
 - `php artisan test` — full suite green, no skips. Feature tests for HTTP/Livewire
   flows, unit tests for actions/support classes, Filament resource tests. Mock Stripe
