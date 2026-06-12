@@ -14,7 +14,7 @@
                 <div class="border-2 border-secondary bg-card p-8 text-center">
                     <h3 class="font-display text-2xl uppercase text-secondary">New course dates coming soon</h3>
                     <p class="mt-2 text-muted-foreground">Send an enquiry and we'll let you know the moment the next course opens.</p>
-                    <x-ui.button href="/aff#enquiry" class="mt-6 bg-primary text-primary-foreground hover:bg-primary/90">Ask about the next course</x-ui.button>
+                    <x-ui.button href="/aff#enquiry" class="mt-6">Ask about the next course</x-ui.button>
                 </div>
             @else
                 <div class="grid gap-4">
@@ -50,9 +50,7 @@
         <form wire:submit="continueToReview" class="mt-8 border-2 border-secondary bg-card p-6 sm:p-8">
             <div class="flex items-center justify-between gap-4">
                 <h3 class="font-display text-2xl uppercase text-secondary">Your details</h3>
-                <button type="button" wire:click="backToStep(1)" class="text-sm font-bold uppercase tracking-wide text-primary hover:underline">
-                    Change course
-                </button>
+                <x-ui.button variant="link" wire:click="backToStep(1)">Change course</x-ui.button>
             </div>
             @if ($course)
                 <p class="mt-1 text-sm text-muted-foreground">{{ $course->date_range_label }} — {{ $course->location->name }}</p>
@@ -92,7 +90,7 @@
                 <input id="ba-website" type="text" wire:model="website" tabindex="-1" autocomplete="off" />
             </div>
 
-            <x-ui.button type="submit" size="lg" class="mt-8 w-full bg-primary text-primary-foreground hover:bg-primary/90" wire:loading.attr="disabled">
+            <x-ui.button type="submit" size="lg" class="mt-8 w-full" wire:loading.attr="disabled">
                 <span wire:loading.remove wire:target="continueToReview">Review booking</span>
                 <span wire:loading wire:target="continueToReview">One moment…</span>
             </x-ui.button>
@@ -104,9 +102,7 @@
         <div class="mt-8 border-2 border-secondary bg-card p-6 sm:p-8">
             <div class="flex items-center justify-between gap-4">
                 <h3 class="font-display text-2xl uppercase text-secondary">Review &amp; pay deposit</h3>
-                <button type="button" wire:click="backToStep(2)" class="text-sm font-bold uppercase tracking-wide text-primary hover:underline">
-                    Edit details
-                </button>
+                <x-ui.button variant="link" wire:click="backToStep(2)">Edit details</x-ui.button>
             </div>
 
             <dl class="mt-6 space-y-3 text-sm">
@@ -159,7 +155,7 @@
                 </div>
             @endif
 
-            <x-ui.button wire:click="pay" size="lg" class="mt-6 w-full bg-primary text-primary-foreground hover:bg-primary/90" wire:loading.attr="disabled">
+            <x-ui.button wire:click="pay" size="lg" class="mt-6 w-full" wire:loading.attr="disabled">
                 <span wire:loading.remove wire:target="pay">Pay {{ $course->formatted_deposit }} deposit with Stripe</span>
                 <span wire:loading wire:target="pay">Taking you to secure payment…</span>
             </x-ui.button>

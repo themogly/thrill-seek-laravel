@@ -65,7 +65,7 @@
                     </ul>
                 </div>
                 <div class="mt-8 text-center">
-                    <x-ui.button href="/" size="lg" class="bg-primary text-primary-foreground hover:bg-primary/90">Back to the site</x-ui.button>
+                    <x-ui.button href="/" size="lg" >Back to the site</x-ui.button>
                 </div>
             </div>
         </x-site.section>
@@ -77,7 +77,7 @@
                     We're waiting for Stripe to confirm your payment. Refresh this page in a moment,
                     or just watch your inbox — your confirmation email will arrive as soon as it clears.
                 </p>
-                <x-ui.button href="" onclick="window.location.reload(); return false;" size="lg" class="mt-8 bg-primary text-primary-foreground hover:bg-primary/90">
+                <x-ui.button href="" onclick="window.location.reload(); return false;" size="lg" class="mt-8">
                     Refresh
                 </x-ui.button>
             </div>
@@ -88,7 +88,7 @@
             <div class="mx-auto max-w-xl text-center">
                 <x-icon name="check" class="mx-auto h-10 w-10 text-primary" />
                 <p class="mt-4 text-lg text-muted-foreground">We'll be in touch shortly to arrange the details of your jump.</p>
-                <x-ui.button href="/" size="lg" class="mt-8 bg-primary text-primary-foreground hover:bg-primary/90">
+                <x-ui.button href="/" size="lg" class="mt-8">
                     Back to the site
                 </x-ui.button>
             </div>

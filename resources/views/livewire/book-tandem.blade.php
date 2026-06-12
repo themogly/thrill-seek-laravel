@@ -14,7 +14,7 @@
                 <div class="border-2 border-secondary bg-card p-8 text-center">
                     <h3 class="font-display text-2xl uppercase text-secondary">No dates online right now</h3>
                     <p class="mt-2 text-muted-foreground">We add jump dates all the time. Send an enquiry and we'll find you a slot.</p>
-                    <x-ui.button href="/contact" class="mt-6 bg-primary text-primary-foreground hover:bg-primary/90">Get in touch</x-ui.button>
+                    <x-ui.button href="/contact" class="mt-6">Get in touch</x-ui.button>
                 </div>
             @else
                 @php $byLocation = $availableSlots->groupBy(fn ($s) => $s->location->name); @endphp
@@ -55,9 +55,7 @@
         <form wire:submit="continueToReview" class="mt-8 border-2 border-secondary bg-card p-6 sm:p-8">
             <div class="flex items-center justify-between gap-4">
                 <h3 class="font-display text-2xl uppercase text-secondary">Your details</h3>
-                <button type="button" wire:click="backToStep(1)" class="text-sm font-bold uppercase tracking-wide text-primary hover:underline">
-                    Change date
-                </button>
+                <x-ui.button variant="link" wire:click="backToStep(1)">Change date</x-ui.button>
             </div>
             @if ($selectedSlot)
                 <p class="mt-1 text-sm text-muted-foreground">
@@ -116,7 +114,7 @@
                 <input id="bt-website" type="text" wire:model="website" tabindex="-1" autocomplete="off" />
             </div>
 
-            <x-ui.button type="submit" size="lg" class="mt-8 w-full bg-primary text-primary-foreground hover:bg-primary/90" wire:loading.attr="disabled">
+            <x-ui.button type="submit" size="lg" class="mt-8 w-full" wire:loading.attr="disabled">
                 <span wire:loading.remove wire:target="continueToReview">Review booking</span>
                 <span wire:loading wire:target="continueToReview">One moment…</span>
             </x-ui.button>
@@ -128,9 +126,7 @@
         <div class="mt-8 border-2 border-secondary bg-card p-6 sm:p-8">
             <div class="flex items-center justify-between gap-4">
                 <h3 class="font-display text-2xl uppercase text-secondary">Review &amp; pay</h3>
-                <button type="button" wire:click="backToStep(2)" class="text-sm font-bold uppercase tracking-wide text-primary hover:underline">
-                    Edit details
-                </button>
+                <x-ui.button variant="link" wire:click="backToStep(2)">Edit details</x-ui.button>
             </div>
 
             <dl class="mt-6 space-y-3 text-sm">
@@ -181,7 +177,7 @@
                     <label for="bt-voucher" class="text-sm font-bold uppercase tracking-wide text-secondary">Got a gift voucher?</label>
                     <div class="mt-2 flex gap-2">
                         <x-ui.input id="bt-voucher" wire:model="voucherCode" placeholder="GV-XXXXXXXX" class="flex-1 uppercase" />
-                        <x-ui.button type="button" wire:click="applyVoucher" variant="outline" class="border-input text-secondary hover:bg-accent" wire:loading.attr="disabled">
+                        <x-ui.button type="button" wire:click="applyVoucher" variant="outline"  wire:loading.attr="disabled">
                             Apply
                         </x-ui.button>
                     </div>
@@ -210,7 +206,7 @@
                 </div>
             @endif
 
-            <x-ui.button wire:click="pay" size="lg" class="mt-6 w-full bg-primary text-primary-foreground hover:bg-primary/90" wire:loading.attr="disabled">
+            <x-ui.button wire:click="pay" size="lg" class="mt-6 w-full" wire:loading.attr="disabled">
                 <span wire:loading.remove wire:target="pay">
                     @if ($duePence === 0)
                         Book now — nothing to pay

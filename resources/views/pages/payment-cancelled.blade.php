@@ -25,11 +25,11 @@
             </p>
             <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
                 @if ($retryUrl)
-                    <x-ui.button :href="$retryUrl" size="lg" class="bg-primary text-primary-foreground hover:bg-primary/90">
+                    <x-ui.button :href="$retryUrl" size="lg" >
                         Try again
                     </x-ui.button>
                 @endif
-                <x-ui.button href="/contact" size="lg" variant="outline" class="border-input text-secondary hover:bg-accent">
+                <x-ui.button href="/contact" size="lg" variant="outline" >
                     Contact us
                 </x-ui.button>
             </div>

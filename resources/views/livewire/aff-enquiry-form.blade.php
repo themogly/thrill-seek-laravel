@@ -16,7 +16,7 @@
         <label for="aff-website">Website</label>
         <input id="aff-website" type="text" name="website" wire:model="website" tabindex="-1" autocomplete="off" />
     </div>
-    <x-ui.button type="submit" wire:loading.attr="disabled" class="mt-6 w-full bg-secondary text-secondary-foreground hover:bg-secondary/90">
+    <x-ui.button type="submit" wire:loading.attr="disabled" class="mt-6 w-full">
         <span wire:loading.remove wire:target="submit">Send Enquiry</span>
         <span wire:loading wire:target="submit">Sending...</span>
     </x-ui.button>

@@ -3,7 +3,7 @@
         <div class="border-2 border-secondary bg-card p-8 text-center">
             <h3 class="font-display text-2xl uppercase text-secondary">Vouchers are taking a breather</h3>
             <p class="mt-2 text-muted-foreground">Get in touch and we'll arrange one directly.</p>
-            <x-ui.button href="/contact" class="mt-6 bg-primary text-primary-foreground hover:bg-primary/90">Contact us</x-ui.button>
+            <x-ui.button href="/contact" class="mt-6">Contact us</x-ui.button>
         </div>
     @else
         <form wire:submit="pay" class="border-2 border-secondary bg-card p-6 sm:p-8">
@@ -54,7 +54,7 @@
                 </div>
             @endif
 
-            <x-ui.button type="submit" size="lg" class="mt-6 w-full bg-primary text-primary-foreground hover:bg-primary/90" wire:loading.attr="disabled">
+            <x-ui.button type="submit" size="lg" class="mt-6 w-full" wire:loading.attr="disabled">
                 <span wire:loading.remove wire:target="pay">Buy for {{ $product->formatted_price }} — delivered by email</span>
                 <span wire:loading wire:target="pay">Taking you to secure payment…</span>
             </x-ui.button>

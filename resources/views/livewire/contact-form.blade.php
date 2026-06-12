@@ -16,7 +16,7 @@
         <label for="c-website">Website</label>
         <input id="c-website" type="text" name="website" wire:model="website" tabindex="-1" autocomplete="off" />
     </div>
-    <x-ui.button type="submit" wire:loading.attr="disabled" class="mt-6 bg-primary text-primary-foreground hover:bg-primary/90">
+    <x-ui.button type="submit" wire:loading.attr="disabled" class="mt-6">
         <x-icon name="send" class="mr-2 h-4 w-4" />
         <span wire:loading.remove wire:target="submit">Send Message</span>
         <span wire:loading wire:target="submit">Sending...</span>

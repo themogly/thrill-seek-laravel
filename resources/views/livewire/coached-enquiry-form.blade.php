@@ -46,7 +46,7 @@
         <input id="ce-website" type="text" wire:model="website" tabindex="-1" autocomplete="off" />
     </div>
 
-    <x-ui.button type="submit" size="lg" class="mt-6 w-full bg-primary text-primary-foreground hover:bg-primary/90" wire:loading.attr="disabled">
+    <x-ui.button type="submit" size="lg" class="mt-6 w-full" wire:loading.attr="disabled">
         <span wire:loading.remove wire:target="submit">Get a coaching plan</span>
         <span wire:loading wire:target="submit">Sending…</span>
     </x-ui.button>

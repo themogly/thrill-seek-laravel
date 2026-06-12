@@ -36,12 +36,9 @@
                 </a>
             @endforeach
         </nav>
-        <a
-            href="/book/tandem"
-            class="hidden h-11 items-center bg-primary px-6 text-sm font-bold uppercase tracking-widest text-primary-foreground transition-colors hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 lg:inline-flex"
-        >
+        <x-ui.button href="/book/tandem" class="hidden lg:inline-flex">
             Book Now
-        </a>
+        </x-ui.button>
         <button aria-label="Toggle menu" class="flex h-11 w-11 items-center justify-center text-secondary lg:hidden" @click="open = !open">
             <x-icon name="menu" x-show="!open" />
             <x-icon name="x" x-show="open" x-cloak />
@@ -58,7 +55,7 @@
                     {{ $item['label'] }}
                 </a>
             @endforeach
-            <a href="/book/tandem" @click="open = false" class="bg-primary px-4 py-3.5 text-sm font-bold uppercase tracking-widest text-primary-foreground">
+            <a href="/book/tandem" @click="open = false" class="bg-primary px-4 py-3.5 text-sm font-bold uppercase tracking-widest text-primary-foreground transition-colors hover:bg-primary/85">
                 Book Now
             </a>
         </nav>

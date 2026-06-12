@@ -21,7 +21,7 @@
                         </div>
                         <span class="text-sm font-bold text-primary">{{ $p->price_label }}</span>
                     </div>
-                    <x-ui.button class="mt-4 w-full bg-secondary text-secondary-foreground hover:bg-secondary/90" onclick="window.toast?.info('Online ordering opens soon — contact us to order.')">
+                    <x-ui.button class="mt-4 w-full" onclick="window.toast?.info('Online ordering opens soon — contact us to order.')">
                         Enquire
                     </x-ui.button>
                 </div>

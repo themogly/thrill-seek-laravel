@@ -33,7 +33,7 @@
                 <x-ui.button href="/tandem" size="lg">
                     {{ $home->hero_cta_primary_label }} <x-icon name="arrow-right" class="ml-2 h-5 w-5" />
                 </x-ui.button>
-                <x-ui.button href="/aff" size="lg" variant="outline-light">
+                <x-ui.button href="/aff" size="lg" variant="outline">
                     {{ $home->hero_cta_secondary_label }}
                 </x-ui.button>
             </div>
