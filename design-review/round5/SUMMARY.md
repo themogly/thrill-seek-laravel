@@ -81,3 +81,36 @@ card floating on a glow shadow, repeated forever. The replacement:
    caught by the page-count check, tightened to one page.
 4. Mail theme button borders stayed black behind the new blue fill — caught in
    the email screenshots.
+
+## Round 6 — owner's feedback corrections (this branch, unmerged)
+
+Five targeted fixes on top of the approved Round 5B direction; one commit per
+item, after-state captured viewport-by-viewport in `after/round6-*.png`
+(1440/768/390), button system documented in `button-montage.png`.
+
+1. **Invented hero light-blue removed.** The `--hero-accent` token and its
+   `.text-hero-accent` utility are deleted; accents use the palette's
+   `--sky-bright` (and the voucher PDF its hex equivalent). No view, CSS or
+   PDF carries a colour outside the brand tokens.
+2. **Trust-band icons back, flat.** One monochrome `sky-bright` icon per stat
+   (CMS-managed icon names), 32px, no circles/gradients/glows. The dark stats
+   band itself stays, as approved.
+3. **One button system.** `<x-ui.button>` is the single source: `primary`
+   (solid brand blue), `outline` (border-current — navy on light, white on
+   dark, replacing the outline-light fork), `link` (inline text action,
+   adopted by the booking back-steps). Every per-call colour override was
+   stripped; the same action now looks the same on every page. See
+   `button-montage.png` for all variants on light/navy/ink surfaces.
+4. **No flat-black heroes or pay sections.** The shared pay-card (tandem +
+   AFF "Secure your place") is flat deep navy. `page-hero` without an image
+   is now a compact navy-gradient band (one type step smaller); tandem, AFF
+   and coached keep their CMS photo heroes — per-page reasoning in
+   DECISIONS.md. Approved dark bands (stats, about, newsletter, gift,
+   footer) are untouched.
+5. **Rules codified.** CLAUDE.md now pins: palette-only colours, buttons only
+   via the shared variants, no flat-black heroes on secondary pages.
+
+Regression caught during the pass: passing `hidden lg:inline-flex` to the
+unified header CTA couldn't beat the component's base `inline-flex`
+(compiled-CSS order decides, not class order) — the CTA leaked into the
+mobile header; fixed with a responsive wrapper and noted in CLAUDE.md.
