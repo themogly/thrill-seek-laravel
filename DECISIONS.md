@@ -374,3 +374,34 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
 - **Screenshot harness** now emulates prefers-reduced-motion (entrance reveals
   otherwise sit at opacity 0 in full-page captures); reveals verified by hand.
 - Tests pinning old markup needed no changes — none asserted card chrome.
+
+## Round 6 — owner's design feedback (design/bold-redesign, unmerged)
+
+- **Hero light-blue token**: the invented `--hero-accent` shade is gone everywhere
+  (`.text-hero-accent` utility deleted); the accent role is filled by the existing
+  palette token `--sky-bright`. The voucher PDF's hex equivalent moved to the
+  palette's `#0ea5e9`.
+- **Trust band icons**: one flat monochrome icon per stat (existing CMS `icon`
+  field), drawn in `sky-bright` at 32px, no circles/gradients/glows. The dark
+  stats band itself stays — the owner named it as a band that works.
+- **One button system**: `<x-ui.button>` is the only way to render a button.
+  Exactly three variants — `primary` (solid brand blue), `outline` (2px
+  `border-current`, so it self-adapts to light and dark surfaces; the old
+  `outline-light` fork is gone), `link` (quiet inline text action, no box;
+  adopted by the booking flows' back-step actions). All per-call colour
+  overrides stripped. Display classes (`hidden`, `flex`…) are never passed to
+  the button — base `inline-flex` conflicts and compiled-CSS order decides —
+  responsive visibility is done with a wrapper (see header).
+- **No flat-black heroes on secondary pages**: `page-hero` without an image is
+  now a compact navy-gradient band (`bg-sky-gradient`, py-16/24, one type step
+  smaller) instead of the full-height ink band. Per-page decision: tandem, AFF
+  and coached keep their CMS photographic heroes; every other page (shop,
+  testimonials, hall of fame, contact, vouchers, privacy, terms, book-tandem,
+  book-aff, payment-success/cancelled, 404) gets the compact navy hero — none
+  of those pages has a CMS hero-image field, and adding twelve image settings
+  was judged scope creep for a corrections round; any page can be promoted to a
+  photo hero later by adding the field and passing `:image`.
+- **AFF "Secure your place"**: the shared `pay-card` (tandem + AFF) moved from
+  the ink band to flat deep navy (`bg-secondary`) with the same primary rule.
+- Dark `band-ink` survives only where the owner said it works: stats band,
+  about band, newsletter band, tandem gift band, footer, image placeholders.

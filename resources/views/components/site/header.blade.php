@@ -36,9 +36,14 @@
                 </a>
             @endforeach
         </nav>
-        <x-ui.button href="/book/tandem" class="hidden lg:inline-flex">
-            Book Now
-        </x-ui.button>
+        {{-- Wrapper, not `hidden` on the button: the component's base
+             inline-flex and a passed `hidden` both set display, and the
+             compiled CSS order — not class order — would decide. --}}
+        <div class="hidden lg:block">
+            <x-ui.button href="/book/tandem">
+                Book Now
+            </x-ui.button>
+        </div>
         <button aria-label="Toggle menu" class="flex h-11 w-11 items-center justify-center text-secondary lg:hidden" @click="open = !open">
             <x-icon name="menu" x-show="!open" />
             <x-icon name="x" x-show="open" x-cloak />
