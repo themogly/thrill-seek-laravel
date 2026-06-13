@@ -11,6 +11,10 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property NewsletterStatus $status
+ * @property Carbon|null $consented_at
+ * @property Carbon|null $confirmed_at
+ * @property Carbon|null $unsubscribed_at
+ * @property Carbon|null $created_at
  */
 class NewsletterSubscriber extends Model
 {

@@ -4,9 +4,11 @@ namespace App\Filament\Widgets;
 
 use App\Enums\BookingStatus;
 use App\Enums\EnquiryStatus;
+use App\Enums\NewsletterStatus;
 use App\Enums\PaymentStatus;
 use App\Models\Booking;
 use App\Models\Enquiry;
+use App\Models\NewsletterSubscriber;
 use App\Models\Payment;
 use App\Support\Money;
 use Filament\Widgets\StatsOverviewWidget;
@@ -33,6 +35,9 @@ class BusinessStatsOverview extends StatsOverviewWidget
             ->get()
             ->sum(fn (Booking $booking): int => $booking->balance_due_pence);
 
+        $confirmedSubscribers = NewsletterSubscriber::confirmed()->count();
+        $pendingSubscribers = NewsletterSubscriber::where('status', NewsletterStatus::Pending)->count();
+
         return [
             Stat::make('Revenue this month', Money::formatPence($revenueThisMonth))
                 ->description('Paid payments, all methods')
@@ -46,6 +51,9 @@ class BusinessStatsOverview extends StatsOverviewWidget
             Stat::make('Outstanding balances', Money::formatPence((int) $outstanding))
                 ->description('Across active bookings')
                 ->color($outstanding > 0 ? 'danger' : 'success'),
+            Stat::make('Newsletter subscribers', (string) $confirmedSubscribers)
+                ->description($pendingSubscribers > 0 ? "{$pendingSubscribers} awaiting confirmation" : 'Confirmed and opted in')
+                ->color('info'),
         ];
     }
 }
