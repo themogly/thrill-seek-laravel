@@ -429,3 +429,27 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
   and asserts the resulting Stripe charge is exactly 31250 pence — guarding against
   the 100×/​÷100 error. Existing tests that filled these form fields were updated to
   enter pounds; tests that write models/DB directly keep using pence.
+
+- **Item 1 — optional lead text**: section-heading and page-hero already gated
+  their leads; the home newsletter/CTA subtitles and voucher intro are now wrapped
+  too, and the lead/intro/subtitle fields are no longer `required` in the admin.
+  Blanking a lead removes the block *and* its margin (conditional wrapper, no empty
+  element), so the title sits directly on the next element.
+- **Item 2 — testimonial avatars**: optional `avatar` via the existing image
+  pipeline (new `testimonials` dir, 240px cap); shared `<x-site.avatar>` shows the
+  photo or a navy initial badge (matching the coach-portrait fallback) on both the
+  testimonials page and home pull-quotes. Two seeded testimonials carry photos.
+- **Item 4 — booking dropdown location**: the jump-slot select leads with the
+  dropzone so identical dates at different locations are distinguishable
+  (location eager-loaded).
+- **Item 5 — booking newsletter opt-in**: an unticked "Keep me posted" checkbox in
+  the tandem/AFF/voucher flows, reusing the footer newsletter backend via a shared
+  `OffersNewsletterOptIn` concern (no second path). Consent is active-only (never
+  pre-ticked). On this branch the backend is the current-main capture; when Round 7
+  merges it flows through the double-opt-in service unchanged.
+- **Item 6 — instructors carousel**: a flex scroll-snap rail; `flex-1` + per-view
+  min-width (50% / 25%) makes 1–4 coaches fill the row and 5+ overflow into a
+  horizontal scroll, never a stack and never a stranded card. Keyboard-focusable,
+  touch-draggable, no layout shift.
+- **Item 7 — subscribe button**: folded into `<x-ui.button variant="primary">`;
+  no one-off colour classes remain on the home page.
