@@ -71,7 +71,7 @@
                 <span wire:loading wire:target="pay">{{ $this->paymentsEnabled ? 'Taking you to secure payment…' : 'Sending your request…' }}</span>
             </x-ui.button>
             @if ($this->paymentsEnabled)
-                <p class="mt-3 text-center text-xs text-muted-foreground">Card payments are handled by Stripe — we never see your card details.</p>
+                <p class="mt-3 text-center text-xs text-muted-foreground">Card payments are secure — we never see your card details.</p>
             @else
                 <p class="mt-3 text-center text-xs text-muted-foreground">We'll arrange the voucher and payment with you directly — no card needed now.</p>
             @endif

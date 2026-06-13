@@ -74,7 +74,7 @@
         <x-site.section>
             <div class="mx-auto max-w-xl text-center">
                 <p class="text-lg text-muted-foreground">
-                    We're waiting for Stripe to confirm your payment. Refresh this page in a moment,
+                    We're waiting to confirm your card payment. Refresh this page in a moment,
                     or just watch your inbox — your confirmation email will arrive as soon as it clears.
                 </p>
                 <x-ui.button href="" onclick="window.location.reload(); return false;" size="lg" class="mt-8">

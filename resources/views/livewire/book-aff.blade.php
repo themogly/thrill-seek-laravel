@@ -174,11 +174,11 @@
             @endif
 
             <x-ui.button wire:click="pay" size="lg" class="mt-6 w-full" wire:loading.attr="disabled">
-                <span wire:loading.remove wire:target="pay">{{ $this->paymentsEnabled ? 'Pay '.$course->formatted_deposit.' deposit with Stripe' : 'Send course request' }}</span>
+                <span wire:loading.remove wire:target="pay">{{ $this->paymentsEnabled ? 'Pay '.$course->formatted_deposit.' deposit by card' : 'Send course request' }}</span>
                 <span wire:loading wire:target="pay">{{ $this->paymentsEnabled ? 'Taking you to secure payment…' : 'Sending your request…' }}</span>
             </x-ui.button>
             @if ($this->paymentsEnabled)
-                <p class="mt-3 text-center text-xs text-muted-foreground">Card payments are handled by Stripe — we never see your card details.</p>
+                <p class="mt-3 text-center text-xs text-muted-foreground">Card payments are secure — we never see your card details.</p>
             @else
                 <p class="mt-3 text-center text-xs text-muted-foreground">We'll confirm your place and arrange the deposit with you directly — no card needed now.</p>
             @endif

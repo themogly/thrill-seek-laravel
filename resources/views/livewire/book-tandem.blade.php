@@ -226,7 +226,7 @@
                     @elseif ($duePence === 0)
                         Book now — nothing to pay
                     @else
-                        Pay {{ $formattedDue }} securely with Stripe
+                        Pay {{ $formattedDue }} by card
                     @endif
                 </span>
                 <span wire:loading wire:target="pay">
@@ -238,7 +238,7 @@
                 </span>
             </x-ui.button>
             @if ($this->paymentsEnabled && $duePence > 0)
-                <p class="mt-3 text-center text-xs text-muted-foreground">Card payments are handled by Stripe — we never see your card details.</p>
+                <p class="mt-3 text-center text-xs text-muted-foreground">Card payments are secure — we never see your card details.</p>
             @elseif (! $this->paymentsEnabled)
                 <p class="mt-3 text-center text-xs text-muted-foreground">We'll confirm availability and arrange payment with you directly — no card needed now.</p>
             @endif

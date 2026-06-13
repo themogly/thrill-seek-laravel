@@ -88,14 +88,14 @@
                     eyebrow="Book online"
                     :heading="$payEnabled ? 'Book your jump now' : 'Request your jump'"
                     :body="$payEnabled
-                        ? 'Pick a date, tell us about you and pay securely — booked in minutes. We use Stripe for safe, instant checkout.'
+                        ? 'Pick a date, tell us about you and pay securely by card — booked in minutes.'
                         : 'Pick a date and tell us about you — we\'ll confirm your booking and arrange payment with you directly.'"
                     :button="$payEnabled ? 'Choose a date & book' : 'Choose a date & enquire'"
                     href="/book/tandem"
                 >
                     <ul class="mt-6 space-y-2 text-sm text-white/90">
                         <li class="flex items-center gap-2"><x-icon name="check" class="h-4 w-4 text-sky-bright" /> {{ $product->formatted_price }} full tandem {{ $payEnabled ? 'payment' : 'price' }}</li>
-                        <li class="flex items-center gap-2"><x-icon name="check" class="h-4 w-4 text-sky-bright" /> {{ $payEnabled ? 'Secure Stripe checkout' : 'No card needed to enquire' }}</li>
+                        <li class="flex items-center gap-2"><x-icon name="check" class="h-4 w-4 text-sky-bright" /> {{ $payEnabled ? 'Secure card checkout' : 'No card needed to enquire' }}</li>
                         <li class="flex items-center gap-2"><x-icon name="check" class="h-4 w-4 text-sky-bright" /> Booking confirmation by email</li>
                     </ul>
                 </x-site.pay-card>
