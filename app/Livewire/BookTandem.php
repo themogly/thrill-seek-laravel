@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Actions\StartTandemCheckout;
 use App\Exceptions\BookingUnavailableException;
+use App\Livewire\Concerns\OffersNewsletterOptIn;
 use App\Livewire\Concerns\ProtectsAgainstSpam;
 use App\Models\Product;
 use App\Models\TandemDate;
@@ -17,7 +18,7 @@ use Livewire\Component;
 
 class BookTandem extends Component
 {
-    use ProtectsAgainstSpam;
+    use OffersNewsletterOptIn, ProtectsAgainstSpam;
 
     public int $step = 1;
 
@@ -168,6 +169,8 @@ class BookTandem extends Component
 
             return;
         }
+
+        $this->subscribeIfOptedIn($this->email);
 
         try {
             $result = $startCheckout->handle($slot, $product, [

@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Actions\StartAffCheckout;
 use App\Exceptions\BookingUnavailableException;
+use App\Livewire\Concerns\OffersNewsletterOptIn;
 use App\Livewire\Concerns\ProtectsAgainstSpam;
 use App\Models\CourseDate;
 use Illuminate\Contracts\View\View;
@@ -14,7 +15,7 @@ use Livewire\Component;
 
 class BookAff extends Component
 {
-    use ProtectsAgainstSpam;
+    use OffersNewsletterOptIn, ProtectsAgainstSpam;
 
     public int $step = 1;
 
@@ -122,6 +123,8 @@ class BookAff extends Component
 
             return;
         }
+
+        $this->subscribeIfOptedIn($this->email);
 
         try {
             $result = $startCheckout->handle($course, [
