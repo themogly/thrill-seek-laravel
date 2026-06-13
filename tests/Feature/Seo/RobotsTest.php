@@ -19,4 +19,12 @@ class RobotsTest extends TestCase
             ->assertOk()
             ->assertDontSee('noindex', false);
     }
+
+    public function test_robots_txt_references_the_absolute_sitemap_and_disallows_admin(): void
+    {
+        $this->get('/robots.txt')
+            ->assertOk()
+            ->assertSee('Sitemap: '.url('/sitemap.xml'), false)
+            ->assertSee('Disallow: /admin', false);
+    }
 }

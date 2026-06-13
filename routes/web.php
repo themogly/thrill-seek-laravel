@@ -3,7 +3,9 @@
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\StripeWebhookController;
+use App\Models\NewsArticle;
 use App\Settings\GeneralSettings;
+use App\Support\SiteContent;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PageController::class, 'home'])->name('home');
@@ -40,6 +42,21 @@ if (app()->environment('local')) {
     require __DIR__.'/dev.php';
 }
 
+Route::get('/robots.txt', function () {
+    // Served dynamically so the Sitemap line is an absolute URL on any host.
+    $body = implode("\n", [
+        'User-agent: *',
+        'Disallow: /admin',
+        'Disallow: /admin/',
+        'Disallow: /dev/',
+        '',
+        'Sitemap: '.url('/sitemap.xml'),
+        '',
+    ]);
+
+    return response($body, 200, ['Content-Type' => 'text/plain']);
+})->name('robots');
+
 Route::get('/sitemap.xml', function () {
     $entries = [
         ['path' => '/', 'priority' => '1.0'],
@@ -62,10 +79,27 @@ Route::get('/sitemap.xml', function () {
 
     if (app(GeneralSettings::class)->news_enabled) {
         $entries[] = ['path' => '/news', 'priority' => '0.6'];
+
+        // Each published article, with its last-modified time so crawlers recrawl
+        // on edit. Read through the cached gateway (busted on save).
+        foreach (app(SiteContent::class)->publishedNews() as $article) {
+            /** @var NewsArticle $article */
+            $entries[] = [
+                'path' => '/news/'.$article->slug,
+                'priority' => '0.5',
+                'lastmod' => $article->updated_at?->toAtomString(),
+            ];
+        }
     }
 
     $urls = collect($entries)
-        ->map(fn ($e) => "  <url><loc>{$e['path']}</loc><changefreq>weekly</changefreq><priority>{$e['priority']}</priority></url>")
+        ->map(function (array $e): string {
+            // Absolute URLs are required in a sitemap.
+            $loc = url($e['path']);
+            $lastmod = isset($e['lastmod']) ? "<lastmod>{$e['lastmod']}</lastmod>" : '';
+
+            return "  <url><loc>{$loc}</loc>{$lastmod}<changefreq>weekly</changefreq><priority>{$e['priority']}</priority></url>";
+        })
         ->implode("\n");
 
     $xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n{$urls}\n</urlset>";
