@@ -37,6 +37,8 @@ class EditCourseDate extends EditRecord
                 ->label('Message students')
                 ->icon('heroicon-o-envelope')
                 ->color('success')
+                // No one to message until the course has paid, non-cancelled students.
+                ->visible(fn (): bool => $this->getRecord()->messageableBookings()->isNotEmpty())
                 ->form([
                     TextInput::make('subject')
                         ->label('Subject')

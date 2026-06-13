@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
@@ -29,6 +30,8 @@ class Booking extends Model
 {
     /** @use HasFactory<BookingFactory> */
     use HasFactory, LogsActivity;
+
+    private const PRESENCE_CACHE_KEY = 'bookings.any';
 
     protected $fillable = [
         'reference',
@@ -91,6 +94,22 @@ class Booking extends Model
         } while (self::where('reference', $reference)->exists());
 
         return $reference;
+    }
+
+    /**
+     * Cheap "are there any bookings yet?" check used to auto-hide booking-only
+     * admin UI (e.g. the calendar) while the system is empty. The flag is
+     * cached and busted by the observer on create/delete, so the steady-state
+     * read is a single cache hit, never a COUNT on every panel render.
+     */
+    public static function anyExistCached(): bool
+    {
+        return (bool) Cache::rememberForever(self::PRESENCE_CACHE_KEY, fn (): bool => self::exists());
+    }
+
+    public static function forgetPresenceCache(): void
+    {
+        Cache::forget(self::PRESENCE_CACHE_KEY);
     }
 
     public function getActivitylogOptions(): LogOptions

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CourseDates\RelationManagers;
 
+use App\Models\CourseDate;
 use App\Models\CourseMessage;
 use Filament\Actions\ViewAction;
 use Filament\Infolists\Components\RepeatableEntry;
@@ -11,12 +12,20 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class MessagesRelationManager extends RelationManager
 {
     protected static string $relationship = 'messages';
 
     protected static ?string $title = 'Message history';
+
+    /** Nothing to show until at least one message has been sent — keep the
+     *  course edit screen clean by hiding this read-only history when empty. */
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+    {
+        return $ownerRecord instanceof CourseDate && $ownerRecord->messages()->exists();
+    }
 
     public function infolist(Schema $schema): Schema
     {
