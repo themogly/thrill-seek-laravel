@@ -113,3 +113,38 @@ that convert".
   dropzone directories / BPA listings; never fabricated.
 - **Production canonical host + HTTPS** — enforce one host (www vs apex) and HTTPS at
   the server/CDN; the canonical tags will then point at the live https host.
+
+---
+
+## Status (after the phased fixes)
+
+**Phase 1 — done:**
+- ✅ Self-referencing canonical + complete OG/Twitter (og:url/site_name/locale/type),
+  absolute og:image, `lang="en-GB"` — centralised in the layout, per-page overridable.
+- ✅ Sitemap now emits **absolute** URLs, lists every **published news article** with
+  `<lastmod>`, and excludes drafts.
+- ✅ `robots.txt` is a dynamic route referencing the absolute sitemap; disallows
+  `/admin` and `/dev`.
+- ✅ `noindex,follow` on payment success/cancelled and the newsletter status pages.
+- ✅ News articles set `og:type=article` and their own (absolute) `og:image`.
+
+**Phase 2 — done (structured data) / deferred (copy & address):**
+- ✅ JSON-LD via `<x-seo.json-ld>` + `App\Support\StructuredData`, all from real data:
+  sitewide SportsActivityLocation, Product+Offer (tandem/AFF, live GBP price), Event
+  per AFF course date, AggregateRating (real star ratings), Article + BreadcrumbList
+  on news. Validated as parseable.
+- ⏸ **Local-SEO titles/descriptions** (e.g. "…in Devon"): these are CMS `seo_title`/
+  `seo_description` fields — left for the owner to edit (guardrail: don't hardcode
+  marketing copy into views). Noted as an owner task.
+- ⏸ **Full LocalBusiness postal address / NAP**: no real street address exists in the
+  CMS; not invented. SportsActivityLocation ships with phone/email/areaServed now and
+  upgrades automatically once the owner adds the address (owner task).
+
+**Phase 3 — done:**
+- ✅ Web manifest, apple-touch-icon, theme-color, explicit favicon; home hero
+  preloaded (LCP) with `fetchpriority=high`. Font already preloaded; image dimensions
+  already set (no CLS). 404 already returns 404.
+- ⏸ Dedicated square 512px maskable PWA icon — owner asset task (logo is non-square).
+
+No critical items deferred. Owner tasks remain as listed above (GSC, GBP, real
+address, square app icon, local-copy edits, real reviews/backlinks).
