@@ -112,6 +112,29 @@ php artisan courses:send-reminders     # manual course-reminder run
 # Local only: /dev/mail lists a rendered preview of every email the system sends
 ```
 
+## Feature toggles (Settings → General → Features)
+
+- **Online shop** — OFF by default. When off, Shop is hidden from the menu, footer
+  and sitemap and `/shop` returns 404. Turn on once the storefront is ready.
+- **Online payments** — ON by default. Turn OFF to run the site **enquiry-first**:
+  public "book/buy" buttons send an enquiry (capturing the chosen date/course)
+  instead of taking card payment. Admin Stripe links, bank-transfer recording and
+  the Stripe webhook keep working regardless — the toggle only affects the public
+  site. Changes take effect immediately.
+
+The booking calendar only appears in the admin once at least one booking exists.
+
+## Newsletter
+
+- Subscriptions use **double opt-in**: a signup stores a pending record and emails a
+  confirmation link; the subscriber is only mailed newsletters after confirming.
+- No new environment variables. Sending uses the existing **Resend** config and the
+  queue worker; the signed confirm/unsubscribe links require `APP_KEY` (already set).
+- Subscriber list, CSV export and manual add live under “Newsletter subscribers”;
+  compose/send and history live under “Newsletters”. Sends go to confirmed
+  subscribers only and each email has a one-click unsubscribe.
+- (List management is in our own DB, not Resend Audiences — see DECISIONS.md.)
+
 ## Where things live
 
 - **Site content** — every public page is editable under `/admin` (“Site content”
@@ -119,7 +142,7 @@ php artisan courses:send-reminders     # manual course-reminder run
   Gallery and Instructors resources.
 - **Sales** — “Bookings & sales” group: Enquiries inbox (reply threads, payment links,
   bank transfers), Products & pricing, Bookings + calendar, Tandem dates, AFF courses, Locations,
-  Vouchers, Customers, Email templates.
+  Vouchers, Customers, Newsletter subscribers, Newsletters, Email templates.
 - **Email templates** — all customer-facing automated emails are editable records with
   `{{ placeholder }}` variables listed on each template's edit screen.
 - **DECISIONS.md** — the judgement calls made during the build and why.

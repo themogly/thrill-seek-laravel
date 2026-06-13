@@ -347,3 +347,74 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
   it. Full suite re-run after removal — no behaviour change surfaced (the
   codebase's full type-hints keep coercion at the edges). The CLAUDE.md
   instruction now states the inverse rule.
+
+## Round 7 — feature toggles, admin date pickers, newsletter (feature/round-7)
+
+- **Branch state**: branched off `main`. The Round 5B/6 bold redesign
+  (`design/bold-redesign`) was still unmerged at the time, so this work sits on
+  the *pre-redesign* design language. The new public surfaces added here (the
+  enquiry-first confirmation panels, the dedicated `/newsletter` page, the
+  newsletter status pages) follow the **current main** look; if/when the redesign
+  merges, re-skin these to the Round 6 language (sharp corners, shared button
+  variants, compact navy hero) and re-verify in Playwright.
+
+### Part A — feature toggles
+- Toggles live on `GeneralSettings` (a new "Features" section), matching the
+  established spatie-settings pattern; reads are a cached settings lookup.
+- **Shop** (`shop_enabled`, default OFF — the storefront has no checkout yet). Off
+  hides Shop from the header nav, footer and sitemap and **404s** the `/shop` route
+  via a reusable `feature:` middleware (chosen over a home redirect: the page
+  genuinely doesn't exist while disabled, and 404 is the honest status — no shop
+  code or data is removed, flipping it on restores everything immediately).
+- **Online payments** (`online_payments_enabled`, default ON). Off reverts the
+  public site to **enquiry-first**: the tandem/AFF/voucher flows keep their
+  date/course pickers, but the terminal action creates an `Enquiry` (capturing the
+  chosen date/course + all collected details) instead of a Stripe Checkout session
+  — the funnel becomes an enquiry rather than the CTA pointing elsewhere, which
+  keeps one coherent flow and satisfies "no Stripe session from the public site".
+  **Scope, deliberately narrow**: the toggle governs *public checkout only*. Admin
+  payment tools (send Stripe link, record bank transfer) and the signed
+  `/webhooks/stripe` endpoint are untouched, so admin-sent links still complete.
+- **Auto-hide empty UI**: the booking calendar nav hides until the first booking
+  exists (a `bookings.any` flag cached forever, busted by the booking observer on
+  create/delete — steady-state cost is one cache hit, not a COUNT per render). Same
+  principle, applied narrowly: the read-only course "Message history" relation
+  manager hides until a message exists, and "Message students" hides until the
+  course has paid, non-cancelled students. We did not hide anything that the owner
+  needs as an entry point.
+
+### Part B — admin date pickers
+- **Native input mode, uniformly, via `App\Support\AdminDates`.** Filament's
+  non-native (JS) picker renders a *readonly* text field — click-only, the owner's
+  complaint. Its native `<input type="date">`/`datetime-local` mode is
+  keyboard-typeable *and* shows the browser calendar, so it's the one mode that
+  gives "type it or pick it". Native renders in the browser locale (dd/mm/yyyy in
+  the UK) and ignores a custom display format, so we don't set one. Every date
+  field is built through the helper so it can never regress to the click-only
+  picker. Defaults added: new tandem date → today 09:00; new course → today + 4
+  days (the 5-day minimum), with the end tracking the start without shrinking a
+  longer course. The live day-count and 5-day rule are unchanged.
+
+### Part C — newsletter
+- **Engine: our database is the list of record; Resend is the transport.** We keep
+  subscribers, status and consent/unsubscribe timestamps in our own tables (behind
+  a `NewsletterService` interface) and send through Resend via the normal queued
+  mail pipeline. We did **not** delegate list management to Resend Audiences/
+  Broadcasts: authoritative, auditable consent and unsubscribe records (with
+  timestamps) belong in our DB for compliance, it keeps one provider and no new
+  keys, and double opt-in + signed unsubscribe are cleaner in-app. The interface
+  isolates list management so a future move to Resend Audiences (or another
+  platform) is a single binding swap in `AppServiceProvider`.
+- **Double opt-in**: signup records a *pending* subscriber (+ consent timestamp)
+  and emails a signed confirmation link; confirming sets *confirmed*. An
+  already-confirmed address is a quiet no-op (no duplicate, no re-send). Existing
+  pre-Round-7 rows were migrated to confirmed/consented so none are dropped.
+- **Compliance**: confirm and unsubscribe are signed, login-free routes (Laravel
+  signed URLs — needs `APP_KEY`); unsubscribe is immediate and timestamped; every
+  broadcast carries a one-click unsubscribe link; sending targets the `confirmed`
+  scope only, so pending and unsubscribed/suppressed addresses are never emailed.
+- **Sending**: a "Compose newsletter" admin action creates an immutable
+  `NewsletterCampaign` (subject, rich body, recipient count, sent-at, sent-by) and
+  queues one `NewsletterCampaignMail` per confirmed subscriber (one bad address
+  can't fail the batch). Campaigns are read-only history afterwards. Both new
+  mailables are in the permanent mail-render test and the `/dev/mail` preview.
