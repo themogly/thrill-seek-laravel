@@ -52,9 +52,12 @@ class BookingForm
                             ->label('Jump slot')
                             ->helperText('Picking a slot sets the date below and confirms the booking.')
                             ->options(fn (): array => TandemDate::upcoming()
+                                ->with('location')
                                 ->get()
                                 ->mapWithKeys(fn (TandemDate $slot): array => [
-                                    $slot->id => $slot->starts_at->format('D j M Y, H:i')." ({$slot->remaining_capacity} of {$slot->capacity} places left)",
+                                    // Location first so otherwise-identical dates at different
+                                    // dropzones are distinguishable.
+                                    $slot->id => $slot->location->name.' · '.$slot->starts_at->format('D j M Y, H:i')." ({$slot->remaining_capacity} of {$slot->capacity} places left)",
                                 ])
                                 ->all())
                             ->placeholder('No slot — set a date manually or leave pending'),
