@@ -1,5 +1,12 @@
 <div class="mx-auto max-w-3xl">
-    @if ($product === null || $product->price_pence === null)
+    @if ($this->enquirySent)
+        <div class="rounded-2xl border bg-card p-8 text-center shadow-sm">
+            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary"><x-icon name="check" class="h-7 w-7" /></div>
+            <h3 class="mt-4 font-display text-2xl uppercase text-secondary">Voucher request sent</h3>
+            <p class="mt-2 text-muted-foreground">Thanks {{ $purchaser_name }} — we've got your request and will be in touch shortly to arrange the voucher and payment.</p>
+            <x-ui.button href="/" class="mt-6 bg-primary text-primary-foreground hover:bg-primary/90">Back to home</x-ui.button>
+        </div>
+    @elseif ($product === null || $product->price_pence === null)
         <div class="rounded-2xl border bg-card p-8 text-center">
             <h3 class="font-display text-2xl uppercase text-secondary">Vouchers are taking a breather</h3>
             <p class="mt-2 text-muted-foreground">Get in touch and we'll arrange one directly.</p>
@@ -55,10 +62,14 @@
             @endif
 
             <x-ui.button type="submit" size="lg" class="mt-6 w-full bg-primary text-primary-foreground hover:bg-primary/90" wire:loading.attr="disabled">
-                <span wire:loading.remove wire:target="pay">Buy for {{ $product->formatted_price }} — delivered by email</span>
-                <span wire:loading wire:target="pay">Taking you to secure payment…</span>
+                <span wire:loading.remove wire:target="pay">{{ $this->paymentsEnabled ? 'Buy for '.$product->formatted_price.' — delivered by email' : 'Request this voucher' }}</span>
+                <span wire:loading wire:target="pay">{{ $this->paymentsEnabled ? 'Taking you to secure payment…' : 'Sending your request…' }}</span>
             </x-ui.button>
-            <p class="mt-3 text-center text-xs text-muted-foreground">Card payments are handled by Stripe — we never see your card details.</p>
+            @if ($this->paymentsEnabled)
+                <p class="mt-3 text-center text-xs text-muted-foreground">Card payments are handled by Stripe — we never see your card details.</p>
+            @else
+                <p class="mt-3 text-center text-xs text-muted-foreground">We'll arrange the voucher and payment with you directly — no card needed now.</p>
+            @endif
         </form>
     @endif
 </div>

@@ -121,11 +121,14 @@
 
     <x-site.section>
         <div class="grid gap-12 lg:grid-cols-2">
+            @php $payEnabled = app(App\Settings\GeneralSettings::class)->online_payments_enabled; @endphp
             <x-site.pay-card
                 eyebrow="Reserve your spot"
                 heading="Secure your place"
-                body="Pick a course date, reserve your place with a deposit and start your journey to a licence."
-                button="Choose a course & pay deposit"
+                :body="$payEnabled
+                    ? 'Pick a course date, reserve your place with a deposit and start your journey to a licence.'
+                    : 'Pick a course date and send us your details — we\'ll confirm your place and arrange the deposit with you directly.'"
+                :button="$payEnabled ? 'Choose a course & pay deposit' : 'Choose a course & enquire'"
                 href="/book/aff"
             />
 

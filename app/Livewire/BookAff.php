@@ -2,10 +2,12 @@
 
 namespace App\Livewire;
 
+use App\Actions\CreateEnquiry;
 use App\Actions\StartAffCheckout;
 use App\Exceptions\BookingUnavailableException;
 use App\Livewire\Concerns\ProtectsAgainstSpam;
 use App\Models\CourseDate;
+use App\Settings\GeneralSettings;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Facades\Log;
@@ -42,6 +44,15 @@ class BookAff extends Component
     public string $unavailableMessage = '';
 
     public string $paymentErrorMessage = '';
+
+    /** Set when the enquiry-first path (online payments off) has been submitted. */
+    public bool $enquirySent = false;
+
+    /** Whether the public site can take card payment right now. */
+    public function getPaymentsEnabledProperty(): bool
+    {
+        return app(GeneralSettings::class)->online_payments_enabled;
+    }
 
     public function mount(): void
     {
@@ -105,7 +116,7 @@ class BookAff extends Component
         $this->step = 3;
     }
 
-    public function pay(StartAffCheckout $startCheckout): void
+    public function pay(StartAffCheckout $startCheckout, CreateEnquiry $createEnquiry): void
     {
         if ($this->isSpam()) {
             return;
@@ -119,6 +130,14 @@ class BookAff extends Component
         if ($course === null) {
             $this->unavailableMessage = 'That course is no longer available — please pick another date.';
             $this->step = 1;
+
+            return;
+        }
+
+        // Enquiry-first mode: capture the request as an enquiry and never
+        // create a Stripe session from the public site.
+        if (! $this->getPaymentsEnabledProperty()) {
+            $this->submitAsEnquiry($createEnquiry, $course);
 
             return;
         }
@@ -149,6 +168,27 @@ class BookAff extends Component
         }
 
         $this->redirect($result['checkout_url']);
+    }
+
+    private function submitAsEnquiry(CreateEnquiry $createEnquiry, CourseDate $course): void
+    {
+        $createEnquiry->handle([
+            'name' => $this->name,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'preferred_date' => $course->start_date->toDateString(),
+            'message' => filled($this->experience) ? $this->experience : null,
+            'context' => [
+                'date_of_birth' => $this->date_of_birth,
+                'weight_kg' => $this->weight_kg,
+                'emergency_contact_name' => $this->emergency_contact_name,
+                'emergency_contact_phone' => $this->emergency_contact_phone,
+                'course' => $course->date_range_label,
+                'location' => $course->location?->name,
+            ],
+        ], $course->product);
+
+        $this->enquirySent = true;
     }
 
     public function getCourseProperty(): ?CourseDate
