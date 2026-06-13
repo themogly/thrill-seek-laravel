@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Livewire\Concerns\ProtectsAgainstSpam;
-use App\Models\NewsletterSubscriber;
+use App\Services\Newsletter\NewsletterService;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
@@ -11,14 +11,17 @@ class NewsletterSignup extends Component
 {
     use ProtectsAgainstSpam;
 
-    /** "banner" (home, on the gradient) or "card" (contact sidebar). */
+    /** "banner" (home, on the gradient) or "card" (contact sidebar / page). */
     public string $variant = 'banner';
+
+    /** Where the signup happened — stored for the admin's context. */
+    public string $source = 'footer';
 
     public string $email = '';
 
     public string $successMessage = '';
 
-    public function subscribe(): void
+    public function subscribe(NewsletterService $newsletter): void
     {
         if ($this->isSpam()) {
             $this->finish();
@@ -29,7 +32,9 @@ class NewsletterSignup extends Component
         $this->ensureNotRateLimited();
         $this->validateForToast();
 
-        NewsletterSubscriber::subscribe($this->email);
+        // Double opt-in: this records the request and emails a confirm link;
+        // an already-confirmed address is a quiet no-op (no duplicate).
+        $newsletter->subscribe($this->email, $this->source);
 
         $this->finish();
     }
@@ -45,9 +50,7 @@ class NewsletterSignup extends Component
     private function finish(): void
     {
         $this->reset('email', 'website');
-        $this->successMessage = $this->variant === 'banner'
-            ? "You're in! Welcome to the G-Force list."
-            : 'Subscribed!';
+        $this->successMessage = 'Almost there — check your inbox to confirm your subscription.';
         $this->dispatch('enquiry-sent', message: $this->successMessage);
     }
 

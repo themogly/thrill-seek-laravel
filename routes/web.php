@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\StripeWebhookController;
 use App\Settings\GeneralSettings;
@@ -19,6 +20,12 @@ Route::get('/terms', [PageController::class, 'terms'])->name('terms');
 Route::get('/book/tandem', [PageController::class, 'bookTandem'])->name('book.tandem');
 Route::get('/book/aff', [PageController::class, 'bookAff'])->name('book.aff');
 Route::get('/vouchers', [PageController::class, 'vouchers'])->name('vouchers');
+
+Route::get('/newsletter', [PageController::class, 'newsletter'])->name('newsletter');
+Route::get('/newsletter/confirm/{subscriber}', [NewsletterController::class, 'confirm'])
+    ->middleware('signed')->name('newsletter.confirm');
+Route::get('/newsletter/unsubscribe/{subscriber}', [NewsletterController::class, 'unsubscribe'])
+    ->middleware('signed')->name('newsletter.unsubscribe');
 
 Route::get('/payment/success', [PageController::class, 'paymentSuccess'])->name('payment.success');
 Route::view('/payment/cancelled', 'pages.payment-cancelled')->name('payment.cancelled');

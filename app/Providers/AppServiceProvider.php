@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Services\Newsletter\NativeNewsletterService;
+use App\Services\Newsletter\NewsletterService;
 use Illuminate\Support\ServiceProvider;
 use Stripe\StripeClient;
 
@@ -12,6 +14,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Swap this binding to move list management to another provider.
+        $this->app->bind(NewsletterService::class, NativeNewsletterService::class);
+
         $this->app->bind(StripeClient::class, function (): StripeClient {
             $secret = config('services.stripe.secret');
 
