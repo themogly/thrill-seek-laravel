@@ -17,7 +17,9 @@ class TestimonialFactory extends Factory
         return [
             'name' => fake()->firstName().' '.mb_strtoupper(fake()->randomLetter()).'.',
             'role' => fake()->randomElement(['Tandem jumper', 'AFF graduate', 'Coached skills']),
+            'rating' => fake()->numberBetween(4, 5),
             'avatar' => null,
+            'photo' => null,
             'quote' => fake()->sentence(14),
             'excerpt' => null,
             'featured' => false,
@@ -33,5 +35,15 @@ class TestimonialFactory extends Factory
     public function withAvatar(): static
     {
         return $this->state(['avatar' => '/images/instructors/ren.jpg']);
+    }
+
+    public function withPhoto(): static
+    {
+        return $this->state(['photo' => '/images/tandem.jpg']);
+    }
+
+    public function rating(?int $rating): static
+    {
+        return $this->state(['rating' => $rating]);
     }
 }

@@ -6,19 +6,36 @@
 @section('description', $pages->hall_of_fame_seo_description)
 
 @section('content')
-    <x-site.page-hero :title="$pages->hall_of_fame_hero_title" :subtitle="$pages->hall_of_fame_hero_subtitle" />
+    {{-- Compact photographic hero so the photo grid — the point of the page —
+         starts high (replaces the old full-height flat-navy band). --}}
+    <x-site.page-hero
+        :title="$pages->hall_of_fame_hero_title"
+        :subtitle="$pages->hall_of_fame_hero_subtitle"
+        image="/images/hero-skydive.jpg"
+        compact
+    />
     <x-site.section>
         <div class="grid gap-px bg-secondary sm:grid-cols-2 lg:grid-cols-4" data-reveal>
             @foreach ($entries as $g)
-                <div class="group relative aspect-[3/4] overflow-hidden bg-secondary">
-                    <img src="{{ $g->image_url }}" alt="{{ $g->name }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
-                    <div class="absolute inset-0 bg-photo-scrim"></div>
-                    <div class="absolute bottom-0 w-full border-t-2 border-primary/80 p-5 text-white">
-                        <x-icon name="trophy" class="h-5 w-5 text-primary" />
-                        <p class="mt-2 font-display text-xl uppercase">{{ $g->name }}</p>
-                        <p class="text-sm opacity-90">{{ $g->milestone }}</p>
-                    </div>
-                </div>
+                <x-site.photo-tile
+                    :image="$g->image_url"
+                    :alt="$g->name"
+                    :monogram="$g->name"
+                    icon="trophy"
+                    :width="600"
+                    :height="800"
+                    class="aspect-[3/4]"
+                >
+                    <p class="mt-2 font-display text-xl uppercase leading-none">{{ $g->name }}</p>
+                    <p class="text-sm text-white/90">{{ $g->milestone }}</p>
+                    @if ($g->achieved_on || filled($g->note))
+                        <p class="mt-1 text-xs uppercase tracking-wide text-white/70">
+                            @if ($g->achieved_on){{ $g->achieved_on->format('M Y') }}@endif
+                            @if ($g->achieved_on && filled($g->note)) · @endif
+                            @if (filled($g->note)){{ $g->note }}@endif
+                        </p>
+                    @endif
+                </x-site.photo-tile>
             @endforeach
         </div>
     </x-site.section>

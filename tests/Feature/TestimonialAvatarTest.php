@@ -19,24 +19,35 @@ class TestimonialAvatarTest extends TestCase
         $this->assertNull($none->avatar_url);
     }
 
-    public function test_testimonials_page_shows_the_avatar_when_present(): void
+    public function test_photo_url_resolves_bundled_and_uploaded_paths(): void
     {
-        Testimonial::factory()->withAvatar()->create(['name' => 'Ada Avatar', 'quote' => 'Loved it.']);
+        $bundled = Testimonial::factory()->make(['photo' => '/images/tandem.jpg']);
+        $this->assertSame('/images/tandem.jpg', $bundled->photo_url);
+
+        $uploaded = Testimonial::factory()->make(['photo' => 'testimonials-photos/abc.webp']);
+        $this->assertStringContainsString('testimonials-photos/abc.webp', (string) $uploaded->photo_url);
+
+        $this->assertNull(Testimonial::factory()->make(['photo' => null])->photo_url);
+    }
+
+    public function test_featured_testimonial_with_photo_renders_as_the_hero_feature(): void
+    {
+        Testimonial::factory()->featured()->withPhoto()->create(['name' => 'Ada Avatar', 'quote' => 'Loved every second of it.']);
 
         $this->get('/testimonials')
             ->assertOk()
-            ->assertSee('/images/instructors/ren.jpg', false)
+            ->assertSee('/images/tandem.jpg', false)
             ->assertSee('Ada Avatar');
     }
 
-    public function test_testimonials_page_falls_back_to_the_initial_when_absent(): void
+    public function test_grid_testimonial_without_a_photo_uses_the_navy_monogram(): void
     {
-        Testimonial::factory()->create(['name' => 'Zoltan Q.', 'avatar' => null, 'quote' => 'Great.']);
+        // A non-featured, photo-less testimonial appears in the grid as a navy
+        // monogram block (the intentional fallback), not a broken image.
+        Testimonial::factory()->create(['name' => 'Zoltan Q.', 'avatar' => null, 'photo' => null, 'featured' => false, 'quote' => 'Great.']);
 
         $response = $this->get('/testimonials')->assertOk();
-
-        // Monogram badge with the initial, no broken image element for this person.
         $response->assertSee('Zoltan Q.');
-        $response->assertSee('bg-secondary font-display', false);
+        $response->assertSee('band-ink absolute', false);
     }
 }

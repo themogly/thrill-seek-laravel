@@ -21,7 +21,9 @@ class Testimonial extends Model
     protected $fillable = [
         'name',
         'role',
+        'rating',
         'avatar',
+        'photo',
         'quote',
         'excerpt',
         'featured',
@@ -33,6 +35,7 @@ class Testimonial extends Model
         return [
             'featured' => 'boolean',
             'sort_order' => 'integer',
+            'rating' => 'integer',
         ];
     }
 
@@ -52,6 +55,24 @@ class Testimonial extends Model
             return str_starts_with($this->avatar, '/')
                 ? $this->avatar
                 : Storage::disk('public')->url($this->avatar);
+        });
+    }
+
+    /**
+     * Public URL for the large action photo, or null when none is set.
+     *
+     * @return Attribute<string|null, never>
+     */
+    protected function photoUrl(): Attribute
+    {
+        return Attribute::make(get: function (): ?string {
+            if (! $this->photo) {
+                return null;
+            }
+
+            return str_starts_with($this->photo, '/')
+                ? $this->photo
+                : Storage::disk('public')->url($this->photo);
         });
     }
 

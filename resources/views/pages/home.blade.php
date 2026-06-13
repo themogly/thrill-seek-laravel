@@ -192,7 +192,10 @@
                     <blockquote class="-mt-4 text-lg leading-relaxed text-foreground">{{ $t->home_quote }}</blockquote>
                     <figcaption class="mt-5 flex items-center gap-3 border-t-2 border-primary pt-4">
                         <x-site.avatar :name="$t->name" :url="$t->avatar_url" size="h-10 w-10" />
-                        <span class="text-sm font-bold uppercase tracking-widest text-secondary">{{ $t->name }}</span>
+                        <span>
+                            <span class="block text-sm font-bold uppercase tracking-widest text-secondary">{{ $t->name }}</span>
+                            <x-site.stars :rating="$t->rating" class="mt-1" />
+                        </span>
                     </figcaption>
                 </figure>
             @endforeach
