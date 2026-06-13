@@ -16,7 +16,7 @@ use Illuminate\Support\Carbon;
  * (recipient count, sent-at, and the rendered HTML frozen at send time).
  *
  * @property NewsletterCampaignStatus $status
- * @property array<int, array{type: string, data: array<string, mixed>}>|null $blocks
+ * @property array<int, array<string, mixed>>|null $blocks
  * @property Carbon|null $sent_at
  * @property Carbon|null $scheduled_at
  */
