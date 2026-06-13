@@ -48,18 +48,21 @@
                 <p class="text-center text-lg text-muted-foreground">No reviews yet.</p>
             @endunless
         @else
-            {{-- Masonry rhythm: photo-backed where photos exist, intentional navy
-                 monogram blocks where they don't. Robust at any count — items flow,
-                 never strand. --}}
-            <div class="gap-px [column-fill:_balance] sm:columns-2 lg:columns-3" data-reveal>
+            {{-- Uniform equal-aspect grid: every tile is the same 4:5 height, so
+                 short/monogram cards never stretch to a neighbour and there are no
+                 in-tile voids. Photo-backed where a photo exists, intentional navy
+                 monogram blocks where not. The hero above provides the visual break;
+                 robust at any count and width (an incomplete final row just leaves
+                 empty grid cells, never a stretched or stranded tile). --}}
+            <div class="grid grid-cols-1 gap-px sm:grid-cols-2 lg:grid-cols-3" data-reveal>
                 @foreach ($rest as $t)
                     <x-site.photo-tile
                         :image="$t->photo_url"
                         :alt="$t->name"
                         :monogram="$t->name"
                         :width="700"
-                        :height="$loop->index % 3 === 0 ? 1050 : 875"
-                        class="mb-px block w-full break-inside-avoid {{ $loop->index % 3 === 0 ? 'aspect-[4/6]' : 'aspect-[4/5]' }}"
+                        :height="875"
+                        class="aspect-[4/5]"
                     >
                         <blockquote class="font-display text-base uppercase leading-snug tracking-wide">
                             {{ \Illuminate\Support\Str::limit($t->home_quote, 90) }}
