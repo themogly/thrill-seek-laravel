@@ -171,7 +171,10 @@
                 <figure class="md:px-8 md:first:pl-0 md:last:pr-0">
                     <span aria-hidden="true" class="font-display text-7xl leading-none text-primary">“</span>
                     <blockquote class="-mt-4 text-lg leading-relaxed text-foreground">{{ $t->home_quote }}</blockquote>
-                    <figcaption class="mt-5 border-t-2 border-primary pt-3 text-sm font-bold uppercase tracking-widest text-secondary">{{ $t->name }}</figcaption>
+                    <figcaption class="mt-5 flex items-center gap-3 border-t-2 border-primary pt-4">
+                        <x-site.avatar :name="$t->name" :url="$t->avatar_url" size="h-10 w-10" />
+                        <span class="text-sm font-bold uppercase tracking-widest text-secondary">{{ $t->name }}</span>
+                    </figcaption>
                 </figure>
             @endforeach
         </div>

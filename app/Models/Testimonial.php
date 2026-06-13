@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Observers\ImageOptimizationObserver;
 use App\Observers\SiteContentObserver;
 use Database\Factories\TestimonialFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -9,8 +10,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
-#[ObservedBy(SiteContentObserver::class)]
+#[ObservedBy([SiteContentObserver::class, ImageOptimizationObserver::class])]
 class Testimonial extends Model
 {
     /** @use HasFactory<TestimonialFactory> */
@@ -19,6 +21,7 @@ class Testimonial extends Model
     protected $fillable = [
         'name',
         'role',
+        'avatar',
         'quote',
         'excerpt',
         'featured',
@@ -31,6 +34,25 @@ class Testimonial extends Model
             'featured' => 'boolean',
             'sort_order' => 'integer',
         ];
+    }
+
+    /**
+     * Public URL for the uploaded avatar, or null when none is set (the display
+     * then falls back to the initial-letter badge).
+     *
+     * @return Attribute<string|null, never>
+     */
+    protected function avatarUrl(): Attribute
+    {
+        return Attribute::make(get: function (): ?string {
+            if (! $this->avatar) {
+                return null;
+            }
+
+            return str_starts_with($this->avatar, '/')
+                ? $this->avatar
+                : Storage::disk('public')->url($this->avatar);
+        });
     }
 
     /**

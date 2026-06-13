@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Testimonials\Schemas;
 
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -23,6 +24,15 @@ class TestimonialForm
                     ->helperText('What they did, e.g. “Tandem jumper” or “AFF graduate”.')
                     ->required()
                     ->maxLength(255),
+                FileUpload::make('avatar')
+                    ->label('Photo (optional)')
+                    ->helperText('Leave blank to show the initial-letter badge instead.')
+                    ->avatar()
+                    ->image()
+                    ->imageEditor()
+                    ->disk('public')
+                    ->directory('testimonials')
+                    ->columnSpanFull(),
                 Textarea::make('quote')
                     ->label('Quote')
                     ->helperText('The full review shown on the Testimonials page.')
