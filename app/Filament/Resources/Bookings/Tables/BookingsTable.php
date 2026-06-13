@@ -7,9 +7,9 @@ use App\Enums\BookingStatus;
 use App\Models\Booking;
 use App\Models\Location;
 use App\Models\TandemDate;
+use App\Support\AdminDates;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
@@ -83,9 +83,8 @@ class BookingsTable
                                 ])
                                 ->all())
                             ->placeholder('Pick a slot, or set a custom date below'),
-                        DateTimePicker::make('scheduled_at')
-                            ->label('Or a custom date & time')
-                            ->seconds(false),
+                        AdminDates::dateTime('scheduled_at')
+                            ->label('Or a custom date & time'),
                         Toggle::make('notify')
                             ->label('Email the customer')
                             ->default(true),

@@ -4,7 +4,7 @@ namespace App\Filament\Resources\Bookings\Schemas;
 
 use App\Enums\BookingStatus;
 use App\Models\TandemDate;
-use Filament\Forms\Components\DateTimePicker;
+use App\Support\AdminDates;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -57,9 +57,8 @@ class BookingForm
                                 ])
                                 ->all())
                             ->placeholder('No slot — set a date manually or leave pending'),
-                        DateTimePicker::make('scheduled_at')
-                            ->label('Date & time')
-                            ->seconds(false),
+                        AdminDates::dateTime('scheduled_at')
+                            ->label('Date & time'),
                         TextInput::make('price_pence')
                             ->label('Price (pence)')
                             ->helperText('e.g. 26000 = £260.')

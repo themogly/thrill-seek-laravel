@@ -12,10 +12,10 @@ use App\Mail\VoucherGiftMail;
 use App\Models\Booking;
 use App\Models\User;
 use App\Models\Voucher;
+use App\Support\AdminDates;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -58,7 +58,7 @@ class VoucherResource extends Resource
                         ->numeric()
                         ->required()
                         ->minValue(100),
-                    DatePicker::make('expires_at')
+                    AdminDates::date('expires_at')
                         ->label('Expires')
                         ->default(now()->addYear())
                         ->required(),

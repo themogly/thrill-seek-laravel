@@ -10,9 +10,9 @@ use App\Enums\PaymentPurpose;
 use App\Filament\Resources\Enquiries\EnquiryResource;
 use App\Models\Enquiry;
 use App\Models\User;
+use App\Support\AdminDates;
 use App\Support\Money;
 use Filament\Actions\Action;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -148,7 +148,7 @@ class ViewEnquiry extends ViewRecord
                         ->label('Bank reference')
                         ->required()
                         ->maxLength(255),
-                    DatePicker::make('paid_at')
+                    AdminDates::date('paid_at')
                         ->label('Date received')
                         ->default(now())
                         ->maxDate(now())
