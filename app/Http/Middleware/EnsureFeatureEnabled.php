@@ -20,6 +20,7 @@ class EnsureFeatureEnabled
 
         $enabled = match ($feature) {
             'shop' => $settings->shop_enabled,
+            'news' => $settings->news_enabled,
             default => abort(500, "Unknown feature toggle: {$feature}"),
         };
 

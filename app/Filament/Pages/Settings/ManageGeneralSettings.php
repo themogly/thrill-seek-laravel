@@ -44,6 +44,9 @@ class ManageGeneralSettings extends SettingsPage
                     Toggle::make('online_payments_enabled')
                         ->label('Online payments')
                         ->helperText('When off, “book & pay” buttons send an enquiry instead of taking card payment. You can still send Stripe links and record bank transfers from the admin.'),
+                    Toggle::make('news_enabled')
+                        ->label('News')
+                        ->helperText('When off, News is hidden from the menu, footer and home page and its pages return “not found”.'),
                 ]),
             Section::make('Site identity')
                 ->columns(2)

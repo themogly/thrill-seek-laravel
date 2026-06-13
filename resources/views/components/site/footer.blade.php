@@ -30,6 +30,9 @@
                 @if ($general->shop_enabled)
                     <li><a href="/shop" class="transition-colors hover:text-sky-bright">Shop</a></li>
                 @endif
+                @if ($general->news_enabled)
+                    <li><a href="/news" class="transition-colors hover:text-sky-bright">News</a></li>
+                @endif
                 <li><a href="/hall-of-fame" class="transition-colors hover:text-sky-bright">Hall of Fame</a></li>
             </ul>
         </div>

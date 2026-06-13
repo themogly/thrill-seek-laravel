@@ -7,6 +7,7 @@ use App\Support\SiteContent;
 use App\ViewModels\PaymentSuccessPage;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class PageController extends Controller
 {
@@ -82,6 +83,37 @@ class PageController extends Controller
     public function newsletter(): View
     {
         return view('pages.newsletter');
+    }
+
+    public function news(Request $request): View
+    {
+        $perPage = 9;
+        $articles = $this->content->publishedNews();
+        $page = LengthAwarePaginator::resolveCurrentPage();
+
+        $paginator = new LengthAwarePaginator(
+            $articles->forPage($page, $perPage)->values(),
+            $articles->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()],
+        );
+
+        return view('pages.news.index', ['articles' => $paginator]);
+    }
+
+    public function newsArticle(string $slug): View
+    {
+        $article = $this->content->newsArticle($slug);
+
+        abort_if($article === null, 404);
+
+        // Availability is always live — places-left changes between cache busts.
+        $course = $article->course_date_id !== null
+            ? CourseDate::with('location')->find($article->course_date_id)
+            : null;
+
+        return view('pages.news.show', ['article' => $article, 'course' => $course]);
     }
 
     /**
