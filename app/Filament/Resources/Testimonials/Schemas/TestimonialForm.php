@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Testimonials\Schemas;
 
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -24,14 +25,25 @@ class TestimonialForm
                     ->helperText('What they did, e.g. “Tandem jumper” or “AFF graduate”.')
                     ->required()
                     ->maxLength(255),
+                Select::make('rating')
+                    ->label('Star rating (optional)')
+                    ->helperText('Shown as stars near the name. Leave blank to hide.')
+                    ->options([1 => '1 ★', 2 => '2 ★', 3 => '3 ★', 4 => '4 ★', 5 => '5 ★']),
                 FileUpload::make('avatar')
-                    ->label('Photo (optional)')
-                    ->helperText('Leave blank to show the initial-letter badge instead.')
+                    ->label('Headshot (optional)')
+                    ->helperText('Small round avatar. Leave blank to show the initial-letter badge instead.')
                     ->avatar()
                     ->image()
                     ->imageEditor()
                     ->disk('public')
-                    ->directory('testimonials')
+                    ->directory('testimonials'),
+                FileUpload::make('photo')
+                    ->label('Action photo (optional)')
+                    ->helperText('A large jump/action shot. When set, the testimonial renders as a full-bleed photo tile.')
+                    ->image()
+                    ->imageEditor()
+                    ->disk('public')
+                    ->directory('testimonials-photos')
                     ->columnSpanFull(),
                 Textarea::make('quote')
                     ->label('Quote')

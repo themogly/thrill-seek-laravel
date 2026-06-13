@@ -562,3 +562,36 @@ posts" homepage block with an owner-managed News content type.
   **profile link** (`general.facebook_url`, used by the footer/contact social
   icons) is a separate social link and was deliberately kept — it is not part of
   the "posts" feature; removing the company's Facebook presence is a separate call.
+
+## design/social-proof — Testimonials + Hall of Fame photo-led redesign
+
+Branched off main `835c373` (Round 10 merged in). Brings Testimonials up to the
+Hall of Fame's photo-led standard and polishes Hall of Fame; nothing else changed.
+
+- **Shared photo-tile**: extracted `<x-site.photo-tile>` (full-bleed image + bottom
+  navy scrim caption, primary top-rule, hover zoom, monogram fallback) and
+  `<x-site.stars>`. Both Testimonials and Hall of Fame are built from it so they are
+  genuinely consistent; named in CLAUDE.md as the canonical pattern with both pages
+  as reference implementations.
+- **Testimonial data** (backward-compatible, nothing required): added `rating`
+  (1–5, nullable) and a large `photo` action shot (separate `testimonials-photos`
+  upload dir at 1280px, distinct from the 240px `avatar` headshot) via the
+  optimisation pipeline. `featured` and `avatar` already existed (Round 8). Seed
+  marks the featured ones, adds ratings and attaches bundled photos.
+- **Testimonials layout**: the first `featured` testimonial is pulled out as a
+  full-width **hero feature** (photographic scrim or navy) with an oversized brand
+  display-type quote; the rest flow in a CSS-columns **masonry** of photo-tiles
+  (photo-backed where a photo exists, navy monogram block where not) with varied
+  aspect ratios for rhythm. Robust at 1/2/7 entries (items flow, never strand). The
+  home pull-quote block gains stars for consistency.
+- **Star colour**: palette only — **sky-bright** filled on dark scrims, **primary**
+  on light surfaces; no gold (would breach the palette-only rule). Documented.
+- **Hall of Fame hero**: the flat full-height navy band is replaced by a **compact
+  photographic hero** (`page-hero` `:image` + new `compact` prop) so the photo grid
+  starts high — applying the no-flat-secondary-hero spirit already in CLAUDE.md.
+- **HoF interactivity**: achievements are **display-only** (no detail story in the
+  data), so tiles are non-link `div`s with a decorative hover photo-zoom (reduced-
+  motion honoured); no detail page was invented. Documented per the brief.
+- **HoF featured tile**: deliberately **not** added — the tight hairline photo grid
+  is the page's strength and the photos already carry it; a broken-rhythm tile would
+  weaken it. Richer captions instead: optional nullable `achieved_on` + `note`.

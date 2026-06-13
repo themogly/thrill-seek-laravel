@@ -45,8 +45,10 @@ class TestimonialsTest extends TestCase
     {
         $this->seed(TestimonialSeeder::class);
 
+        // The featured testimonial becomes the hero feature (shown via its
+        // excerpt); a non-featured one appears in the grid.
         $this->get('/testimonials')
-            ->assertSee("Absolutely life-changing. The team made me feel safe from the moment I arrived. I'll be back!")
+            ->assertSee('Absolutely life-changing. The team made me feel safe from the moment I arrived.')
             ->assertSee('Lucy is an incredible coach. Clear, patient, and genuinely cares about your progress.');
 
         $this->get('/')

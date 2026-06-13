@@ -31,6 +31,7 @@ final class ImageOptimization
     public const MAX_DIMENSIONS = [
         'instructors' => 480,
         'testimonials' => 240,
+        'testimonials-photos' => 1280,
         'news' => 1280,
         'gallery' => 1200,
         'hall-of-fame' => 960,
@@ -45,7 +46,7 @@ final class ImageOptimization
     /** @var array<class-string<Model>, list<string>> */
     public const MODEL_IMAGE_ATTRIBUTES = [
         Instructor::class => ['photo'],
-        Testimonial::class => ['avatar'],
+        Testimonial::class => ['avatar', 'photo'],
         NewsArticle::class => ['featured_image'],
         GalleryImage::class => ['image'],
         HallOfFameEntry::class => ['image'],

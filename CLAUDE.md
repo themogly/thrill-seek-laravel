@@ -99,7 +99,17 @@ that manages all site content, enquiries, payments and bookings.
 - **No flat-black hero bands on secondary pages**: `<x-site.page-hero>` without an
   image renders the compact navy-gradient hero; only tandem/AFF/coached get
   photographic CMS heroes. Dark `band-ink` sections stay only where already
-  approved (stats, about, newsletter, gift band, footer).
+  approved (stats, about, newsletter, gift band, footer). `page-hero` also takes a
+  `compact` prop for a shorter photographic hero (Hall of Fame).
+- **Photo tiles**: the canonical photo-led pattern is `<x-site.photo-tile>` — a
+  full-bleed image with a bottom navy scrim carrying the caption (icon + text in
+  the slot), a primary top-rule, sharp corners, hover photo-zoom (reduced-motion
+  honoured) and a visible focus ring when given an `href`. Without an image it
+  renders the intentional navy monogram fallback (bold brand initial), never a
+  broken box. Reference implementations: **Hall of Fame** and **Testimonials** —
+  the two photo-led pages are built from it so they read as siblings; build any
+  new photo-grid from it. Star ratings render via `<x-site.stars>` in palette
+  colours only (sky-bright on dark scrims, primary on light) — no gold.
 
 ## Quality bar (enforced before every commit)
 - `php artisan test` — full suite green, no skips. Feature tests for HTTP/Livewire

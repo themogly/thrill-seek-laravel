@@ -21,6 +21,8 @@ class HallOfFameEntry extends Model
     protected $fillable = [
         'name',
         'milestone',
+        'achieved_on',
+        'note',
         'image',
         'sort_order',
     ];
@@ -29,6 +31,7 @@ class HallOfFameEntry extends Model
     {
         return [
             'sort_order' => 'integer',
+            'achieved_on' => 'date',
         ];
     }
 
