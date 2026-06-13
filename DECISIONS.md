@@ -533,3 +533,32 @@ jump/balance reminders, course messages, the voucher gift email and the enquiry
 acknowledgement — are sufficient for launch. Admin-editable email automation may be
 revisited post-launch if the client requests it. Part A (the in-panel help guide)
 shipped; no email-engine model, hooks or dispatcher were built.
+
+## Round 10 — News system replacing Facebook posts (feature/round-10)
+
+Branched off main `bfce3ad` (Rounds 7–9 merged). Replaces the static "Facebook
+posts" homepage block with an owner-managed News content type.
+
+- **Model**: `NewsArticle` (table `news_articles`) — title, auto/editable unique
+  slug (route key), optional lead (Round 8 pattern), rich `body`, optimised
+  `featured_image`, `published` + `published_at`, optional `byline`, SEO fields,
+  nullable `course_date_id` (nullOnDelete) linking an AFF course.
+- **Scheduling + caching**: the `published` flag drives the SiteContent cache
+  (`news.published`); the `published_at <= now` window is applied **live** on read,
+  so drafts never show and a scheduled post appears the moment its time passes
+  without waiting for a cache bust. The linked course's availability is always a
+  live query (never cached) — places-left must be current.
+- **Public**: `/news` (paginated, published-only, newest first, redesigned card
+  grid, optional lead) and `/news/{slug}` (404 on draft/missing). Course-linked
+  articles render a live navy course panel with a Book CTA into the AFF flow.
+- **`news_enabled` toggle** (default ON, Round 7 pattern): gates the routes (404),
+  nav, footer, sitemap and the home "Latest News" block. Added because it matches
+  the established shop/payments toggles and lets the owner hide News pre-launch.
+- **Facebook removal**: the posts feature is gone — `home.facebook_posts` and
+  `home.facebook_caption` settings (removed via an existence-guarded settings
+  migration), the HomePageSettings properties, the admin repeater and the homepage
+  Facebook column. The homepage social row now pairs Instagram with a "Latest News"
+  block and collapses to one balanced column when News is off/empty. The Facebook
+  **profile link** (`general.facebook_url`, used by the footer/contact social
+  icons) is a separate social link and was deliberately kept — it is not part of
+  the "posts" feature; removing the company's Facebook presence is a separate call.
