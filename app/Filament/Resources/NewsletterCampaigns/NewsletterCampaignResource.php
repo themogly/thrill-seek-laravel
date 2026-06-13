@@ -2,16 +2,19 @@
 
 namespace App\Filament\Resources\NewsletterCampaigns;
 
+use App\Enums\NewsletterCampaignStatus;
+use App\Filament\Resources\NewsletterCampaigns\Pages\CreateNewsletterCampaign;
+use App\Filament\Resources\NewsletterCampaigns\Pages\EditNewsletterCampaign;
 use App\Filament\Resources\NewsletterCampaigns\Pages\ListNewsletterCampaigns;
-use App\Filament\Resources\NewsletterCampaigns\Pages\ViewNewsletterCampaign;
+use App\Filament\Resources\NewsletterCampaigns\Schemas\NewsletterCampaignForm;
 use App\Models\NewsletterCampaign;
 use BackedEnum;
-use Filament\Actions\ViewAction;
-use Filament\Infolists\Components\TextEntry;
+use Filament\Actions\EditAction;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use UnitEnum;
 
@@ -29,45 +32,42 @@ class NewsletterCampaignResource extends Resource
 
     protected static ?string $pluralModelLabel = 'newsletters';
 
-    public static function canCreate(): bool
+    public static function form(Schema $schema): Schema
     {
-        // Newsletters are composed and sent in one go via the list header action.
-        return false;
-    }
-
-    public static function infolist(Schema $schema): Schema
-    {
-        return $schema->components([
-            TextEntry::make('subject'),
-            TextEntry::make('sent_at')->label('Sent')->dateTime(),
-            TextEntry::make('recipient_count')->label('Recipients'),
-            TextEntry::make('user.name')->label('Sent by')->placeholder('—'),
-            TextEntry::make('body')->label('Message')->html()->columnSpanFull(),
-        ]);
+        return NewsletterCampaignForm::configure($schema);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('sent_at', 'desc')
+            ->defaultSort('created_at', 'desc')
             ->columns([
-                TextColumn::make('subject')
-                    ->label('Subject')
+                TextColumn::make('name')
+                    ->label('Name')
                     ->searchable()
-                    ->limit(60),
+                    ->description(fn (NewsletterCampaign $r): string => $r->subject)
+                    ->limit(50),
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->badge(),
                 TextColumn::make('recipient_count')
                     ->label('Recipients')
+                    ->placeholder('—')
                     ->sortable(),
                 TextColumn::make('sent_at')
                     ->label('Sent')
                     ->dateTime()
+                    ->placeholder('—')
                     ->sortable(),
                 TextColumn::make('user.name')
-                    ->label('Sent by')
+                    ->label('By')
                     ->placeholder('—'),
             ])
+            ->filters([
+                SelectFilter::make('status')->options(NewsletterCampaignStatus::class),
+            ])
             ->recordActions([
-                ViewAction::make(),
+                EditAction::make()->label(fn (NewsletterCampaign $r): string => $r->isSent() ? 'View' : 'Edit'),
             ]);
     }
 
@@ -75,7 +75,8 @@ class NewsletterCampaignResource extends Resource
     {
         return [
             'index' => ListNewsletterCampaigns::route('/'),
-            'view' => ViewNewsletterCampaign::route('/{record}'),
+            'create' => CreateNewsletterCampaign::route('/create'),
+            'edit' => EditNewsletterCampaign::route('/{record}/edit'),
         ];
     }
 }
