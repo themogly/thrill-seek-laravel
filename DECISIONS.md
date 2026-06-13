@@ -524,3 +524,12 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
   touch-draggable, no layout shift.
 - **Item 7 — subscribe button**: folded into `<x-ui.button variant="primary">`;
   no one-off colour classes remain on the home page.
+
+## Round 9 Part B — dynamic email engine: DEFERRED (owner decision)
+
+Round 9 Part B (a dynamic, admin-managed email engine) is **deferred
+indefinitely**. The system's existing hardcoded emails — booking confirmation,
+jump/balance reminders, course messages, the voucher gift email and the enquiry
+acknowledgement — are sufficient for launch. Admin-editable email automation may be
+revisited post-launch if the client requests it. Part A (the in-panel help guide)
+shipped; no email-engine model, hooks or dispatcher were built.
