@@ -626,3 +626,24 @@ which had to be on main to address.
   `home.hero_image` setting is populated (`/images/hero-skydive.jpg`). No layout bug
   reproduced; the earlier appearance was most likely a stale Vite build (rebuilt
   with `npm run build`). No code change; flagged here per the brief.
+
+## Design audit pass (design/audit-pass)
+
+Branched off main `2f0889d`. Report-first audit of every public page at 1440/390
+(design-review/AUDIT.md). The site was already strong — prior rounds enforced the
+structural rules — so the pass was short and real, no redesign:
+
+- **News no-image card** (P1): the bare navy void + tiny icon read as a broken
+  image; replaced with an intentional brand-blue gradient panel (dotted texture,
+  newspaper icon, "G-Force News" eyebrow). Palette-only; real photos stay a content
+  task.
+- **News article typography** (P2): body lifted to text-lg / leading-8 with roomier
+  paragraph and heading rhythm for comfortable long-form reading.
+- **News card hover** (P3): the cards joined the shared photo-tile image-zoom hover
+  (overflow-hidden wrapper + group-hover scale, `motion-reduce` honoured) used by
+  the Services and Hall-of-Fame tiles.
+- Confirmed (no change): dark mode is N/A (light-themed by design); loading/empty/
+  success states already exist; a11y (focus rings, labels, aria-labels, alt) solid.
+- Content artifact fixed in dev only: the home "What we do" lead held leftover test
+  text ("i dont want it here") — restored to the seeded copy; flagged as an owner
+  content field, not a code defect.
