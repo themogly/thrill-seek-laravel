@@ -65,7 +65,7 @@ class SendPaymentLinkTest extends TestCase
         Livewire::test(ViewEnquiry::class, ['record' => $enquiry->getRouteKey()])
             ->callAction('sendPaymentLink', [
                 'purpose' => PaymentPurpose::Custom->value,
-                'amount_pence' => 9000,
+                'amount_pence' => 90, // pounds
                 'description' => 'Coaching session',
             ])
             ->assertHasNoActionErrors();
@@ -87,7 +87,7 @@ class SendPaymentLinkTest extends TestCase
         Livewire::test(ViewEnquiry::class, ['record' => $enquiry->getRouteKey()])
             ->callAction('sendPaymentLink', [
                 'purpose' => PaymentPurpose::Custom->value,
-                'amount_pence' => 9000,
+                'amount_pence' => 90, // pounds
                 'description' => 'Coaching session',
             ])
             ->assertNotified();

@@ -14,6 +14,7 @@ use App\Models\Booking;
 use App\Models\User;
 use App\Models\Voucher;
 use App\Support\AdminDates;
+use App\Support\MoneyField;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
@@ -55,12 +56,11 @@ class VoucherResource extends Resource
                         ->label('Product')
                         ->relationship('product', 'name')
                         ->preload(),
-                    TextInput::make('amount_pence')
-                        ->label('Value (pence)')
-                        ->helperText('e.g. 26000 = £260.')
-                        ->numeric()
+                    MoneyField::pounds('amount_pence')
+                        ->label('Value')
+                        ->helperText('In pounds, e.g. 260.00.')
                         ->required()
-                        ->minValue(100),
+                        ->minValue(1),
                     AdminDates::date('expires_at')
                         ->label('Expires')
                         ->default(now()->addYear())

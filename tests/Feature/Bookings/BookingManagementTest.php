@@ -32,7 +32,7 @@ class BookingManagementTest extends TestCase
                 'name' => 'Walk-in Customer',
                 'email' => 'walkin@example.com',
                 'status' => BookingStatus::PendingDate->value,
-                'price_pence' => 26000,
+                'price_pence' => 260, // pounds
             ])
             ->call('create')
             ->assertHasNoFormErrors();

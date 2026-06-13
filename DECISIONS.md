@@ -476,3 +476,51 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
   queues one `NewsletterCampaignMail` per confirmed subscriber (one bad address
   can't fail the batch). Campaigns are read-only history afterwards. Both new
   mailables are in the permanent mail-render test and the `/dev/mail` preview.
+
+## Round 8 — content, pricing, booking & layout polish (feature/round-8)
+
+- **Branch state**: off `main` (which now includes the Round 5B/6 redesign).
+  The Round 7 work (`feature/round-7`: feature toggles, native date pickers,
+  newsletter) was still unmerged when this branched, so Round 8 does not build on
+  it — e.g. the newsletter opt-in here reuses the *current main* newsletter
+  capture, not Round 7's double-opt-in pipeline (see Item 5). Re-test the overlap
+  once both merge.
+
+- **Item 3 — pricing in pounds (storage decision)**: storage stays **integer
+  pence** everywhere; we did NOT migrate the `*_pence` columns. Stripe charges in
+  the smallest currency unit, so pence is the correct canonical form and every
+  read site (Stripe `unit_amount`, Money::formatPence, balances) is unchanged —
+  the lowest-risk path for the round's highest-risk item. The admin now enters and
+  sees **pounds** via one shared presenter, `App\Support\MoneyField::pounds()`,
+  which converts pence→pounds on load and pounds→pence (rounded) on save, only at
+  the form edge. Applied to every money input (products + add-ons, course price/
+  deposit overrides, booking price, voucher value, the enquiry payment-link and
+  bank-transfer amounts — the last two also had their pence prefill divided to
+  pounds). An end-to-end test (`PricingInPoundsTest`) enters £312.50 in the admin
+  and asserts the resulting Stripe charge is exactly 31250 pence — guarding against
+  the 100×/​÷100 error. Existing tests that filled these form fields were updated to
+  enter pounds; tests that write models/DB directly keep using pence.
+
+- **Item 1 — optional lead text**: section-heading and page-hero already gated
+  their leads; the home newsletter/CTA subtitles and voucher intro are now wrapped
+  too, and the lead/intro/subtitle fields are no longer `required` in the admin.
+  Blanking a lead removes the block *and* its margin (conditional wrapper, no empty
+  element), so the title sits directly on the next element.
+- **Item 2 — testimonial avatars**: optional `avatar` via the existing image
+  pipeline (new `testimonials` dir, 240px cap); shared `<x-site.avatar>` shows the
+  photo or a navy initial badge (matching the coach-portrait fallback) on both the
+  testimonials page and home pull-quotes. Two seeded testimonials carry photos.
+- **Item 4 — booking dropdown location**: the jump-slot select leads with the
+  dropzone so identical dates at different locations are distinguishable
+  (location eager-loaded).
+- **Item 5 — booking newsletter opt-in**: an unticked "Keep me posted" checkbox in
+  the tandem/AFF/voucher flows, reusing the footer newsletter backend via a shared
+  `OffersNewsletterOptIn` concern (no second path). Consent is active-only (never
+  pre-ticked). On this branch the backend is the current-main capture; when Round 7
+  merges it flows through the double-opt-in service unchanged.
+- **Item 6 — instructors carousel**: a flex scroll-snap rail; `flex-1` + per-view
+  min-width (50% / 25%) makes 1–4 coaches fill the row and 5+ overflow into a
+  horizontal scroll, never a stack and never a stranded card. Keyboard-focusable,
+  touch-draggable, no layout shift.
+- **Item 7 — subscribe button**: folded into `<x-ui.button variant="primary">`;
+  no one-off colour classes remain on the home page.

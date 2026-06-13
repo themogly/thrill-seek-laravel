@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Actions\CreateEnquiry;
 use App\Actions\StartAffCheckout;
 use App\Exceptions\BookingUnavailableException;
+use App\Livewire\Concerns\OffersNewsletterOptIn;
 use App\Livewire\Concerns\ProtectsAgainstSpam;
 use App\Models\CourseDate;
 use App\Settings\GeneralSettings;
@@ -16,7 +17,7 @@ use Livewire\Component;
 
 class BookAff extends Component
 {
-    use ProtectsAgainstSpam;
+    use OffersNewsletterOptIn, ProtectsAgainstSpam;
 
     public int $step = 1;
 
@@ -133,6 +134,8 @@ class BookAff extends Component
 
             return;
         }
+
+        $this->subscribeIfOptedIn($this->email);
 
         // Enquiry-first mode: capture the request as an enquiry and never
         // create a Stripe session from the public site.

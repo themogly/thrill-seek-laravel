@@ -42,7 +42,7 @@ class ManageCoachedPageSettings extends SettingsPage
                 ->columns(2)
                 ->components([
                     TextInput::make('hero_title')->label('Heading')->required()->maxLength(255),
-                    TextInput::make('hero_subtitle')->label('Text under the heading')->required()->maxLength(500),
+                    TextInput::make('hero_subtitle')->label('Text under the heading')->maxLength(500),
                     FileUpload::make('hero_image')
                         ->label('Hero photo')
                         ->helperText('Full-width banner photo. Leave empty to keep the current image.')
@@ -79,7 +79,7 @@ class ManageCoachedPageSettings extends SettingsPage
                 ->components([
                     TextInput::make('enquiry_eyebrow')->label('Small line')->required()->maxLength(255),
                     TextInput::make('enquiry_title')->label('Heading')->required()->maxLength(255),
-                    TextInput::make('enquiry_lead')->label('Lead text')->required()->maxLength(500),
+                    TextInput::make('enquiry_lead')->label('Lead text')->maxLength(500),
                 ]),
         ]);
     }

@@ -145,4 +145,6 @@ The booking calendar only appears in the admin once at least one booking exists.
   Vouchers, Customers, Newsletter subscribers, Newsletters, Email templates.
 - **Email templates** — all customer-facing automated emails are editable records with
   `{{ placeholder }}` variables listed on each template's edit screen.
+- **Prices** — entered and shown in **pounds** in the admin (e.g. 260.00); stored
+  internally as pence. Just type the pound amount; the conversion is automatic.
 - **DECISIONS.md** — the judgement calls made during the build and why.

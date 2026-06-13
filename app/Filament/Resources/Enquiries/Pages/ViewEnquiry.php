@@ -12,6 +12,7 @@ use App\Models\Enquiry;
 use App\Models\User;
 use App\Support\AdminDates;
 use App\Support\Money;
+use App\Support\MoneyField;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -83,15 +84,15 @@ class ViewEnquiry extends ViewRecord
                             $default = $this->defaultAmountFor($state);
 
                             if ($default !== null) {
-                                $set('amount_pence', $default);
+                                // The field shows pounds; the default is pence.
+                                $set('amount_pence', $default / 100);
                             }
                         }),
-                    TextInput::make('amount_pence')
-                        ->label('Amount (pence)')
-                        ->helperText('e.g. 26000 = £260. Pre-filled from the product where possible.')
-                        ->numeric()
+                    MoneyField::pounds('amount_pence')
+                        ->label('Amount')
+                        ->helperText('In pounds, e.g. 260.00. Pre-filled from the product where possible.')
                         ->required()
-                        ->minValue(100),
+                        ->minValue(1),
                     TextInput::make('description')
                         ->label('Shown on the Stripe checkout page')
                         ->default(fn (): string => $this->getRecord()->product->name ?? 'G-Force Skydiving')
@@ -138,12 +139,11 @@ class ViewEnquiry extends ViewRecord
                         ->label('What was this payment for?')
                         ->options(PaymentPurpose::class)
                         ->required(),
-                    TextInput::make('amount_pence')
-                        ->label('Amount received (pence)')
-                        ->helperText('e.g. 26000 = £260.')
-                        ->numeric()
+                    MoneyField::pounds('amount_pence')
+                        ->label('Amount received')
+                        ->helperText('In pounds, e.g. 260.00.')
                         ->required()
-                        ->minValue(100),
+                        ->minValue(1),
                     TextInput::make('reference')
                         ->label('Bank reference')
                         ->required()

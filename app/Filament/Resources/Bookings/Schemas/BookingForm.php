@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Bookings\Schemas;
 use App\Enums\BookingStatus;
 use App\Models\TandemDate;
 use App\Support\AdminDates;
+use App\Support\MoneyField;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -51,20 +52,21 @@ class BookingForm
                             ->label('Jump slot')
                             ->helperText('Picking a slot sets the date below and confirms the booking.')
                             ->options(fn (): array => TandemDate::upcoming()
+                                ->with('location')
                                 ->get()
                                 ->mapWithKeys(fn (TandemDate $slot): array => [
-                                    $slot->id => $slot->starts_at->format('D j M Y, H:i')." ({$slot->remaining_capacity} of {$slot->capacity} places left)",
+                                    // Location first so otherwise-identical dates at different
+                                    // dropzones are distinguishable.
+                                    $slot->id => $slot->location->name.' · '.$slot->starts_at->format('D j M Y, H:i')." ({$slot->remaining_capacity} of {$slot->capacity} places left)",
                                 ])
                                 ->all())
                             ->placeholder('No slot — set a date manually or leave pending'),
                         AdminDates::dateTime('scheduled_at')
                             ->label('Date & time'),
-                        TextInput::make('price_pence')
-                            ->label('Price (pence)')
-                            ->helperText('e.g. 26000 = £260.')
-                            ->numeric()
-                            ->required()
-                            ->minValue(0),
+                        MoneyField::pounds('price_pence')
+                            ->label('Price')
+                            ->helperText('In pounds, e.g. 260.00.')
+                            ->required(),
                     ]),
                 Section::make('Jump details')
                     ->components([

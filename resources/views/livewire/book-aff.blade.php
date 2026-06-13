@@ -1,10 +1,10 @@
 <div class="mx-auto max-w-3xl">
     @if ($this->enquirySent)
-        <div class="rounded-2xl border bg-card p-8 text-center shadow-sm">
-            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary"><x-icon name="check" class="h-7 w-7" /></div>
+        <div class="border-2 border-secondary bg-card p-8 text-center">
+            <span class="mx-auto flex h-14 w-14 items-center justify-center bg-primary text-primary-foreground"><x-icon name="check" class="h-7 w-7" /></span>
             <h3 class="mt-4 font-display text-2xl uppercase text-secondary">Course request sent</h3>
             <p class="mt-2 text-muted-foreground">Thanks {{ $name }} — we've got your details and will be in touch shortly to confirm your place and arrange the deposit.</p>
-            <x-ui.button href="/" class="mt-6 bg-primary text-primary-foreground hover:bg-primary/90">Back to home</x-ui.button>
+            <x-ui.button href="/" class="mt-6">Back to home</x-ui.button>
         </div>
     @else
     <x-booking.steps :current="$step" :labels="['Pick a course', 'Your details', $this->paymentsEnabled ? 'Review & pay deposit' : 'Review & send']" />
@@ -155,6 +155,11 @@
             </p>
 
             <label class="mt-6 flex items-start gap-3 text-sm">
+                <input type="checkbox" wire:model="newsletterOptIn" class="mt-0.5 h-5 w-5 rounded border-input text-primary focus:ring-ring" />
+                <span>Keep me posted on jump days, course dates and offers.</span>
+            </label>
+
+            <label class="mt-3 flex items-start gap-3 text-sm">
                 <input type="checkbox" wire:model="terms" class="mt-0.5 h-5 w-5 rounded border-input text-primary focus:ring-ring" />
                 <span>I accept the <a href="/terms" target="_blank" class="font-semibold text-primary underline">booking terms</a> and confirm the details above are accurate.</span>
             </label>

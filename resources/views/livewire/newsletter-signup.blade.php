@@ -16,7 +16,7 @@
             placeholder="you@example.com"
             aria-label="Email address"
             autocomplete="email"
-            class="h-12 flex-1 border-white/20 bg-white/10 text-white placeholder:text-white/60"
+            class="h-14 flex-1 border-white/20 bg-white/10 text-white placeholder:text-white/60"
         />
     @else
         <x-ui.input
@@ -34,14 +34,14 @@
         <input id="nl-website-{{ $variant }}" type="text" wire:model="website" tabindex="-1" autocomplete="off" />
     </div>
 
+    {{-- The one button system: solid primary, palette only, no one-off colours.
+         w-full only on the stacked card variant. --}}
     <x-ui.button
         type="submit"
+        variant="primary"
         size="lg"
         wire:loading.attr="disabled"
-        @class([
-            'h-12 bg-secondary text-secondary-foreground hover:bg-secondary/90' => $variant === 'banner',
-            'w-full bg-secondary text-secondary-foreground hover:bg-secondary/90' => $variant === 'card',
-        ])
+        @class(['w-full' => $variant === 'card'])
     >
         <span wire:loading.remove wire:target="subscribe">Subscribe</span>
         <span wire:loading wire:target="subscribe">Subscribing…</span>

@@ -68,11 +68,12 @@ class ProductsTest extends TestCase
                 'name' => 'Night Jump Special',
                 'slug' => 'night-jump-special',
                 'type' => 'tandem',
-                'price_pence' => 30000,
+                'price_pence' => 300, // entered in pounds
             ])
             ->call('create')
             ->assertHasNoFormErrors();
 
+        // …stored as pence.
         $this->assertDatabaseHas('products', ['slug' => 'night-jump-special', 'price_pence' => 30000]);
     }
 }

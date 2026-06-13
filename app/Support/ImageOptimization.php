@@ -7,6 +7,7 @@ use App\Models\HallOfFameEntry;
 use App\Models\Instructor;
 use App\Models\Location;
 use App\Models\Product;
+use App\Models\Testimonial;
 use App\Settings\AffPageSettings;
 use App\Settings\CoachedPageSettings;
 use App\Settings\HomePageSettings;
@@ -28,6 +29,7 @@ final class ImageOptimization
     /** @var array<string, int> upload directory => longest-edge pixels */
     public const MAX_DIMENSIONS = [
         'instructors' => 480,
+        'testimonials' => 240,
         'gallery' => 1200,
         'hall-of-fame' => 960,
         'products' => 1280,
@@ -41,6 +43,7 @@ final class ImageOptimization
     /** @var array<class-string<Model>, list<string>> */
     public const MODEL_IMAGE_ATTRIBUTES = [
         Instructor::class => ['photo'],
+        Testimonial::class => ['avatar'],
         GalleryImage::class => ['image'],
         HallOfFameEntry::class => ['image'],
         Product::class => ['image'],

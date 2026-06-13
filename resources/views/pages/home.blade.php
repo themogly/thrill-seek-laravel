@@ -107,9 +107,20 @@
     {{-- TEAM: editorial portraits with name plates --}}
     <x-site.section>
         <x-site.section-heading :eyebrow="$home->team_eyebrow" :title="$home->team_title" :lead="$home->team_lead" />
-        <div class="grid gap-px bg-secondary md:grid-cols-3" data-reveal>
+        {{-- Horizontal scroll-snap rail: 2-up on mobile, 4-up on desktop. Each
+             card uses flex-1 with a per-view min-width, so a few coaches stretch
+             to fill the row (no stranded card) while five or more overflow into a
+             left/right scroll instead of stacking. The rail is keyboard-focusable
+             and touch-draggable; scrollbar styling keeps it discoverable. --}}
+        <div
+            tabindex="0"
+            role="list"
+            aria-label="{{ $home->team_title }}"
+            class="flex snap-x snap-mandatory gap-px overflow-x-auto bg-secondary pb-3 [scrollbar-color:var(--primary)_transparent] [scrollbar-width:thin] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            data-reveal
+        >
             @foreach ($instructors as $instructor)
-                <div class="group bg-background">
+                <div role="listitem" class="group flex min-w-[50%] flex-1 snap-start flex-col bg-background lg:min-w-[25%]">
                     <div class="relative aspect-[4/5] overflow-hidden bg-secondary">
                         @if ($instructor->photo)
                             <img src="{{ $instructor->photo_url }}" alt="{{ $instructor->name }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" width="800" height="1000" />
@@ -124,7 +135,7 @@
                             <p class="mt-1 text-xs font-bold uppercase tracking-[0.25em] text-sky-bright">{{ $instructor->role }}</p>
                         </div>
                     </div>
-                    <p class="border-2 border-t-0 border-border p-6 text-muted-foreground">{{ $instructor->bio }}</p>
+                    <p class="flex-1 border-2 border-t-0 border-border p-6 text-muted-foreground">{{ $instructor->bio }}</p>
                 </div>
             @endforeach
         </div>
@@ -171,7 +182,10 @@
                 <figure class="md:px-8 md:first:pl-0 md:last:pr-0">
                     <span aria-hidden="true" class="font-display text-7xl leading-none text-primary">“</span>
                     <blockquote class="-mt-4 text-lg leading-relaxed text-foreground">{{ $t->home_quote }}</blockquote>
-                    <figcaption class="mt-5 border-t-2 border-primary pt-3 text-sm font-bold uppercase tracking-widest text-secondary">{{ $t->name }}</figcaption>
+                    <figcaption class="mt-5 flex items-center gap-3 border-t-2 border-primary pt-4">
+                        <x-site.avatar :name="$t->name" :url="$t->avatar_url" size="h-10 w-10" />
+                        <span class="text-sm font-bold uppercase tracking-widest text-secondary">{{ $t->name }}</span>
+                    </figcaption>
                 </figure>
             @endforeach
         </div>
@@ -181,7 +195,9 @@
     <section class="band-ink border-y-4 border-primary py-20">
         <div class="mx-auto max-w-3xl px-4 text-center">
             <h2 class="font-display text-5xl uppercase leading-none tracking-wide md:text-6xl">{{ $home->newsletter_title }}</h2>
-            <p class="mt-4 text-lg text-white/85">{{ $home->newsletter_subtitle }}</p>
+            @if (filled($home->newsletter_subtitle))
+                <p class="mt-4 text-lg text-white/85">{{ $home->newsletter_subtitle }}</p>
+            @endif
             <livewire:newsletter-signup variant="banner" />
         </div>
     </section>
@@ -192,7 +208,9 @@
         <div class="absolute inset-0 -z-10 bg-photo-scrim"></div>
         <div class="mx-auto max-w-4xl px-4 text-center" data-reveal>
             <h2 class="font-display text-6xl uppercase leading-[0.92] tracking-wide md:text-8xl">{{ $home->cta_title }}</h2>
-            <p class="mx-auto mt-5 max-w-xl text-lg text-white/90">{{ $home->cta_subtitle }}</p>
+            @if (filled($home->cta_subtitle))
+                <p class="mx-auto mt-5 max-w-xl text-lg text-white/90">{{ $home->cta_subtitle }}</p>
+            @endif
             <x-ui.button href="/contact" size="lg" class="mt-10">
                 {{ $home->cta_button_label }}
             </x-ui.button>

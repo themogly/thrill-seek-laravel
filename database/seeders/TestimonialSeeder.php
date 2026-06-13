@@ -13,6 +13,7 @@ class TestimonialSeeder extends Seeder
             [
                 'name' => 'Sarah M.',
                 'role' => 'Tandem jumper',
+                'avatar' => '/images/instructors/ren.jpg',
                 'quote' => "Absolutely life-changing. The team made me feel safe from the moment I arrived. I'll be back!",
                 'excerpt' => 'Absolutely life-changing. The team made me feel safe from the moment I arrived.',
                 'featured' => true,
@@ -20,6 +21,7 @@ class TestimonialSeeder extends Seeder
             [
                 'name' => 'Tom R.',
                 'role' => 'AFF graduate',
+                'avatar' => '/images/instructors/jay.jpg',
                 'quote' => 'Did my AFF with G-Force in Spain. Best decision I ever made — incredible coaches and an unforgettable trip.',
                 'excerpt' => 'Did my AFF with G-Force in Spain. Best decision I ever made — incredible coaches.',
                 'featured' => true,

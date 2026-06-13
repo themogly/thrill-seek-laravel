@@ -36,7 +36,7 @@ class ManualPaymentTest extends TestCase
         Livewire::test(ViewEnquiry::class, ['record' => $enquiry->getRouteKey()])
             ->callAction('recordBankTransfer', [
                 'purpose' => PaymentPurpose::AffDeposit->value,
-                'amount_pence' => 30000,
+                'amount_pence' => 300, // pounds
                 'reference' => 'FPS-998877',
                 'paid_at' => now()->toDateString(),
             ])
@@ -61,14 +61,14 @@ class ManualPaymentTest extends TestCase
 
         $page->callAction('recordBankTransfer', [
             'purpose' => PaymentPurpose::AffDeposit->value,
-            'amount_pence' => 30000,
+            'amount_pence' => 300, // pounds
             'reference' => 'DEPOSIT-1',
             'paid_at' => now()->toDateString(),
         ]);
 
         $page->callAction('recordBankTransfer', [
             'purpose' => PaymentPurpose::AffBalance->value,
-            'amount_pence' => 145000,
+            'amount_pence' => 1450, // pounds
             'reference' => 'BALANCE-1',
             'paid_at' => now()->toDateString(),
         ]);

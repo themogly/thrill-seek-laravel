@@ -44,7 +44,7 @@ class ManageTandemPageSettings extends SettingsPage
                 ->columns(2)
                 ->components([
                     TextInput::make('hero_title')->label('Heading')->required()->maxLength(255),
-                    TextInput::make('hero_subtitle')->label('Text under the heading')->required()->maxLength(500),
+                    TextInput::make('hero_subtitle')->label('Text under the heading')->maxLength(500),
                     FileUpload::make('hero_image')
                         ->label('Hero photo')
                         ->helperText('Full-width banner photo. Leave empty to keep the current image.')
@@ -57,7 +57,7 @@ class ManageTandemPageSettings extends SettingsPage
                 ->components([
                     TextInput::make('intro_eyebrow')->label('Small line')->required()->maxLength(255),
                     TextInput::make('intro_title')->label('Heading')->required()->maxLength(255),
-                    Textarea::make('intro_lead')->label('Lead text')->rows(3)->required(),
+                    Textarea::make('intro_lead')->label('Lead text')->rows(3),
                     Repeater::make('bullets')
                         ->label('Bullet points')
                         ->simple(TextInput::make('bullet')->required()->maxLength(255))

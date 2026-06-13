@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Actions\CreateEnquiry;
 use App\Actions\StartVoucherCheckout;
+use App\Livewire\Concerns\OffersNewsletterOptIn;
 use App\Livewire\Concerns\ProtectsAgainstSpam;
 use App\Models\Product;
 use App\Settings\GeneralSettings;
@@ -14,7 +15,7 @@ use Livewire\Component;
 
 class BuyVoucher extends Component
 {
-    use ProtectsAgainstSpam;
+    use OffersNewsletterOptIn, ProtectsAgainstSpam;
 
     public string $purchaser_name = '';
 
@@ -65,6 +66,8 @@ class BuyVoucher extends Component
 
         $this->ensureNotRateLimited();
         $validated = $this->validate();
+
+        $this->subscribeIfOptedIn($validated['purchaser_email']);
 
         // Enquiry-first mode: capture the request as an enquiry and never
         // create a Stripe session from the public site.
