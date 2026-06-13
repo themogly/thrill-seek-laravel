@@ -5,6 +5,18 @@
 @section('title', $page->seo_title)
 @section('description', $page->seo_description)
 
+@php $affProduct = $products->first(); @endphp
+@if ($affProduct)
+    @push('json-ld')
+        <x-seo.json-ld :data="\App\Support\StructuredData::product($affProduct, url('/aff'), $page->seo_description)" />
+    @endpush
+@endif
+@foreach ($courseDates as $course)
+    @push('json-ld')
+        <x-seo.json-ld :data="\App\Support\StructuredData::courseEvent($course, url('/aff'))" />
+    @endpush
+@endforeach
+
 @section('content')
     <x-site.page-hero :title="$page->hero_title" :subtitle="$page->hero_subtitle" :image="$page->imageUrl($page->hero_image)" />
 

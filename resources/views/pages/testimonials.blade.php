@@ -12,6 +12,13 @@
 @section('title', $pages->testimonials_seo_title)
 @section('description', $pages->testimonials_seo_description)
 
+@php $ratingData = \App\Support\StructuredData::aggregateRating($testimonials); @endphp
+@if ($ratingData)
+    @push('json-ld')
+        <x-seo.json-ld :data="$ratingData" />
+    @endpush
+@endif
+
 @section('content')
     <x-site.page-hero :title="$pages->testimonials_hero_title" :subtitle="$pages->testimonials_hero_subtitle" />
 

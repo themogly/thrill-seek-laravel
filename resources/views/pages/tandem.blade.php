@@ -7,6 +7,12 @@
 @section('og_title', $page->og_title)
 @section('og_description', $page->og_description)
 
+@if ($product)
+    @push('json-ld')
+        <x-seo.json-ld :data="\App\Support\StructuredData::product($product, url('/tandem'), $page->seo_description)" />
+    @endpush
+@endif
+
 @section('content')
     <x-site.page-hero :title="$page->hero_title" :subtitle="$page->hero_subtitle" :image="$page->imageUrl($page->hero_image)" />
 

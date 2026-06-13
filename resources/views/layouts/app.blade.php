@@ -48,6 +48,9 @@
     <meta name="twitter:description" content="{!! $pageDescription !!}" />
     <meta name="twitter:image" content="{!! $pageOgImage !!}" />
 
+    {{-- Sitewide business identity (real CMS data; see App\Support\StructuredData) --}}
+    <x-seo.json-ld :data="\App\Support\StructuredData::organization()" />
+
     @stack('head')
     @fonts
     @vite(['resources/css/app.css', 'resources/js/app.js'])

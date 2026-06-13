@@ -23,6 +23,11 @@
     @section('og_image', $articleOgImage)
 @endif
 
+@push('json-ld')
+    <x-seo.json-ld :data="\App\Support\StructuredData::article($article, url('/news/'.$article->slug), $articleOgImage)" />
+    <x-seo.json-ld :data="\App\Support\StructuredData::breadcrumbs(['Home' => url('/'), 'News' => url('/news'), $article->title => url('/news/'.$article->slug)])" />
+@endpush
+
 @section('content')
     <x-site.page-hero :title="$article->title" :subtitle="$article->lead" :image="$article->featured_image_url" />
     <x-site.section>
