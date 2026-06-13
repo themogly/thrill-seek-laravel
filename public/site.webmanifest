@@ -1,0 +1,12 @@
+{
+    "name": "G-Force Skydiving",
+    "short_name": "G-Force",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#14224a",
+    "icons": [
+        { "src": "/favicon.ico", "sizes": "48x48", "type": "image/x-icon" },
+        { "src": "/images/logo.png", "sizes": "392x140", "type": "image/png" }
+    ]
+}

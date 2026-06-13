@@ -6,6 +6,11 @@
 @section('title', 'G-Force Skydiving — One Life. One Adventure. Live It.')
 @section('description', 'UK-based skydiving school offering tandem jumps, AFF courses and advanced coaching. Book your jump today.')
 
+@push('head')
+    {{-- The hero is the LCP element — preload it. --}}
+    <link rel="preload" as="image" href="{{ $home->imageUrl($home->hero_image) }}" fetchpriority="high" />
+@endpush
+
 @section('content')
     {{-- HERO: full-height photography, left-set editorial headline --}}
     <section class="relative isolate flex min-h-[92vh] items-end overflow-hidden">
@@ -15,6 +20,7 @@
             class="absolute inset-0 h-full w-full object-cover"
             width="1920"
             height="1280"
+            fetchpriority="high"
         />
         <div class="absolute inset-0 bg-photo-scrim"></div>
         <div class="relative z-10 mx-auto w-full max-w-7xl px-4 pb-20 pt-40 text-white lg:px-8 lg:pb-28">

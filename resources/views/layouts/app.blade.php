@@ -26,6 +26,10 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="/images/logo.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#14224a" />
     <title>{!! $pageTitle !!}</title>
     <meta name="description" content="{!! $pageDescription !!}" />
     <link rel="canonical" href="{{ $canonical }}" />
