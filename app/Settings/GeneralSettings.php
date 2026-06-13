@@ -31,6 +31,13 @@ class GeneralSettings extends Settings
     /** @phpstan-var array<int, array{icon: string, value: string, label: string}> */
     public array $trust_items;
 
+    /** Storefront switch — off hides the shop everywhere and 404s its routes. */
+    public bool $shop_enabled;
+
+    /** Public checkout switch — off reverts the site to enquiry-first (admin
+     *  payment tools and the Stripe webhook are unaffected). */
+    public bool $online_payments_enabled;
+
     public static function group(): string
     {
         return 'general';

@@ -9,6 +9,7 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -33,6 +34,17 @@ class ManageGeneralSettings extends SettingsPage
     public function form(Schema $schema): Schema
     {
         return $schema->components([
+            Section::make('Features')
+                ->description('Switch whole areas of the public site on or off. Changes take effect immediately.')
+                ->columns(2)
+                ->components([
+                    Toggle::make('shop_enabled')
+                        ->label('Online shop')
+                        ->helperText('When off, the Shop is hidden from the menu and footer and its page returns “not found”.'),
+                    Toggle::make('online_payments_enabled')
+                        ->label('Online payments')
+                        ->helperText('When off, “book & pay” buttons send an enquiry instead of taking card payment. You can still send Stripe links and record bank transfers from the admin.'),
+                ]),
             Section::make('Site identity')
                 ->columns(2)
                 ->components([

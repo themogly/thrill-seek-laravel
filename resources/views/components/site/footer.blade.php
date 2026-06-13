@@ -17,7 +17,9 @@
                 <li><a href="/aff" class="hover:text-primary">AFF Course</a></li>
                 <li><a href="/coached" class="hover:text-primary">Coached Skills</a></li>
                 <li><a href="/vouchers" class="hover:text-primary">Gift Vouchers</a></li>
-                <li><a href="/shop" class="hover:text-primary">Shop</a></li>
+                @if ($general->shop_enabled)
+                    <li><a href="/shop" class="hover:text-primary">Shop</a></li>
+                @endif
                 <li><a href="/hall-of-fame" class="hover:text-primary">Hall of Fame</a></li>
             </ul>
         </div>
