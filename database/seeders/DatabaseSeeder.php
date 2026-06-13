@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             EmailTemplateSeeder::class,
             LocationSeeder::class,
             CourseDateSeeder::class,
+            NewsArticleSeeder::class,
         ]);
     }
 }
