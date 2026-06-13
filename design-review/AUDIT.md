@@ -85,3 +85,21 @@ These are CONTENT, not design defects — do not fake them:
 - **Some seeded photos are placeholders** (instructor crops reused as testimonial
   avatars/photos, bundled stock as Hall-of-Fame/hero images). Swap for real
   G-Force photography through the admin uploads when available.
+
+---
+
+## Status (after the phased fixes)
+
+- **P1.1 — news no-image card** — ✅ done. Branded blue-gradient panel replaces the
+  void (`fix(design): audit P1.1`).
+- **P2.1 — article long-form typography** — ✅ done. text-lg / leading-8 / roomier
+  rhythm (`fix(design): audit P2.1`).
+- **P2.2 / P3 — news card hover zoom** — ✅ done. News cards now share the
+  Services / Hall-of-Fame image-zoom hover, reduced-motion honoured
+  (`fix(design): audit P3`).
+- **P3 — dark mode** — N/A (intentionally light-themed; not in scope).
+- **P3 — loading / empty / success states** — verified already in good shape; no
+  change made.
+
+No items deferred. Content tasks above remain with the owner (real article photos,
+real photography for placeholders).
