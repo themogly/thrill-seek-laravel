@@ -7,10 +7,7 @@
     </div>
     <div class="mx-auto grid max-w-7xl gap-10 border-t border-white/15 px-4 py-14 lg:grid-cols-4 lg:px-8">
         <div>
-            <div class="flex items-center gap-2">
-                <img src="/images/logo.png" alt="{{ $general->site_name }}" class="h-12 w-auto" width="48" height="48" loading="lazy" />
-                <span class="font-display text-2xl tracking-wider">G-FORCE</span>
-            </div>
+            <span class="font-display text-3xl uppercase tracking-wider text-white">G-Force Skydiving</span>
             <div class="mt-6 flex gap-3">
                 <a href="{{ $general->instagram_url }}" target="_blank" rel="noreferrer" aria-label="Instagram" class="flex h-11 w-11 items-center justify-center border border-white/30 text-white transition-colors hover:border-primary hover:bg-primary">
                     <x-icon name="instagram" class="h-4 w-4" />
