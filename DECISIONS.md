@@ -595,3 +595,34 @@ Hall of Fame's photo-led standard and polishes Hall of Fame; nothing else change
 - **HoF featured tile**: deliberately **not** added — the tight hairline photo grid
   is the page's strength and the photos already carry it; a broken-rhythm tile would
   weaken it. Richer captions instead: optional nullable `achieved_on` + `note`.
+
+## Merge + small design fixes (on main)
+
+Round 10 (News) and design/social-proof (photo-led Testimonials + Hall of Fame)
+were both green and approved, so both were merged into main (`818cacc`) and pushed
+before the fixes below — the testimonials grid fix targets the social-proof masonry,
+which had to be on main to address.
+
+- **Footer logo**: dropped the duplicate logo IMAGE; the footer now shows the full
+  "G-Force Skydiving" wordmark in brand display type (palette white on the ink
+  band). The header logo is untouched.
+- **"Stripe" → "by card" (public copy only)**: changed the public pay CTAs and
+  reassurance copy — tandem/AFF pay buttons ("Pay … by card"), the tandem pay-card
+  body + bullet ("Secure card checkout"), the booking/voucher reassurance lines
+  ("Card payments are secure — we never see your card details") and the
+  payment-success waiting line. No payment logic/routing/Stripe integration changed.
+  Kept the word "Stripe" only in the **admin Help guide** (the operator knows it);
+  the admin "Send payment link" action was already neutrally named.
+- **Missing news icon**: the icon component had no `newspaper` glyph, so the home
+  "Latest News" heading (and /news pages) rendered an empty SVG. Added the lucide
+  newspaper path; the heading now matches the Instagram heading.
+- **Testimonials grid**: the CSS-columns masonry stretched short/monogram cards to a
+  neighbour's height and the taller 4/6 aspect left big in-tile voids. Replaced with
+  a **uniform equal-aspect (4:5) grid** — every tile the same height, monogram/text
+  cards at natural size, no voids; the hero feature still breaks the rhythm.
+  Verified at 1/2/5/7 entries and 390/768/1440.
+- **Home hero band**: investigated the reported empty/clipped band. The hero renders
+  correctly at 390 and 1440 — full-bleed image, no navy/white gap — and the
+  `home.hero_image` setting is populated (`/images/hero-skydive.jpg`). No layout bug
+  reproduced; the earlier appearance was most likely a stale Vite build (rebuilt
+  with `npm run build`). No code change; flagged here per the brief.
