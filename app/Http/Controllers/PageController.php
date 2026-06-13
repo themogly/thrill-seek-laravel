@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\CourseDate;
+use App\Settings\GeneralSettings;
 use App\Support\SiteContent;
 use App\ViewModels\PaymentSuccessPage;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -15,11 +17,17 @@ class PageController extends Controller
 
     public function home(): View
     {
+        // Empty (so the home "Latest News" block hides) when News is switched off.
+        $latestNews = app(GeneralSettings::class)->news_enabled
+            ? $this->content->latestNews(3)
+            : new Collection;
+
         return view('pages.home', [
             'instructors' => $this->content->instructors(),
             'testimonials' => $this->content->featuredTestimonials(),
             'galleryImages' => $this->content->galleryImages(),
             'services' => $this->content->homeServices(),
+            'latestNews' => $latestNews,
         ]);
     }
 
