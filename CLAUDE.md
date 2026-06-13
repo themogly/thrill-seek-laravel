@@ -71,6 +71,12 @@ that manages all site content, enquiries, payments and bookings.
   nav group; sales resources in “Bookings & sales”.
 - Settings classes use spatie/laravel-settings; array properties document shapes with
   `@phpstan-var` ONLY (a `@var` tag breaks spatie's docblock reflector).
+- **Admin date fields**: build every date/datetime input via `App\Support\AdminDates`
+  (`AdminDates::date()` / `AdminDates::dateTime()`), never `DatePicker::make()`
+  directly. The factories pin Filament's *native* input mode — keyboard-typeable and
+  showing the browser calendar — because the non-native JS picker is readonly
+  (click-only). Callers chain their own label/default/rules; defaults that help go on
+  the field (new tandem date → today; course end → start + 4 to meet the 5-day min).
 - Images are plain `FileUpload`s to the public disk; stored values are either bundled
   paths (`/images/x.jpg`) or upload paths, resolved by `image_url` accessors /
   `imageUrl()` helpers. No medialibrary.

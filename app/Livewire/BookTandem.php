@@ -2,12 +2,14 @@
 
 namespace App\Livewire;
 
+use App\Actions\CreateEnquiry;
 use App\Actions\StartTandemCheckout;
 use App\Exceptions\BookingUnavailableException;
 use App\Livewire\Concerns\ProtectsAgainstSpam;
 use App\Models\Product;
 use App\Models\TandemDate;
 use App\Models\Voucher;
+use App\Settings\GeneralSettings;
 use App\Support\Money;
 use App\Support\SiteContent;
 use Illuminate\Contracts\View\View;
@@ -53,6 +55,15 @@ class BookTandem extends Component
     public string $unavailableMessage = '';
 
     public string $paymentErrorMessage = '';
+
+    /** Set when the enquiry-first path (online payments off) has been submitted. */
+    public bool $enquirySent = false;
+
+    /** Whether the public site can take card payment right now. */
+    public function getPaymentsEnabledProperty(): bool
+    {
+        return app(GeneralSettings::class)->online_payments_enabled;
+    }
 
     /** @return array<string, mixed> */
     protected function rules(): array
@@ -150,7 +161,7 @@ class BookTandem extends Component
         return $this->getTotalPenceProperty() - $coverage;
     }
 
-    public function pay(StartTandemCheckout $startCheckout): void
+    public function pay(StartTandemCheckout $startCheckout, CreateEnquiry $createEnquiry): void
     {
         if ($this->isSpam()) {
             return;
@@ -165,6 +176,14 @@ class BookTandem extends Component
         if ($slot === null || $product === null) {
             $this->unavailableMessage = 'That date is no longer available — please pick another.';
             $this->step = 1;
+
+            return;
+        }
+
+        // Enquiry-first mode: capture the request as an enquiry and never
+        // create a Stripe session from the public site.
+        if (! $this->getPaymentsEnabledProperty()) {
+            $this->submitAsEnquiry($createEnquiry, $slot, $product);
 
             return;
         }
@@ -202,6 +221,34 @@ class BookTandem extends Component
         }
 
         $this->redirect($result['checkout_url']);
+    }
+
+    private function submitAsEnquiry(CreateEnquiry $createEnquiry, TandemDate $slot, Product $product): void
+    {
+        $addOns = $product->addOns
+            ->where('purchasable', true)
+            ->whereIn('id', $this->addOnIds)
+            ->pluck('name')
+            ->all();
+
+        $createEnquiry->handle([
+            'name' => $this->name,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'preferred_date' => $slot->starts_at->toDateString(),
+            'context' => [
+                'date_of_birth' => $this->date_of_birth,
+                'weight_kg' => $this->weight_kg,
+                'emergency_contact_name' => $this->emergency_contact_name,
+                'emergency_contact_phone' => $this->emergency_contact_phone,
+                'medical_notes' => $this->medical_notes,
+                'location' => $slot->location?->name,
+                'add_ons' => $addOns,
+                'voucher_code' => $this->getAppliedVoucherProperty()?->code,
+            ],
+        ], $product);
+
+        $this->enquirySent = true;
     }
 
     public function getProductProperty(): ?Product

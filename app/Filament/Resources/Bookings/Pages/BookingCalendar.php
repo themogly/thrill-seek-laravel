@@ -30,6 +30,14 @@ class BookingCalendar extends Page
 
     protected string $view = 'filament.resources.bookings.pages.booking-calendar';
 
+    /** The calendar is meaningless with no bookings — hide it until the first
+     *  one exists, then it appears automatically (presence flag is cached). */
+    /** @param  array<string, mixed>  $parameters */
+    public static function shouldRegisterNavigation(array $parameters = []): bool
+    {
+        return Booking::anyExistCached();
+    }
+
     #[Url]
     public string $month = '';
 

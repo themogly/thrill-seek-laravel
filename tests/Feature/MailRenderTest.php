@@ -6,12 +6,16 @@ use App\Enums\MessageDirection;
 use App\Mail\CourseMessageMail;
 use App\Mail\EnquiryAdminNotification;
 use App\Mail\EnquiryReplyMail;
+use App\Mail\NewsletterCampaignMail;
+use App\Mail\NewsletterConfirmationMail;
 use App\Mail\PaymentReceivedAdminNotification;
 use App\Mail\VoucherGiftMail;
 use App\Models\Booking;
 use App\Models\CourseDate;
 use App\Models\CourseMessage;
 use App\Models\Enquiry;
+use App\Models\NewsletterCampaign;
+use App\Models\NewsletterSubscriber;
 use App\Models\Payment;
 use App\Models\Voucher;
 use Tests\TestCase;
@@ -39,6 +43,9 @@ class MailRenderTest extends TestCase
         $voucherWithMessage = Voucher::factory()->create(['message' => 'Happy birthday!']);
         $voucherBare = Voucher::factory()->create(['recipient_name' => null, 'message' => null]);
 
+        $subscriber = NewsletterSubscriber::factory()->pending()->create();
+        $campaign = NewsletterCampaign::factory()->sent()->create();
+
         $mailables = [
             new EnquiryAdminNotification($enquiry),
             new EnquiryReplyMail($outbound),
@@ -46,6 +53,8 @@ class MailRenderTest extends TestCase
             new CourseMessageMail($courseMessage, 'Jess'),
             new VoucherGiftMail($voucherWithMessage),
             new VoucherGiftMail($voucherBare),
+            new NewsletterConfirmationMail($subscriber),
+            new NewsletterCampaignMail($campaign, $subscriber),
         ];
 
         foreach ($mailables as $mailable) {

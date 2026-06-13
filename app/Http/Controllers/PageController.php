@@ -79,6 +79,11 @@ class PageController extends Controller
         return view('pages.vouchers');
     }
 
+    public function newsletter(): View
+    {
+        return view('pages.newsletter');
+    }
+
     /**
      * Stripe redirects here with the Checkout session id, so the page can
      * show the customer their booking (or a processing note while the

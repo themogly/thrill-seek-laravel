@@ -6,13 +6,14 @@ use App\Enums\CourseDateStatus;
 use App\Enums\ProductType;
 use App\Models\CourseDate;
 use App\Models\Product;
+use App\Support\AdminDates;
 use App\Support\DateClash;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Carbon;
 
@@ -53,12 +54,29 @@ class CourseDateForm
                             ->searchable()
                             ->preload()
                             ->required(),
-                        DatePicker::make('start_date')
+                        AdminDates::date('start_date')
                             ->label('Starts')
+                            ->default(now())
                             ->live()
+                            // Suggest an end that meets the 5-day minimum: bump the end
+                            // whenever it is blank or would now be too short, but never
+                            // shrink a longer course the admin has deliberately set.
+                            ->afterStateUpdated(function (mixed $state, Set $set, Get $get): void {
+                                if (blank($state)) {
+                                    return;
+                                }
+
+                                $suggested = Carbon::parse($state)->addDays(CourseDate::MIN_DURATION_DAYS - 1);
+                                $end = $get('end_date');
+
+                                if (blank($end) || Carbon::parse($end)->lt($suggested)) {
+                                    $set('end_date', $suggested->toDateString());
+                                }
+                            })
                             ->required(),
-                        DatePicker::make('end_date')
+                        AdminDates::date('end_date')
                             ->label('Ends')
+                            ->default(now()->addDays(CourseDate::MIN_DURATION_DAYS - 1))
                             ->live()
                             ->required()
                             ->helperText(function (Get $get): string {

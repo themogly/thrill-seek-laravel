@@ -27,7 +27,9 @@
                 <li><a href="/aff" class="transition-colors hover:text-sky-bright">AFF Course</a></li>
                 <li><a href="/coached" class="transition-colors hover:text-sky-bright">Coached Skills</a></li>
                 <li><a href="/vouchers" class="transition-colors hover:text-sky-bright">Gift Vouchers</a></li>
-                <li><a href="/shop" class="transition-colors hover:text-sky-bright">Shop</a></li>
+                @if ($general->shop_enabled)
+                    <li><a href="/shop" class="transition-colors hover:text-sky-bright">Shop</a></li>
+                @endif
                 <li><a href="/hall-of-fame" class="transition-colors hover:text-sky-bright">Hall of Fame</a></li>
             </ul>
         </div>

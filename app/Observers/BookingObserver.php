@@ -11,6 +11,16 @@ use Illuminate\Support\Facades\Mail;
 
 class BookingObserver
 {
+    public function created(Booking $booking): void
+    {
+        Booking::forgetPresenceCache();
+    }
+
+    public function deleted(Booking $booking): void
+    {
+        Booking::forgetPresenceCache();
+    }
+
     /**
      * Email the customer whenever a booking becomes confirmed (including
      * re-confirmation after a reschedule, which confirms the new date).

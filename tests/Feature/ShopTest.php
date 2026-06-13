@@ -11,6 +11,14 @@ use Tests\TestCase;
 
 class ShopTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // The storefront is off by default (Round 7); these tests exercise it on.
+        $this->setFeature('shop_enabled', true);
+    }
+
     public function test_shop_page_lists_items_in_order(): void
     {
         ShopItem::factory()->create(['name' => 'Zeta Cap', 'sort_order' => 2]);

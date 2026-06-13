@@ -2,9 +2,11 @@
 
 namespace App\Livewire;
 
+use App\Actions\CreateEnquiry;
 use App\Actions\StartVoucherCheckout;
 use App\Livewire\Concerns\ProtectsAgainstSpam;
 use App\Models\Product;
+use App\Settings\GeneralSettings;
 use App\Support\SiteContent;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Log;
@@ -26,6 +28,15 @@ class BuyVoucher extends Component
 
     public string $paymentErrorMessage = '';
 
+    /** Set when the enquiry-first path (online payments off) has been submitted. */
+    public bool $enquirySent = false;
+
+    /** Whether the public site can take card payment right now. */
+    public function getPaymentsEnabledProperty(): bool
+    {
+        return app(GeneralSettings::class)->online_payments_enabled;
+    }
+
     /** @return array<string, string> */
     protected function rules(): array
     {
@@ -46,7 +57,7 @@ class BuyVoucher extends Component
         ];
     }
 
-    public function pay(StartVoucherCheckout $startCheckout): void
+    public function pay(StartVoucherCheckout $startCheckout, CreateEnquiry $createEnquiry): void
     {
         if ($this->isSpam()) {
             return;
@@ -54,6 +65,24 @@ class BuyVoucher extends Component
 
         $this->ensureNotRateLimited();
         $validated = $this->validate();
+
+        // Enquiry-first mode: capture the request as an enquiry and never
+        // create a Stripe session from the public site.
+        if (! $this->getPaymentsEnabledProperty()) {
+            $createEnquiry->handle([
+                'name' => $validated['purchaser_name'],
+                'email' => $validated['purchaser_email'],
+                'message' => filled($validated['message'] ?? null) ? $validated['message'] : null,
+                'context' => [
+                    'enquiry_type' => 'Gift voucher',
+                    'recipient_name' => $validated['recipient_name'],
+                ],
+            ], $this->getProductProperty());
+
+            $this->enquirySent = true;
+
+            return;
+        }
 
         try {
             $result = $startCheckout->handle([

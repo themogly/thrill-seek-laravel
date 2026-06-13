@@ -1,5 +1,13 @@
 <div class="mx-auto max-w-3xl">
-    <x-booking.steps :current="$step" :labels="['Pick a course', 'Your details', 'Review & pay deposit']" />
+    @if ($this->enquirySent)
+        <div class="rounded-2xl border bg-card p-8 text-center shadow-sm">
+            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary"><x-icon name="check" class="h-7 w-7" /></div>
+            <h3 class="mt-4 font-display text-2xl uppercase text-secondary">Course request sent</h3>
+            <p class="mt-2 text-muted-foreground">Thanks {{ $name }} — we've got your details and will be in touch shortly to confirm your place and arrange the deposit.</p>
+            <x-ui.button href="/" class="mt-6 bg-primary text-primary-foreground hover:bg-primary/90">Back to home</x-ui.button>
+        </div>
+    @else
+    <x-booking.steps :current="$step" :labels="['Pick a course', 'Your details', $this->paymentsEnabled ? 'Review & pay deposit' : 'Review & send']" />
 
     @if ($unavailableMessage)
         <div class="mt-6">
@@ -101,7 +109,7 @@
     @if ($step === 3 && $course)
         <div class="mt-8 border-2 border-secondary bg-card p-6 sm:p-8">
             <div class="flex items-center justify-between gap-4">
-                <h3 class="font-display text-2xl uppercase text-secondary">Review &amp; pay deposit</h3>
+                <h3 class="font-display text-2xl uppercase text-secondary">{{ $this->paymentsEnabled ? 'Review & pay deposit' : 'Review & send' }}</h3>
                 <x-ui.button variant="link" wire:click="backToStep(2)">Edit details</x-ui.button>
             </div>
 
@@ -136,9 +144,14 @@
             </dl>
 
             <p class="mt-4 text-xs text-muted-foreground">
-                Your deposit secures the place. We'll send a payment link or bank details for the
-                balance well before the course starts — deposits are transferable if plans change
-                (see the booking terms).
+                @if ($this->paymentsEnabled)
+                    Your deposit secures the place. We'll send a payment link or bank details for the
+                    balance well before the course starts — deposits are transferable if plans change
+                    (see the booking terms).
+                @else
+                    Send us your details and we'll confirm your place and arrange the deposit with you
+                    directly — deposits are transferable if plans change (see the booking terms).
+                @endif
             </p>
 
             <label class="mt-6 flex items-start gap-3 text-sm">
@@ -156,10 +169,15 @@
             @endif
 
             <x-ui.button wire:click="pay" size="lg" class="mt-6 w-full" wire:loading.attr="disabled">
-                <span wire:loading.remove wire:target="pay">Pay {{ $course->formatted_deposit }} deposit with Stripe</span>
-                <span wire:loading wire:target="pay">Taking you to secure payment…</span>
+                <span wire:loading.remove wire:target="pay">{{ $this->paymentsEnabled ? 'Pay '.$course->formatted_deposit.' deposit with Stripe' : 'Send course request' }}</span>
+                <span wire:loading wire:target="pay">{{ $this->paymentsEnabled ? 'Taking you to secure payment…' : 'Sending your request…' }}</span>
             </x-ui.button>
-            <p class="mt-3 text-center text-xs text-muted-foreground">Card payments are handled by Stripe — we never see your card details.</p>
+            @if ($this->paymentsEnabled)
+                <p class="mt-3 text-center text-xs text-muted-foreground">Card payments are handled by Stripe — we never see your card details.</p>
+            @else
+                <p class="mt-3 text-center text-xs text-muted-foreground">We'll confirm your place and arrange the deposit with you directly — no card needed now.</p>
+            @endif
         </div>
+    @endif
     @endif
 </div>

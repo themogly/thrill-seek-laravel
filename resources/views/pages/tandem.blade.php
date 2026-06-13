@@ -81,18 +81,21 @@
     <x-site.section>
         <div class="grid gap-12 lg:grid-cols-2">
             {{-- Pay card --}}
+            @php $payEnabled = app(App\Settings\GeneralSettings::class)->online_payments_enabled; @endphp
             @if ($product)
             <div data-reveal>
                 <x-site.pay-card
                     eyebrow="Book online"
-                    heading="Book your jump now"
-                    body="Pick a date, tell us about you and pay securely — booked in minutes. We use Stripe for safe, instant checkout."
-                    button="Choose a date & book"
+                    :heading="$payEnabled ? 'Book your jump now' : 'Request your jump'"
+                    :body="$payEnabled
+                        ? 'Pick a date, tell us about you and pay securely — booked in minutes. We use Stripe for safe, instant checkout.'
+                        : 'Pick a date and tell us about you — we\'ll confirm your booking and arrange payment with you directly.'"
+                    :button="$payEnabled ? 'Choose a date & book' : 'Choose a date & enquire'"
                     href="/book/tandem"
                 >
                     <ul class="mt-6 space-y-2 text-sm text-white/90">
-                        <li class="flex items-center gap-2"><x-icon name="check" class="h-4 w-4 text-sky-bright" /> {{ $product->formatted_price }} full tandem payment</li>
-                        <li class="flex items-center gap-2"><x-icon name="check" class="h-4 w-4 text-sky-bright" /> Secure Stripe checkout</li>
+                        <li class="flex items-center gap-2"><x-icon name="check" class="h-4 w-4 text-sky-bright" /> {{ $product->formatted_price }} full tandem {{ $payEnabled ? 'payment' : 'price' }}</li>
+                        <li class="flex items-center gap-2"><x-icon name="check" class="h-4 w-4 text-sky-bright" /> {{ $payEnabled ? 'Secure Stripe checkout' : 'No card needed to enquire' }}</li>
                         <li class="flex items-center gap-2"><x-icon name="check" class="h-4 w-4 text-sky-bright" /> Booking confirmation by email</li>
                     </ul>
                 </x-site.pay-card>

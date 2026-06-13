@@ -4,6 +4,8 @@ use App\Enums\MessageDirection;
 use App\Mail\CourseMessageMail;
 use App\Mail\EnquiryAdminNotification;
 use App\Mail\EnquiryReplyMail;
+use App\Mail\NewsletterCampaignMail;
+use App\Mail\NewsletterConfirmationMail;
 use App\Mail\PaymentReceivedAdminNotification;
 use App\Mail\TemplatedMail;
 use App\Mail\VoucherGiftMail;
@@ -13,6 +15,8 @@ use App\Models\CourseMessage;
 use App\Models\EmailTemplate;
 use App\Models\Enquiry;
 use App\Models\Location;
+use App\Models\NewsletterCampaign;
+use App\Models\NewsletterSubscriber;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Voucher;
@@ -103,6 +107,20 @@ function devMailPreviews(): array
             ]);
 
             return new VoucherGiftMail($voucher);
+        },
+        'newsletter-confirmation' => function () {
+            $subscriber = NewsletterSubscriber::factory()->pending()->create(['email' => 'fan@example.com']);
+
+            return new NewsletterConfirmationMail($subscriber);
+        },
+        'newsletter-campaign' => function () {
+            $subscriber = NewsletterSubscriber::factory()->create(['email' => 'fan@example.com']);
+            $campaign = NewsletterCampaign::factory()->sent()->create([
+                'subject' => 'Summer jump days just dropped',
+                'body' => "We've opened a fresh batch of tandem dates and a Seville AFF course.\n\nGrab a slot before they're gone — see you in the sky!",
+            ]);
+
+            return new NewsletterCampaignMail($campaign, $subscriber);
         },
         // Every editable template, rendered with representative variables.
         ...collect([

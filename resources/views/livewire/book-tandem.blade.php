@@ -1,5 +1,13 @@
 <div class="mx-auto max-w-3xl">
-    <x-booking.steps :current="$step" :labels="['Pick a date', 'Your details', 'Review & pay']" />
+    @if ($this->enquirySent)
+        <div class="rounded-2xl border bg-card p-8 text-center shadow-sm">
+            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary"><x-icon name="check" class="h-7 w-7" /></div>
+            <h3 class="mt-4 font-display text-2xl uppercase text-secondary">Booking request sent</h3>
+            <p class="mt-2 text-muted-foreground">Thanks {{ $name }} — we've got your details and will be in touch shortly to confirm your jump and arrange payment.</p>
+            <x-ui.button href="/" class="mt-6 bg-primary text-primary-foreground hover:bg-primary/90">Back to home</x-ui.button>
+        </div>
+    @else
+    <x-booking.steps :current="$step" :labels="['Pick a date', 'Your details', $this->paymentsEnabled ? 'Review & pay' : 'Review & send']" />
 
     @if ($unavailableMessage)
         <div class="mt-6">
@@ -125,7 +133,7 @@
     @if ($step === 3 && $product)
         <div class="mt-8 border-2 border-secondary bg-card p-6 sm:p-8">
             <div class="flex items-center justify-between gap-4">
-                <h3 class="font-display text-2xl uppercase text-secondary">Review &amp; pay</h3>
+                <h3 class="font-display text-2xl uppercase text-secondary">{{ $this->paymentsEnabled ? 'Review & pay' : 'Review & send' }}</h3>
                 <x-ui.button variant="link" wire:click="backToStep(2)">Edit details</x-ui.button>
             </div>
 
@@ -172,7 +180,7 @@
                 </div>
             </dl>
 
-            @unless ($appliedVoucher)
+            @unless ($appliedVoucher || ! $this->paymentsEnabled)
                 <div class="mt-6 border-2 border-border bg-background p-4">
                     <label for="bt-voucher" class="text-sm font-bold uppercase tracking-wide text-secondary">Got a gift voucher?</label>
                     <div class="mt-2 flex gap-2">
@@ -208,17 +216,28 @@
 
             <x-ui.button wire:click="pay" size="lg" class="mt-6 w-full" wire:loading.attr="disabled">
                 <span wire:loading.remove wire:target="pay">
-                    @if ($duePence === 0)
+                    @if (! $this->paymentsEnabled)
+                        Send booking request
+                    @elseif ($duePence === 0)
                         Book now — nothing to pay
                     @else
                         Pay {{ $formattedDue }} securely with Stripe
                     @endif
                 </span>
-                <span wire:loading wire:target="pay">{{ $duePence === 0 ? 'Confirming your booking…' : 'Taking you to secure payment…' }}</span>
+                <span wire:loading wire:target="pay">
+                    @if (! $this->paymentsEnabled)
+                        Sending your request…
+                    @else
+                        {{ $duePence === 0 ? 'Confirming your booking…' : 'Taking you to secure payment…' }}
+                    @endif
+                </span>
             </x-ui.button>
-            @if ($duePence > 0)
+            @if ($this->paymentsEnabled && $duePence > 0)
                 <p class="mt-3 text-center text-xs text-muted-foreground">Card payments are handled by Stripe — we never see your card details.</p>
+            @elseif (! $this->paymentsEnabled)
+                <p class="mt-3 text-center text-xs text-muted-foreground">We'll confirm availability and arrange payment with you directly — no card needed now.</p>
             @endif
         </div>
+    @endif
     @endif
 </div>

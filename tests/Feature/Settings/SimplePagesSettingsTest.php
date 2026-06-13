@@ -12,6 +12,7 @@ class SimplePagesSettingsTest extends TestCase
 {
     public function test_simple_pages_render_the_seeded_settings_content(): void
     {
+        $this->setFeature('shop_enabled', true);
         $this->get('/shop')->assertOk()->assertSee('Repping G-Force on the dropzone.');
         $this->get('/testimonials')->assertOk()->assertSee('Real stories from the people who&#039;ve jumped with us.', false);
         $this->get('/hall-of-fame')->assertOk()->assertSee('The students, graduates and coaches that make G-Force what it is.');
