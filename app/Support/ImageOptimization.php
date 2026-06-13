@@ -6,6 +6,7 @@ use App\Models\GalleryImage;
 use App\Models\HallOfFameEntry;
 use App\Models\Instructor;
 use App\Models\Location;
+use App\Models\NewsArticle;
 use App\Models\Product;
 use App\Models\Testimonial;
 use App\Settings\AffPageSettings;
@@ -30,6 +31,7 @@ final class ImageOptimization
     public const MAX_DIMENSIONS = [
         'instructors' => 480,
         'testimonials' => 240,
+        'news' => 1280,
         'gallery' => 1200,
         'hall-of-fame' => 960,
         'products' => 1280,
@@ -44,6 +46,7 @@ final class ImageOptimization
     public const MODEL_IMAGE_ATTRIBUTES = [
         Instructor::class => ['photo'],
         Testimonial::class => ['avatar'],
+        NewsArticle::class => ['featured_image'],
         GalleryImage::class => ['image'],
         HallOfFameEntry::class => ['image'],
         Product::class => ['image'],

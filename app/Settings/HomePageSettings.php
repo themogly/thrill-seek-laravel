@@ -63,11 +63,6 @@ class HomePageSettings extends Settings
 
     public string $instagram_note;
 
-    public string $facebook_caption;
-
-    /** @phpstan-var array<int, array{title: string, description: string}> */
-    public array $facebook_posts;
-
     public string $testimonials_eyebrow;
 
     public string $testimonials_title;

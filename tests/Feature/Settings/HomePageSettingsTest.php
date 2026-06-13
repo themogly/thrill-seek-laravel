@@ -25,7 +25,6 @@ class HomePageSettingsTest extends TestCase
         $response->assertSee('Established 2017. Built on experience.');
         $response->assertSee('Highest UK Tandem');
         $response->assertSee('Follow @gforceskydiving for jumps from the weekend.');
-        $response->assertSee('AFF Course in Spain — June 8–12');
         $response->assertSee('Trusted. Certified. Experienced.');
         $response->assertSee('Ex-Military');
         $response->assertSee('Ready to Jump?');

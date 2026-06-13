@@ -26,6 +26,7 @@ class SiteContentCacheTest extends TestCase
         $content->affProducts();
         $content->shopItems();
         $content->hallOfFame();
+        $content->publishedNews();
 
         $keys = collect(SiteContent::KEYS_BY_MODEL)->flatten()->unique();
 

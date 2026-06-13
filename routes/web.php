@@ -11,6 +11,10 @@ Route::get('/tandem', [PageController::class, 'tandem'])->name('tandem');
 Route::get('/aff', [PageController::class, 'aff'])->name('aff');
 Route::get('/coached', [PageController::class, 'coached'])->name('coached');
 Route::get('/shop', [PageController::class, 'shop'])->middleware('feature:shop')->name('shop');
+Route::middleware('feature:news')->group(function (): void {
+    Route::get('/news', [PageController::class, 'news'])->name('news');
+    Route::get('/news/{slug}', [PageController::class, 'newsArticle'])->name('news.show');
+});
 Route::get('/testimonials', [PageController::class, 'testimonials'])->name('testimonials');
 Route::get('/hall-of-fame', [PageController::class, 'hallOfFame'])->name('hall-of-fame');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
@@ -54,6 +58,10 @@ Route::get('/sitemap.xml', function () {
 
     if (app(GeneralSettings::class)->shop_enabled) {
         $entries[] = ['path' => '/shop', 'priority' => '0.7'];
+    }
+
+    if (app(GeneralSettings::class)->news_enabled) {
+        $entries[] = ['path' => '/news', 'priority' => '0.6'];
     }
 
     $urls = collect($entries)

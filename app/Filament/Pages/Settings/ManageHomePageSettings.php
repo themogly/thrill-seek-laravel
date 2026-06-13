@@ -123,7 +123,8 @@ class ManageHomePageSettings extends SettingsPage
                     TextInput::make('team_title')->label('Heading')->required()->maxLength(255),
                     TextInput::make('team_lead')->label('Lead text')->maxLength(500),
                 ]),
-            Section::make('Social feeds')
+            Section::make('Instagram feed')
+                ->description('The “Latest News” block next to it is managed under News.')
                 ->components([
                     TextInput::make('instagram_caption')
                         ->label('Instagram caption')
@@ -133,18 +134,6 @@ class ManageHomePageSettings extends SettingsPage
                         ->label('Instagram small print')
                         ->required()
                         ->maxLength(255),
-                    TextInput::make('facebook_caption')
-                        ->label('Facebook caption')
-                        ->required()
-                        ->maxLength(255),
-                    Repeater::make('facebook_posts')
-                        ->label('Facebook posts')
-                        ->components([
-                            TextInput::make('title')->required()->maxLength(255),
-                            TextInput::make('description')->required()->maxLength(500),
-                        ])
-                        ->reorderable()
-                        ->minItems(1),
                 ]),
             Section::make('“Real reviews” heading')
                 ->columns(2)

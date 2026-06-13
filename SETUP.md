@@ -121,6 +121,9 @@ php artisan courses:send-reminders     # manual course-reminder run
   instead of taking card payment. Admin Stripe links, bank-transfer recording and
   the Stripe webhook keep working regardless — the toggle only affects the public
   site. Changes take effect immediately.
+- **News** — ON by default. When off, News is hidden from the menu, footer, sitemap
+  and the home page, and `/news` returns 404. Articles are written under News →
+  News articles (drafts and future publish dates stay hidden until live).
 
 The booking calendar only appears in the admin once at least one booking exists.
 

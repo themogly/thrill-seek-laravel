@@ -1,11 +1,14 @@
 @php
-    $shopEnabled = app(App\Settings\GeneralSettings::class)->shop_enabled;
+    $settings = app(App\Settings\GeneralSettings::class);
+    $shopEnabled = $settings->shop_enabled;
+    $newsEnabled = $settings->news_enabled;
     $nav = array_values(array_filter([
         ['to' => '/', 'label' => 'Home'],
         ['to' => '/tandem', 'label' => 'Tandem'],
         ['to' => '/aff', 'label' => 'AFF'],
         ['to' => '/coached', 'label' => 'Coached Skills'],
         $shopEnabled ? ['to' => '/shop', 'label' => 'Shop'] : null,
+        $newsEnabled ? ['to' => '/news', 'label' => 'News'] : null,
         ['to' => '/testimonials', 'label' => 'Testimonials'],
         ['to' => '/hall-of-fame', 'label' => 'Hall of Fame'],
         ['to' => '/contact', 'label' => 'Contact'],

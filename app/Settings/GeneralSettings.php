@@ -38,6 +38,9 @@ class GeneralSettings extends Settings
      *  payment tools and the Stripe webhook are unaffected). */
     public bool $online_payments_enabled;
 
+    /** News switch — off hides News from the nav/footer/home and 404s its routes. */
+    public bool $news_enabled;
+
     public static function group(): string
     {
         return 'general';

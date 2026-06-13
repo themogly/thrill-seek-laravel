@@ -74,6 +74,21 @@
             redeem them under <strong>Bookings &amp; sales → Vouchers</strong>.
         </p>
 
+        <h2>Managing News</h2>
+        <p>
+            Write articles under <strong>News → News articles</strong>. They show on the public
+            <strong>/news</strong> page and the newest one appears on the home page.
+        </p>
+        <ul>
+            <li><strong>To write an article:</strong> click “New article”, add a title (the web
+                address fills in automatically), an optional lead line, and the body.</li>
+            <li><strong>Draft vs published:</strong> leave “Published” off to keep it hidden while you
+                work; set a future publish date to schedule it — it appears automatically on the day.</li>
+            <li><strong>Link an AFF course:</strong> pick a course in “Link an AFF course” to show its
+                live dates and places-left with a Book button on the article.</li>
+            <li>You can switch the whole News section off under Settings → General → Features.</li>
+        </ul>
+
         <h2>Newsletter</h2>
         <p>
             Sign-ups are stored under <strong>Bookings &amp; sales → Newsletter subscribers</strong>.

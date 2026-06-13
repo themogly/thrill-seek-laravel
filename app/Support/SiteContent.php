@@ -6,6 +6,7 @@ use App\Enums\ProductType;
 use App\Models\GalleryImage;
 use App\Models\HallOfFameEntry;
 use App\Models\Instructor;
+use App\Models\NewsArticle;
 use App\Models\Product;
 use App\Models\ProductAddOn;
 use App\Models\ShopItem;
@@ -36,6 +37,7 @@ final class SiteContent
         ProductAddOn::class => ['products.tandem'],
         ShopItem::class => ['shop'],
         HallOfFameEntry::class => ['hall_of_fame'],
+        NewsArticle::class => ['news.published'],
     ];
 
     /** @return EloquentCollection<int, Instructor> */
@@ -116,6 +118,39 @@ final class SiteContent
     public function hallOfFame(): EloquentCollection
     {
         return HallOfFameEntry::hydrate($this->rows('hall_of_fame', fn () => HallOfFameEntry::ordered()->get()));
+    }
+
+    /**
+     * Published news, newest first. The published flag drives the cache; the
+     * published_at window is applied live so a scheduled post appears the
+     * moment its time passes without waiting for a cache bust.
+     *
+     * @return EloquentCollection<int, NewsArticle>
+     */
+    public function publishedNews(): EloquentCollection
+    {
+        $articles = NewsArticle::hydrate($this->rows(
+            'news.published',
+            fn () => NewsArticle::published()->orderByDesc('published_at')->orderByDesc('id')->get(),
+        ));
+
+        return $articles->filter(fn (NewsArticle $article): bool => $article->isLive())->values();
+    }
+
+    /**
+     * The newest N live articles (for the home page).
+     *
+     * @return EloquentCollection<int, NewsArticle>
+     */
+    public function latestNews(int $limit = 2): EloquentCollection
+    {
+        return $this->publishedNews()->take($limit);
+    }
+
+    /** A single live article by slug, or null (drafts/future posts excluded). */
+    public function newsArticle(string $slug): ?NewsArticle
+    {
+        return $this->publishedNews()->firstWhere('slug', $slug);
     }
 
     /** @param  class-string<Model>  $modelClass */

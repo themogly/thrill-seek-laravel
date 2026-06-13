@@ -141,10 +141,10 @@
         </div>
     </x-site.section>
 
-    {{-- SOCIAL FEEDS --}}
+    {{-- SOCIAL + NEWS --}}
     <section class="border-y-2 border-secondary">
         <div class="mx-auto max-w-7xl px-4 py-20 lg:px-8">
-            <div class="grid gap-14 lg:grid-cols-2">
+            <div class="grid gap-14 @if ($latestNews->isNotEmpty()) lg:grid-cols-2 @endif">
                 <div data-reveal>
                     <h2 class="flex items-center gap-3 font-display text-4xl uppercase tracking-wide text-secondary"><x-icon name="instagram" class="text-primary" /> Instagram</h2>
                     <p class="mt-2 text-muted-foreground">{{ $home->instagram_caption }}</p>
@@ -158,18 +158,26 @@
                     </div>
                     <p class="mt-3 text-xs text-muted-foreground">{{ $home->instagram_note }}</p>
                 </div>
-                <div data-reveal>
-                    <h2 class="flex items-center gap-3 font-display text-4xl uppercase tracking-wide text-secondary"><x-icon name="facebook" class="text-primary" /> Facebook</h2>
-                    <p class="mt-2 text-muted-foreground">{{ $home->facebook_caption }}</p>
-                    <div class="mt-6 divide-y-2 divide-border border-2 border-border">
-                        @foreach ($home->facebook_posts as $p)
-                            <a href="{{ $general->facebook_url }}" target="_blank" rel="noreferrer" class="block p-5 transition-colors hover:bg-accent/40">
-                                <p class="font-semibold text-secondary">{{ $p['title'] }}</p>
-                                <p class="mt-1 text-sm text-muted-foreground">{{ $p['description'] }}</p>
-                            </a>
-                        @endforeach
+                @if ($latestNews->isNotEmpty())
+                    <div data-reveal>
+                        <h2 class="flex items-center gap-3 font-display text-4xl uppercase tracking-wide text-secondary"><x-icon name="newspaper" class="text-primary" /> Latest News</h2>
+                        <p class="mt-2 text-muted-foreground">Fresh from the dropzone.</p>
+                        <div class="mt-6 divide-y-2 divide-border border-2 border-border">
+                            @foreach ($latestNews as $article)
+                                <a href="{{ route('news.show', $article->slug) }}" class="block p-5 transition-colors hover:bg-accent/40">
+                                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-primary">{{ $article->published_at->format('j M Y') }}</p>
+                                    <p class="mt-1 font-display text-xl uppercase leading-tight text-secondary">{{ $article->title }}</p>
+                                    @if (filled($article->lead))
+                                        <p class="mt-1 text-sm text-muted-foreground">{{ $article->lead }}</p>
+                                    @endif
+                                </a>
+                            @endforeach
+                        </div>
+                        <a href="/news" class="mt-4 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-primary hover:underline">
+                            All news <x-icon name="arrow-right" class="h-4 w-4" />
+                        </a>
                     </div>
-                </div>
+                @endif
             </div>
         </div>
     </section>
