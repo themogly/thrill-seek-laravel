@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
             LocationSeeder::class,
             CourseDateSeeder::class,
             NewsArticleSeeder::class,
+            NewsletterCampaignSeeder::class,
         ]);
     }
 }
