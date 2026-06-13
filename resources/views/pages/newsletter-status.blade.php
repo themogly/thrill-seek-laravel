@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', $heading.' — G-Force Skydiving')
+@section('robots', 'noindex,follow')
 
 @section('content')
     <x-site.page-hero :title="$heading" />
