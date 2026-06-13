@@ -7,7 +7,7 @@
             <x-ui.button href="/" class="mt-6 bg-primary text-primary-foreground hover:bg-primary/90">Back to home</x-ui.button>
         </div>
     @else
-    <x-booking.steps :current="$step" :labels="['Pick a date', 'Your details', $this->paymentsEnabled ? 'Review &amp; pay' : 'Review &amp; send']" />
+    <x-booking.steps :current="$step" :labels="['Pick a date', 'Your details', $this->paymentsEnabled ? 'Review & pay' : 'Review & send']" />
 
     @if ($unavailableMessage)
         <div class="mt-6">
