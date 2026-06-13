@@ -105,9 +105,8 @@ class ManageGeneralSettings extends SettingsPage
                         ->rows(3)
                         ->required(),
                     TextInput::make('og_image')
-                        ->label('Social sharing image URL')
-                        ->helperText('Image shown when the site is shared on social media.')
-                        ->url()
+                        ->label('Social sharing image')
+                        ->helperText('Shown when the site is shared on social media. A site path like /images/share.jpg or a full URL; ideally 1200×630.')
                         ->required()
                         ->maxLength(2048),
                 ]),
