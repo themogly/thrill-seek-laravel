@@ -35,7 +35,7 @@ class ManageSimplePagesSettings extends SettingsPage
                 ->columns(2)
                 ->components([
                     TextInput::make('shop_hero_title')->label('Heading')->required()->maxLength(255),
-                    TextInput::make('shop_hero_subtitle')->label('Text under the heading')->required()->maxLength(500),
+                    TextInput::make('shop_hero_subtitle')->label('Text under the heading')->maxLength(500),
                     TextInput::make('shop_seo_title')->label('SEO page title')->required()->maxLength(255),
                     Textarea::make('shop_seo_description')->label('SEO description')->rows(2)->required(),
                 ]),
@@ -43,7 +43,7 @@ class ManageSimplePagesSettings extends SettingsPage
                 ->columns(2)
                 ->components([
                     TextInput::make('testimonials_hero_title')->label('Heading')->required()->maxLength(255),
-                    TextInput::make('testimonials_hero_subtitle')->label('Text under the heading')->required()->maxLength(500),
+                    TextInput::make('testimonials_hero_subtitle')->label('Text under the heading')->maxLength(500),
                     TextInput::make('testimonials_seo_title')->label('SEO page title')->required()->maxLength(255),
                     Textarea::make('testimonials_seo_description')->label('SEO description')->rows(2)->required(),
                 ]),
@@ -51,7 +51,7 @@ class ManageSimplePagesSettings extends SettingsPage
                 ->columns(2)
                 ->components([
                     TextInput::make('hall_of_fame_hero_title')->label('Heading')->required()->maxLength(255),
-                    TextInput::make('hall_of_fame_hero_subtitle')->label('Text under the heading')->required()->maxLength(500),
+                    TextInput::make('hall_of_fame_hero_subtitle')->label('Text under the heading')->maxLength(500),
                     TextInput::make('hall_of_fame_seo_title')->label('SEO page title')->required()->maxLength(255),
                     Textarea::make('hall_of_fame_seo_description')->label('SEO description')->rows(2)->required(),
                 ]),
@@ -59,7 +59,7 @@ class ManageSimplePagesSettings extends SettingsPage
                 ->columns(2)
                 ->components([
                     TextInput::make('contact_hero_title')->label('Heading')->required()->maxLength(255),
-                    TextInput::make('contact_hero_subtitle')->label('Text under the heading')->required()->maxLength(500),
+                    TextInput::make('contact_hero_subtitle')->label('Text under the heading')->maxLength(500),
                     TextInput::make('contact_seo_title')->label('SEO page title')->required()->maxLength(255),
                     Textarea::make('contact_seo_description')->label('SEO description')->rows(2)->required(),
                     TextInput::make('contact_form_heading')->label('Form heading')->required()->maxLength(255),
@@ -71,7 +71,7 @@ class ManageSimplePagesSettings extends SettingsPage
                 ->columns(2)
                 ->components([
                     TextInput::make('booking_tandem_hero_title')->label('Heading')->required()->maxLength(255),
-                    TextInput::make('booking_tandem_hero_subtitle')->label('Text under the heading')->required()->maxLength(500),
+                    TextInput::make('booking_tandem_hero_subtitle')->label('Text under the heading')->maxLength(500),
                     TextInput::make('booking_tandem_seo_title')->label('SEO page title')->required()->maxLength(255),
                     Textarea::make('booking_tandem_seo_description')->label('SEO description')->rows(2)->required(),
                 ]),
@@ -79,7 +79,7 @@ class ManageSimplePagesSettings extends SettingsPage
                 ->columns(2)
                 ->components([
                     TextInput::make('booking_aff_hero_title')->label('Heading')->required()->maxLength(255),
-                    TextInput::make('booking_aff_hero_subtitle')->label('Text under the heading')->required()->maxLength(500),
+                    TextInput::make('booking_aff_hero_subtitle')->label('Text under the heading')->maxLength(500),
                     TextInput::make('booking_aff_seo_title')->label('SEO page title')->required()->maxLength(255),
                     Textarea::make('booking_aff_seo_description')->label('SEO description')->rows(2)->required(),
                 ]),
@@ -87,10 +87,10 @@ class ManageSimplePagesSettings extends SettingsPage
                 ->columns(2)
                 ->components([
                     TextInput::make('voucher_hero_title')->label('Heading')->required()->maxLength(255),
-                    TextInput::make('voucher_hero_subtitle')->label('Text under the heading')->required()->maxLength(500),
+                    TextInput::make('voucher_hero_subtitle')->label('Text under the heading')->maxLength(500),
                     TextInput::make('voucher_seo_title')->label('SEO page title')->required()->maxLength(255),
                     Textarea::make('voucher_seo_description')->label('SEO description')->rows(2)->required(),
-                    Textarea::make('voucher_intro')->label('Intro text above the form')->rows(2)->required()->columnSpanFull(),
+                    Textarea::make('voucher_intro')->label('Intro text above the form')->rows(2)->columnSpanFull(),
                 ]),
             Section::make('Privacy policy')
                 ->components([

@@ -78,7 +78,7 @@ class ManageHomePageSettings extends SettingsPage
                 ->components([
                     TextInput::make('services_eyebrow')->label('Small line')->required()->maxLength(255),
                     TextInput::make('services_title')->label('Heading')->required()->maxLength(255),
-                    TextInput::make('services_lead')->label('Lead text')->required()->maxLength(500),
+                    TextInput::make('services_lead')->label('Lead text')->maxLength(500),
                 ]),
             Section::make('“Our story” section')
                 ->components([
@@ -121,7 +121,7 @@ class ManageHomePageSettings extends SettingsPage
                 ->components([
                     TextInput::make('team_eyebrow')->label('Small line')->required()->maxLength(255),
                     TextInput::make('team_title')->label('Heading')->required()->maxLength(255),
-                    TextInput::make('team_lead')->label('Lead text')->required()->maxLength(500),
+                    TextInput::make('team_lead')->label('Lead text')->maxLength(500),
                 ]),
             Section::make('Social feeds')
                 ->components([
@@ -156,13 +156,13 @@ class ManageHomePageSettings extends SettingsPage
                 ->columns(2)
                 ->components([
                     TextInput::make('newsletter_title')->label('Heading')->required()->maxLength(255),
-                    TextInput::make('newsletter_subtitle')->label('Text')->required()->maxLength(500),
+                    TextInput::make('newsletter_subtitle')->label('Text')->maxLength(500),
                 ]),
             Section::make('“Ready to jump?” box')
                 ->columns(3)
                 ->components([
                     TextInput::make('cta_title')->label('Heading')->required()->maxLength(255),
-                    TextInput::make('cta_subtitle')->label('Text')->required()->maxLength(500),
+                    TextInput::make('cta_subtitle')->label('Text')->maxLength(500),
                     TextInput::make('cta_button_label')->label('Button text (links to Contact)')->required()->maxLength(100),
                 ]),
         ]);

@@ -181,7 +181,9 @@
     <section class="band-ink border-y-4 border-primary py-20">
         <div class="mx-auto max-w-3xl px-4 text-center">
             <h2 class="font-display text-5xl uppercase leading-none tracking-wide md:text-6xl">{{ $home->newsletter_title }}</h2>
-            <p class="mt-4 text-lg text-white/85">{{ $home->newsletter_subtitle }}</p>
+            @if (filled($home->newsletter_subtitle))
+                <p class="mt-4 text-lg text-white/85">{{ $home->newsletter_subtitle }}</p>
+            @endif
             <livewire:newsletter-signup variant="banner" />
         </div>
     </section>
@@ -192,7 +194,9 @@
         <div class="absolute inset-0 -z-10 bg-photo-scrim"></div>
         <div class="mx-auto max-w-4xl px-4 text-center" data-reveal>
             <h2 class="font-display text-6xl uppercase leading-[0.92] tracking-wide md:text-8xl">{{ $home->cta_title }}</h2>
-            <p class="mx-auto mt-5 max-w-xl text-lg text-white/90">{{ $home->cta_subtitle }}</p>
+            @if (filled($home->cta_subtitle))
+                <p class="mx-auto mt-5 max-w-xl text-lg text-white/90">{{ $home->cta_subtitle }}</p>
+            @endif
             <x-ui.button href="/contact" size="lg" class="mt-10">
                 {{ $home->cta_button_label }}
             </x-ui.button>

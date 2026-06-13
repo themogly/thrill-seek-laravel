@@ -44,7 +44,7 @@ class ManageAffPageSettings extends SettingsPage
                 ->columns(2)
                 ->components([
                     TextInput::make('hero_title')->label('Heading')->required()->maxLength(255),
-                    TextInput::make('hero_subtitle')->label('Text under the heading')->required()->maxLength(500),
+                    TextInput::make('hero_subtitle')->label('Text under the heading')->maxLength(500),
                     FileUpload::make('hero_image')
                         ->label('Hero photo')
                         ->helperText('Full-width banner photo. Leave empty to keep the current image.')
@@ -57,7 +57,7 @@ class ManageAffPageSettings extends SettingsPage
                 ->components([
                     TextInput::make('intro_eyebrow')->label('Small line')->required()->maxLength(255),
                     TextInput::make('intro_title')->label('Heading')->required()->maxLength(255),
-                    Textarea::make('intro_lead')->label('Lead text')->rows(3)->required(),
+                    Textarea::make('intro_lead')->label('Lead text')->rows(3),
                     Repeater::make('bullets')
                         ->label('Bullet points')
                         ->simple(TextInput::make('bullet')->required()->maxLength(255))
@@ -89,14 +89,14 @@ class ManageAffPageSettings extends SettingsPage
                 ->components([
                     TextInput::make('courses_eyebrow')->label('Small line')->required()->maxLength(255),
                     TextInput::make('courses_title')->label('Heading')->required()->maxLength(255),
-                    TextInput::make('courses_lead')->label('Lead text')->required()->maxLength(500),
+                    TextInput::make('courses_lead')->label('Lead text')->maxLength(500),
                     TextInput::make('courses_empty_text')->label('Text when no courses are open')->required()->maxLength(500),
                 ]),
             Section::make('“Where & when” section')
                 ->components([
                     TextInput::make('info_eyebrow')->label('Small line')->required()->maxLength(255),
                     TextInput::make('info_title')->label('Heading')->required()->maxLength(255),
-                    Textarea::make('info_lead')->label('Lead text')->rows(2)->required(),
+                    Textarea::make('info_lead')->label('Lead text')->rows(2),
                     Repeater::make('info_cards')
                         ->label('Info cards')
                         ->columns(3)
