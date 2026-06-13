@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Bookings\Schemas;
 
 use App\Enums\BookingStatus;
 use App\Models\TandemDate;
+use App\Support\MoneyField;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
@@ -60,12 +61,10 @@ class BookingForm
                         DateTimePicker::make('scheduled_at')
                             ->label('Date & time')
                             ->seconds(false),
-                        TextInput::make('price_pence')
-                            ->label('Price (pence)')
-                            ->helperText('e.g. 26000 = £260.')
-                            ->numeric()
-                            ->required()
-                            ->minValue(0),
+                        MoneyField::pounds('price_pence')
+                            ->label('Price')
+                            ->helperText('In pounds, e.g. 260.00.')
+                            ->required(),
                     ]),
                 Section::make('Jump details')
                     ->components([

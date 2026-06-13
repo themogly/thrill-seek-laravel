@@ -32,7 +32,7 @@ class VoucherTest extends TestCase
     {
         Livewire::test(CreateVoucher::class)
             ->fillForm([
-                'amount_pence' => 26000,
+                'amount_pence' => 260, // pounds
                 'expires_at' => now()->addYear()->toDateString(),
                 'purchaser_name' => 'Gift Giver',
                 'purchaser_email' => 'giver@example.com',

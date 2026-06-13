@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Products\Schemas;
 
 use App\Enums\ProductType;
+use App\Support\MoneyField;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -79,16 +80,12 @@ class ProductForm
                 Section::make('Pricing')
                     ->columns(2)
                     ->components([
-                        TextInput::make('price_pence')
-                            ->label('Price (pence)')
-                            ->helperText('e.g. 26000 = £260. Leave empty for enquiry-only pricing.')
-                            ->numeric()
-                            ->minValue(0),
-                        TextInput::make('deposit_pence')
-                            ->label('Deposit (pence)')
-                            ->helperText('For AFF: the amount paid up front, e.g. 30000 = £300.')
-                            ->numeric()
-                            ->minValue(0)
+                        MoneyField::pounds('price_pence')
+                            ->label('Price')
+                            ->helperText('In pounds, e.g. 260.00. Leave empty for enquiry-only pricing.'),
+                        MoneyField::pounds('deposit_pence')
+                            ->label('Deposit')
+                            ->helperText('For AFF: the amount paid up front, e.g. 300.00.')
                             ->visible(fn (Get $get): bool => $get('type') === ProductType::Aff),
                         TextInput::make('price_note')
                             ->label('Price note')
@@ -149,7 +146,7 @@ class ProductForm
                             ->columns(4)
                             ->components([
                                 TextInput::make('name')->required()->maxLength(255),
-                                TextInput::make('price_pence')->label('Price (pence)')->numeric()->required()->minValue(0),
+                                MoneyField::pounds('price_pence')->label('Price')->required(),
                                 TextInput::make('note')->maxLength(255),
                                 Toggle::make('purchasable')->inline(false),
                             ])

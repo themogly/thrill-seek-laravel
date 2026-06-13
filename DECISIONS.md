@@ -405,3 +405,27 @@ Running log of judgement calls made during the autonomous CMS/booking build, new
   the ink band to flat deep navy (`bg-secondary`) with the same primary rule.
 - Dark `band-ink` survives only where the owner said it works: stats band,
   about band, newsletter band, tandem gift band, footer, image placeholders.
+
+## Round 8 — content, pricing, booking & layout polish (feature/round-8)
+
+- **Branch state**: off `main` (which now includes the Round 5B/6 redesign).
+  The Round 7 work (`feature/round-7`: feature toggles, native date pickers,
+  newsletter) was still unmerged when this branched, so Round 8 does not build on
+  it — e.g. the newsletter opt-in here reuses the *current main* newsletter
+  capture, not Round 7's double-opt-in pipeline (see Item 5). Re-test the overlap
+  once both merge.
+
+- **Item 3 — pricing in pounds (storage decision)**: storage stays **integer
+  pence** everywhere; we did NOT migrate the `*_pence` columns. Stripe charges in
+  the smallest currency unit, so pence is the correct canonical form and every
+  read site (Stripe `unit_amount`, Money::formatPence, balances) is unchanged —
+  the lowest-risk path for the round's highest-risk item. The admin now enters and
+  sees **pounds** via one shared presenter, `App\Support\MoneyField::pounds()`,
+  which converts pence→pounds on load and pounds→pence (rounded) on save, only at
+  the form edge. Applied to every money input (products + add-ons, course price/
+  deposit overrides, booking price, voucher value, the enquiry payment-link and
+  bank-transfer amounts — the last two also had their pence prefill divided to
+  pounds). An end-to-end test (`PricingInPoundsTest`) enters £312.50 in the admin
+  and asserts the resulting Stripe charge is exactly 31250 pence — guarding against
+  the 100×/​÷100 error. Existing tests that filled these form fields were updated to
+  enter pounds; tests that write models/DB directly keep using pence.

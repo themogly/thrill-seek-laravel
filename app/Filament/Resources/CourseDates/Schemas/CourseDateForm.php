@@ -7,6 +7,7 @@ use App\Enums\ProductType;
 use App\Models\CourseDate;
 use App\Models\Product;
 use App\Support\DateClash;
+use App\Support\MoneyField;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -108,16 +109,12 @@ class CourseDateForm
                     ->description('Leave empty to use the product price/deposit.')
                     ->columns(2)
                     ->components([
-                        TextInput::make('price_pence')
-                            ->label('Price (pence)')
-                            ->helperText('e.g. 175000 = £1,750.')
-                            ->numeric()
-                            ->minValue(0),
-                        TextInput::make('deposit_pence')
-                            ->label('Deposit (pence)')
-                            ->helperText('e.g. 30000 = £300.')
-                            ->numeric()
-                            ->minValue(0),
+                        MoneyField::pounds('price_pence')
+                            ->label('Price')
+                            ->helperText('In pounds, e.g. 1750.00.'),
+                        MoneyField::pounds('deposit_pence')
+                            ->label('Deposit')
+                            ->helperText('In pounds, e.g. 300.00.'),
                     ]),
                 Section::make('Notes')
                     ->components([

@@ -62,7 +62,7 @@ class CustomerRecordsTest extends TestCase
         Livewire::test(ViewEnquiry::class, ['record' => $enquiry->getRouteKey()])
             ->callAction('recordBankTransfer', [
                 'purpose' => 'tandem_full',
-                'amount_pence' => 26000,
+                'amount_pence' => 260, // pounds
                 'reference' => 'REF-1',
                 'paid_at' => now()->toDateString(),
             ]);
