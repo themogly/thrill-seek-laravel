@@ -80,6 +80,9 @@ class SimplePagesSettings extends Settings
 
     public string $privacy_body;
 
+    /** Auto-stamped (Y-m-d) whenever the privacy body is saved — drives the "Last updated" line. */
+    public string $privacy_updated_at;
+
     public string $terms_title;
 
     public string $terms_body;

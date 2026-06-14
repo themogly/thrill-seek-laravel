@@ -1080,3 +1080,33 @@ layout, so every transactional email opens and closes identically.
   Verified every refactored email in `/dev/mail` at desktop + mobile widths — greeting/
   body/sign-off render once, tandem prep only on tandem emails, no console errors;
   `TemplatedMail` is now exercised by `MailRenderTest`.
+
+## Improved privacy policy (feature/privacy-policy)
+
+Branched off main `5c5b613`. Replaces the thin seeded privacy copy with a stronger,
+UK-GDPR-aware default that names special-category (medical) data, legal bases, sharing,
+under-18s, retention and data-subject rights.
+
+- **Still owner-editable CMS content**, not hardcoded: it stays in
+  `SimplePagesSettings::privacy_body` (RichEditor). The upgrade ships as a settings
+  migration that **conditionally** rewrites the body — `migrator->update(…, fn($cur) =>
+  $cur === $oldDefault ? $new : $cur)` — so it sets the better default on installs that
+  never touched it but **never clobbers an owner edit** on re-run.
+- **Dynamic variables resolve live, never stored** — `App\ViewModels\PrivacyPage` (the
+  `<Thing>Page` + `viewData()` convention) substitutes `{{ business_name }}` →
+  `GeneralSettings::site_name`, `{{ contact_email }}` → `GeneralSettings::email` (as a
+  mailto link), `{{ last_updated }}` → the policy's last-saved date. Editing those
+  settings updates the policy everywhere; the values are never baked into the text.
+  Chose the existing `{{ token }}` approach (consistent with the email templates) over
+  Blade-around-body because the variables sit mid-sentence; the `[Owner: …]` lines remain
+  in the editable body for the owner to complete.
+- **"Last updated" is auto-stamped**: spatie's settings row has no usable per-property
+  `updated_at` (the repository `upsert`s only the payload), so a dedicated
+  `simple_pages.privacy_updated_at` is bumped in `ManageSimplePagesSettings::save()`
+  whenever the body changes.
+- **NOT legal advice.** The policy is a strong starting draft only. Because the business
+  processes medical (special-category) and potentially minors' data, it must be reviewed
+  by a solicitor before go-live, and the two `[Owner: …]` sections (minimum age /
+  guardian consent, retention period) completed with the real policy. This warning is in
+  the admin Help guide ("Your privacy policy") and is an explicit owner task — the policy
+  is never presented as legally complete in code or docs.
