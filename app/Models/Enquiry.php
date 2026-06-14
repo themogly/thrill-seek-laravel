@@ -112,6 +112,12 @@ class Enquiry extends Model
         return $this->hasMany(EnquiryMessage::class)->orderBy('created_at')->orderBy('id');
     }
 
+    /** @return HasOne<EnquiryMessage, $this> */
+    public function latestMessage(): HasOne
+    {
+        return $this->hasOne(EnquiryMessage::class)->latestOfMany();
+    }
+
     /** @return HasMany<Payment, $this> */
     public function payments(): HasMany
     {
