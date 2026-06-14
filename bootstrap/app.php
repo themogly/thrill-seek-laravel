@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureFeatureEnabled;
+use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -16,6 +17,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'webhooks/stripe',
             'webhooks/resend',
+        ]);
+
+        // Defence-in-depth response headers (incl. a report-only CSP) on every
+        // web response — public site and admin panel alike.
+        $middleware->web(append: [
+            SecurityHeaders::class,
         ]);
 
         $middleware->alias([

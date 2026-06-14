@@ -935,3 +935,27 @@ time, not a self-service or bulk path.
 - Owner guidance lives in the Help guide ("Handling a data request (GDPR)") and SETUP.md
   ("Data protection & retention"); retention guidance is keep-anonymised-financials for
   the statutory accounting period, erase personal data when no longer needed.
+
+### SEC-P3.1 — Security response headers + CSP
+
+`App\Http\Middleware\SecurityHeaders`, appended to the `web` group in
+`bootstrap/app.php`, so it covers the public site AND the Filament admin (both web).
+- Static headers: `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`,
+  `Referrer-Policy: strict-origin-when-cross-origin`, a locked-down `Permissions-Policy`
+  (camera/mic/geolocation/payment/usb/cohort all `()`).
+- **HSTS only when `app()->isProduction()` AND the request is HTTPS** — never on local
+  http, which would otherwise pin the dev domain to https with no cert.
+- **CSP shipped in Report-Only mode** (`Content-Security-Policy-Report-Only`), not
+  enforcing. The policy is `default-src 'self'` with `object-src 'none'`,
+  `frame-ancestors 'self'`, `base-uri 'self'`; `script-src` allows `'unsafe-inline'` +
+  `'unsafe-eval'` because Alpine compiles `x-*` with the Function constructor and
+  Livewire/Alpine inject inline script/style; `img-src` allows `data:`/`blob:`/`https:`
+  for CMS imagery; `frame-src`/`form-action` allow the Stripe Checkout hosts. All JS/CSS/
+  fonts are self-hosted via Vite, so there are no other third-party origins.
+- **Verified clean**: a Playwright pass at 1440 and 390 over home, the three service
+  pages, contact and the admin login — plus an interactive run (Alpine mobile menu + a
+  Livewire newsletter round-trip) — produced **zero CSP console violations**.
+- **Enforcement call**: report-only is safe to enforce as written, but we keep it
+  report-only through the first production deploy so the real Stripe redirect and any
+  remote CMS image hosts can be confirmed against a live console; then flip the header
+  name to `Content-Security-Policy`. Documented as an owner/ops follow-up.
