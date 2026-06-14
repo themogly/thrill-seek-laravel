@@ -49,12 +49,23 @@ class NewsletterCampaignMail extends Mailable implements ShouldQueue
 
         $unsubscribeUrl = URL::signedRoute('newsletter.unsubscribe', ['subscriber' => $this->subscriber->getKey()]);
 
+        // Render the body inside a plain-Blade (non-Markdown) shell so the
+        // pre-built, inline-styled block HTML is emitted verbatim, then strip any
+        // Livewire morph markers the Blade compiler injected around conditionals.
+        $html = NewsletterRenderer::stripLivewireMarkers(
+            view('mail.newsletter.shell', [
+                'subject' => $this->campaign->subject,
+                'preheader' => $this->campaign->preheader,
+                'copyright' => app(GeneralSettings::class)->footer_copyright,
+                'body' => $body,
+                'unsubscribeUrl' => $unsubscribeUrl,
+            ])->render()
+        );
+
         return new Content(
-            markdown: 'mail.newsletter',
+            htmlString: $html,
             text: 'mail.newsletter-text',
             with: [
-                'body' => $body,
-                'preheader' => $this->campaign->preheader,
                 'textBody' => $renderer->plainText($body),
                 'unsubscribeUrl' => $unsubscribeUrl,
             ],

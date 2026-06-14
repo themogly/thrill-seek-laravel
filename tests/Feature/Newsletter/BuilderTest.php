@@ -112,4 +112,51 @@ class BuilderTest extends TestCase
             ->assertOk()
             ->assertSee('Add a block');
     }
+
+    public function test_livewire_morph_markers_are_stripped(): void
+    {
+        // Livewire injects these conditional comments around @if/@foreach in any
+        // Blade view — they must never survive into newsletter HTML.
+        $dirty = '<!--[if BLOCK]><![endif]--><table>x</table><!--[if ENDBLOCK]><![endif-->';
+        $clean = NewsletterRenderer::stripLivewireMarkers(
+            '<!--[if BLOCK]><![endif]--><table>x</table><!--[if ENDBLOCK]><![endif]-->'
+        );
+
+        $this->assertSame('<table>x</table>', $clean);
+        $this->assertStringNotContainsString('[if BLOCK]', $clean);
+        $this->assertStringNotContainsString('[if ENDBLOCK]', $clean);
+    }
+
+    public function test_no_block_type_leaks_raw_or_escaped_markup_into_the_email(): void
+    {
+        // Every block, including the dynamic ones, in one campaign.
+        NewsArticle::factory()->create(['title' => 'Dropzone Update', 'slug' => 'dz-update']);
+
+        $subscriber = NewsletterSubscriber::factory()->create();
+        $campaign = NewsletterCampaign::factory()->create([
+            'rendered_html' => null,
+            'blocks' => [
+                ['type' => 'heading', 'data' => ['text' => 'All blocks', 'level' => 'h1']],
+                ['type' => 'paragraph', 'data' => ['text' => '<p>Intro.</p>']],
+                ['type' => 'image', 'data' => ['image' => '/images/hero-skydive.jpg', 'caption' => 'Sky', 'link' => '/tandem']],
+                ['type' => 'button', 'data' => ['label' => 'Book', 'url' => '/tandem']],
+                ['type' => 'divider', 'data' => []],
+                ['type' => 'two_column', 'data' => ['image' => '/images/aff.jpg', 'heading' => 'AFF', 'text' => 'Go pro.', 'image_side' => 'left', 'button_label' => 'See AFF', 'button_url' => '/aff']],
+                ['type' => 'latest_news', 'data' => []],
+                ['type' => 'featured_course', 'data' => []],
+            ],
+        ]);
+
+        $html = (new NewsletterCampaignMail($campaign, $subscriber))->render();
+
+        // No Livewire markers, and no markup shown as escaped/visible text.
+        foreach (['[if BLOCK]', '[if ENDBLOCK]', '&lt;table', '&lt;h3', '&lt;p', '<pre', '<code>'] as $leak) {
+            $this->assertStringNotContainsString($leak, $html, "Email leaked: {$leak}");
+        }
+
+        // The block HTML itself is present and rendered (not stripped away).
+        $this->assertStringContainsString('<table', $html);
+        $this->assertStringContainsString('Dropzone Update', $html);
+        $this->assertStringContainsString('All blocks', $html);
+    }
 }
