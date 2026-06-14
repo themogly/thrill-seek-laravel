@@ -23,6 +23,7 @@ class TestimonialFactory extends Factory
             'quote' => fake()->sentence(14),
             'excerpt' => null,
             'featured' => false,
+            'approved' => true,
             'sort_order' => fake()->numberBetween(1, 10),
         ];
     }
@@ -30,6 +31,11 @@ class TestimonialFactory extends Factory
     public function featured(): static
     {
         return $this->state(['featured' => true]);
+    }
+
+    public function unapproved(): static
+    {
+        return $this->state(['approved' => false]);
     }
 
     public function withAvatar(): static

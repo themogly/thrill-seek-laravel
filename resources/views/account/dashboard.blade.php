@@ -46,6 +46,16 @@
             </div>
         </div>
 
+        @if ($canReview)
+            <div class="mt-6 flex flex-col items-start gap-4 border-2 border-primary bg-sky-bright/5 p-6 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h2 class="font-display text-2xl uppercase tracking-wide">How was your jump?</h2>
+                    <p class="mt-1 text-muted-foreground">Leave a review and help future jumpers take the leap.</p>
+                </div>
+                <x-ui.button :href="route('account.review')">Leave a review</x-ui.button>
+            </div>
+        @endif
+
         {{-- Recent activity --}}
         <div class="mt-6 border-2 border-border p-6">
             <h2 class="font-display text-2xl uppercase tracking-wide">Recent payments</h2>

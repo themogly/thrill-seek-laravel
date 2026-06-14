@@ -5,6 +5,7 @@ use App\Http\Controllers\Account\DashboardController as AccountDashboardControll
 use App\Http\Controllers\Account\LoginController as AccountLoginController;
 use App\Http\Controllers\Account\MessageController as AccountMessageController;
 use App\Http\Controllers\Account\PaymentController as AccountPaymentController;
+use App\Http\Controllers\Account\ReviewController as AccountReviewController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ResendWebhookController;
@@ -62,6 +63,9 @@ Route::prefix('account')->name('account.')->group(function (): void {
         Route::get('/messages', [AccountMessageController::class, 'index'])->name('messages');
         Route::get('/messages/{enquiry}', [AccountMessageController::class, 'show'])->name('messages.show');
         Route::post('/messages/{enquiry}/reply', [AccountMessageController::class, 'reply'])->name('messages.reply');
+
+        Route::get('/review', [AccountReviewController::class, 'create'])->name('review');
+        Route::post('/review', [AccountReviewController::class, 'store'])->name('review.store');
     });
 });
 

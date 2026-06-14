@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\BookingStatus;
 use App\Enums\PaymentStatus;
 use App\Support\Money;
 use Database\Factories\CustomerFactory;
@@ -56,6 +57,18 @@ class Customer extends Model implements Authenticatable
     public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class)->latest();
+    }
+
+    /** A customer can leave a review once they have a completed booking. */
+    public function canLeaveReview(): bool
+    {
+        return $this->bookings()->where('status', BookingStatus::Completed)->exists();
+    }
+
+    /** Their most recent completed booking — used to pre-fill the review role. */
+    public function latestCompletedBooking(): ?Booking
+    {
+        return $this->bookings()->where('status', BookingStatus::Completed)->with('product')->first();
     }
 
     /**

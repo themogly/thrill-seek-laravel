@@ -29,6 +29,9 @@ class TestimonialsTable
                     ->label('Quote')
                     ->limit(60)
                     ->toggleable(),
+                IconColumn::make('approved')
+                    ->label('Approved')
+                    ->boolean(),
                 IconColumn::make('featured')
                     ->label('Home page')
                     ->boolean(),
@@ -39,6 +42,8 @@ class TestimonialsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                TernaryFilter::make('approved')
+                    ->label('Approved'),
                 TernaryFilter::make('featured')
                     ->label('Home page'),
             ])

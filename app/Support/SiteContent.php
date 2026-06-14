@@ -51,14 +51,14 @@ final class SiteContent
     {
         return Testimonial::hydrate($this->rows(
             'testimonials.featured',
-            fn () => Testimonial::featured()->ordered()->limit(3)->get(),
+            fn () => Testimonial::approved()->featured()->ordered()->limit(3)->get(),
         ));
     }
 
     /** @return EloquentCollection<int, Testimonial> */
     public function allTestimonials(): EloquentCollection
     {
-        return Testimonial::hydrate($this->rows('testimonials.all', fn () => Testimonial::ordered()->get()));
+        return Testimonial::hydrate($this->rows('testimonials.all', fn () => Testimonial::approved()->ordered()->get()));
     }
 
     /** @return EloquentCollection<int, GalleryImage> */

@@ -48,6 +48,7 @@ class AccountDashboardPage
             'totalOutstandingPence' => $totalOutstanding,
             'totalOutstandingLabel' => Money::formatPence($totalOutstanding),
             'recentPayments' => $recentPayments,
+            'canReview' => $customer->canLeaveReview(),
         ];
     }
 }
