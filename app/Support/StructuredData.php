@@ -162,17 +162,20 @@ class StructuredData
      */
     public static function breadcrumbs(array $items): array
     {
-        $position = 1;
-
         return [
             '@context' => 'https://schema.org',
             '@type' => 'BreadcrumbList',
-            'itemListElement' => collect($items)->map(fn (string $url, string $name): array => [
-                '@type' => 'ListItem',
-                'position' => $position++,
-                'name' => $name,
-                'item' => $url,
-            ])->values()->all(),
+            // Position comes from the (1-based) index — keys are labels, values URLs.
+            'itemListElement' => collect($items)
+                ->map(fn (string $url, string $name): array => ['name' => $name, 'url' => $url])
+                ->values()
+                ->map(fn (array $item, int $index): array => [
+                    '@type' => 'ListItem',
+                    'position' => $index + 1,
+                    'name' => $item['name'],
+                    'item' => $item['url'],
+                ])
+                ->all(),
         ];
     }
 }

@@ -5,6 +5,7 @@ namespace Tests\Feature\Seo;
 use App\Models\NewsArticle;
 use App\Models\Testimonial;
 use App\Settings\GeneralSettings;
+use App\Support\StructuredData;
 use Database\Seeders\ProductSeeder;
 use Tests\TestCase;
 
@@ -49,5 +50,19 @@ class StructuredDataTest extends TestCase
             ->assertOk()
             ->assertSee('"@type":"Article"', false)
             ->assertSee('"@type":"BreadcrumbList"', false);
+    }
+
+    public function test_breadcrumb_positions_are_sequential_and_ordered(): void
+    {
+        $data = StructuredData::breadcrumbs([
+            'Home' => 'https://x/',
+            'News' => 'https://x/news',
+            'Article' => 'https://x/news/a',
+        ]);
+
+        $this->assertSame([1, 2, 3], array_column($data['itemListElement'], 'position'));
+        $this->assertSame('Home', $data['itemListElement'][0]['name']);
+        $this->assertSame('https://x/', $data['itemListElement'][0]['item']);
+        $this->assertSame('Article', $data['itemListElement'][2]['name']);
     }
 }
