@@ -4,20 +4,15 @@ namespace App\Actions;
 
 use App\Enums\EnquiryStatus;
 use App\Enums\PaymentPurpose;
-use App\Mail\PaymentReceivedAdminNotification;
-use App\Mail\TemplatedMail;
 use App\Models\Booking;
 use App\Models\Customer;
-use App\Models\EmailTemplate;
 use App\Models\Payment;
-use App\Settings\GeneralSettings;
-use App\Support\Money;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 
 class ConvertEnquiryToBooking
 {
+    public function __construct(private readonly SendPaymentReceipt $receipt) {}
+
     /**
      * Called when a payment succeeds: attach it to the enquiry's booking
      * (creating the booking if this is the first payment), mark the enquiry
@@ -52,7 +47,7 @@ class ConvertEnquiryToBooking
             return $booking;
         });
 
-        $this->sendEmails($payment, $booking);
+        $this->receipt->handle($payment, $booking);
 
         return $booking;
     }
@@ -69,33 +64,5 @@ class ConvertEnquiryToBooking
             PaymentPurpose::AffDeposit, PaymentPurpose::AffBalance => $productPrice ?? $payment->amount_pence,
             default => $payment->amount_pence,
         };
-    }
-
-    private function sendEmails(Payment $payment, Booking $booking): void
-    {
-        try {
-            $booking->refresh();
-
-            Mail::to($booking->email)->queue(new TemplatedMail(
-                EmailTemplate::findByKey('payment_received'),
-                [
-                    'name' => $booking->name,
-                    'amount' => $payment->formatted_amount,
-                    'product' => $booking->product->name ?? 'your booking',
-                    'reference' => $booking->reference,
-                    'balance_note' => $booking->hasOutstandingBalance()
-                        ? 'Your remaining balance is '.Money::formatPence($booking->balance_due_pence).'.'
-                        : 'There is nothing left to pay.',
-                ],
-            ));
-
-            Mail::to(app(GeneralSettings::class)->email)
-                ->queue(new PaymentReceivedAdminNotification($payment, $booking));
-        } catch (\Throwable $e) {
-            Log::error('Failed to queue payment confirmation emails', [
-                'payment_id' => $payment->id,
-                'exception' => $e->getMessage(),
-            ]);
-        }
     }
 }

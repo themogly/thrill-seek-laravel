@@ -92,4 +92,18 @@ is nothing to escalate.
 ## Status
 
 - [x] CA-P1.1 — fix breadcrumb positions (+ pin test) — **done**
-- [ ] CA-P2.1 — extract shared `SendPaymentReceipt` action
+- [x] CA-P2.1 — extract shared `SendPaymentReceipt` action — **done**
+
+## Summary of changes
+
+- **Phase 1:** fixed the breadcrumb-position bug (`StructuredData::breadcrumbs`), pinned
+  by a new test. One commit.
+- **Phase 2:** extracted `App\Actions\SendPaymentReceipt`; `ConvertEnquiryToBooking` and
+  `ConfirmHeldBooking` now delegate to it (removing ~30 duplicated lines and 8 now-unused
+  imports across the two). Behaviour identical — both webhook paths covered by
+  `StripeWebhookTest`. One commit.
+- **Phase 3:** nothing changed — the codebase is already uniform; the deferred items
+  above are deliberate-by-design, not defects.
+
+Full suite green (305 tests), Larastan clean, Pint clean throughout. Behaviour identical
+before/after both fixes.
