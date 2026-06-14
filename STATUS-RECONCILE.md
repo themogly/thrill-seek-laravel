@@ -74,3 +74,31 @@ templates, plus a launch checklist and a "something's wrong?" note. Already comp
 
 Fix A (money-facing) → B → C, one commit each, `composer check` green before each.
 D/E/F: no work. E is NOT deferred (it's done).
+
+---
+
+## Final state (this session)
+
+| Item | Outcome | Commit |
+| --- | --- | --- |
+| A — completed-booking balance/pay | **Fixed** (money-facing, done first) | `91c9ed3` |
+| B — booking date/time "3am"/midnight | **Fixed** | `a37e4ac` |
+| C — bookings grouping | **Fixed** | `3ca67c9` |
+| D — account form widths | Already done (no change) | — |
+| E — SEO | Already done (no change) | `seo/audit-pass` (merged) |
+| F — admin help guide | Already done (no change) | `feature/admin-docs` (merged) |
+
+- **A** added `Booking::awaitingBalance()` (outstanding balance AND status not
+  completed/cancelled), gating the card, detail and `pay()` controller — reusing the
+  existing balance calc, no second path. Completed/cancelled bookings now show only the
+  factual Total/Paid, never a balance-due alarm or pay button.
+- **B** added `Booking::scheduledLabel()`/`formatScheduled()` (time only when really set,
+  date-only at midnight) used across dashboard, list, detail and the confirmation/
+  reminder/reschedule emails; factories now seed sensible daytime slot times.
+- **C** replaced "Past & awaiting" with Upcoming / Awaiting a date / Awaiting payment /
+  Past (empty groups hidden).
+- **E is NOT deferred** — contrary to the prompt's assumption it was already completed in
+  the `seo/audit-pass` round (sitemap, robots, centralised meta/canonical/OG, JSON-LD,
+  noindex). No separate SEO run is needed.
+
+309 tests green; public routes double-hit 200 on Redis after each item.
