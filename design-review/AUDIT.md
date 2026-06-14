@@ -1,105 +1,94 @@
-# Design Audit — design/audit-pass
+# Full design audit
 
-Branched off main `2f0889d`. Method: every public page reviewed in the browser at
-1440×900 and 390×844 (viewport captures in `design-review/audit/`), cross-checked
-against `CLAUDE.md` (palette, shared buttons, photo-tile/scrim, no flat-black
-secondary heroes, no rounded-glow cards) and the code.
+Branch `design/audit-pass`, off main `21f4a04`.
 
-**Overall:** the site is in strong shape. The earlier rounds already enforced the
-structural rules — palette is navy/blue/white throughout, every CTA is a shared
-`<x-ui.button>` variant, heroes are photographic or the compact navy-gradient band
-(no flat-black), tiles are photo-led with scrims, inputs are labelled with visible
-focus rings, social/icon links carry `aria-label`, the 404 returns a real 404. So
-this audit is deliberately short: a few real items, no padding.
+Method: rendered the public site in the browser and reviewed **viewport-sized**
+screenshots (never full-page) across **1440, 1280, 1024, 390, and a short 1366×700
+laptop height** — the in-between sizes where past rounds (overfit to 1440/390) broke.
+Three parallel sweeps covered marketing pages, content/trust pages, and the
+conversion/account pages; findings below were re-verified by hand. Evidence in
+`design-review/audit/`.
 
----
+## Headline (read this first)
+
+**The site is in excellent shape and needs no critical design changes.** The four
+structural issues the owner flagged were all fixed in earlier rounds and are confirmed
+resolved at every tested size:
+
+| Flagged issue | Status | Where fixed |
+| --- | --- | --- |
+| Full-viewport heroes / full-bleed images becoming one-screen walls | **Resolved** | `page-hero` padding + home hero capped to a rem band (`d8289f0`) |
+| Text+image two-column collapsing to an orphaned tall photo | **Resolved** | shared `x-site.feature-split` — holds 2-col to `md`, stacks to `aspect-[16/10]`, groups with its text (`9006456`) |
+| Stray white band between the CTA and the footer | **Resolved** | dropped the footer's `mt-24` (`b1c7953`) |
+| Double hero on Testimonials | **Resolved** | featured quote is the hero with a small eyebrow |
+
+Re-checked at 1024/1280/short-height: the booking-flow hero is a compact band with a
+well-spaced step indicator; the tandem/aff/coached intros hold two columns and the photo
+is a proportioned landscape when stacked; the account dashboard's balance card is already
+visually distinguished (primary border + tint) when a balance is outstanding. No new
+breakage was found.
+
+This is a deliberately short report. Per the brief, I did not invent problems or churn
+working code for taste.
 
 ## PHASE 1 — Critical
 
-- **News index card (no featured image)**: an article without a photo renders a
-  large empty `band-ink` block with a small centred icon (16:10), which on a public
-  landing page — especially at 390px where it's a tall dark void above the title —
-  reads as a *broken / failed-to-load image* → make the no-image area an intentional
-  branded panel (brand-blue gradient, larger icon, a small "News" eyebrow) so it
-  always looks designed, never broken → first-timers judge trust by polish; a
-  "missing image" on the news landing undersells. *(The actual article photos are a
-  CONTENT task — listed below; this fixes the fallback's design.)*
+**None.** No broken/awkward layouts, no responsiveness breakage at the in-between sizes,
+no off-palette colour, no one-off buttons, no flat-black secondary heroes, no
+stranded/stretched tiles, and no accessibility failures found (inputs are labelled and
+associated, focus states are defined via `focus-visible:ring`, hero/body text clears AA,
+photo-tile captions sit on navy scrims). The owner-flagged structural issues are already
+resolved (table above).
 
-`Review:` This is the only item that can read as *broken* to a visitor, and it sits
-on a public marketing surface, so it ranks first. Everything else passed the
-critical bar (no contrast failures, no unlabelled inputs, no missing focus states,
-no off-palette colour, no one-off buttons, no flat-black heroes, no
-stretched/stranded grid tiles — the testimonials grid was already fixed). It's a
-small, safe, palette-compliant change.
+`Review:` Phase 1 is empty because the work it would contain was done in the prior
+rounds referenced above and verified here across the full size range. Nothing remaining
+actively hurts the experience.
 
 ## PHASE 2 — Refinement
 
-- **News article body (`/news/{slug}`)**: the long-form body is plain body copy at
-  full content width with modest vertical rhythm → give it an editorial measure
-  (cap width, lift paragraph leading/spacing, style `h2`/lists to match the brand)
-  so a full article reads as deliberately as the rest of the site → news is an SEO
-  and trust surface; readable long-form copy keeps visitors engaged.
-- **News index card hover**: the card has a border-colour hover but the image
-  doesn't move, unlike the Services and Hall-of-Fame photo tiles which zoom on hover
-  → add the same subtle image zoom (reduced-motion honoured) so the news cards feel
-  part of the same interactive family → consistency of the photo-tile interaction
-  language. *(Implemented in Phase 3 with the other hover work — noted here as the
-  consistency rationale.)*
+Genuinely optional; none rise to a defect. Listed honestly, not as required work:
 
-`Review:` Both are genuine quality lifts, not breakage, so they sit below Phase 1.
-The article-body refinement is sequenced first because long-form readability has the
-larger payoff; the hover consistency is folded into the Phase 3 interaction pass.
+- [Vouchers form `buy-voucher`]: the footnote "Card payments are secure — we never see
+  your card details" is phrased by negation → a confident framing ("Pay securely by
+  card") reads as proactive rather than defensive → minor trust nuance on a payment page.
+  **Optional** — the current copy is accurate and reassuring; left as-is.
+- [Booking step indicator @ 1024]: spacing is slightly tighter than at 1440 but well
+  within comfortable → no change needed (verified not cramped, contrary to first glance).
+
+`Review:` These are taste-level nuances, not rhythm/alignment defects. The spacing,
+type scale and palette application are already uniform across similar screens (the
+codebase has had explicit consistency passes), so there is no Phase-2 cluster to fix.
 
 ## PHASE 3 — Polish
 
-- **News card hover zoom**: bring the news cards into the shared photo-tile hover
-  language (subtle image scale, `prefers-reduced-motion` respected). Other tiles
-  (services, Hall of Fame, testimonials) already do this.
-- **Dark mode**: N/A. The site is intentionally light-themed with dark navy bands;
-  no dark-mode toggle is in scope (the owner hasn't asked) — a generic checklist's
-  "add dark mode" item does not apply here.
-- **Loading / empty / success states**: already in good shape — booking and
-  newsletter CTAs show `wire:loading` text, the news index and testimonials pages
-  have written empty states ("No news just yet…", "No reviews yet."), and form
-  validation surfaces inline/toast errors. No work needed; recorded so it's
-  consciously checked, not assumed.
+Already handled by the existing system; nothing to add:
 
-`Review:` Phase 3 is a single real interaction tweak plus confirmations. Cumulative
-impact across the three phases: the news surface stops ever looking broken, reads
-better, and behaves like the rest of the site — closing the last visible gaps
-without touching the (already solid) structural design.
+- Hover/zoom on photo tiles and news cards (`scale-105`) honour `prefers-reduced-motion`.
+- `data-reveal` entrance animations are reduced-motion aware.
+- Visible focus rings on buttons, inputs and links.
+- Livewire forms have loading (`wire:loading`), success and inline error/`role="alert"`
+  states (contact, booking, voucher purchase, newsletter).
+- **Dark mode: N/A** — the site is light-themed by design with intentional dark bands;
+  a toggle is explicitly out of scope (owner did not ask).
 
----
+`Review:` The premium micro-detail layer already exists and is consistent; adding more
+would be noise.
 
-## Content tasks for the owner
+## Content tasks for the owner (NOT design defects — do not fake)
 
-These are CONTENT, not design defects — do not fake them:
+- **News articles** use the branded blue-gradient "no image" fallback because the seeded
+  articles have no `featured_image`. Upload real photos to give each article a hero.
+- **Hall of Fame / some tiles** reuse instructor crops as placeholders; replace with the
+  real milestone photography when available.
+- A seeded demo booking shows an odd time (e.g. "3:12am") because the factory used a
+  random time — cosmetic to demo data only; real tandem slots carry sensible times.
 
-- **News articles have no featured images** — both seeded articles fall back to the
-  designed placeholder. Upload a real photo per article (Admin → News → edit →
-  Featured image) and they'll render as full photo cards.
-- **Home "What we do" lead** contained leftover test text ("i dont want it here") in
-  the dev database; restored to the correct seeded copy for the audit. The owner
-  controls this line under Site content → Home (it's optional — clearing it hides
-  the line cleanly).
-- **Some seeded photos are placeholders** (instructor crops reused as testimonial
-  avatars/photos, bundled stock as Hall-of-Fame/hero images). Swap for real
-  G-Force photography through the admin uploads when available.
+## Discussion / deferred
 
----
+Nothing requires an owner decision, and nothing is deferred with an open design question.
 
-## Status (after the phased fixes)
+## Status
 
-- **P1.1 — news no-image card** — ✅ done. Branded blue-gradient panel replaces the
-  void (`fix(design): audit P1.1`).
-- **P2.1 — article long-form typography** — ✅ done. text-lg / leading-8 / roomier
-  rhythm (`fix(design): audit P2.1`).
-- **P2.2 / P3 — news card hover zoom** — ✅ done. News cards now share the
-  Services / Hall-of-Fame image-zoom hover, reduced-motion honoured
-  (`fix(design): audit P3`).
-- **P3 — dark mode** — N/A (intentionally light-themed; not in scope).
-- **P3 — loading / empty / success states** — verified already in good shape; no
-  change made.
-
-No items deferred. Content tasks above remain with the owner (real article photos,
-real photography for placeholders).
+- [x] Phase 1 — verified resolved (no new work required)
+- [x] Phase 2 — reviewed; no required changes (one optional copy nuance noted, left as-is)
+- [x] Phase 3 — reviewed; existing polish is sufficient
