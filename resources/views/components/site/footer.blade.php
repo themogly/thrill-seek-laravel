@@ -5,6 +5,15 @@
             {{ $general->tagline }}
         </p>
     </div>
+    <div class="mx-auto flex max-w-7xl flex-col gap-6 border-t border-white/15 px-4 py-12 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+        <div class="max-w-md">
+            <h3 class="font-display text-2xl uppercase tracking-wide text-white">Stay in the loop</h3>
+            <p class="mt-2 text-sm text-white/70">Jump dates, course openings and the occasional offer — straight to your inbox. Unsubscribe anytime.</p>
+        </div>
+        <div class="w-full lg:max-w-md">
+            <livewire:newsletter-signup variant="footer" source="footer" />
+        </div>
+    </div>
     <div class="mx-auto grid max-w-7xl gap-10 border-t border-white/15 px-4 py-14 lg:grid-cols-4 lg:px-8">
         <div>
             <span class="font-display text-3xl uppercase tracking-wider text-white">G-Force Skydiving</span>

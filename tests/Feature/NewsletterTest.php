@@ -123,4 +123,30 @@ class NewsletterTest extends TestCase
         $this->get('/contact')->assertOk()->assertSeeLivewire(NewsletterSignup::class);
         $this->get('/newsletter')->assertOk()->assertSeeLivewire(NewsletterSignup::class);
     }
+
+    public function test_the_footer_signup_appears_site_wide_even_on_pages_with_no_other_signup(): void
+    {
+        // /terms and /privacy have no dedicated newsletter section — the footer
+        // signup is the only one, proving it's present on every page.
+        foreach (['/terms', '/privacy', '/tandem'] as $path) {
+            $this->get($path)
+                ->assertOk()
+                ->assertSeeLivewire(NewsletterSignup::class)
+                ->assertSee('Stay in the loop', escape: false);
+        }
+    }
+
+    public function test_the_footer_variant_uses_the_double_opt_in_pipeline(): void
+    {
+        Livewire::test(NewsletterSignup::class, ['variant' => 'footer', 'source' => 'footer'])
+            ->set('email', 'footer-fan@example.com')
+            ->call('subscribe')
+            ->assertDispatched('enquiry-sent');
+
+        // Same pipeline as every other signup: a pending (unconfirmed) record.
+        $subscriber = NewsletterSubscriber::firstWhere('email', 'footer-fan@example.com');
+        $this->assertNotNull($subscriber);
+        $this->assertNull($subscriber->confirmed_at);
+        $this->assertSame('footer', $subscriber->source);
+    }
 }

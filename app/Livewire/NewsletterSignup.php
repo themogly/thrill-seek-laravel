@@ -51,7 +51,7 @@ class NewsletterSignup extends Component
     {
         $this->reset('email', 'website');
         $this->successMessage = 'Almost there — check your inbox to confirm your subscription.';
-        $this->dispatch('enquiry-sent', message: $this->successMessage);
+        $this->dispatch('enquiry-sent', message: $this->successMessage)->self();
     }
 
     public function render(): View

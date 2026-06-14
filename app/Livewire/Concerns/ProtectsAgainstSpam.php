@@ -25,7 +25,7 @@ trait ProtectsAgainstSpam
 
         if (RateLimiter::tooManyAttempts($key, maxAttempts: 5)) {
             $message = 'Too many messages — please wait a few minutes and try again.';
-            $this->dispatch('enquiry-failed', message: $message);
+            $this->dispatch('enquiry-failed', message: $message)->self();
 
             throw ValidationException::withMessages(['name' => $message]);
         }
@@ -44,7 +44,7 @@ trait ProtectsAgainstSpam
         try {
             return $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('enquiry-failed', message: collect($e->errors())->flatten()->first());
+            $this->dispatch('enquiry-failed', message: collect($e->errors())->flatten()->first())->self();
 
             throw $e;
         }

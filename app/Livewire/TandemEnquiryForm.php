@@ -86,7 +86,7 @@ class TandemEnquiryForm extends Component
     private function finish(): void
     {
         $this->reset('date', 'name', 'address', 'postcode', 'dob', 'phone', 'email', 'height', 'weight', 'sex', 'website');
-        $this->dispatch('enquiry-sent', message: "Enquiry sent! We'll be in touch shortly.");
+        $this->dispatch('enquiry-sent', message: "Enquiry sent! We'll be in touch shortly.")->self();
     }
 
     public function render(): View
