@@ -8,8 +8,10 @@
 @php
     $words = explode(' ', $title);
     $lastIndex = count($words) - 1;
-    $padding = $image ? ($compact ? 'py-14 lg:py-20' : 'py-24 lg:py-36') : 'py-16 lg:py-24';
-    $titleSize = $image && ! $compact ? 'text-6xl md:text-8xl lg:text-9xl' : 'text-5xl md:text-7xl';
+    // Heroes are sized by padding (not the viewport) — a reasonable band that keeps
+    // the next section visible on short/laptop screens, never a full-screen wall.
+    $padding = $image ? ($compact ? 'py-12 lg:py-16' : 'py-16 lg:py-24') : 'py-16 lg:py-24';
+    $titleSize = $image && ! $compact ? 'text-5xl md:text-7xl lg:text-8xl' : 'text-5xl md:text-7xl';
 @endphp
 <section {{ $attributes->merge(['class' => ($image ? 'band-ink' : 'bg-sky-gradient text-white').' '.$padding.' relative overflow-hidden border-b-4 border-primary']) }}>
     @if ($image)

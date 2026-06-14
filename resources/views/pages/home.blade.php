@@ -13,7 +13,7 @@
 
 @section('content')
     {{-- HERO: full-height photography, left-set editorial headline --}}
-    <section class="relative isolate flex min-h-[92vh] items-end overflow-hidden">
+    <section class="relative isolate flex min-h-[32rem] items-end overflow-hidden md:min-h-[38rem] lg:min-h-[42rem]">
         <img
             src="{{ $home->imageUrl($home->hero_image) }}"
             alt="Skydivers in freefall above mountain landscape"
