@@ -266,3 +266,29 @@ Subject-access and erasure requests are handled from the **Customers** resource
   keep it — run *Erase / anonymise* on request, or periodically for long-past customers.
 - The activity log records that an erasure happened (not the erased content). No PII is
   copied to logs or error tracking — see the Sentry scrubber notes below.
+
+## Error tracking (Sentry)
+
+Optional but recommended in production. Disabled until a DSN is set, so it's a no-op
+locally and in tests.
+
+- **Owner task:** create a project at <https://sentry.io> (platform: Laravel) and paste
+  its DSN into `SENTRY_LARAVEL_DSN`. Nothing else is required.
+- **Privacy:** `send_default_pii` is **off** (no IPs, cookies or authenticated user
+  attached), and a `before_send` scrubber (`App\Support\SentryScrubber`) drops request
+  bodies wholesale and redacts any personal/medical/secret key (name, email, phone,
+  address, postcode, DOB, weight, height, sex, medical notes, message bodies, card/auth
+  tokens, Stripe ids) from the request, query string and our `extra` context — so Sentry
+  never becomes a second, unaudited PII store.
+- **Sampling:** all errors are captured; `SENTRY_TRACES_SAMPLE_RATE` (default `0.2`)
+  controls performance tracing — lower it on a busy site, raise it while debugging.
+- **Verify after adding the DSN:** run `php artisan sentry:test` (sends one test event),
+  confirm it appears in Sentry and that the event contains **no** customer PII, then
+  you're done — there is no test trigger left in the app to remove.
+
+> **Monitored services:** Horizon (the queue worker) and the `schedule:run` cron are
+> **must-always-be-running** in production — if either stops, queued emails (booking
+> confirmations, reminders, sign-in links) and the daily reminder/hold-release jobs
+> silently stop. Supervisor `autorestart`/launchd `KeepAlive` cover crashes; also add an
+> uptime/heartbeat check (e.g. Sentry Crons or a cron-monitor ping) so a stuck worker is
+> noticed, not discovered via a missed email.

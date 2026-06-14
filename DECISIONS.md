@@ -959,3 +959,25 @@ time, not a self-service or bulk path.
   report-only through the first production deploy so the real Stripe redirect and any
   remote CMS image hosts can be confirmed against a live console; then flip the header
   name to `Content-Security-Policy`. Documented as an owner/ops follow-up.
+
+### SEC-P3.3 — Sentry error tracking (privacy-first)
+
+Installed `sentry/sentry-laravel`; `Integration::handles($exceptions)` wired in
+`bootstrap/app.php`. Disabled until `SENTRY_LARAVEL_DSN` is set, so local/CI are no-ops.
+- **`send_default_pii` stays false** and we add a `before_send` scrubber
+  (`App\Support\SentryScrubber::scrub`) as the second layer: it removes the request body
+  on every route (that's where the booking/enquiry forms carry name/DOB/weight/height/
+  sex/medical notes/address) and recursively redacts any key whose name contains a
+  personal/medical/secret fragment from the request, query string and our `extra`.
+  Over-redaction is the intended failure mode — Sentry must never hold customer PII.
+- **Why an array callable, not a closure**: `'before_send' => [SentryScrubber::class,
+  'scrub']` is `var_export`-serializable, so `php artisan config:cache` (used in
+  production) still works — a closure there would break it.
+- **Sampling**: error `sample_rate` 1.0 (capture everything on a low-traffic site);
+  `traces_sample_rate` defaults to 0.2 via env.
+- **Verification**: the scrubber is covered by a unit test (request body dropped, query
+  string + `extra` PII redacted, safe fields kept). End-to-end "does a real event arrive
+  and is it scrubbed" is an owner step (`php artisan sentry:test` after pasting the DSN) —
+  no temporary test-exception trigger is left in the app.
+- SETUP.md notes Horizon + `schedule:run` as monitored must-be-running services (a
+  stopped worker silently halts queued mail), recommending an uptime/heartbeat check.
