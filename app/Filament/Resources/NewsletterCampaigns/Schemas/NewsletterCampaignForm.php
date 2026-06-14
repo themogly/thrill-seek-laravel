@@ -21,9 +21,14 @@ class NewsletterCampaignForm
 {
     public static function configure(Schema $schema): Schema
     {
-        return $schema->components([
-            Section::make('Newsletter')
+        // Single column so the meta panel and the block builder stack full-width
+        // down the page — the builder needs the room, not a squeezed half-column.
+        return $schema->columns(1)->components([
+            Section::make('Newsletter details')
+                ->description('Internal name, subject and preheader. Collapse this to focus on the content.')
+                ->collapsible()
                 ->columns(2)
+                ->columnSpanFull()
                 ->components([
                     TextInput::make('name')
                         ->label('Internal name')
@@ -41,6 +46,7 @@ class NewsletterCampaignForm
                         ->columnSpanFull(),
                 ]),
             Section::make('Content')
+                ->columnSpanFull()
                 ->components([
                     Builder::make('blocks')
                         ->hiddenLabel()
