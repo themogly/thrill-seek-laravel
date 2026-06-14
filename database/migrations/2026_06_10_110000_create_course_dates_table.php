@@ -25,9 +25,11 @@ return new class extends Migration
         });
 
         Schema::table('bookings', function (Blueprint $table) {
+            // No ->after(): `tandem_date_id` is added by a later migration, so on
+            // MySQL (which honours column position) this would reference a column
+            // that doesn't exist yet. SQLite ignored ->after(), hiding the bug.
             $table->foreignId('course_date_id')
                 ->nullable()
-                ->after('tandem_date_id')
                 ->constrained()
                 ->nullOnDelete();
         });

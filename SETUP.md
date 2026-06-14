@@ -6,6 +6,9 @@ Livewire 4 forms and a Filament v5 admin panel at `/admin`.
 ## Requirements
 
 - PHP 8.3, Composer, Node 20+
+- **MySQL 8+** — the application database (see "Production database" below). Locally via
+  Laravel Herd, or `brew install mysql && brew services start mysql`; create a
+  `thrill_seek` database. The `pdo_mysql` PHP extension is required.
 - **Redis** — the cache and queue stores. Locally: `brew install redis && brew services
   start redis`. The PHP client is predis (composer dependency); no PHP extension needed.
 
@@ -48,6 +51,73 @@ that depend on deployment/env):
 - The Content-Security-Policy currently ships in **Report-Only** mode; after the first
   production deploy, confirm a clean browser console (real Stripe redirect + any remote
   image hosts) and then switch it to enforcing — see DECISIONS.md (SEC-P3.1).
+
+## Production database (MySQL)
+
+The app runs on **MySQL 8+** in production and locally (SQLite is no longer used except
+as the fast CI/`composer check` test driver — see below). See
+`db-migration/MYSQL-NOTES.md` for the SQLite→MySQL migration notes.
+
+- **Env vars** (`.env`):
+  ```
+  DB_CONNECTION=mysql
+  DB_HOST=127.0.0.1        # or the managed-DB host
+  DB_PORT=3306
+  DB_DATABASE=thrill_seek
+  DB_USERNAME=thrill_seek
+  DB_PASSWORD=<strong password>
+  # DB_SOCKET=             # set if connecting via socket instead of TCP
+  ```
+  Charset/collation default to `utf8mb4`/`utf8mb4_unicode_ci` (set in
+  `config/database.php`). A **managed MySQL** (RDS, DigitalOcean, PlanetScale-compatible,
+  etc.) is strongly recommended — you get backups, failover and patching for free.
+- **Create the DB + a dedicated user** (don't use `root` in production):
+  ```sql
+  CREATE DATABASE thrill_seek CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+  CREATE USER 'thrill_seek'@'%' IDENTIFIED BY '<strong password>';
+  GRANT ALL PRIVILEGES ON thrill_seek.* TO 'thrill_seek'@'%';
+  FLUSH PRIVILEGES;
+  ```
+- **On deploy:** run `php artisan migrate --force`. **NEVER run `migrate:fresh`,
+  `migrate:refresh` or `db:wipe` against production** — they drop every table (this is how
+  the admin user got wiped early in the build). Only `migrate` (forward-only) is safe.
+- **Moving existing SQLite data to MySQL** (one-time, only if a SQLite prod file exists):
+  the cleanest path is to point `.env` at MySQL, run `php artisan migrate --force` on the
+  empty MySQL DB, then transfer rows with a tool that handles type/JSON differences
+  (e.g. a short Laravel command reading from a second `sqlite` connection and writing via
+  the models, or `mysql`-import after converting the dump). Verify row counts and spot-check
+  the JSON columns (`bookings.customer_details`, `enquiries.context`) afterwards.
+
+### Backups & restore (TESTED before go-live)
+
+> **"We have backups" is worthless until a restore is proven.** Run the restore drill
+> below once on a copy before launch.
+
+- **Backup** — nightly `mysqldump` via cron (or use the managed-DB's automated
+  backups/PITR if hosted, which is preferable):
+  ```bash
+  0 3 * * * mysqldump -h "$DB_HOST" -u "$DB_USERNAME" -p"$DB_PASSWORD" \
+      --single-transaction --routines --triggers --set-gtid-purged=OFF \
+      thrill_seek | gzip > /backups/thrill_seek-$(date +\%F).sql.gz
+  ```
+  `--single-transaction` gives a consistent snapshot without locking; `--set-gtid-purged=OFF`
+  is required or the dump won't restore onto another server (verified — without it the
+  restore fails with `GTID_PURGED cannot be changed`).
+- **Restore** (the tested procedure):
+  ```bash
+  gunzip < /backups/thrill_seek-YYYY-MM-DD.sql.gz \
+    | mysql -h "$DB_HOST" -u "$DB_USERNAME" -p"$DB_PASSWORD" thrill_seek_restore
+  ```
+  Restore into a **separate** database first, compare row counts against production and
+  spot-check a JSON column (`SELECT JSON_VALID(payload) FROM settings LIMIT 1;`), then
+  cut over. This exact dump→restore→verify drill was run during the migration and passed
+  (row counts matched; JSON intact).
+- **Backups contain PII + medical data** (`customer_details`, `enquiries.context`,
+  message bodies). Store them **encrypted and access-controlled** (encrypted bucket /
+  encrypted volume), apply the same retention as the GDPR policy, and never commit a dump
+  to git or leave it world-readable.
+- **Retention:** keep enough daily backups to recover from a problem discovered late
+  (e.g. 14–30 dailies + a few monthlies); managed-DB point-in-time recovery is ideal.
 
 ## First run
 

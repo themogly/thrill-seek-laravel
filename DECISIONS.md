@@ -1110,3 +1110,28 @@ under-18s, retention and data-subject rights.
   guardian consent, retention period) completed with the real policy. This warning is in
   the admin Help guide ("Your privacy policy") and is an explicit owner task — the policy
   is never presented as legally complete in code or docs.
+
+## MySQL is the production database (chore/mysql-migration)
+
+Branched off main `3d2d7b8`. Moved the app database from SQLite to **MySQL 8+** for
+production and local parity. Rationale: SQLite is a single file on local disk — on
+ephemeral/containerised hosts it can vanish on redeploy — and it takes a database-wide
+write lock; MySQL/InnoDB persists independently of the app host, does row-level locking
+(matters once webhooks + the queue worker + admins write concurrently), and brings a
+mature backup/restore + replica ecosystem.
+
+- **Local + prod on MySQL; SQLite kept only as the fast test driver.** `.env` defaults to
+  `mysql`; `phpunit.xml` stays SQLite `:memory:` for quick `composer check`/CI, and a new
+  `phpunit.mysql.xml` runs the full suite against a real MySQL DB as the production-parity
+  gate. Both are green (341 tests).
+- **One SQLite-only bug surfaced and fixed:** a migration added a column
+  `->after('tandem_date_id')` before that column existed; SQLite ignores `->after()`,
+  MySQL enforces it. Dropped the cosmetic `->after()` (portable on both). No other code or
+  test needed changing — the existing conventions (JSON via array casts with no JSON-path
+  queries, string-backed enums, integer-pence money, Carbon date casts) are all
+  driver-agnostic, which is why the suite went green on MySQL on the first run.
+- **Backup/restore is documented AND tested** (SETUP.md): `mysqldump --single-transaction
+  --set-gtid-purged=OFF` -> restore into a fresh DB -> row counts + JSON validity verified.
+  The `--set-gtid-purged=OFF` flag is mandatory or the restore aborts. Chose mysqldump+cron
+  over `spatie/laravel-backup` to avoid a new dependency; managed-DB PITR preferred where
+  available. Full risk inventory + step log in `db-migration/MYSQL-NOTES.md`.
