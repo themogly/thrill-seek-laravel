@@ -151,3 +151,15 @@ The booking calendar only appears in the admin once at least one booking exists.
 - **Prices** — entered and shown in **pounds** in the admin (e.g. 260.00); stored
   internally as pence. Just type the pound amount; the conversion is automatic.
 - **DECISIONS.md** — the judgement calls made during the build and why.
+
+## Newsletter builder
+
+- Newsletters are composed from content blocks under **Bookings & sales →
+  Newsletters** (build → preview → test → send). Blocks render to email-safe HTML
+  (tables + inlined CSS) via Laravel's Markdown Mail + the gforce theme.
+- **`APP_URL` must be the real public URL in production** — newsletter images and
+  links are made absolute from it (email clients require absolute URLs), as are the
+  signed unsubscribe links. A wrong `APP_URL` breaks images/links in sent emails.
+- Sends are queued (one per confirmed subscriber) and idempotent (a per-recipient
+  claim row), so the queue worker must be running (see Queues above). Scheduling is
+  groundwork only (status + scheduled_at columns exist) — see DECISIONS.md.

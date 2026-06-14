@@ -95,6 +95,22 @@
             People can also opt in while booking.
         </p>
 
+        <h3>Sending a newsletter</h3>
+        <p>Build it from blocks, preview it, send yourself a test, then send to everyone — under
+            <strong>Bookings &amp; sales → Newsletters</strong>.</p>
+        <ul>
+            <li><strong>New newsletter:</strong> give it an internal name and a subject line.</li>
+            <li><strong>Add blocks:</strong> click “Add a block” and choose a heading, text, image,
+                button, divider, image+text, “latest news” (pulls your newest article automatically)
+                or a featured AFF course. Drag blocks to reorder them.</li>
+            <li><strong>Preview:</strong> use the Preview button to see it at desktop and mobile size.</li>
+            <li><strong>Send a test:</strong> “Send test to me” emails the draft to your address only —
+                it never reaches subscribers.</li>
+            <li><strong>Send:</strong> “Send to subscribers” goes to everyone who has confirmed their
+                subscription (unconfirmed and unsubscribed people are skipped). Every email includes a
+                one-click unsubscribe. Once sent, the newsletter is kept as history.</li>
+        </ul>
+
         <h2>Automated emails</h2>
         <p>
             The wording of confirmation, reminder and acknowledgement emails is editable under
