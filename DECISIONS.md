@@ -845,3 +845,14 @@ items were actioned, no documented decision was revisited.
   controllers (idiomatic, no reuse to justify Form Requests); `CourseMessageMail`'s
   `Queueable`-without-`ShouldQueue` (documented — the per-recipient job queues it); the
   `ProtectsAgainstSpam` honeypot concern. All confirmed as correct-by-design.
+
+## Full design audit (design/audit-pass)
+
+Branched off main `21f4a04`. Report-first browser audit across 1440/1280/1024/390 and a
+short 1366×700 height (`design-review/AUDIT.md`). Outcome: **the site is in excellent
+shape; no critical design changes required.** The four structural issues the owner
+flagged (full-viewport heroes, the orphaned text+image photo, the footer white band, the
+testimonials double-hero) were all fixed in earlier rounds and verified resolved at every
+size. Phase 2/3 turned up only taste-level nuances and existing polish; per the brief I
+did not invent problems or churn working code. Remaining items are owner content tasks
+(real article/hall-of-fame photography), not design defects.
