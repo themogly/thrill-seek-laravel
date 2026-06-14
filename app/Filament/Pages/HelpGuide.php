@@ -171,10 +171,11 @@ class HelpGuide extends Page
                 'title' => 'Newsletter',
                 'intro' => 'Subscribers (with double opt-in and one-click unsubscribe) live under Newsletter subscribers; you build and send newsletters under Newsletters.',
                 'steps' => [
-                    '<strong>To send a newsletter:</strong> New newsletter → add a name and subject.',
-                    '<strong>Add blocks</strong> (heading, text, image, button, divider, image+text, “latest news”, featured course) and drag to reorder.',
+                    '<strong>To send a newsletter:</strong> New newsletter → optionally <strong>start from a template</strong> (e.g. “New dates announcement”) to pre-fill the content, then add a name and subject.',
+                    '<strong>Add blocks</strong> (logo header, heading, text, image, button, divider, image+text, “latest news”, featured course) and drag to reorder. Add the <strong>Logo header</strong> block at the top to brand the email.',
                     '<strong>Preview</strong> it (desktop + mobile), then <strong>Send test to me</strong> — that only emails you.',
                     '<strong>Send to subscribers</strong> goes to everyone confirmed; unconfirmed/unsubscribed people are skipped. Sent newsletters are kept as history.',
+                    '<strong>Reuse a past one:</strong> use <strong>Duplicate</strong> on any newsletter to copy it as a fresh draft you can tweak and resend.',
                 ],
                 'cta' => ['label' => 'Open Newsletters', 'url' => NewsletterCampaignResource::getUrl()],
             ],

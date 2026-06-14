@@ -146,6 +146,30 @@ class BuilderTest extends TestCase
         }
     }
 
+    public function test_every_starter_template_renders_email_safe(): void
+    {
+        // A template error must never ship silently — render each through the real
+        // mailable and assert no leaked/escaped markup or Livewire markers.
+        NewsArticle::factory()->create(['title' => 'Template Render News', 'slug' => 'tpl-news']);
+        $subscriber = NewsletterSubscriber::factory()->create();
+
+        foreach (NewsletterStarterTemplates::all() as $key => $template) {
+            $campaign = NewsletterCampaign::factory()->create([
+                'rendered_html' => null,
+                'blocks' => $template['blocks'],
+            ]);
+
+            $html = (new NewsletterCampaignMail($campaign, $subscriber))->render();
+
+            foreach (['[if BLOCK]', '[if ENDBLOCK]', '&lt;table', '&lt;h3', '<pre', '<code>'] as $leak) {
+                $this->assertStringNotContainsString($leak, $html, "Template {$key} leaked: {$leak}");
+            }
+            // Branded footer present on every send.
+            $this->assertStringContainsString('Unsubscribe instantly', $html);
+            $this->assertStringContainsString('/newsletter/unsubscribe/'.$subscriber->id, $html);
+        }
+    }
+
     public function test_logo_block_renders_with_an_absolute_url_and_alt(): void
     {
         $html = $this->renderBody([['type' => 'logo', 'data' => []]]);
