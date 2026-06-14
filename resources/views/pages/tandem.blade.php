@@ -16,18 +16,20 @@
 @section('content')
     <x-site.page-hero :title="$page->hero_title" :subtitle="$page->hero_subtitle" :image="$page->imageUrl($page->hero_image)" />
 
-    {{-- INTRO: copy beside a full-height bleed image --}}
+    {{-- INTRO: copy beside a bleed photo, with Locations grouped below --}}
     <section class="overflow-hidden border-b-2 border-secondary">
-        <div class="mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 lg:grid-cols-2 lg:px-8 lg:py-24">
-            <div data-reveal>
+        <div class="py-16 lg:py-24">
+            <x-site.feature-split :image="$page->imageUrl($page->intro_image)" alt="Tandem skydive" side="right">
                 <x-site.section-heading :eyebrow="$page->intro_eyebrow" :title="$page->intro_title" :lead="$page->intro_lead" class="mb-8" />
                 <ul class="space-y-3">
                     @foreach ($page->bullets as $b)
                         <li class="flex items-start gap-3 border-l-2 border-primary pl-3"><x-icon name="check" class="mt-1 h-5 w-5 flex-shrink-0 text-primary" /><span>{{ $b }}</span></li>
                     @endforeach
                 </ul>
+            </x-site.feature-split>
 
-                <h3 class="mt-12 font-display text-3xl uppercase text-secondary">{{ $page->locations_heading }}</h3>
+            <div class="mx-auto mt-16 max-w-7xl px-4 lg:px-8" data-reveal>
+                <h3 class="font-display text-3xl uppercase text-secondary">{{ $page->locations_heading }}</h3>
                 <div class="mt-4 grid grid-cols-3 divide-x-2 divide-border border-y-2 border-border">
                     @foreach ($page->locations as $loc)
                         <div class="px-4 py-5 text-center">
@@ -36,9 +38,6 @@
                         </div>
                     @endforeach
                 </div>
-            </div>
-            <div class="relative lg:-mr-24" data-reveal>
-                <img src="{{ $page->imageUrl($page->intro_image) }}" alt="Tandem skydive" class="h-[22rem] w-full object-cover lg:h-[30rem]" loading="lazy" width="1280" height="896" />
             </div>
         </div>
     </section>

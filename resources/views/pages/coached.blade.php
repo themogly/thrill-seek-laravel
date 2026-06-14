@@ -10,11 +10,8 @@
 
     {{-- INTRO: image bleeds off the left edge --}}
     <section class="overflow-hidden border-b-2 border-secondary">
-        <div class="mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 lg:grid-cols-2 lg:px-8 lg:py-24">
-            <div class="relative order-last lg:order-first lg:-ml-24" data-reveal>
-                <img src="{{ $page->imageUrl($page->image) }}" alt="Advanced freefly coaching" class="h-[22rem] w-full object-cover lg:h-[30rem]" loading="lazy" width="1280" height="896" />
-            </div>
-            <div data-reveal>
+        <div class="py-16 lg:py-24">
+            <x-site.feature-split :image="$page->imageUrl($page->image)" alt="Advanced freefly coaching" side="left">
                 <p class="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.3em] text-primary">
                     <span class="inline-block h-0.5 w-10 bg-primary"></span>{{ $page->price_eyebrow }}
                 </p>
@@ -30,7 +27,7 @@
                 <x-ui.button href="#enquiry" size="lg" class="mt-10">
                     {{ $page->button_label }}
                 </x-ui.button>
-            </div>
+            </x-site.feature-split>
         </div>
     </section>
 
