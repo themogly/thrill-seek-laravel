@@ -22,18 +22,15 @@
 
     {{-- INTRO: image bleeds off the left edge --}}
     <section class="overflow-hidden border-b-2 border-secondary">
-        <div class="mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 lg:grid-cols-2 lg:px-8 lg:py-24">
-            <div class="relative order-last lg:order-first lg:-ml-24" data-reveal>
-                <img src="{{ $page->imageUrl($page->intro_image) }}" alt="AFF training" class="h-[22rem] w-full object-cover lg:h-[30rem]" loading="lazy" width="1280" height="896" />
-            </div>
-            <div data-reveal>
+        <div class="py-16 lg:py-24">
+            <x-site.feature-split :image="$page->imageUrl($page->intro_image)" alt="AFF training" side="left">
                 <x-site.section-heading :eyebrow="$page->intro_eyebrow" :title="$page->intro_title" :lead="$page->intro_lead" class="mb-8" />
                 <ul class="space-y-3">
                     @foreach ($page->bullets as $b)
                         <li class="flex items-start gap-3 border-l-2 border-primary pl-3"><x-icon name="check" class="mt-1 h-5 w-5 flex-shrink-0 text-primary" /><span>{{ $b }}</span></li>
                     @endforeach
                 </ul>
-            </div>
+            </x-site.feature-split>
         </div>
     </section>
 
