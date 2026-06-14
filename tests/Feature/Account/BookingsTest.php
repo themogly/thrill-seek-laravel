@@ -143,6 +143,21 @@ class BookingsTest extends TestCase
             ->assertSee('by card');
     }
 
+    public function test_bookings_are_split_into_clear_self_explanatory_groups(): void
+    {
+        $customer = Customer::factory()->create();
+        Booking::factory()->create(['customer_id' => $customer->id, 'status' => BookingStatus::Confirmed, 'scheduled_at' => now()->addWeek()->setTime(9, 0)]);
+        Booking::factory()->create(['customer_id' => $customer->id, 'status' => BookingStatus::PendingDate, 'scheduled_at' => null]);
+        Booking::factory()->create(['customer_id' => $customer->id, 'status' => BookingStatus::PendingPayment, 'scheduled_at' => null]);
+        Booking::factory()->create(['customer_id' => $customer->id, 'status' => BookingStatus::Completed, 'scheduled_at' => now()->subWeek()->setTime(9, 0)]);
+
+        $this->actingAs($customer, 'customer')
+            ->get('/account/bookings')
+            ->assertOk()
+            ->assertDontSee('Past &amp; awaiting', false) // the old confusing single bucket is gone
+            ->assertSeeInOrder(['Upcoming', 'Awaiting a date', 'Awaiting payment', 'Past']);
+    }
+
     public function test_scheduled_label_shows_a_time_only_when_a_real_one_is_set(): void
     {
         $this->assertNull(Booking::factory()->create(['scheduled_at' => null])->scheduledLabel());
