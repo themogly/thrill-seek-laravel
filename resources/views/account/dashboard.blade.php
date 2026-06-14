@@ -46,6 +46,45 @@
             </div>
         </div>
 
+        @if ($upcoming)
+            @inject('jumpPrep', 'App\Settings\JumpPrepSettings')
+            <div class="mt-6 border-2 border-border p-6">
+                <h2 class="font-display text-2xl uppercase tracking-wide">Before your jump</h2>
+                <div class="mt-4 grid gap-6 sm:grid-cols-3">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-widest text-primary">Arrival &amp; timing</p>
+                        <p class="mt-2 text-sm text-secondary">{{ $jumpPrep->arrival_info }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-widest text-primary">What to bring</p>
+                        <p class="mt-2 text-sm text-secondary">{{ $jumpPrep->what_to_bring }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-widest text-primary">What to expect</p>
+                        <p class="mt-2 text-sm text-secondary">{{ $jumpPrep->what_to_expect }}</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        @if ($vouchers->isNotEmpty())
+            <div class="mt-6 border-2 border-border p-6">
+                <h2 class="font-display text-2xl uppercase tracking-wide">Your gift vouchers</h2>
+                <ul class="mt-4 divide-y divide-border">
+                    @foreach ($vouchers as $voucher)
+                        <li class="flex items-center justify-between py-3">
+                            <span>
+                                <span class="font-bold text-ink">{{ $voucher->formatted_amount }}</span>
+                                <span class="font-mono text-sm text-muted-foreground"> · {{ $voucher->code }}</span>
+                            </span>
+                            <span class="text-sm text-muted-foreground">Valid until {{ $voucher->expires_at?->format('j M Y') }}</span>
+                        </li>
+                    @endforeach
+                </ul>
+                <p class="mt-3 text-xs text-muted-foreground">Enter the code at checkout when you book.</p>
+            </div>
+        @endif
+
         @if ($canReview)
             <div class="mt-6 flex flex-col items-start gap-4 border-2 border-primary bg-sky-bright/5 p-6 sm:flex-row sm:items-center sm:justify-between">
                 <div>

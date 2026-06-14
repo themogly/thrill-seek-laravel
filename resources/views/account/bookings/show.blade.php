@@ -68,6 +68,27 @@
             </div>
         </div>
 
+        @if ($booking->scheduled_at?->isFuture())
+            @inject('jumpPrep', 'App\Settings\JumpPrepSettings')
+            <div class="mt-6 border-2 border-border p-6">
+                <h2 class="font-display text-2xl uppercase tracking-wide">Before your jump</h2>
+                <div class="mt-4 grid gap-6 sm:grid-cols-3">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-widest text-primary">Arrival &amp; timing</p>
+                        <p class="mt-2 text-sm text-secondary">{{ $jumpPrep->arrival_info }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-widest text-primary">What to bring</p>
+                        <p class="mt-2 text-sm text-secondary">{{ $jumpPrep->what_to_bring }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-widest text-primary">What to expect</p>
+                        <p class="mt-2 text-sm text-secondary">{{ $jumpPrep->what_to_expect }}</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <div class="mt-6 flex flex-wrap items-center justify-between gap-4">
             <x-ui.button variant="link" :href="route('account.bookings')">&larr; All bookings</x-ui.button>
             <x-ui.button variant="outline" size="sm" :href="route('account.bookings.receipt', $booking)">Download receipt (PDF)</x-ui.button>

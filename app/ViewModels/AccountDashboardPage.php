@@ -3,9 +3,11 @@
 namespace App\ViewModels;
 
 use App\Enums\PaymentStatus;
+use App\Enums\VoucherStatus;
 use App\Models\Booking;
 use App\Models\Customer;
 use App\Models\Payment;
+use App\Models\Voucher;
 use App\Support\Money;
 use Illuminate\Support\Collection;
 
@@ -41,6 +43,14 @@ class AccountDashboardPage
             ->limit(5)
             ->get();
 
+        // Vouchers the customer bought that are still redeemable.
+        $vouchers = Voucher::query()
+            ->where('purchaser_email', $customer->email)
+            ->where('status', VoucherStatus::Active)
+            ->get()
+            ->filter(fn (Voucher $v): bool => $v->isRedeemable())
+            ->values();
+
         return [
             'customer' => $customer,
             'upcoming' => $upcoming,
@@ -49,6 +59,7 @@ class AccountDashboardPage
             'totalOutstandingLabel' => Money::formatPence($totalOutstanding),
             'recentPayments' => $recentPayments,
             'canReview' => $customer->canLeaveReview(),
+            'vouchers' => $vouchers,
         ];
     }
 }
