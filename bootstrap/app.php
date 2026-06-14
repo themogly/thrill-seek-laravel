@@ -22,8 +22,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'feature' => EnsureFeatureEnabled::class,
         ]);
 
-        // The only login is the admin panel's (no public accounts).
-        $middleware->redirectGuestsTo('/admin/login');
+        // Account-area guests go to the customer sign-in; everything else
+        // (the admin panel) goes to the Filament login.
+        $middleware->redirectGuestsTo(fn (Request $request): string => $request->is('account', 'account/*')
+            ? route('account.login')
+            : '/admin/login');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

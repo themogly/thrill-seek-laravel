@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Account\DashboardController as AccountDashboardController;
+use App\Http\Controllers\Account\LoginController as AccountLoginController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ResendWebhookController;
@@ -36,6 +38,18 @@ Route::get('/newsletter/unsubscribe/{subscriber}', [NewsletterController::class,
 
 Route::get('/payment/success', [PageController::class, 'paymentSuccess'])->name('payment.success');
 Route::view('/payment/cancelled', 'pages.payment-cancelled')->name('payment.cancelled');
+
+// Customer account area — passwordless magic-link auth (the `customer` guard).
+Route::prefix('account')->name('account.')->group(function (): void {
+    Route::get('/login', [AccountLoginController::class, 'show'])->name('login');
+    Route::post('/login', [AccountLoginController::class, 'sendLink'])->middleware('throttle:6,1')->name('login.send');
+    Route::get('/login/{token}', [AccountLoginController::class, 'verify'])->middleware('throttle:10,1')->name('login.verify');
+
+    Route::middleware('auth:customer')->group(function (): void {
+        Route::get('/', AccountDashboardController::class)->name('dashboard');
+        Route::post('/logout', [AccountLoginController::class, 'logout'])->name('logout');
+    });
+});
 
 Route::post('/webhooks/stripe', StripeWebhookController::class)->name('webhooks.stripe');
 Route::post('/webhooks/resend', ResendWebhookController::class)->name('webhooks.resend');
