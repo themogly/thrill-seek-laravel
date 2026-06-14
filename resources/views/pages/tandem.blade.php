@@ -83,6 +83,9 @@
     </section>
     @endif
 
+    {{-- FAQS --}}
+    <x-site.faq-section :faqs="$faqs" />
+
     <x-site.section>
         <div class="grid gap-12 lg:grid-cols-2">
             {{-- Pay card --}}

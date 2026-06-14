@@ -31,6 +31,9 @@
         </div>
     </section>
 
+    {{-- FAQS --}}
+    <x-site.faq-section :faqs="$faqs" />
+
     {{-- COACHING ENQUIRY --}}
     <section id="enquiry">
         <div class="mx-auto max-w-7xl px-4 py-16 lg:px-8 lg:py-24">

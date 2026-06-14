@@ -8,6 +8,7 @@ use App\Filament\Resources\CourseDates\CourseDateResource;
 use App\Filament\Resources\Documents\DocumentResource;
 use App\Filament\Resources\EmailTemplates\EmailTemplateResource;
 use App\Filament\Resources\Enquiries\EnquiryResource;
+use App\Filament\Resources\Faqs\FaqResource;
 use App\Filament\Resources\Locations\LocationResource;
 use App\Filament\Resources\News\NewsResource;
 use App\Filament\Resources\NewsletterCampaigns\NewsletterCampaignResource;
@@ -87,6 +88,19 @@ class HelpGuide extends Page
                     '<strong>Add-ons</strong> (e.g. an outside camera) are listed under the product; tick “purchasable” for ones customers can buy online.',
                 ],
                 'cta' => ['label' => 'Open Products', 'url' => ProductResource::getUrl()],
+            ],
+            [
+                'id' => 'faqs',
+                'icon' => 'heroicon-o-question-mark-circle',
+                'title' => 'FAQs',
+                'intro' => 'Each service page (Tandem, AFF, Coached skills) has its own list of questions &amp; answers, shown as a drop-down accordion near the bottom of the page.',
+                'steps' => [
+                    '<strong>Add or edit a question:</strong> open FAQs, pick the <strong>page</strong> it belongs to, write the question and answer, and Save.',
+                    '<strong>Reorder them</strong> by dragging the rows (filter by page first); <strong>untick “Published”</strong> to hide one without deleting it.',
+                    'The starter questions are general placeholders — edit the answers with your real details (limits, prices, medical/weather wording).',
+                    'FAQs also feed Google’s “People also ask” via structured data, so good answers help you show up.',
+                ],
+                'cta' => ['label' => 'Open FAQs', 'url' => FaqResource::getUrl()],
             ],
             [
                 'id' => 'tandem-dates',

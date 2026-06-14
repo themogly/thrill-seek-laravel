@@ -2,7 +2,9 @@
 
 namespace App\Support;
 
+use App\Enums\FaqPage;
 use App\Enums\ProductType;
+use App\Models\Faq;
 use App\Models\GalleryImage;
 use App\Models\HallOfFameEntry;
 use App\Models\Instructor;
@@ -31,6 +33,7 @@ final class SiteContent
     /** @var array<class-string<Model>, list<string>> */
     public const KEYS_BY_MODEL = [
         Instructor::class => ['instructors'],
+        Faq::class => ['faqs.tandem', 'faqs.aff', 'faqs.coached'],
         Testimonial::class => ['testimonials.featured', 'testimonials.all'],
         GalleryImage::class => ['gallery'],
         Product::class => ['products.home', 'products.tandem', 'products.aff'],
@@ -44,6 +47,19 @@ final class SiteContent
     public function instructors(): EloquentCollection
     {
         return Instructor::hydrate($this->rows('instructors', fn () => Instructor::ordered()->get()));
+    }
+
+    /**
+     * Active FAQs for a page, in display order. Cached per page, busted on FAQ save.
+     *
+     * @return EloquentCollection<int, Faq>
+     */
+    public function faqs(FaqPage $page): EloquentCollection
+    {
+        return Faq::hydrate($this->rows(
+            'faqs.'.$page->value,
+            fn () => Faq::active()->forPage($page)->ordered()->get(),
+        ));
     }
 
     /** @return EloquentCollection<int, Testimonial> */

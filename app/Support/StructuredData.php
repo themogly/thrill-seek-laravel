@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Models\CourseDate;
+use App\Models\Faq;
 use App\Models\NewsArticle;
 use App\Models\Product;
 use App\Models\Testimonial;
@@ -176,6 +177,29 @@ class StructuredData
                     'item' => $item['url'],
                 ])
                 ->all(),
+        ];
+    }
+
+    /**
+     * FAQPage from a page's FAQs. The answer is the PLAIN-TEXT version so the schema
+     * matches the visible (rich) answer exactly — Google requires that parity.
+     *
+     * @param  Collection<int, Faq>  $faqs
+     * @return array<string, mixed>
+     */
+    public static function faqPage(Collection $faqs): array
+    {
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'FAQPage',
+            'mainEntity' => $faqs->map(fn (Faq $faq): array => [
+                '@type' => 'Question',
+                'name' => $faq->question,
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => $faq->plainAnswer(),
+                ],
+            ])->values()->all(),
         ];
     }
 }

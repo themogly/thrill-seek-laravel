@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Enums\FaqPage;
+use App\Models\Faq;
 use App\Models\Product;
 use App\Models\Testimonial;
 use App\Support\SiteContent;
@@ -15,6 +17,9 @@ class SiteContentCacheTest extends TestCase
     {
         $this->seed(ProductSeeder::class);
         Testimonial::factory()->featured()->create();
+        foreach (FaqPage::cases() as $page) {
+            Faq::factory()->forPage($page)->create();
+        }
 
         $content = app(SiteContent::class);
         $content->instructors();
@@ -27,6 +32,9 @@ class SiteContentCacheTest extends TestCase
         $content->shopItems();
         $content->hallOfFame();
         $content->publishedNews();
+        foreach (FaqPage::cases() as $page) {
+            $content->faqs($page);
+        }
 
         $keys = collect(SiteContent::KEYS_BY_MODEL)->flatten()->unique();
 

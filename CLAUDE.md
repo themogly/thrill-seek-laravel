@@ -83,6 +83,12 @@ that manages all site content, enquiries, payments and bookings.
   and rendered via `<x-seo.json-ld :data="..." />` (push per-page into `@stack('json-ld')`);
   never invent prices, dates, addresses or review counts. New indexable page → it
   inherits meta automatically; add JSON-LD if it has a rich entity.
+- **FAQs are per-page**: a `Faq` (page `FaqPage` enum) read via `SiteContent::faqs()` and
+  rendered by `<x-site.faq-section :faqs="...">` — an accordion whose answers are ALWAYS
+  in the DOM (collapsed via CSS `grid-rows` height, never `display:none`) so they're
+  crawlable and match the `StructuredData::faqPage()` FAQPage JSON-LD the component
+  `@push`es. Answer text in the schema is `Faq::plainAnswer()`. The section + schema only
+  appear when the page has active FAQs. Add a new page's FAQs by passing its collection.
 - Money is **integer pence**; format with `App\Support\Money::formatPence()`.
 - Statuses are string-backed **enums** in `app/Enums` implementing Filament's
   `HasLabel`/`HasColor`.
