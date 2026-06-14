@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
@@ -19,6 +20,7 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property PaymentMethod $method
  * @property PaymentStatus $status
  * @property array<string, mixed>|null $metadata
+ * @property Carbon|null $paid_at
  */
 class Payment extends Model
 {

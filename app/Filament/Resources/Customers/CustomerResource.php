@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Customers;
 
+use App\Actions\EraseCustomerData;
+use App\Actions\ExportCustomerData;
 use App\Enums\EnquiryStatus;
 use App\Filament\Resources\Customers\Pages\EditCustomer;
 use App\Filament\Resources\Customers\Pages\ListCustomers;
@@ -10,11 +12,13 @@ use App\Filament\Resources\Enquiries\EnquiryResource;
 use App\Models\Customer;
 use App\Models\Enquiry;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -25,6 +29,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use UnitEnum;
 
 class CustomerResource extends Resource
@@ -162,6 +167,29 @@ class CustomerResource extends Resource
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                Action::make('export')
+                    ->label('Export data')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('gray')
+                    ->tooltip('Download this customer’s data (GDPR subject-access request)')
+                    ->action(fn (Customer $record): StreamedResponse => response()->streamDownload(
+                        fn () => print (json_encode(app(ExportCustomerData::class)->handle($record), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)),
+                        'customer-'.$record->id.'-data.json',
+                        ['Content-Type' => 'application/json'],
+                    )),
+                Action::make('erase')
+                    ->label('Erase / anonymise')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->visible(fn (Customer $record): bool => ! $record->isErased())
+                    ->requiresConfirmation()
+                    ->modalHeading('Erase this customer’s personal data?')
+                    ->modalDescription('Permanently removes their name, contact, address, DOB, weight, medical notes, reviews and message contents. This CANNOT be undone. Anonymised booking and payment records are kept for accounting.')
+                    ->modalSubmitActionLabel('Erase permanently')
+                    ->action(function (Customer $record): void {
+                        app(EraseCustomerData::class)->handle($record);
+                        Notification::make()->success()->title('Customer data erased')->body('Their personal and medical data has been anonymised.')->send();
+                    }),
             ])
             ->toolbarActions([]);
     }

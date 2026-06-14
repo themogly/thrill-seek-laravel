@@ -904,3 +904,34 @@ FAQ page — the answers differ per page and each emits its own FAQPage schema.
   Resolves the "FAQPage N/A" note from the SEO audit.
 - Starter FAQs are general, clearly-editable placeholders — no fabricated safety/medical
   specifics; the owner refines them in the admin.
+
+## Security audit fixes (security/fixes)
+
+Branched off main after `security/audit-pass` merged. Implements the open items from
+`security-review/SECURITY-AUDIT.md`. Everything here is **additive** — no documented
+decision is weakened.
+
+### SEC-P2.1 — Customer data export & erasure (GDPR)
+
+Subject-access and erasure are admin actions on `CustomerResource`, one customer at a
+time, not a self-service or bulk path.
+- **Export** is `App\Actions\ExportCustomerData::handle(Customer): array`, streamed as a
+  JSON download by the `export` row action. Strictly scoped to one customer — every join
+  is by their id or their email (bookings/enquiries/messages/payments/reviews/vouchers/
+  newsletter). It deliberately INCLUDES the medical `customer_details` (that is the point
+  of a subject-access request) but never another customer's data.
+- **Erase** is `App\Actions\EraseCustomerData::handle(Customer): void`, behind a
+  `requiresConfirmation()` modal, run in a single DB transaction. The chosen model is
+  **anonymise-in-place, not hard-delete**: financial/audit records (booking references,
+  amounts, dates, payments) must survive for accounting, so we strip the personal/medical
+  fields from them rather than deleting the rows — name → "Erased customer", email →
+  `erased-<id>@erased.invalid`, phone/notes/`customer_details`/enquiry `context` nulled,
+  message bodies → `[erased]`. Reviews, the newsletter subscription and login tokens ARE
+  deleted (not financial). The customer row is anonymised and stamped `erased_at`
+  (new nullable column, `isErased()` helper); the anonymised email means they can no
+  longer request a magic link, so they're effectively locked out — intended.
+- Why anonymise-in-place: hard-deleting a paid booking would break the accounts and the
+  Stripe reconciliation trail. Anonymised shells keep the books correct with zero PII.
+- Owner guidance lives in the Help guide ("Handling a data request (GDPR)") and SETUP.md
+  ("Data protection & retention"); retention guidance is keep-anonymised-financials for
+  the statutory accounting period, erase personal data when no longer needed.

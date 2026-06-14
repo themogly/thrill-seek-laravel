@@ -240,3 +240,29 @@ balances, read messages and leave reviews.
   **Site content → Testimonials** (the nav badge shows how many are waiting).
 - Edit the pre-jump info shown to customers under **Site content → Before-your-jump
   info**.
+
+## Data protection & retention (GDPR)
+
+Subject-access and erasure requests are handled from the **Customers** resource
+(`/admin/customers`), one customer at a time:
+
+- **Export** (subject-access request): the *Export data* row action streams a single
+  JSON file with everything tied to that customer — their record, bookings (incl. the
+  `customer_details` JSON: DOB, weight, height, sex, medical notes), enquiries and
+  message threads, payments, reviews, purchased vouchers and newsletter status. It is
+  scoped strictly to that customer (joined by their id and email); no other customer's
+  data is included. Send the file to the requester.
+- **Erase / anonymise** (right to erasure): the *Erase / anonymise* row action is
+  **irreversible** and behind a confirmation modal. It anonymises in place rather than
+  hard-deleting: personal and medical fields (name, contact, address, postcode, DOB,
+  weight, height, sex, medical notes), message bodies, reviews and the newsletter
+  subscription are removed or blanked; **anonymised booking and payment records
+  (references, amounts, dates) are retained** for finance/audit. The customer row is
+  marked `erased_at` and its email anonymised, so the person can no longer request a
+  sign-in link.
+- **Retention**: keep anonymised financial records for as long as tax/accounting law
+  requires (UK: typically 6 years). Personal/medical data should be erased once it is no
+  longer needed for the booking it was collected for and there is no other legal basis to
+  keep it — run *Erase / anonymise* on request, or periodically for long-past customers.
+- The activity log records that an erasure happened (not the erased content). No PII is
+  copied to logs or error tracking — see the Sentry scrubber notes below.

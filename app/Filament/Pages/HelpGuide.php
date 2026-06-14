@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use App\Filament\Pages\Settings\ManageGeneralSettings;
 use App\Filament\Resources\Bookings\BookingResource;
 use App\Filament\Resources\CourseDates\CourseDateResource;
+use App\Filament\Resources\Customers\CustomerResource;
 use App\Filament\Resources\Documents\DocumentResource;
 use App\Filament\Resources\EmailTemplates\EmailTemplateResource;
 use App\Filament\Resources\Enquiries\EnquiryResource;
@@ -267,6 +268,19 @@ class HelpGuide extends Page
                     'Edit the <strong>“Before-your-jump info”</strong> (arrival, what to bring, what to expect) under Site content — it shows on the customer’s account before an upcoming jump.',
                 ],
                 'cta' => ['label' => 'Open Testimonials', 'url' => TestimonialResource::getUrl()],
+            ],
+            [
+                'id' => 'data-requests',
+                'icon' => 'heroicon-o-shield-check',
+                'title' => 'Handling a data request (GDPR)',
+                'intro' => 'A customer has the legal right to ask for <strong>a copy of the data you hold on them</strong>, or to ask you to <strong>delete it</strong>. Both are handled from the <strong>Customers</strong> list — find the person (search by name or email), then use the buttons on their row.',
+                'steps' => [
+                    '<strong>“They want a copy of their data”:</strong> press <strong>Export data</strong>. It downloads a single file with their bookings, enquiries, messages, payments, reviews and newsletter status — send that to them.',
+                    '<strong>“They want to be deleted”:</strong> press <strong>Erase / anonymise</strong> and confirm. This permanently removes their name, contact details, address, date of birth, weight and any medical notes, and blanks out their messages and reviews.',
+                    'For your accounts, the <strong>booking and payment amounts and dates are kept</strong> — but with the personal details stripped out, so the figures still add up without identifying anyone. <strong>This cannot be undone</strong>, so only do it on a genuine request.',
+                    'An erased customer can no longer sign in (their email is gone), which is expected.',
+                ],
+                'cta' => ['label' => 'Open Customers', 'url' => CustomerResource::getUrl()],
             ],
             [
                 'id' => 'launch',
