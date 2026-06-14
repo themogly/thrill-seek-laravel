@@ -883,3 +883,24 @@ testimonials double-hero) were all fixed in earlier rounds and verified resolved
 size. Phase 2/3 turned up only taste-level nuances and existing polish; per the brief I
 did not invent problems or churn working code. Remaining items are owner content tasks
 (real article/hall-of-fame photography), not design defects.
+
+## Per-page FAQs (feature/page-faqs)
+
+Branched off main `c71887d`. FAQs are PER-PAGE (tandem/aff/coached), not a standalone
+FAQ page — the answers differ per page and each emits its own FAQPage schema.
+- **Model:** `Faq` (page `FaqPage` enum, question, rich answer, sort_order, is_active),
+  with active/forPage/ordered scopes and `plainAnswer()` (de-spaced strip_tags) for
+  schema parity. Cached per page via `SiteContent::faqs()` and busted on save by
+  `SiteContentObserver` (same pattern as the other content models). Filament resource
+  under "Site content" with page filter, published toggle and drag-to-reorder.
+- **Display:** shared `<x-site.faq-section>` accordion. Answers are ALWAYS in the DOM
+  (crawlable + parity with the schema) and collapsed via a CSS `grid-rows-[0fr]→[1fr]`
+  height transition — never `display:none` or removed. Real `<button>` triggers
+  (native Enter/Space), `aria-expanded`/`aria-controls`, `role="region"`, visible focus,
+  `motion-reduce` aware. Rendered only when the page has active FAQs (no empty section).
+- **Schema:** `StructuredData::faqPage()` builds one FAQPage JSON-LD per page from the
+  same FAQs, with the PLAIN-text answer to match the visible rich answer exactly. The
+  component `@push`es it inside the not-empty guard, so it's absent when a page has none.
+  Resolves the "FAQPage N/A" note from the SEO audit.
+- Starter FAQs are general, clearly-editable placeholders — no fabricated safety/medical
+  specifics; the owner refines them in the admin.
