@@ -101,10 +101,18 @@ that manages all site content, enquiries, payments and bookings.
 - **Newsletter emails are block-based**: a campaign's `blocks` JSON renders through
   `App\Support\NewsletterRenderer` — each block is a self-contained, inline-styled
   partial in `resources/views/mail/blocks/` (web-safe fonts, tables, absolute image
-  URLs, no flexbox), wrapped by the gforce Markdown-Mail shell which inlines CSS. To
-  add a block type: a partial + a Filament Builder block (content fields only — no
-  colour/font; keep it brand-locked) + the `NewsletterRenderer::BLOCK_TYPES` list.
-  Dynamic blocks resolve live but are frozen into `rendered_html` at send.
+  URLs, no flexbox), wrapped by the plain-Blade `mail/newsletter/shell.blade.php`
+  (NOT a Markdown view — Markdown/CommonMark mangles pre-built HTML; the shell emits
+  `{!! $body !!}` verbatim and the mailable strips Livewire morph markers via
+  `NewsletterRenderer::stripLivewireMarkers()`). To add a block type: a partial + a
+  Filament Builder block (content fields only — no colour/font; keep it brand-locked)
+  + the `NewsletterRenderer::BLOCK_TYPES` list. Dynamic blocks resolve live but are
+  frozen into `rendered_html` at send.
+- **Starter templates**: a new newsletter can be pre-filled from
+  `App\Support\NewsletterStarterTemplates` via the create-screen picker. To add one,
+  append a `{label, description, blocks[]}` entry to `NewsletterStarterTemplates::all()`
+  (blocks use existing `BLOCK_TYPES` with placeholder copy) — it appears in the picker
+  automatically and is just pre-filled blocks, never a separate rendering path.
 - Customer-facing automated emails go through editable `EmailTemplate` records +
   `TemplatedMail`; all mail is queued and wrapped so failures log instead of breaking
   the request.

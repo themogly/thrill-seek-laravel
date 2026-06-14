@@ -16,6 +16,7 @@ class NewsletterRenderer
 {
     /** @var list<string> */
     public const BLOCK_TYPES = [
+        'logo',
         'heading',
         'paragraph',
         'image',
@@ -28,14 +29,29 @@ class NewsletterRenderer
 
     public function renderBody(NewsletterCampaign $campaign): string
     {
-        return collect($campaign->blocks ?? [])
+        $html = collect($campaign->blocks ?? [])
             ->filter(fn (array $block): bool => in_array($block['type'] ?? '', self::BLOCK_TYPES, true)
                 && View::exists('mail.blocks.'.$block['type']))
-            ->map(fn (array $block): string => View::make('mail.blocks.'.$block['type'], [
+            ->map(fn (array $block): string => trim(View::make('mail.blocks.'.$block['type'], [
                 'data' => $block['data'] ?? [],
                 'campaign' => $campaign,
-            ])->render())
+            ])->render()))
             ->implode("\n");
+
+        return self::stripLivewireMarkers($html);
+    }
+
+    /**
+     * Remove Livewire's morph-aware conditional-comment markers
+     * (`<!--[if BLOCK]><![endif]-->` / `<!--[if ENDBLOCK]><![endif]-->`).
+     * Livewire injects these around every `@if`/`@foreach` in Blade — harmless
+     * in a morphed DOM, but they leak into mail HTML as stray comments (and can
+     * freeze into a campaign's `rendered_html`). Email is never morphed, so we
+     * strip them from every newsletter render.
+     */
+    public static function stripLivewireMarkers(string $html): string
+    {
+        return (string) preg_replace('/<!--\[if (?:END)?BLOCK\]><!\[endif\]-->/', '', $html);
     }
 
     /** A readable plain-text alternative for deliverability. */

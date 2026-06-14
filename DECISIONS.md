@@ -717,3 +717,46 @@ already good (unique titles/descriptions, one h1, crawlable server-rendered link
   links are built from each resource's `getUrl()` so they can never 404 — a test
   (`test_every_open_screen_link_resolves`) GETs every link and asserts success, and
   `test_the_guide_covers_every_major_area` guards coverage so a removed topic fails CI.
+
+## Newsletter builder polish (feature/newsletter-polish)
+
+Branched off main `a2b3547` (after the newsletter builder + admin docs + SEO merges).
+
+- **Email shell is plain Blade, not Markdown (5a)**: the body was wrapped in
+  `<x-mail::message>` (CommonMark), which mangled the pre-built block HTML —
+  4-space indentation became code blocks, blank lines escaped tags — and only
+  "worked" because blocks were joined with single newlines (one big HTML block).
+  Replaced with `mail/newsletter/shell.blade.php`, a table-based, fully-inline
+  shell that emits `{!! $body !!}` verbatim; the mailable returns
+  `Content(htmlString:)`. No more CommonMark in the newsletter path.
+- **Strip Livewire morph markers (5a)**: Livewire's global Blade precompiler injects
+  `<!--[if BLOCK]><![endif]-->` around every `@if`/`@foreach`, including the mail
+  block partials; because `SendNewsletterCampaign` freezes `rendered_html` during the
+  admin's web request, those markers could bake into sent emails.
+  `NewsletterRenderer::stripLivewireMarkers()` removes them from both the frozen body
+  and the final shell render. A test asserts no markers / no escaped tags for every
+  block type, verified against a live HTTP render where the markers are active.
+- **Full-width builder (Item 1)**: the edit form is single-column so the block builder
+  gets full page width, with a compact collapsible "Newsletter details" panel on top
+  instead of a permanent half-width meta column.
+- **Starter templates (Item 2)**: a code registry, `App\Support\NewsletterStarterTemplates`,
+  picked via a create-screen select that pre-fills the builder. Chosen over storing
+  templates in the DB/CMS: they're developer-curated starting points that should ship
+  with the code, and they're just pre-filled blocks (same email-safe path, no second
+  renderer). Adding one is a single array entry.
+- **Logo block (Item 3)**: a brand-locked "Logo header" block using the existing
+  `public/images/logo.png` (dark-on-transparent, reads on the white card) at 180×64
+  (2× the 392×140 source), absolute URL, alt text. No new asset needed.
+- **Duplicate = deep copy + reset (Item 4)**: `App\Actions\DuplicateNewsletterCampaign`
+  copies blocks (JSON value → independent) and meta as a new **draft**, resetting all
+  send state (no `rendered_html`, `recipient_count` 0, `sent_at`/`scheduled_at` null,
+  no recipient rows). Image handling: the copy shares the original's image *paths*;
+  Filament's Builder never deletes files referenced in nested JSON when a block is
+  edited or removed, and replacing an image uploads a new file — so neither campaign
+  can break the other's image. No file copying needed.
+- **Branded footer (5b)**: a navy footer band (wordmark, tagline, social links,
+  signed unsubscribe, copyright) in the established email palette; the sign-off reads
+  as part of the template. Compliance unchanged (signed one-click unsubscribe).
+- **Mobile preview (5c)**: the email is now responsive (viewport meta +
+  `max-width:600px` media query), so the admin preview's mobile pane is a fixed 375px
+  phone frame with overflow clipped — no sideways scroll. Email output unchanged.

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\NewsletterCampaigns;
 
+use App\Actions\DuplicateNewsletterCampaign;
 use App\Enums\NewsletterCampaignStatus;
 use App\Filament\Resources\NewsletterCampaigns\Pages\CreateNewsletterCampaign;
 use App\Filament\Resources\NewsletterCampaigns\Pages\EditNewsletterCampaign;
@@ -9,13 +10,16 @@ use App\Filament\Resources\NewsletterCampaigns\Pages\ListNewsletterCampaigns;
 use App\Filament\Resources\NewsletterCampaigns\Schemas\NewsletterCampaignForm;
 use App\Models\NewsletterCampaign;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Actions\EditAction;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 use UnitEnum;
 
 class NewsletterCampaignResource extends Resource
@@ -68,6 +72,22 @@ class NewsletterCampaignResource extends Resource
             ])
             ->recordActions([
                 EditAction::make()->label(fn (NewsletterCampaign $r): string => $r->isSent() ? 'View' : 'Edit'),
+                Action::make('duplicate')
+                    ->label('Duplicate')
+                    ->icon(Heroicon::OutlinedDocumentDuplicate)
+                    ->color('gray')
+                    ->tooltip('Copy this newsletter as a new draft you can edit and resend.')
+                    ->action(function (NewsletterCampaign $record, Action $action): void {
+                        $copy = app(DuplicateNewsletterCampaign::class)->handle($record, Auth::id());
+
+                        Notification::make()
+                            ->success()
+                            ->title('Newsletter duplicated')
+                            ->body("Created the draft “{$copy->name}”.")
+                            ->send();
+
+                        $action->redirect(EditNewsletterCampaign::getUrl(['record' => $copy]));
+                    }),
             ]);
     }
 

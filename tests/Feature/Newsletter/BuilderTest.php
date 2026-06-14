@@ -2,9 +2,12 @@
 
 namespace Tests\Feature\Newsletter;
 
+use App\Actions\DuplicateNewsletterCampaign;
 use App\Actions\SendNewsletterCampaign;
+use App\Enums\NewsletterCampaignStatus;
 use App\Filament\Resources\NewsletterCampaigns\Pages\CreateNewsletterCampaign;
 use App\Filament\Resources\NewsletterCampaigns\Pages\EditNewsletterCampaign;
+use App\Filament\Resources\NewsletterCampaigns\Pages\ListNewsletterCampaigns;
 use App\Mail\NewsletterCampaignMail;
 use App\Models\NewsArticle;
 use App\Models\NewsletterCampaign;
@@ -12,6 +15,7 @@ use App\Models\NewsletterCampaignRecipient;
 use App\Models\NewsletterSubscriber;
 use App\Models\User;
 use App\Support\NewsletterRenderer;
+use App\Support\NewsletterStarterTemplates;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -110,6 +114,188 @@ class BuilderTest extends TestCase
 
         Livewire::test(CreateNewsletterCampaign::class)
             ->assertOk()
-            ->assertSee('Add a block');
+            ->assertSee('Add a block')
+            ->assertSee('Start from a template');
+    }
+
+    public function test_starter_template_seeds_the_expected_blocks_on_create(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        $component = Livewire::test(CreateNewsletterCampaign::class)
+            ->set('data.starter_template', 'new_dates');
+
+        $types = collect($component->get('data.blocks'))->pluck('type')->all();
+        $this->assertSame(['logo', 'heading', 'paragraph', 'featured_course', 'button'], $types);
+
+        // Switching to Blank clears the content.
+        $component->set('data.starter_template', 'blank');
+        $this->assertSame([], $component->get('data.blocks'));
+    }
+
+    public function test_every_starter_template_uses_only_known_block_types(): void
+    {
+        foreach (NewsletterStarterTemplates::all() as $key => $template) {
+            foreach ($template['blocks'] as $block) {
+                $this->assertContains(
+                    $block['type'],
+                    NewsletterRenderer::BLOCK_TYPES,
+                    "Template {$key} uses unknown block: {$block['type']}",
+                );
+            }
+        }
+    }
+
+    public function test_every_starter_template_renders_email_safe(): void
+    {
+        // A template error must never ship silently — render each through the real
+        // mailable and assert no leaked/escaped markup or Livewire markers.
+        NewsArticle::factory()->create(['title' => 'Template Render News', 'slug' => 'tpl-news']);
+        $subscriber = NewsletterSubscriber::factory()->create();
+
+        foreach (NewsletterStarterTemplates::all() as $key => $template) {
+            $campaign = NewsletterCampaign::factory()->create([
+                'rendered_html' => null,
+                'blocks' => $template['blocks'],
+            ]);
+
+            $html = (new NewsletterCampaignMail($campaign, $subscriber))->render();
+
+            foreach (['[if BLOCK]', '[if ENDBLOCK]', '&lt;table', '&lt;h3', '<pre', '<code>'] as $leak) {
+                $this->assertStringNotContainsString($leak, $html, "Template {$key} leaked: {$leak}");
+            }
+            // Branded footer present on every send.
+            $this->assertStringContainsString('Unsubscribe instantly', $html);
+            $this->assertStringContainsString('/newsletter/unsubscribe/'.$subscriber->id, $html);
+        }
+    }
+
+    public function test_logo_block_renders_with_an_absolute_url_and_alt(): void
+    {
+        $html = $this->renderBody([['type' => 'logo', 'data' => []]]);
+
+        $this->assertStringContainsString('src="'.url('/images/logo.png').'"', $html);
+        $this->assertStringContainsString('alt="G-Force Skydiving"', $html);
+        // Explicit dimensions for email clients; no flexbox.
+        $this->assertStringContainsString('width="180"', $html);
+        $this->assertStringContainsString('height="64"', $html);
+        $this->assertStringNotContainsString('display:flex', $html);
+    }
+
+    public function test_duplicating_copies_blocks_and_meta_as_an_independent_draft(): void
+    {
+        $original = NewsletterCampaign::factory()->create([
+            'name' => 'June update',
+            'subject' => 'June news',
+            'preheader' => 'Read on',
+            'blocks' => [['type' => 'heading', 'data' => ['text' => 'Original', 'level' => 'h1']]],
+        ]);
+
+        $copy = app(DuplicateNewsletterCampaign::class)->handle($original);
+
+        // All content + meta copied, with a sensible default name.
+        $this->assertSame('Copy of June update', $copy->name);
+        $this->assertSame('June news', $copy->subject);
+        $this->assertSame('Read on', $copy->preheader);
+        $this->assertSame($original->blocks, $copy->blocks);
+        $this->assertTrue($copy->status === NewsletterCampaignStatus::Draft);
+
+        // Editing the copy never touches the original.
+        $copy->update(['blocks' => [['type' => 'heading', 'data' => ['text' => 'Changed', 'level' => 'h1']]]]);
+        $this->assertSame('Original', $original->refresh()->blocks[0]['data']['text']);
+    }
+
+    public function test_duplicating_a_sent_newsletter_resets_all_send_state(): void
+    {
+        $sender = User::factory()->create();
+        $sent = NewsletterCampaign::factory()->create([
+            'name' => 'Last month',
+            'status' => NewsletterCampaignStatus::Sent,
+            'rendered_html' => '<p>frozen</p>',
+            'recipient_count' => 42,
+            'sent_at' => now()->subWeek(),
+            'scheduled_at' => now()->subWeek(),
+        ]);
+        // Real send history on the original.
+        NewsletterCampaignRecipient::create([
+            'newsletter_campaign_id' => $sent->id,
+            'newsletter_subscriber_id' => NewsletterSubscriber::factory()->create()->id,
+            'sent_at' => now()->subWeek(),
+        ]);
+
+        $copy = app(DuplicateNewsletterCampaign::class)->handle($sent, $sender->id);
+
+        // A fresh, editable draft — never something that looks sent or could resend.
+        $this->assertTrue($copy->status === NewsletterCampaignStatus::Draft);
+        $this->assertFalse($copy->isSent());
+        $this->assertNull($copy->rendered_html);
+        $this->assertSame(0, $copy->recipient_count);
+        $this->assertNull($copy->sent_at);
+        $this->assertNull($copy->scheduled_at);
+        // Send history is NOT copied.
+        $this->assertSame(0, $copy->recipients()->count());
+        $this->assertSame($sender->id, $copy->user_id);
+    }
+
+    public function test_duplicate_action_creates_a_copy_from_the_list(): void
+    {
+        $this->actingAs(User::factory()->create());
+        $campaign = NewsletterCampaign::factory()->create(['name' => 'Spring']);
+
+        Livewire::test(ListNewsletterCampaigns::class)
+            ->callTableAction('duplicate', $campaign);
+
+        $this->assertDatabaseHas('newsletter_campaigns', [
+            'name' => 'Copy of Spring',
+            'status' => NewsletterCampaignStatus::Draft->value,
+        ]);
+    }
+
+    public function test_livewire_morph_markers_are_stripped(): void
+    {
+        // Livewire injects these conditional comments around @if/@foreach in any
+        // Blade view — they must never survive into newsletter HTML.
+        $dirty = '<!--[if BLOCK]><![endif]--><table>x</table><!--[if ENDBLOCK]><![endif-->';
+        $clean = NewsletterRenderer::stripLivewireMarkers(
+            '<!--[if BLOCK]><![endif]--><table>x</table><!--[if ENDBLOCK]><![endif]-->'
+        );
+
+        $this->assertSame('<table>x</table>', $clean);
+        $this->assertStringNotContainsString('[if BLOCK]', $clean);
+        $this->assertStringNotContainsString('[if ENDBLOCK]', $clean);
+    }
+
+    public function test_no_block_type_leaks_raw_or_escaped_markup_into_the_email(): void
+    {
+        // Every block, including the dynamic ones, in one campaign.
+        NewsArticle::factory()->create(['title' => 'Dropzone Update', 'slug' => 'dz-update']);
+
+        $subscriber = NewsletterSubscriber::factory()->create();
+        $campaign = NewsletterCampaign::factory()->create([
+            'rendered_html' => null,
+            'blocks' => [
+                ['type' => 'logo', 'data' => []],
+                ['type' => 'heading', 'data' => ['text' => 'All blocks', 'level' => 'h1']],
+                ['type' => 'paragraph', 'data' => ['text' => '<p>Intro.</p>']],
+                ['type' => 'image', 'data' => ['image' => '/images/hero-skydive.jpg', 'caption' => 'Sky', 'link' => '/tandem']],
+                ['type' => 'button', 'data' => ['label' => 'Book', 'url' => '/tandem']],
+                ['type' => 'divider', 'data' => []],
+                ['type' => 'two_column', 'data' => ['image' => '/images/aff.jpg', 'heading' => 'AFF', 'text' => 'Go pro.', 'image_side' => 'left', 'button_label' => 'See AFF', 'button_url' => '/aff']],
+                ['type' => 'latest_news', 'data' => []],
+                ['type' => 'featured_course', 'data' => []],
+            ],
+        ]);
+
+        $html = (new NewsletterCampaignMail($campaign, $subscriber))->render();
+
+        // No Livewire markers, and no markup shown as escaped/visible text.
+        foreach (['[if BLOCK]', '[if ENDBLOCK]', '&lt;table', '&lt;h3', '&lt;p', '<pre', '<code>'] as $leak) {
+            $this->assertStringNotContainsString($leak, $html, "Email leaked: {$leak}");
+        }
+
+        // The block HTML itself is present and rendered (not stripped away).
+        $this->assertStringContainsString('<table', $html);
+        $this->assertStringContainsString('Dropzone Update', $html);
+        $this->assertStringContainsString('All blocks', $html);
     }
 }
