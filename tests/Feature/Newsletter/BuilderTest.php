@@ -12,6 +12,7 @@ use App\Models\NewsletterCampaignRecipient;
 use App\Models\NewsletterSubscriber;
 use App\Models\User;
 use App\Support\NewsletterRenderer;
+use App\Support\NewsletterStarterTemplates;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -110,7 +111,36 @@ class BuilderTest extends TestCase
 
         Livewire::test(CreateNewsletterCampaign::class)
             ->assertOk()
-            ->assertSee('Add a block');
+            ->assertSee('Add a block')
+            ->assertSee('Start from a template');
+    }
+
+    public function test_starter_template_seeds_the_expected_blocks_on_create(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        $component = Livewire::test(CreateNewsletterCampaign::class)
+            ->set('data.starter_template', 'new_dates');
+
+        $types = collect($component->get('data.blocks'))->pluck('type')->all();
+        $this->assertSame(['logo', 'heading', 'paragraph', 'featured_course', 'button'], $types);
+
+        // Switching to Blank clears the content.
+        $component->set('data.starter_template', 'blank');
+        $this->assertSame([], $component->get('data.blocks'));
+    }
+
+    public function test_every_starter_template_uses_only_known_block_types(): void
+    {
+        foreach (NewsletterStarterTemplates::all() as $key => $template) {
+            foreach ($template['blocks'] as $block) {
+                $this->assertContains(
+                    $block['type'],
+                    NewsletterRenderer::BLOCK_TYPES,
+                    "Template {$key} uses unknown block: {$block['type']}",
+                );
+            }
+        }
     }
 
     public function test_logo_block_renders_with_an_absolute_url_and_alt(): void

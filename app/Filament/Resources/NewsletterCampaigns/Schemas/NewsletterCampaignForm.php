@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\NewsletterCampaigns\Schemas;
 
 use App\Models\CourseDate;
+use App\Support\NewsletterStarterTemplates;
 use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Builder\Block;
 use Filament\Forms\Components\FileUpload;
@@ -11,6 +12,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 
 /**
@@ -24,6 +26,19 @@ class NewsletterCampaignForm
         // Single column so the meta panel and the block builder stack full-width
         // down the page — the builder needs the room, not a squeezed half-column.
         return $schema->columns(1)->components([
+            // Create only: pick a starter to pre-fill the blocks below, then edit.
+            // Hidden on edit, where re-picking would wipe the owner's content.
+            Select::make('starter_template')
+                ->label('Start from a template')
+                ->options(NewsletterStarterTemplates::options())
+                ->default('blank')
+                ->selectablePlaceholder(false)
+                ->live()
+                ->dehydrated(false)
+                ->visibleOn('create')
+                ->helperText('Pick a starting point — it pre-fills the content below, which you can then edit. Choose “Blank” to build from scratch.')
+                ->afterStateUpdated(fn (?string $state, Set $set): mixed => $set('blocks', NewsletterStarterTemplates::blocks((string) $state)))
+                ->columnSpanFull(),
             Section::make('Newsletter details')
                 ->description('Internal name, subject and preheader. Collapse this to focus on the content.')
                 ->collapsible()
