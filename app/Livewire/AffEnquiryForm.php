@@ -60,7 +60,7 @@ class AffEnquiryForm extends Component
     private function finish(): void
     {
         $this->reset('name', 'email', 'phone', 'message', 'website');
-        $this->dispatch('enquiry-sent', message: "Enquiry sent! We'll be in touch shortly.");
+        $this->dispatch('enquiry-sent', message: "Enquiry sent! We'll be in touch shortly.")->self();
     }
 
     public function render(): View

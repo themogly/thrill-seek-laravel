@@ -1,10 +1,11 @@
 <form
     wire:submit="subscribe"
     x-data
-    @enquiry-sent.window="window.toast.success($event.detail.message)"
-    @enquiry-failed.window="window.toast.error($event.detail.message)"
+    @enquiry-sent="window.toast.success($event.detail.message)"
+    @enquiry-failed="window.toast.error($event.detail.message)"
     @class([
         'mt-8 flex flex-col gap-3 sm:flex-row' => $variant === 'banner',
+        'mt-5 flex flex-col gap-3 sm:flex-row' => $variant === 'footer',
         'mt-4 flex flex-col gap-3' => $variant === 'card',
     ])
 >
@@ -17,6 +18,16 @@
             aria-label="Email address"
             autocomplete="email"
             class="h-14 flex-1 border-white/20 bg-white/10 text-white placeholder:text-white/60"
+        />
+    @elseif ($variant === 'footer')
+        <x-ui.input
+            type="email"
+            required
+            wire:model="email"
+            placeholder="you@example.com"
+            aria-label="Email address"
+            autocomplete="email"
+            class="flex-1 border-white/20 bg-white/10 text-white placeholder:text-white/60"
         />
     @else
         <x-ui.input
@@ -35,11 +46,11 @@
     </div>
 
     {{-- The one button system: solid primary, palette only, no one-off colours.
-         w-full only on the stacked card variant. --}}
+         w-full only on the stacked card variant; compact (default) size in the footer. --}}
     <x-ui.button
         type="submit"
         variant="primary"
-        size="lg"
+        size="{{ $variant === 'footer' ? 'default' : 'lg' }}"
         wire:loading.attr="disabled"
         @class(['w-full' => $variant === 'card'])
     >

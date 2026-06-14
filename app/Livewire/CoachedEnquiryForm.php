@@ -82,7 +82,7 @@ class CoachedEnquiryForm extends Component
     private function finish(): void
     {
         $this->reset('name', 'email', 'phone', 'discipline', 'jumps', 'licence', 'message', 'website');
-        $this->dispatch('enquiry-sent', message: "Enquiry sent! We'll come back with a coaching plan.");
+        $this->dispatch('enquiry-sent', message: "Enquiry sent! We'll come back with a coaching plan.")->self();
     }
 
     public function render(): View

@@ -1,8 +1,8 @@
 <form
     wire:submit="submit"
     x-data
-    @enquiry-sent.window="window.toast.success($event.detail.message); $dispatch('reset')"
-    @enquiry-failed.window="window.toast.error($event.detail.message)"
+    @enquiry-sent="window.toast.success($event.detail.message); $dispatch('reset')"
+    @enquiry-failed="window.toast.error($event.detail.message)"
     class="border-2 border-secondary bg-card p-6 sm:p-8"
 >
     <div class="grid gap-4 sm:grid-cols-2">

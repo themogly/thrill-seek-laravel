@@ -1009,3 +1009,23 @@ advisory range covers the latest published `shell-quote`, so there is no non-bre
 fix; it is never part of the production asset bundle. Left as-is rather than force a
 major `concurrently` bump that could break the local dev script — flagged here for the
 owner to revisit when an upstream fix ships.
+
+## Footer newsletter signup (feature/footer-newsletter)
+
+Branched off main `5c5b613`. Adds a compact newsletter signup to the site footer so it
+appears on **every** page, reusing the existing `NewsletterSignup` Livewire component and
+its double-opt-in pipeline — NOT a second signup path.
+- **New `footer` variant** on the shared component (alongside `banner`/`card`): a compact
+  `h-11` dark-band input + the standard `<x-ui.button>` primary, in a "Stay in the loop"
+  row between the footer tagline and the link columns. Same honeypot + per-IP rate limit
+  (`ProtectsAgainstSpam`) and the same "check your inbox to confirm" toast as the other
+  signups. No opt-in was added to the enquiry/contact forms — those stay task-focused.
+- **Toast scoping fix (required by the footer being site-wide):** the success/failure
+  toast was relayed by each form's root via `@enquiry-sent.window` / `@enquiry-failed.window`.
+  Because that listens on `window`, every form on a page fired a toast for any form's
+  event — so adding the footer signup to pages that already carry an enquiry form (and the
+  contact page, which already paired its form with a newsletter card) would have shown
+  duplicate toasts. Fixed by dispatching these events with `->self()` and listening
+  without `.window`, so a form only toasts its own result. Verified with Playwright: a
+  footer subscribe and a contact submit each show exactly one toast, no console errors,
+  at 1440 and 390. Applied uniformly across all five forms + the shared spam trait.

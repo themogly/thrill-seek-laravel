@@ -55,7 +55,7 @@ class ContactForm extends Component
     private function finish(): void
     {
         $this->reset('name', 'email', 'phone', 'message', 'website');
-        $this->dispatch('enquiry-sent', message: "Message sent! We'll be in touch.");
+        $this->dispatch('enquiry-sent', message: "Message sent! We'll be in touch.")->self();
     }
 
     public function render(): View
