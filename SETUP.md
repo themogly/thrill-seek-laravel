@@ -188,3 +188,39 @@ The booking calendar only appears in the admin once at least one booking exists.
     and provide a square 512px app icon for the web manifest.
   - Add the real business **postal address** (Settings → General, once the fields
     exist) so the structured data upgrades to a full LocalBusiness address.
+
+## Inbound email setup (threading customer replies)
+
+Customer replies thread back into the enquiry automatically via Resend inbound email.
+The code is in place; these one-time DNS + dashboard steps connect it (they can't be
+done in code).
+
+1. **Pick a receiving subdomain** for replies, e.g. `reply.gforce.co.uk`. Add it as a
+   domain in the Resend dashboard and add the **MX record** Resend shows for it to your
+   DNS (typically `reply  MX 10 inbound.resend.com`). Wait for it to verify.
+2. **Add an inbound route / webhook** in Resend pointing at
+   `https://<your-app>/webhooks/resend` for the `email.received` event. Resend signs
+   these (Svix); copy the **signing secret** (`whsec_…`).
+3. **Set env vars** (see `.env.example`):
+   - `MAIL_INBOUND_DOMAIN=reply.gforce.co.uk`
+   - `RESEND_WEBHOOK_SECRET=whsec_…`
+   - `RESEND_API_KEY=…` (already set for sending; the second-step body fetch reuses it)
+   - `APP_URL` must be the real public URL.
+4. **Run the queue** — inbound processing is queued (Horizon). The webhook returns
+   immediately; the `ProcessInboundEmail` job does the fetch + threading.
+5. **Test**: open an enquiry in the admin and send the customer a reply (its reply-to is
+   `enquiry+<token>@<inbound domain>`). Reply to that email from another account; within
+   a moment the reply appears in the enquiry thread, the enquiry flips to **Customer
+   replied**, and the Enquiries badge increments. Watch it process in **Horizon**.
+   - Mail that can't be routed (unknown token, etc.) lands under **Unmatched messages**
+     in the admin rather than being dropped.
+   - The exact Resend inbound *fetch* endpoint is encapsulated in
+     `App\Support\Inbound\ResendInboundEmailFetcher` — confirm its path/shape against
+     the current Resend docs when wiring the live domain; it's the single integration
+     seam and degrades gracefully (logs + Unmatched) if a field is missing.
+
+**BCC dropbox (deferred):** capturing emails the owner sends from their *own* mail
+client (by BCC'ing a dropbox address) is documented as future work — it needs reliable
+matching by customer address and a manual-outbound message type, and wasn't built to
+keep this round focused on the core reply-threading loop. The inbound webhook +
+`HandleInboundEmail` action are the foundation to add it later.

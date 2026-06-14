@@ -143,6 +143,20 @@ class HelpGuide extends Page
                 'cta' => ['label' => 'Open Enquiries', 'url' => EnquiryResource::getUrl()],
             ],
             [
+                'id' => 'customer-replies',
+                'icon' => 'heroicon-o-chat-bubble-left-right',
+                'title' => 'Customer replies & messages',
+                'intro' => 'When a customer replies to one of your emails, their reply appears automatically inside the enquiry — no copy-pasting from your own inbox.',
+                'steps' => [
+                    'The Enquiries list shows who needs you: a <strong>“Needs reply”</strong> tab, a red bell on unread rows, the latest-message preview, and a number badge on the Enquiries menu item.',
+                    'The <strong>Customers</strong> list flags anyone awaiting a reply too, with “Has unread” and “Awaiting our reply” filters.',
+                    'Opening an enquiry marks it read; sending a reply sets it back to handled.',
+                    'Anything that can’t be matched to an enquiry is kept under <strong>Unmatched messages</strong> to check — nothing is ever lost.',
+                    'The one-time technical email setup (so replies route back here) is a developer job — contact your developer if replies aren’t appearing.',
+                ],
+                'cta' => ['label' => 'Open Enquiries', 'url' => EnquiryResource::getUrl()],
+            ],
+            [
                 'id' => 'payments',
                 'icon' => 'heroicon-o-credit-card',
                 'title' => 'Taking payment',

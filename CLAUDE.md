@@ -58,7 +58,11 @@ that manages all site content, enquiries, payments and bookings.
    Reference: `PageController::paymentSuccess()` + `App\ViewModels\PaymentSuccessPage`.
 3. **Webhooks**: `StripeWebhookController` verifies the signature only;
    `HandleStripeWebhook` is a pure event-type dispatcher; each event has its own
-   Action. Reference: `App\Actions\HandleCheckoutSessionExpired`.
+   Action. Reference: `App\Actions\HandleCheckoutSessionExpired`. The inbound-email
+   webhook is its sibling: `ResendWebhookController` verifies the Svix signature, then
+   dispatches a queued `ProcessInboundEmail` job → `HandleInboundEmail` action (the
+   slow Resend body-fetch runs in the job, behind the `InboundEmailFetcher` interface
+   so tests fake it). Both routes are CSRF-exempt in `bootstrap/app.php`.
 4. **Blade by default**: pages are plain Blade rendered by `PageController`;
    Livewire only where the page talks to the server after load, embedded as an
    island in a Blade page (reference: `NewsletterSignup` in the footer). Never a
