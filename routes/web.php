@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\ResendWebhookController;
 use App\Http\Controllers\StripeWebhookController;
 use App\Models\NewsArticle;
 use App\Settings\GeneralSettings;
@@ -37,6 +38,7 @@ Route::get('/payment/success', [PageController::class, 'paymentSuccess'])->name(
 Route::view('/payment/cancelled', 'pages.payment-cancelled')->name('payment.cancelled');
 
 Route::post('/webhooks/stripe', StripeWebhookController::class)->name('webhooks.stripe');
+Route::post('/webhooks/resend', ResendWebhookController::class)->name('webhooks.resend');
 
 if (app()->environment('local')) {
     require __DIR__.'/dev.php';

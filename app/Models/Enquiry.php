@@ -16,6 +16,7 @@ use Illuminate\Support\Str;
 /**
  * @property EnquiryStatus $status
  * @property Carbon|null $preferred_date
+ * @property Carbon|null $last_customer_message_at
  */
 class Enquiry extends Model
 {
@@ -34,6 +35,7 @@ class Enquiry extends Model
         'preferred_date',
         'context',
         'read_at',
+        'last_customer_message_at',
     ];
 
     protected function casts(): array
@@ -43,6 +45,7 @@ class Enquiry extends Model
             'preferred_date' => 'date',
             'context' => 'array',
             'read_at' => 'datetime',
+            'last_customer_message_at' => 'datetime',
         ];
     }
 
