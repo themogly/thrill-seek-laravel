@@ -54,4 +54,18 @@ class GeneralSettings extends Settings
     {
         return 'tel:'.preg_replace('/[^+\d]/', '', $this->phone);
     }
+
+    /**
+     * The transactional-email sign-off, with a safe default. Read defensively
+     * (not via the raw property) so a stale settings cache that predates the
+     * `email_signoff` property degrades gracefully instead of throwing
+     * "must not be accessed before initialization" and failing EVERY email job.
+     * The proper fix for a stale cache is still `php artisan settings:clear-cache`.
+     */
+    public function emailSignoff(): string
+    {
+        return isset($this->email_signoff) && $this->email_signoff !== ''
+            ? $this->email_signoff
+            : "Blue skies,\nThe G-Force team";
+    }
 }
