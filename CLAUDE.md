@@ -169,6 +169,12 @@ that manages all site content, enquiries, payments and bookings.
   colours only (sky-bright on dark scrims, primary on light) — no gold.
 
 ## Quality bar (enforced before every commit)
+- **Database is MySQL 8+** in production and local dev. SQLite (`:memory:`) is kept ONLY
+  as the fast default test driver (`phpunit.xml`); the production-parity gate is
+  `php artisan test -c phpunit.mysql.xml` against a real MySQL DB. Run both green before
+  shipping anything that touches migrations/queries. Migrations must work on both drivers
+  (e.g. avoid `->after()` referencing a not-yet-added column — SQLite ignores it, MySQL
+  errors). See `db-migration/MYSQL-NOTES.md` + SETUP.md "Production database".
 - `php artisan test` — full suite green, no skips. Feature tests for HTTP/Livewire
   flows, unit tests for actions/support classes, Filament resource tests. Mock Stripe
   via the `StripeCheckout` service binding; use `Mail::fake()` — tests never hit real APIs.
