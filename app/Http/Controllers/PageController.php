@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\FaqPage;
 use App\Models\CourseDate;
 use App\Settings\GeneralSettings;
 use App\Support\SiteContent;
@@ -35,6 +36,7 @@ class PageController extends Controller
     {
         return view('pages.tandem', [
             'product' => $this->content->tandemProduct(),
+            'faqs' => $this->content->faqs(FaqPage::Tandem),
         ]);
     }
 
@@ -44,12 +46,15 @@ class PageController extends Controller
             'products' => $this->content->affProducts(),
             // Live query (not cached): remaining places must always be current.
             'courseDates' => CourseDate::upcomingOpen()->with(['product', 'location'])->get(),
+            'faqs' => $this->content->faqs(FaqPage::Aff),
         ]);
     }
 
     public function coached(): View
     {
-        return view('pages.coached');
+        return view('pages.coached', [
+            'faqs' => $this->content->faqs(FaqPage::Coached),
+        ]);
     }
 
     public function shop(): View
