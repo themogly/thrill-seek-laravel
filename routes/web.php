@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Account\BookingController as AccountBookingController;
 use App\Http\Controllers\Account\DashboardController as AccountDashboardController;
 use App\Http\Controllers\Account\LoginController as AccountLoginController;
 use App\Http\Controllers\NewsletterController;
@@ -48,6 +49,10 @@ Route::prefix('account')->name('account.')->group(function (): void {
     Route::middleware('auth:customer')->group(function (): void {
         Route::get('/', AccountDashboardController::class)->name('dashboard');
         Route::post('/logout', [AccountLoginController::class, 'logout'])->name('logout');
+
+        Route::get('/bookings', [AccountBookingController::class, 'index'])->name('bookings');
+        Route::get('/bookings/{booking}', [AccountBookingController::class, 'show'])->name('bookings.show');
+        Route::post('/bookings/{booking}/pay', [AccountBookingController::class, 'pay'])->name('bookings.pay');
     });
 });
 
