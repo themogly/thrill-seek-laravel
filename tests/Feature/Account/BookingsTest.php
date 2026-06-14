@@ -143,6 +143,20 @@ class BookingsTest extends TestCase
             ->assertSee('by card');
     }
 
+    public function test_scheduled_label_shows_a_time_only_when_a_real_one_is_set(): void
+    {
+        $this->assertNull(Booking::factory()->create(['scheduled_at' => null])->scheduledLabel());
+
+        // Date-only (midnight) booking — no misleading "12:00am".
+        $dayOnly = Booking::factory()->create(['scheduled_at' => now()->addWeek()->startOfDay()]);
+        $this->assertStringNotContainsString('am', strtolower($dayOnly->scheduledLabel()));
+        $this->assertStringNotContainsString('pm', strtolower($dayOnly->scheduledLabel()));
+
+        // A real slot time shows it.
+        $timed = Booking::factory()->create(['scheduled_at' => now()->addWeek()->setTime(9, 0)]);
+        $this->assertStringContainsString('9:00am', $timed->scheduledLabel());
+    }
+
     public function test_a_customer_cannot_view_another_customers_booking(): void
     {
         $owner = Customer::factory()->create();

@@ -4,7 +4,7 @@
     <div>
         <p class="text-lg font-bold text-ink">{{ $booking->product?->name ?? 'Skydive' }}</p>
         <p class="mt-1 text-secondary">
-            {{ $booking->scheduled_at?->format('l j F Y, g:ia') ?? 'Date to be confirmed' }}
+            {{ $booking->scheduledLabel() ?? 'Date to be confirmed' }}
             @if ($booking->locationName()) · {{ $booking->locationName() }} @endif
         </p>
         <p class="mt-1 text-sm uppercase tracking-widest text-muted-foreground">{{ $booking->status->getLabel() }}</p>

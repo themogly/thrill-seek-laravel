@@ -48,8 +48,8 @@ class RescheduleBooking
                     'name' => $booking->name,
                     'reference' => $booking->reference,
                     'product' => $booking->product->name ?? 'your jump',
-                    'old_date' => $oldDate?->format('l j F Y, H:i') ?? 'not previously scheduled',
-                    'new_date' => $booking->scheduled_at?->format('l j F Y, H:i') ?? 'to be confirmed',
+                    'old_date' => Booking::formatScheduled($oldDate) ?? 'not previously scheduled',
+                    'new_date' => $booking->scheduledLabel() ?? 'to be confirmed',
                 ],
             ));
         } catch (\Throwable $e) {

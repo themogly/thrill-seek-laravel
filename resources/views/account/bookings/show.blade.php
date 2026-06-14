@@ -17,7 +17,7 @@
                 <h2 class="font-display text-2xl uppercase tracking-wide">Jump details</h2>
                 <dl class="mt-4 grid grid-cols-[auto,1fr] gap-x-6 gap-y-2 text-ink">
                     <dt class="font-bold uppercase tracking-widest text-secondary">Date</dt>
-                    <dd>{{ $booking->scheduled_at?->format('l j F Y, g:ia') ?? 'To be confirmed' }}</dd>
+                    <dd>{{ $booking->scheduledLabel() ?? 'To be confirmed' }}</dd>
                     @if ($booking->locationName())
                         <dt class="font-bold uppercase tracking-widest text-secondary">Where</dt>
                         <dd>{{ $booking->locationName() }}</dd>

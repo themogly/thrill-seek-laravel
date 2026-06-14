@@ -15,7 +15,7 @@
                 <h2 class="font-display text-2xl uppercase tracking-wide">Your next jump</h2>
                 @if ($upcoming)
                     <p class="mt-4 text-xl font-bold text-ink">{{ $upcoming->product?->name ?? 'Skydive' }}</p>
-                    <p class="mt-1 text-lg text-secondary">{{ $upcoming->scheduled_at?->format('l j F Y, g:ia') }}</p>
+                    <p class="mt-1 text-lg text-secondary">{{ $upcoming->scheduledLabel() }}</p>
                     @if ($upcoming->locationName())
                         <p class="mt-1 text-muted-foreground">{{ $upcoming->locationName() }}</p>
                     @endif

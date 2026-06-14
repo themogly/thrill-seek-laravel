@@ -226,6 +226,28 @@ class Booking extends Model
     }
 
     /**
+     * Human label for the jump date: date + time when a real time is set, or just
+     * the date when it's midnight (a date-only / not-yet-timed booking) — never a
+     * misleading "12:00am". Null when no date is scheduled. Used everywhere a booking
+     * date is shown (account + emails) so the format stays consistent.
+     */
+    public static function formatScheduled(?Carbon $at): ?string
+    {
+        if ($at === null) {
+            return null;
+        }
+
+        return $at->isStartOfDay()
+            ? $at->format('l j F Y')
+            : $at->format('l j F Y, g:ia');
+    }
+
+    public function scheduledLabel(): ?string
+    {
+        return self::formatScheduled($this->scheduled_at);
+    }
+
+    /**
      * SQL condition matching bookings whose paid payments do not yet cover
      * the price; shared by the scope and admin table filters.
      */
