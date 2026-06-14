@@ -845,3 +845,18 @@ items were actioned, no documented decision was revisited.
   controllers (idiomatic, no reuse to justify Form Requests); `CourseMessageMail`'s
   `Queueable`-without-`ShouldQueue` (documented — the per-recipient job queues it); the
   `ProtectsAgainstSpam` honeypot concern. All confirmed as correct-by-design.
+
+## Queue reconciliation (chore/queue-reconcile)
+
+Branched off main `21f4a04`. Investigated six queued items; fixed the three genuinely
+incomplete ones (A/B/C) and confirmed the other three already done.
+- **A (money-facing):** `Booking::awaitingBalance()` gates the customer balance-due
+  display + pay action on status (not just `hasOutstandingBalance()`), so a completed or
+  cancelled booking never shows "pay balance" — settlement on a finished jump is
+  admin-side. Same balance calc, just guarded.
+- **B:** `Booking::scheduledLabel()` shows a time only when a real one is set (date-only
+  at midnight), used everywhere a booking date appears; factories seed daytime times.
+- **C:** account bookings split into Upcoming / Awaiting a date / Awaiting payment / Past.
+- **D/E/F already complete** (form widths; SEO in seo/audit-pass; help-guide rebuild in
+  feature/admin-docs). E was assumed missing by the prompt but is present — no SEO run
+  needed.

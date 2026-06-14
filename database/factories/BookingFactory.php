@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Enums\BookingStatus;
 use App\Models\Booking;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
@@ -35,7 +36,9 @@ class BookingFactory extends Factory
     {
         return $this->state([
             'status' => BookingStatus::Confirmed,
-            'scheduled_at' => fake()->dateTimeBetween('+1 week', '+2 months'),
+            // A sensible daytime slot time, never a random small-hours time.
+            'scheduled_at' => Carbon::instance(fake()->dateTimeBetween('+1 week', '+2 months'))
+                ->setTime(fake()->randomElement([9, 10, 11, 13, 14]), 0),
         ]);
     }
 }

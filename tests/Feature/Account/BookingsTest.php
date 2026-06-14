@@ -106,6 +106,72 @@ class BookingsTest extends TestCase
             ->assertDontSee('Pay '); // no "Pay … by card" button
     }
 
+    public function test_completed_booking_never_shows_a_balance_due_or_pay_action(): void
+    {
+        // A finished jump that still carries an unpaid balance must NOT offer the
+        // customer a "pay balance" — settlement on a completed booking is admin-side.
+        $customer = Customer::factory()->create();
+        $booking = $this->affBooking($customer, price: 26000, paid: 0); // £260 outstanding
+        $booking->update(['status' => BookingStatus::Completed]);
+
+        // The Total/Paid breakdown is factual and may show £260; what must be gone is
+        // the "Outstanding" alarm, the pay button, and any false "Paid in full".
+        $this->actingAs($customer, 'customer')
+            ->get('/account/bookings/'.$booking->id)
+            ->assertOk()
+            ->assertDontSee('Outstanding')
+            ->assertDontSee('by card')
+            ->assertDontSee('Paid in full');
+
+        // And the pay route is blocked for a completed booking — no checkout/payment.
+        $this->actingAs($customer, 'customer')
+            ->post('/account/bookings/'.$booking->id.'/pay')
+            ->assertRedirect('/account/bookings/'.$booking->id);
+
+        $this->assertSame(0, Payment::where('booking_id', $booking->id)->where('status', PaymentStatus::Pending)->count());
+    }
+
+    public function test_part_paid_open_booking_shows_the_correct_outstanding_amount(): void
+    {
+        $customer = Customer::factory()->create();
+        $booking = $this->affBooking($customer, price: 175000, paid: 30000); // £1,450 due, Confirmed
+
+        $this->actingAs($customer, 'customer')
+            ->get('/account/bookings/'.$booking->id)
+            ->assertOk()
+            ->assertSee('£1,450')
+            ->assertSee('by card');
+    }
+
+    public function test_bookings_are_split_into_clear_self_explanatory_groups(): void
+    {
+        $customer = Customer::factory()->create();
+        Booking::factory()->create(['customer_id' => $customer->id, 'status' => BookingStatus::Confirmed, 'scheduled_at' => now()->addWeek()->setTime(9, 0)]);
+        Booking::factory()->create(['customer_id' => $customer->id, 'status' => BookingStatus::PendingDate, 'scheduled_at' => null]);
+        Booking::factory()->create(['customer_id' => $customer->id, 'status' => BookingStatus::PendingPayment, 'scheduled_at' => null]);
+        Booking::factory()->create(['customer_id' => $customer->id, 'status' => BookingStatus::Completed, 'scheduled_at' => now()->subWeek()->setTime(9, 0)]);
+
+        $this->actingAs($customer, 'customer')
+            ->get('/account/bookings')
+            ->assertOk()
+            ->assertDontSee('Past &amp; awaiting', false) // the old confusing single bucket is gone
+            ->assertSeeInOrder(['Upcoming', 'Awaiting a date', 'Awaiting payment', 'Past']);
+    }
+
+    public function test_scheduled_label_shows_a_time_only_when_a_real_one_is_set(): void
+    {
+        $this->assertNull(Booking::factory()->create(['scheduled_at' => null])->scheduledLabel());
+
+        // Date-only (midnight) booking — no misleading "12:00am".
+        $dayOnly = Booking::factory()->create(['scheduled_at' => now()->addWeek()->startOfDay()]);
+        $this->assertStringNotContainsString('am', strtolower($dayOnly->scheduledLabel()));
+        $this->assertStringNotContainsString('pm', strtolower($dayOnly->scheduledLabel()));
+
+        // A real slot time shows it.
+        $timed = Booking::factory()->create(['scheduled_at' => now()->addWeek()->setTime(9, 0)]);
+        $this->assertStringContainsString('9:00am', $timed->scheduledLabel());
+    }
+
     public function test_a_customer_cannot_view_another_customers_booking(): void
     {
         $owner = Customer::factory()->create();

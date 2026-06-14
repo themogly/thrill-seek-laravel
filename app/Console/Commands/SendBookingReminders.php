@@ -42,7 +42,7 @@ class SendBookingReminders extends Command
                 'name' => $booking->name,
                 'reference' => $booking->reference,
                 'product' => $booking->product->name ?? 'your jump',
-                'date' => (string) $booking->scheduled_at?->format('l j F Y, H:i'),
+                'date' => (string) $booking->scheduledLabel(),
                 'location' => $booking->locationName() ?? 'to be confirmed',
             ]));
 
