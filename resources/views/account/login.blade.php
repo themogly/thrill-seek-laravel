@@ -42,6 +42,13 @@
                 Only people who have booked with us have an account. Haven't booked yet?
                 <a href="{{ route('tandem') }}" class="font-bold text-primary hover:underline">See our jumps</a>.
             </p>
+
+            @if (app()->environment('local') && Route::has('dev.account-login'))
+                <div class="mt-6 border-2 border-dashed border-amber-400 bg-amber-50 p-4">
+                    <p class="text-xs font-bold uppercase tracking-widest text-amber-700">Local dev only</p>
+                    <a href="{{ route('dev.account-login') }}" class="mt-2 inline-block font-bold text-amber-800 underline">Skip the email — sign in now &rarr;</a>
+                </div>
+            @endif
         </div>
     </x-site.section>
 @endsection
