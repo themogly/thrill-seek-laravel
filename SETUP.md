@@ -224,3 +224,19 @@ client (by BCC'ing a dropbox address) is documented as future work — it needs 
 matching by customer address and a manual-outbound message type, and wasn't built to
 keep this round focused on the core reply-threading loop. The inbound webhook +
 `HandleInboundEmail` action are the foundation to add it later.
+
+## Customer accounts (passwordless "My Account")
+
+Customers who have booked can sign in at `/account/login` to view bookings, pay
+balances, read messages and leave reviews.
+
+- **No new env vars.** Sign-in links email through the existing **Resend** config and
+  the queue worker; the links rely on `APP_KEY` (already set) and `APP_URL` being the
+  real public URL. Session lifetime is the standard `SESSION_LIFETIME`.
+- Auth is a **separate `customer` guard** (passwordless magic links) — customers are
+  never admin users and can't reach `/admin`. There are no customer passwords or stored
+  card details (balances pay through the same Stripe Checkout flow as everything else).
+- Reviews left from an account arrive **unapproved**; moderate them under
+  **Site content → Testimonials** (the nav badge shows how many are waiting).
+- Edit the pre-jump info shown to customers under **Site content → Before-your-jump
+  info**.

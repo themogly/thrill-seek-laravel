@@ -14,6 +14,7 @@ use App\Filament\Resources\NewsletterCampaigns\NewsletterCampaignResource;
 use App\Filament\Resources\NewsletterSubscribers\NewsletterSubscriberResource;
 use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Resources\TandemDates\TandemDateResource;
+use App\Filament\Resources\Testimonials\TestimonialResource;
 use App\Filament\Resources\Vouchers\VoucherResource;
 use BackedEnum;
 use Filament\Pages\Page;
@@ -238,6 +239,20 @@ class HelpGuide extends Page
                     'Edit the text and keep the <code>{{ placeholders }}</code> — they’re filled with real details when the email sends.',
                 ],
                 'cta' => ['label' => 'Open Email templates', 'url' => EmailTemplateResource::getUrl()],
+            ],
+            [
+                'id' => 'customer-accounts',
+                'icon' => 'heroicon-o-user-circle',
+                'title' => 'Customer accounts & reviews',
+                'intro' => 'Customers who have booked can sign in to a "My Account" area to see their bookings, pay any balance themselves, read their messages and leave a review.',
+                'steps' => [
+                    'They sign in <strong>by email link — there are no passwords</strong>. They enter their email and we send a one-time link; nothing for you to manage.',
+                    'They can <strong>pay off an outstanding balance by card</strong> themselves — it lands as a payment and clears the balance exactly like a payment link you send.',
+                    'A reply they send from their account appears in the <strong>Enquiries</strong> inbox (and you’re emailed), the same as any other message.',
+                    'After a completed jump they can <strong>leave a review</strong>. Reviews arrive <strong>unapproved</strong> and never show publicly until you approve them: open <strong>Testimonials</strong> (a badge shows how many are waiting), tick <strong>Approved</strong> and save.',
+                    'Edit the <strong>“Before-your-jump info”</strong> (arrival, what to bring, what to expect) under Site content — it shows on the customer’s account before an upcoming jump.',
+                ],
+                'cta' => ['label' => 'Open Testimonials', 'url' => TestimonialResource::getUrl()],
             ],
             [
                 'id' => 'launch',
