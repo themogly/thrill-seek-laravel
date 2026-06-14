@@ -20,10 +20,10 @@
 @endif
 
 @section('content')
-    <x-site.page-hero :title="$pages->testimonials_hero_title" :subtitle="$pages->testimonials_hero_subtitle" />
-
     @if ($featured)
-        {{-- HERO FEATURE QUOTE — breaks the grid, brand display type, real drama. --}}
+        {{-- The featured testimonial IS the page hero — no separate title band above
+             it (avoids two stacked heroes). A small "Testimonials" eyebrow orients
+             the visitor. --}}
         <section class="group relative isolate overflow-hidden border-b-4 border-primary bg-secondary text-white" data-reveal>
             @if ($featured->photo_url)
                 <img src="{{ $featured->photo_url }}" alt="{{ $featured->name }}" width="1920" height="1080"
@@ -33,7 +33,8 @@
                 <div class="band-ink absolute inset-0 -z-10"></div>
             @endif
             <div class="mx-auto max-w-4xl px-4 py-20 lg:px-8 lg:py-28">
-                <span aria-hidden="true" class="font-display text-7xl leading-none text-sky-bright">&ldquo;</span>
+                <p class="text-xs font-bold uppercase tracking-[0.3em] text-sky-bright">Testimonials</p>
+                <span aria-hidden="true" class="mt-4 block font-display text-7xl leading-none text-sky-bright">&ldquo;</span>
                 <blockquote class="-mt-6 font-display text-3xl uppercase leading-[1.05] tracking-wide md:text-5xl">
                     {{ $featured->home_quote }}
                 </blockquote>
@@ -47,6 +48,9 @@
                 </figcaption>
             </div>
         </section>
+    @else
+        {{-- No featured quote to lead with — fall back to the standard page hero. --}}
+        <x-site.page-hero :title="$pages->testimonials_hero_title" :subtitle="$pages->testimonials_hero_subtitle" />
     @endif
 
     <x-site.section>
