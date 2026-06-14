@@ -2,9 +2,12 @@
 
 namespace Tests\Feature\Newsletter;
 
+use App\Actions\DuplicateNewsletterCampaign;
 use App\Actions\SendNewsletterCampaign;
+use App\Enums\NewsletterCampaignStatus;
 use App\Filament\Resources\NewsletterCampaigns\Pages\CreateNewsletterCampaign;
 use App\Filament\Resources\NewsletterCampaigns\Pages\EditNewsletterCampaign;
+use App\Filament\Resources\NewsletterCampaigns\Pages\ListNewsletterCampaigns;
 use App\Mail\NewsletterCampaignMail;
 use App\Models\NewsArticle;
 use App\Models\NewsletterCampaign;
@@ -153,6 +156,75 @@ class BuilderTest extends TestCase
         $this->assertStringContainsString('width="180"', $html);
         $this->assertStringContainsString('height="64"', $html);
         $this->assertStringNotContainsString('display:flex', $html);
+    }
+
+    public function test_duplicating_copies_blocks_and_meta_as_an_independent_draft(): void
+    {
+        $original = NewsletterCampaign::factory()->create([
+            'name' => 'June update',
+            'subject' => 'June news',
+            'preheader' => 'Read on',
+            'blocks' => [['type' => 'heading', 'data' => ['text' => 'Original', 'level' => 'h1']]],
+        ]);
+
+        $copy = app(DuplicateNewsletterCampaign::class)->handle($original);
+
+        // All content + meta copied, with a sensible default name.
+        $this->assertSame('Copy of June update', $copy->name);
+        $this->assertSame('June news', $copy->subject);
+        $this->assertSame('Read on', $copy->preheader);
+        $this->assertSame($original->blocks, $copy->blocks);
+        $this->assertTrue($copy->status === NewsletterCampaignStatus::Draft);
+
+        // Editing the copy never touches the original.
+        $copy->update(['blocks' => [['type' => 'heading', 'data' => ['text' => 'Changed', 'level' => 'h1']]]]);
+        $this->assertSame('Original', $original->refresh()->blocks[0]['data']['text']);
+    }
+
+    public function test_duplicating_a_sent_newsletter_resets_all_send_state(): void
+    {
+        $sender = User::factory()->create();
+        $sent = NewsletterCampaign::factory()->create([
+            'name' => 'Last month',
+            'status' => NewsletterCampaignStatus::Sent,
+            'rendered_html' => '<p>frozen</p>',
+            'recipient_count' => 42,
+            'sent_at' => now()->subWeek(),
+            'scheduled_at' => now()->subWeek(),
+        ]);
+        // Real send history on the original.
+        NewsletterCampaignRecipient::create([
+            'newsletter_campaign_id' => $sent->id,
+            'newsletter_subscriber_id' => NewsletterSubscriber::factory()->create()->id,
+            'sent_at' => now()->subWeek(),
+        ]);
+
+        $copy = app(DuplicateNewsletterCampaign::class)->handle($sent, $sender->id);
+
+        // A fresh, editable draft — never something that looks sent or could resend.
+        $this->assertTrue($copy->status === NewsletterCampaignStatus::Draft);
+        $this->assertFalse($copy->isSent());
+        $this->assertNull($copy->rendered_html);
+        $this->assertSame(0, $copy->recipient_count);
+        $this->assertNull($copy->sent_at);
+        $this->assertNull($copy->scheduled_at);
+        // Send history is NOT copied.
+        $this->assertSame(0, $copy->recipients()->count());
+        $this->assertSame($sender->id, $copy->user_id);
+    }
+
+    public function test_duplicate_action_creates_a_copy_from_the_list(): void
+    {
+        $this->actingAs(User::factory()->create());
+        $campaign = NewsletterCampaign::factory()->create(['name' => 'Spring']);
+
+        Livewire::test(ListNewsletterCampaigns::class)
+            ->callTableAction('duplicate', $campaign);
+
+        $this->assertDatabaseHas('newsletter_campaigns', [
+            'name' => 'Copy of Spring',
+            'status' => NewsletterCampaignStatus::Draft->value,
+        ]);
     }
 
     public function test_livewire_morph_markers_are_stripped(): void
