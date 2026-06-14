@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
             CourseDateSeeder::class,
             NewsArticleSeeder::class,
             NewsletterCampaignSeeder::class,
+            FaqSeeder::class,
         ]);
     }
 }
