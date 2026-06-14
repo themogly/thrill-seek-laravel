@@ -10,10 +10,10 @@
         <p class="mt-1 text-sm uppercase tracking-widest text-muted-foreground">{{ $booking->status->getLabel() }}</p>
     </div>
     <div class="sm:text-right">
-        @if ($booking->hasOutstandingBalance())
+        @if ($booking->awaitingBalance())
             <p class="text-sm text-muted-foreground">Balance due</p>
             <p class="font-display text-2xl text-primary">{{ $booking->formatted_balance_due }}</p>
-        @else
+        @elseif (! $booking->hasOutstandingBalance())
             <p class="font-bold uppercase tracking-widest text-secondary">Paid in full</p>
         @endif
         <div class="mt-3">

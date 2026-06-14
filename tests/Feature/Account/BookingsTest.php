@@ -106,6 +106,43 @@ class BookingsTest extends TestCase
             ->assertDontSee('Pay '); // no "Pay … by card" button
     }
 
+    public function test_completed_booking_never_shows_a_balance_due_or_pay_action(): void
+    {
+        // A finished jump that still carries an unpaid balance must NOT offer the
+        // customer a "pay balance" — settlement on a completed booking is admin-side.
+        $customer = Customer::factory()->create();
+        $booking = $this->affBooking($customer, price: 26000, paid: 0); // £260 outstanding
+        $booking->update(['status' => BookingStatus::Completed]);
+
+        // The Total/Paid breakdown is factual and may show £260; what must be gone is
+        // the "Outstanding" alarm, the pay button, and any false "Paid in full".
+        $this->actingAs($customer, 'customer')
+            ->get('/account/bookings/'.$booking->id)
+            ->assertOk()
+            ->assertDontSee('Outstanding')
+            ->assertDontSee('by card')
+            ->assertDontSee('Paid in full');
+
+        // And the pay route is blocked for a completed booking — no checkout/payment.
+        $this->actingAs($customer, 'customer')
+            ->post('/account/bookings/'.$booking->id.'/pay')
+            ->assertRedirect('/account/bookings/'.$booking->id);
+
+        $this->assertSame(0, Payment::where('booking_id', $booking->id)->where('status', PaymentStatus::Pending)->count());
+    }
+
+    public function test_part_paid_open_booking_shows_the_correct_outstanding_amount(): void
+    {
+        $customer = Customer::factory()->create();
+        $booking = $this->affBooking($customer, price: 175000, paid: 30000); // £1,450 due, Confirmed
+
+        $this->actingAs($customer, 'customer')
+            ->get('/account/bookings/'.$booking->id)
+            ->assertOk()
+            ->assertSee('£1,450')
+            ->assertSee('by card');
+    }
+
     public function test_a_customer_cannot_view_another_customers_booking(): void
     {
         $owner = Customer::factory()->create();

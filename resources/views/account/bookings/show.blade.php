@@ -48,13 +48,13 @@
             </div>
 
             {{-- Balance / pay --}}
-            <div class="border-2 p-6 {{ $booking->hasOutstandingBalance() ? 'border-primary bg-sky-bright/5' : 'border-border' }}">
+            <div class="border-2 p-6 {{ $booking->awaitingBalance() ? 'border-primary bg-sky-bright/5' : 'border-border' }}">
                 <h2 class="font-display text-2xl uppercase tracking-wide">Balance</h2>
                 <dl class="mt-4 space-y-1 text-sm">
                     <div class="flex justify-between"><dt class="text-muted-foreground">Total</dt><dd class="font-bold">{{ Money::formatPence($booking->price_pence) }}</dd></div>
                     <div class="flex justify-between"><dt class="text-muted-foreground">Paid</dt><dd class="font-bold">{{ Money::formatPence($booking->total_paid_pence) }}</dd></div>
                 </dl>
-                @if ($booking->hasOutstandingBalance())
+                @if ($booking->awaitingBalance())
                     <p class="mt-4 text-sm text-muted-foreground">Outstanding</p>
                     <p class="font-display text-3xl text-primary">{{ $booking->formatted_balance_due }}</p>
                     <form method="POST" action="{{ route('account.bookings.pay', $booking) }}" class="mt-4">
@@ -62,7 +62,7 @@
                         <x-ui.button type="submit" class="w-full">Pay {{ $booking->formatted_balance_due }} by card</x-ui.button>
                     </form>
                     <p class="mt-3 text-xs text-muted-foreground">You'll be taken to our secure card-payment page.</p>
-                @else
+                @elseif (! $booking->hasOutstandingBalance())
                     <p class="mt-4 font-bold uppercase tracking-widest text-secondary">Paid in full 🪂</p>
                 @endif
             </div>

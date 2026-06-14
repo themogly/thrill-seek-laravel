@@ -37,9 +37,9 @@ class BookingController extends AccountController
     {
         $booking = $this->ownedBooking($booking);
 
-        if (! $booking->hasOutstandingBalance()) {
+        if (! $booking->awaitingBalance()) {
             return redirect()->route('account.bookings.show', $booking)
-                ->with('account_status', 'That booking is already paid in full.');
+                ->with('account_status', 'There is nothing to pay on that booking.');
         }
 
         return redirect()->away($checkout->handle($booking));

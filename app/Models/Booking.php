@@ -214,6 +214,18 @@ class Booking extends Model
     }
 
     /**
+     * Whether the customer should be offered self-service balance payment: an
+     * outstanding balance AND the booking is still open. A completed or cancelled
+     * booking never shows a balance-due alarm or a "pay now" in the account — a
+     * finished jump's settlement is admin-side. (Same balance calc, just gated.)
+     */
+    public function awaitingBalance(): bool
+    {
+        return $this->hasOutstandingBalance()
+            && ! in_array($this->status, [BookingStatus::Completed, BookingStatus::Cancelled], true);
+    }
+
+    /**
      * SQL condition matching bookings whose paid payments do not yet cover
      * the price; shared by the scope and admin table filters.
      */
