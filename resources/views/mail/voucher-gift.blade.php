@@ -1,10 +1,8 @@
 @php
     $forLine = filled($voucher->recipient_name) ? ', for **'.$voucher->recipient_name.'**' : '';
 @endphp
-<x-mail::message>
+<x-mail.layout :name="$voucher->purchaser_name">
 # A jump from 15,000ft, wrapped up 🎁
-
-Hi {{ $voucher->purchaser_name }},
 
 Here it is — **{{ $voucher->formatted_amount }}** towards {{ $voucher->product->name ?? 'a tandem skydive' }} with G-Force Skydiving{!! $forLine !!}.
 
@@ -26,7 +24,4 @@ this email and we'll sort everything.
 <x-mail::button :url="$bookingUrl">
 Book the jump
 </x-mail::button>
-
-Blue skies,<br>
-The G-Force team
-</x-mail::message>
+</x-mail.layout>

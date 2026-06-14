@@ -1,4 +1,4 @@
-<x-mail::message>
+<x-mail.layout>
 # One quick step
 
 Thanks for signing up to the G-Force Skydiving newsletter — jump days, course
@@ -11,7 +11,4 @@ Confirm my subscription
 </x-mail::button>
 
 If you didn't sign up, just ignore this email — you won't hear from us again.
-
-Blue skies,
-The G-Force team
-</x-mail::message>
+</x-mail.layout>

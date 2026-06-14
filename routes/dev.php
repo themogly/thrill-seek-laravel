@@ -157,9 +157,9 @@ function devMailPreviews(): array
             'enquiry_acknowledgement' => ['name' => 'Sam Curious', 'reference' => 'GF-AB12CD', 'product' => 'Tandem Skydive'],
             'payment_link' => ['name' => 'Jess Jumper', 'amount' => '£300', 'description' => 'AFF course deposit', 'link' => 'https://checkout.stripe.com/example', 'reference' => 'GF-AB12CD'],
             'payment_received' => ['name' => 'Jess Jumper', 'amount' => '£300', 'product' => 'AFF Course Levels 1–8', 'reference' => 'BK-XY34ZW', 'balance_note' => 'Your remaining balance is £1,450.'],
-            'booking_confirmed' => ['name' => 'Jess Jumper', 'reference' => 'BK-XY34ZW', 'product' => 'Tandem Skydive', 'date' => 'Saturday 18 July 2026, 09:00', 'jump_prep' => app(JumpPrepSettings::class)->emailBlock()],
+            'booking_confirmed' => ['name' => 'Jess Jumper', 'reference' => 'BK-XY34ZW', 'product' => 'Tandem Skydive', 'date' => 'Saturday 18 July 2026, 09:00', 'location' => 'Dunkeswell, Devon', 'jump_prep' => app(JumpPrepSettings::class)->emailBlock()],
             'booking_rescheduled' => ['name' => 'Jess Jumper', 'reference' => 'BK-XY34ZW', 'product' => 'Tandem Skydive', 'old_date' => 'Saturday 18 July 2026, 09:00', 'new_date' => 'Sunday 26 July 2026, 09:00'],
-            'jump_reminder' => ['name' => 'Jess Jumper', 'reference' => 'BK-XY34ZW', 'product' => 'Tandem Skydive', 'date' => 'Saturday 18 July 2026, 09:00', 'jump_prep' => app(JumpPrepSettings::class)->emailBlock()],
+            'jump_reminder' => ['name' => 'Jess Jumper', 'reference' => 'BK-XY34ZW', 'product' => 'Tandem Skydive', 'date' => 'Saturday 18 July 2026, 09:00', 'location' => 'Dunkeswell, Devon', 'jump_prep' => app(JumpPrepSettings::class)->emailBlock()],
             'balance_reminder' => ['name' => 'Jess Jumper', 'reference' => 'BK-XY34ZW', 'product' => 'AFF Course Levels 1–8', 'balance' => '£1,450', 'date' => 'Monday 3 August 2026'],
         ])->mapWithKeys(fn (array $vars, string $key): array => [
             'template-'.str_replace('_', '-', $key) => fn () => new TemplatedMail(EmailTemplate::findByKey($key), $vars),

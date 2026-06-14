@@ -125,7 +125,13 @@ that manages all site content, enquiries, payments and bookings.
   automatically and is just pre-filled blocks, never a separate rendering path.
 - Customer-facing automated emails go through editable `EmailTemplate` records +
   `TemplatedMail`; all mail is queued and wrapped so failures log instead of breaking
-  the request.
+  the request. Transactional emails render inside the shared **`<x-mail.layout>`**, which
+  owns the greeting (`Hi {name},`) and the sign-off ONCE (`GeneralSettings::email_signoff`)
+  — editable template bodies and designed views carry ONLY their unique content, never a
+  greeting/sign-off. The tandem-only "before your jump" block is single-sourced from
+  `JumpPrepSettings` (the same data as the account panel), injected into the
+  `booking_confirmed`/`jump_reminder` templates via `{{ jump_prep }}` for tandem bookings
+  (`Booking::isTandem()`) only. Keep every mailable in `MailRenderTest` + `/dev/mail`.
 - **Customer accounts** use a separate `customer` auth guard (passwordless magic links,
   no passwords) — entirely distinct from the Filament admin `web` guard; customers never
   reach `/admin`. Account controllers extend `App\Http\Controllers\Account\AccountController`
