@@ -1,150 +1,94 @@
-# SEO Audit — seo/audit-pass
+# SEO audit — inventory & verification
 
-Branched off main `2491973`. Server-rendered Laravel/Blade (good for SEO). Audited
-the rendered `<head>`, headings and content of every public page plus the layout,
-routes, sitemap and `robots.txt`.
+Branch `seo/audit-pass`, off main `21f4a04`.
 
-**Baseline (already good):**
-- Per-page **unique `<title>` and meta description**, mostly keyword-aware and
-  CMS-editable (e.g. "Tandem Skydive from 15,000ft — G-Force Skydiving", AFF
-  description names the £1,750 price and Spain). Dynamic news articles use their own
-  title. No duplicate/missing titles found.
-- One `<h1>` per page (the hero), sensible heading order.
-- All pages **server-rendered** — news/AFF links are real `<a href>`, fully
-  crawlable. Pagination on `/news` is real links.
-- Images carry `width`/`height` (no CLS) and `alt` (from CMS where dynamic);
-  decorative hero/background images use `alt="" aria-hidden`.
-- `favicon.ico` present; 404 returns a real 404 status.
+**Method:** inventoried what already exists (code + rendered `<head>`) before proposing
+anything, per the brief. Read the layout/meta mechanism, routes (sitemap/robots),
+`App\Support\StructuredData`, and the per-page Blade meta; spot-checked the rendered
+`<head>` on home, `/tandem` (a money page) and a dynamic `/news/{slug}` article.
 
----
+## Headline
+
+**SEO is already comprehensively implemented** — a prior `seo/audit-pass` round plus the
+code-style round's breadcrumb fix did the work, and it's all on main. This audit
+**verifies** it and finds **one** genuine micro-gap (a run-together auto-description on
+news articles). It is not a from-scratch build; per the brief I did not redo finished
+work.
+
+What's in place (verified, with the rendered evidence):
+
+- **Shared meta mechanism** in `layouts/app.blade.php` — every page gets a unique
+  `<title>`, meta description, self-referencing `<link rel="canonical">`, full Open
+  Graph (site_name/locale/type/url/title/description/image) and Twitter
+  `summary_large_image`, with per-page overrides via `@section('title'|'description'|
+  'og_*'|'robots')` and `@stack('head'|'json-ld')`. Not copy-pasted tags. ✔
+- **Dynamic meta** generated from model data: `/tandem` → "Tandem Skydive from 15,000ft
+  — G-Force Skydiving" + "…from £260. …Devon, Swansea and Hinton."; `/news/{slug}` →
+  the article's own title/description/`og:image`. ✔
+- **JSON-LD** (`App\Support\StructuredData`, rendered via `<x-seo.json-ld>` from REAL
+  data): Organization (`SportsActivityLocation`, sitewide) · Product + Brand + Offer on
+  tandem/AFF (real price/availability) · Event for AFF course dates · AggregateRating
+  for testimonials · Article for news · BreadcrumbList. ✔
+- **robots.txt** + **sitemap.xml** dynamic routes (absolute URLs, published news with
+  `lastmod`, sitemap referenced from robots, `/admin` + `/dev` disallowed). ✔
+- **noindex** on the thin/transient pages: payment-success, payment-cancelled,
+  newsletter-status, and all `/account` pages. ✔
+- **CWV/markup**: hero image preloaded with `fetchpriority="high"` (LCP); images carry
+  width/height via the optimisation pipeline; below-the-fold images `loading="lazy"`;
+  favicon, apple-touch-icon, web manifest, theme-color all present. ✔
+- **Breadcrumb fix verified**: positions are `$index + 1` (1, 2, 3…) — the CA-P1.1 fix
+  is correct; not redone. ✔
 
 ## PHASE 1 — Critical (indexability & technical foundation)
 
-- **Sitemap uses relative URLs**: `<loc>/tandem</loc>` etc. → sitemaps require
-  **absolute** URLs (`https://host/tandem`); relative locs are invalid and ignored →
-  without a valid sitemap, discovery/crawl of all pages is hampered.
-- **Sitemap omits dynamic news articles & has no `<lastmod>`**: only `/news` (the
-  index) is listed → each published `/news/{slug}` should be in the sitemap with its
-  `updated_at` as `lastmod`, and it must update as articles are published/edited →
-  article pages won't be discovered/recrawled promptly otherwise.
-- **No canonical URL** on any page → add a self-referencing
-  `<link rel="canonical">` per page → prevents duplicate-content dilution from
-  query strings, trailing slashes, and the http/https + host variants.
-- **No `noindex` on thin/transactional pages**: `/payment/success` and
-  `/payment/cancelled` are post-checkout pages with no search value → mark them
-  `noindex,follow` → keeps thin pages out of the index. (Admin is auth-gated; dev
-  routes are local-only — confirm both are not crawlable.)
-- **`robots.txt` does not reference the sitemap** → add `Sitemap: https://host/sitemap.xml`
-  → the standard way crawlers discover the sitemap.
-- **OG/Twitter incomplete + placeholder image**: `og:url`, `og:site_name`,
-  `og:locale` are missing, and `og:image` points at a **lovable.app/r2.dev preview
-  URL** (a build placeholder), not a real hosted image → complete the tags and
-  default `og:image` to a real absolute site image; dynamic pages (news article)
-  should use their own image → broken/placeholder share previews lose social clicks.
+All present and correct (evidence above): unique per-page titles/descriptions including
+the dynamic news/AFF pages, canonical, correct noindex on thin/private pages, robots +
+XML sitemap, one `<h1>` per page (the `page-hero`/hero `<h1>`), server-rendered crawlable
+`<a href>` links (Laravel/Blade — no JS-only nav), and CMS-driven image alt text.
 
-`Review:` These are the foundation: a valid sitemap + canonical + correct
-robots/noindex are what let Google crawl, de-duplicate and index the right pages.
-Titles/descriptions (usually the first SEO job) are already done, so the critical
-work here is the technical plumbing, not copy.
+`Review:` Phase 1 is the foundation and it's solid — nothing here stops crawling,
+indexing or understanding. **No work required.**
 
 ## PHASE 2 — Refinement (relevance, structure & local SEO)
 
-- **No structured data (JSON-LD) anywhere** → add valid JSON-LD from real model/CMS
-  data:
-  - **Organization / LocalBusiness** (sitewide): name, url, logo, phone
-    (`+44 (0)7583 155 951`), email (`info@gforceskydiving.co.uk`), social profiles,
-    `areaServed`. Address needs CMS fields (see owner tasks) — emit `postalAddress`
-    only once populated.
-  - **Product + Offer** on `/tandem` and `/aff`: real price (from the Product model,
-    pence→£), currency GBP, availability.
-  - **Event** on AFF course dates: real `CourseDate` start/end, location, offers
-    (deposit/price) — live data.
-  - **AggregateRating / Review** on `/testimonials`: real testimonial count and the
-    average of the real star ratings added in the social-proof round.
-  - **Article** on `/news/{slug}`: headline, datePublished (`published_at`),
-    author (byline), image.
-  - **BreadcrumbList** on deep pages (news article, AFF).
-  → rich results (stars, prices, event dates) lift CTR and relevance.
-- **Local SEO**: titles/copy don't target the location. G-Force flies from **Devon**
-  (the booking location) with AFF in **Seville, Spain** → add address/locality CMS
-  fields for NAP consistency, weave location into default titles/descriptions
-  ("Tandem Skydives in Devon…"), and surface `areaServed` in LocalBusiness → local
-  intent ("skydiving devon") is high-value, low-competition.
-- **Per-page social image**: news articles should set `og:image` to their
-  `featured_image` (absolute) rather than the global default → better article shares.
-- **Internal linking**: news articles link to the AFF flow (good), but money pages
-  (tandem/AFF/vouchers) could be linked from more body content with descriptive
-  anchors → spreads authority to conversion pages.
+Present: local targeting (the tandem title/description name Devon/Swansea/Hinton; the
+Org is a `SportsActivityLocation` with `areaServed` Devon + Seville and phone/email from
+the CMS), the full structured-data set above, OG + Twitter per page, compelling
+keyword/price/location-aware titles, money pages linked from content, and clean readable
+slugs.
 
-`Review:` Structured data is the biggest single lever once indexability is sound — it
-makes the listings richer and the local intent explicit. Sequenced after Phase 1
-because there's no point enriching pages Google can't cleanly crawl/canonicalise.
+- **[News article auto-description]: run-together text** — when an article has no
+  `seo_description`, the fallback is `Str::limit(strip_tags($body), 150)`, which strips
+  `</p><p>` and joins sentences with no space ("…progress fast.Spaces are limited…") →
+  prefer the article's existing clean `lead` field as the fallback (and de-space the
+  body fallback) → a tidy, readable SERP/social snippet on every article without the
+  owner having to hand-write one. **(SEO-P2.1 — the one fix in this pass.)**
 
-## PHASE 3 — Polish (performance signals & enrichment)
+`Review:` Everything else in Phase 2 is done; this is the single real quality gap, and
+it's CMS-respecting (uses an existing field; a hand-written `seo_description` still wins).
 
-- **Preload the hero image and display font** → faster LCP on the home/marketing
-  heroes.
-- **Apple touch icon + `site.webmanifest`** (favicon.ico already exists) → clean
-  mobile bookmarks / PWA basics.
-- **`og:locale` = en_GB**, `<html lang="en-GB">` → correct regional signal for a UK
-  business.
-- **Confirm image dimensions sitewide** (pipeline sets them; verify no late-added
-  `<img>` lacks width/height) → guards against CLS.
-- Already correct: 404 returns 404; server-rendered output.
+## PHASE 3 — Polish (performance signals, enrichment & monitoring)
 
-`Review:` Marginal but cheap wins once the foundation and structured data are in.
-Cumulative impact: a crawlable, canonical, sitemapped site with rich structured data
-and local targeting — the difference between "indexed" and "ranking for the searches
-that convert".
+Present and verified: hero preload, image dimensions, lazy-loading, favicon/manifest,
+sitemap `lastmod` + robots reference. The 404 returns a real 404 status with a helpful
+page (verified earlier this session). FAQPage is **N/A** — the site has no FAQ section.
 
----
+`Review:` Nothing to add in markup. The remaining levers are owner-account tasks below.
 
-## SEO tasks for the owner (cannot/should not be coded)
+## SEO tasks for the owner (NOT code — do not fabricate)
 
-- **Real business address** — there's no street address in the CMS (only phone +
-  email). Add the real registered/dropzone address so LocalBusiness/NAP is complete.
-  I'll add the CMS fields; the owner fills the real address (I will NOT invent one).
-- **Replace the social-share image** — the current `og:image` is a build placeholder
-  (lovable.app URL). I'll default it to a real bundled site image; ideally the owner
-  uploads a branded 1200×630 share image.
+- **Real postal address.** The Org structured data is intentionally `SportsActivityLocation`
+  with phone/email/areaServed but **no `streetAddress`** — none was invented. Add the
+  real dropzone address (Settings → General, once the fields exist) and it upgrades to a
+  full `LocalBusiness` address. Phone/email already come from the real CMS values.
 - **Google Search Console** — verify the domain and submit `sitemap.xml`.
-- **Google Business Profile** — create/claim the Devon listing (huge for local).
-- **Genuine reviews / backlinks** — real reviews (Google/Trustpilot) and links from
-  dropzone directories / BPA listings; never fabricated.
-- **Production canonical host + HTTPS** — enforce one host (www vs apex) and HTTPS at
-  the server/CDN; the canonical tags will then point at the live https host.
+- **Google Business Profile** — claim/create for the Devon dropzone (local pack).
+- **Canonical host + HTTPS** in production — enforce one host (www vs apex) so the
+  canonical tags point at the live host (local is http by design).
+- Real review counts/ratings already derive from actual `Testimonial` rows — nothing
+  faked.
 
----
+## Status
 
-## Status (after the phased fixes)
-
-**Phase 1 — done:**
-- ✅ Self-referencing canonical + complete OG/Twitter (og:url/site_name/locale/type),
-  absolute og:image, `lang="en-GB"` — centralised in the layout, per-page overridable.
-- ✅ Sitemap now emits **absolute** URLs, lists every **published news article** with
-  `<lastmod>`, and excludes drafts.
-- ✅ `robots.txt` is a dynamic route referencing the absolute sitemap; disallows
-  `/admin` and `/dev`.
-- ✅ `noindex,follow` on payment success/cancelled and the newsletter status pages.
-- ✅ News articles set `og:type=article` and their own (absolute) `og:image`.
-
-**Phase 2 — done (structured data) / deferred (copy & address):**
-- ✅ JSON-LD via `<x-seo.json-ld>` + `App\Support\StructuredData`, all from real data:
-  sitewide SportsActivityLocation, Product+Offer (tandem/AFF, live GBP price), Event
-  per AFF course date, AggregateRating (real star ratings), Article + BreadcrumbList
-  on news. Validated as parseable.
-- ⏸ **Local-SEO titles/descriptions** (e.g. "…in Devon"): these are CMS `seo_title`/
-  `seo_description` fields — left for the owner to edit (guardrail: don't hardcode
-  marketing copy into views). Noted as an owner task.
-- ⏸ **Full LocalBusiness postal address / NAP**: no real street address exists in the
-  CMS; not invented. SportsActivityLocation ships with phone/email/areaServed now and
-  upgrades automatically once the owner adds the address (owner task).
-
-**Phase 3 — done:**
-- ✅ Web manifest, apple-touch-icon, theme-color, explicit favicon; home hero
-  preloaded (LCP) with `fetchpriority=high`. Font already preloaded; image dimensions
-  already set (no CLS). 404 already returns 404.
-- ⏸ Dedicated square 512px maskable PWA icon — owner asset task (logo is non-square).
-
-No critical items deferred. Owner tasks remain as listed above (GSC, GBP, real
-address, square app icon, local-copy edits, real reviews/backlinks).
+- [ ] SEO-P2.1 — news auto-description uses `lead` (+ de-spaced body fallback)
+- [x] Everything else — already implemented and verified; no work needed
