@@ -120,6 +120,14 @@ that manages all site content, enquiries, payments and bookings.
 - Customer-facing automated emails go through editable `EmailTemplate` records +
   `TemplatedMail`; all mail is queued and wrapped so failures log instead of breaking
   the request.
+- **Customer accounts** use a separate `customer` auth guard (passwordless magic links,
+  no passwords) — entirely distinct from the Filament admin `web` guard; customers never
+  reach `/admin`. Account controllers extend `App\Http\Controllers\Account\AccountController`
+  and read the current customer ONLY via `customer()`; route-bound records pass through
+  `ownedBooking()`/`ownedEnquiry()` (404 on someone else's id) — never trust a URL id for
+  access. Login links are single-use, expiring, hashed rows (`CustomerLoginLink`).
+  Customer balance payments reuse the existing Stripe path (`StartBalanceCheckout` →
+  `StripeCheckout` → the same webhook), never a second payment implementation.
 - **Never cache Eloquent objects** — Laravel 13's cache refuses to unserialize PHP
   objects (`cache.serializable_classes = false`). Settings caching is fine (plain values).
 

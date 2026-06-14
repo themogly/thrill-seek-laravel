@@ -1,5 +1,11 @@
 <?php
 
+use App\Http\Controllers\Account\BookingController as AccountBookingController;
+use App\Http\Controllers\Account\DashboardController as AccountDashboardController;
+use App\Http\Controllers\Account\LoginController as AccountLoginController;
+use App\Http\Controllers\Account\MessageController as AccountMessageController;
+use App\Http\Controllers\Account\PaymentController as AccountPaymentController;
+use App\Http\Controllers\Account\ReviewController as AccountReviewController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ResendWebhookController;
@@ -36,6 +42,32 @@ Route::get('/newsletter/unsubscribe/{subscriber}', [NewsletterController::class,
 
 Route::get('/payment/success', [PageController::class, 'paymentSuccess'])->name('payment.success');
 Route::view('/payment/cancelled', 'pages.payment-cancelled')->name('payment.cancelled');
+
+// Customer account area — passwordless magic-link auth (the `customer` guard).
+Route::prefix('account')->name('account.')->group(function (): void {
+    Route::get('/login', [AccountLoginController::class, 'show'])->name('login');
+    Route::post('/login', [AccountLoginController::class, 'sendLink'])->middleware('throttle:6,1')->name('login.send');
+    Route::get('/login/{token}', [AccountLoginController::class, 'verify'])->middleware('throttle:10,1')->name('login.verify');
+
+    Route::middleware('auth:customer')->group(function (): void {
+        Route::get('/', AccountDashboardController::class)->name('dashboard');
+        Route::post('/logout', [AccountLoginController::class, 'logout'])->name('logout');
+
+        Route::get('/bookings', [AccountBookingController::class, 'index'])->name('bookings');
+        Route::get('/bookings/{booking}', [AccountBookingController::class, 'show'])->name('bookings.show');
+        Route::post('/bookings/{booking}/pay', [AccountBookingController::class, 'pay'])->name('bookings.pay');
+        Route::get('/bookings/{booking}/receipt', [AccountPaymentController::class, 'receipt'])->name('bookings.receipt');
+
+        Route::get('/payments', [AccountPaymentController::class, 'index'])->name('payments');
+
+        Route::get('/messages', [AccountMessageController::class, 'index'])->name('messages');
+        Route::get('/messages/{enquiry}', [AccountMessageController::class, 'show'])->name('messages.show');
+        Route::post('/messages/{enquiry}/reply', [AccountMessageController::class, 'reply'])->name('messages.reply');
+
+        Route::get('/review', [AccountReviewController::class, 'create'])->name('review');
+        Route::post('/review', [AccountReviewController::class, 'store'])->name('review.store');
+    });
+});
 
 Route::post('/webhooks/stripe', StripeWebhookController::class)->name('webhooks.stripe');
 Route::post('/webhooks/resend', ResendWebhookController::class)->name('webhooks.resend');

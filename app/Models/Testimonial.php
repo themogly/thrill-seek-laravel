@@ -19,6 +19,7 @@ class Testimonial extends Model
     use HasFactory;
 
     protected $fillable = [
+        'customer_id',
         'name',
         'role',
         'rating',
@@ -27,6 +28,7 @@ class Testimonial extends Model
         'quote',
         'excerpt',
         'featured',
+        'approved',
         'sort_order',
     ];
 
@@ -34,9 +36,21 @@ class Testimonial extends Model
     {
         return [
             'featured' => 'boolean',
+            'approved' => 'boolean',
             'sort_order' => 'integer',
             'rating' => 'integer',
         ];
+    }
+
+    /**
+     * Only approved reviews are ever shown publicly.
+     *
+     * @param  Builder<self>  $query
+     * @return Builder<self>
+     */
+    public function scopeApproved(Builder $query): Builder
+    {
+        return $query->where('approved', true);
     }
 
     /**

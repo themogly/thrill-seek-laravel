@@ -2,28 +2,50 @@
 
 namespace App\Models;
 
+use App\Enums\BookingStatus;
 use App\Enums\PaymentStatus;
 use App\Support\Money;
 use Database\Factories\CustomerFactory;
+use Illuminate\Auth\Authenticatable as AuthenticatableTrait;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * One record per unique email address, so repeat customers (AFF students
- * especially) have their enquiries and bookings in one place.
+ * especially) have their enquiries and bookings in one place. Also the identity
+ * for the passwordless customer account area (magic-link auth, `customer` guard)
+ * — there are no stored passwords.
+ *
+ * @property Carbon|null $last_login_at
  */
-class Customer extends Model
+class Customer extends Model implements Authenticatable
 {
     /** @use HasFactory<CustomerFactory> */
-    use HasFactory;
+    use AuthenticatableTrait, HasFactory;
 
     protected $fillable = [
         'name',
         'email',
         'phone',
+        'last_login_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'last_login_at' => 'datetime',
+        ];
+    }
+
+    /** @return HasMany<CustomerLoginLink, $this> */
+    public function loginLinks(): HasMany
+    {
+        return $this->hasMany(CustomerLoginLink::class);
+    }
 
     /** @return HasMany<Enquiry, $this> */
     public function enquiries(): HasMany
@@ -35,6 +57,18 @@ class Customer extends Model
     public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class)->latest();
+    }
+
+    /** A customer can leave a review once they have a completed booking. */
+    public function canLeaveReview(): bool
+    {
+        return $this->bookings()->where('status', BookingStatus::Completed)->exists();
+    }
+
+    /** Their most recent completed booking — used to pre-fill the review role. */
+    public function latestCompletedBooking(): ?Booking
+    {
+        return $this->bookings()->where('status', BookingStatus::Completed)->with('product')->first();
     }
 
     /**

@@ -56,6 +56,10 @@ class TestimonialForm
                     ->helperText('Used on the home page instead of the full quote. Leave blank to show the full quote.')
                     ->rows(3)
                     ->columnSpanFull(),
+                Toggle::make('approved')
+                    ->label('Approved (visible on the site)')
+                    ->helperText('Customer-submitted reviews start unapproved — turn this on to publish.')
+                    ->default(true),
                 Toggle::make('featured')
                     ->label('Show on home page')
                     ->helperText('The first three featured testimonials appear on the home page.'),

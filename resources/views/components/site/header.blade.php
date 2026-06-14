@@ -40,6 +40,11 @@
                 </a>
             @endforeach
         </nav>
+        @auth('customer')
+            <a href="{{ route('account.dashboard') }}" class="mr-5 hidden text-sm font-bold uppercase tracking-widest text-secondary transition-colors hover:text-primary lg:inline-block">
+                My Account
+            </a>
+        @endauth
         {{-- Wrapper, not `hidden` on the button: the component's base
              inline-flex and a passed `hidden` both set display, and the
              compiled CSS order — not class order — would decide. --}}
@@ -64,6 +69,11 @@
                     {{ $item['label'] }}
                 </a>
             @endforeach
+            @auth('customer')
+                <a href="{{ route('account.dashboard') }}" @click="open = false" class="px-4 py-3.5 text-sm font-bold uppercase tracking-wide text-secondary">
+                    My Account
+                </a>
+            @endauth
             <a href="/book/tandem" @click="open = false" class="bg-primary px-4 py-3.5 text-sm font-bold uppercase tracking-widest text-primary-foreground transition-colors hover:bg-primary/85">
                 Book Now
             </a>

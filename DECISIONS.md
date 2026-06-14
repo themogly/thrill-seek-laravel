@@ -795,3 +795,33 @@ conversation, built on Resend inbound (no second mail provider).
   is documented as future work (SETUP.md) rather than half-built — it needs reliable
   match-by-customer-address and a manual-outbound message type; the inbound
   webhook/action are the foundation to add it on.
+
+## Customer account area (feature/customer-accounts)
+
+Branched off main `2a76611`. A customer-facing "My Account" that reuses the existing
+booking/payment/enquiry/testimonial machinery — no duplicated business logic.
+
+- **Passwordless magic-link auth, separate `customer` guard**: no customer passwords
+  (a security liability and wrong fit for infrequent use). A sign-in request mints a
+  single-use, 20-min, SHA-256-hashed token (`customer_login_links`) emailed as a link;
+  the response is always the same neutral message (never reveals whether an email is on
+  file); requests are rate-limited per email/IP and route-throttled. The `customer`
+  guard is entirely separate from the Filament admin `web` guard — customers can never
+  reach `/admin`. Account-area guests redirect to the customer sign-in, not admin.
+- **Hard data isolation**: every account query scopes to `AccountController::customer()`
+  (the authenticated customer), and route-bound records pass through `ownedBooking()` /
+  `ownedEnquiry()` which 404 on someone else's id — a guessed URL never grants access.
+  Tested explicitly per resource (booking, payment/receipt, message, review).
+- **Pay-balance reuses the admin path exactly**: `StartBalanceCheckout` creates a
+  pending Stripe Payment + `StripeCheckout::createSession`, recorded Paid and
+  balance-cleared by the same `HandleCheckoutSessionCompleted` webhook. No second
+  payment implementation. "Pay by card" wording (never "Stripe").
+- **Reviews are moderated**: customer reviews create a Testimonial with a new `approved`
+  flag, default false; existing/seeded testimonials backfilled true, and the public
+  `SiteContent` queries filter to approved only (cache busted by the observer on
+  approve). Only customers with a *completed* booking can review.
+- **Receipt PDF**: a printable booking confirmation/receipt reuses the existing DomPDF
+  approach (`pdf.booking-receipt`), scoped to the owner — cheap, so built rather than
+  deferred.
+- **No news in the account**: news is public and needs no account; the account links
+  out to the public `/news` at most. Documented to avoid duplicating it behind auth.

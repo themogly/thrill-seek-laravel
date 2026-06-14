@@ -76,7 +76,7 @@ class TestimonialSeeder extends Seeder
         foreach ($testimonials as $i => $data) {
             Testimonial::updateOrCreate(
                 ['name' => $data['name']],
-                array_merge($data, ['sort_order' => $i + 1]),
+                array_merge($data, ['sort_order' => $i + 1, 'approved' => true]),
             );
         }
     }
