@@ -69,8 +69,15 @@ Route::prefix('account')->name('account.')->group(function (): void {
     });
 });
 
-Route::post('/webhooks/stripe', StripeWebhookController::class)->name('webhooks.stripe');
-Route::post('/webhooks/resend', ResendWebhookController::class)->name('webhooks.resend');
+// Generous rate limit as defence-in-depth against a flood of forged/replayed
+// webhook calls — signature verification (in each controller) stays the primary
+// gate. The cap sits well above real Stripe/Resend delivery + retry volume.
+Route::post('/webhooks/stripe', StripeWebhookController::class)
+    ->middleware('throttle:120,1')
+    ->name('webhooks.stripe');
+Route::post('/webhooks/resend', ResendWebhookController::class)
+    ->middleware('throttle:120,1')
+    ->name('webhooks.resend');
 
 if (app()->environment('local')) {
     require __DIR__.'/dev.php';

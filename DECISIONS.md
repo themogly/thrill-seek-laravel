@@ -981,3 +981,12 @@ Installed `sentry/sentry-laravel`; `Integration::handles($exceptions)` wired in
   no temporary test-exception trigger is left in the app.
 - SETUP.md notes Horizon + `schedule:run` as monitored must-be-running services (a
   stopped worker silently halts queued mail), recommending an uptime/heartbeat check.
+
+### SEC-P1.1 — Webhook rate limiting
+
+`throttle:120,1` on `/webhooks/stripe` and `/webhooks/resend`. Pure defence-in-depth
+against a flood of forged/replayed calls — the per-controller signature verification
+(`Webhook::constructEvent` / Svix) stays the primary gate and is unchanged. 120/min/IP
+sits comfortably above real Stripe/Resend delivery and retry volume, so legitimate
+bursts pass; tested that 10 normal calls are never 429 and that a 130-call flood does
+trip the limiter.
