@@ -904,3 +904,108 @@ FAQ page — the answers differ per page and each emits its own FAQPage schema.
   Resolves the "FAQPage N/A" note from the SEO audit.
 - Starter FAQs are general, clearly-editable placeholders — no fabricated safety/medical
   specifics; the owner refines them in the admin.
+
+## Security audit fixes (security/fixes)
+
+Branched off main after `security/audit-pass` merged. Implements the open items from
+`security-review/SECURITY-AUDIT.md`. Everything here is **additive** — no documented
+decision is weakened.
+
+### SEC-P2.1 — Customer data export & erasure (GDPR)
+
+Subject-access and erasure are admin actions on `CustomerResource`, one customer at a
+time, not a self-service or bulk path.
+- **Export** is `App\Actions\ExportCustomerData::handle(Customer): array`, streamed as a
+  JSON download by the `export` row action. Strictly scoped to one customer — every join
+  is by their id or their email (bookings/enquiries/messages/payments/reviews/vouchers/
+  newsletter). It deliberately INCLUDES the medical `customer_details` (that is the point
+  of a subject-access request) but never another customer's data.
+- **Erase** is `App\Actions\EraseCustomerData::handle(Customer): void`, behind a
+  `requiresConfirmation()` modal, run in a single DB transaction. The chosen model is
+  **anonymise-in-place, not hard-delete**: financial/audit records (booking references,
+  amounts, dates, payments) must survive for accounting, so we strip the personal/medical
+  fields from them rather than deleting the rows — name → "Erased customer", email →
+  `erased-<id>@erased.invalid`, phone/notes/`customer_details`/enquiry `context` nulled,
+  message bodies → `[erased]`. Reviews, the newsletter subscription and login tokens ARE
+  deleted (not financial). The customer row is anonymised and stamped `erased_at`
+  (new nullable column, `isErased()` helper); the anonymised email means they can no
+  longer request a magic link, so they're effectively locked out — intended.
+- Why anonymise-in-place: hard-deleting a paid booking would break the accounts and the
+  Stripe reconciliation trail. Anonymised shells keep the books correct with zero PII.
+- Owner guidance lives in the Help guide ("Handling a data request (GDPR)") and SETUP.md
+  ("Data protection & retention"); retention guidance is keep-anonymised-financials for
+  the statutory accounting period, erase personal data when no longer needed.
+
+### SEC-P3.1 — Security response headers + CSP
+
+`App\Http\Middleware\SecurityHeaders`, appended to the `web` group in
+`bootstrap/app.php`, so it covers the public site AND the Filament admin (both web).
+- Static headers: `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`,
+  `Referrer-Policy: strict-origin-when-cross-origin`, a locked-down `Permissions-Policy`
+  (camera/mic/geolocation/payment/usb/cohort all `()`).
+- **HSTS only when `app()->isProduction()` AND the request is HTTPS** — never on local
+  http, which would otherwise pin the dev domain to https with no cert.
+- **CSP shipped in Report-Only mode** (`Content-Security-Policy-Report-Only`), not
+  enforcing. The policy is `default-src 'self'` with `object-src 'none'`,
+  `frame-ancestors 'self'`, `base-uri 'self'`; `script-src` allows `'unsafe-inline'` +
+  `'unsafe-eval'` because Alpine compiles `x-*` with the Function constructor and
+  Livewire/Alpine inject inline script/style; `img-src` allows `data:`/`blob:`/`https:`
+  for CMS imagery; `frame-src`/`form-action` allow the Stripe Checkout hosts. All JS/CSS/
+  fonts are self-hosted via Vite, so there are no other third-party origins.
+- **Verified clean**: a Playwright pass at 1440 and 390 over home, the three service
+  pages, contact and the admin login — plus an interactive run (Alpine mobile menu + a
+  Livewire newsletter round-trip) — produced **zero CSP console violations**.
+- **Enforcement call**: report-only is safe to enforce as written, but we keep it
+  report-only through the first production deploy so the real Stripe redirect and any
+  remote CMS image hosts can be confirmed against a live console; then flip the header
+  name to `Content-Security-Policy`. Documented as an owner/ops follow-up.
+
+### SEC-P3.3 — Sentry error tracking (privacy-first)
+
+Installed `sentry/sentry-laravel`; `Integration::handles($exceptions)` wired in
+`bootstrap/app.php`. Disabled until `SENTRY_LARAVEL_DSN` is set, so local/CI are no-ops.
+- **`send_default_pii` stays false** and we add a `before_send` scrubber
+  (`App\Support\SentryScrubber::scrub`) as the second layer: it removes the request body
+  on every route (that's where the booking/enquiry forms carry name/DOB/weight/height/
+  sex/medical notes/address) and recursively redacts any key whose name contains a
+  personal/medical/secret fragment from the request, query string and our `extra`.
+  Over-redaction is the intended failure mode — Sentry must never hold customer PII.
+- **Why an array callable, not a closure**: `'before_send' => [SentryScrubber::class,
+  'scrub']` is `var_export`-serializable, so `php artisan config:cache` (used in
+  production) still works — a closure there would break it.
+- **Sampling**: error `sample_rate` 1.0 (capture everything on a low-traffic site);
+  `traces_sample_rate` defaults to 0.2 via env.
+- **Verification**: the scrubber is covered by a unit test (request body dropped, query
+  string + `extra` PII redacted, safe fields kept). End-to-end "does a real event arrive
+  and is it scrubbed" is an owner step (`php artisan sentry:test` after pasting the DSN) —
+  no temporary test-exception trigger is left in the app.
+- SETUP.md notes Horizon + `schedule:run` as monitored must-be-running services (a
+  stopped worker silently halts queued mail), recommending an uptime/heartbeat check.
+
+### SEC-P1.1 — Webhook rate limiting
+
+`throttle:120,1` on `/webhooks/stripe` and `/webhooks/resend`. Pure defence-in-depth
+against a flood of forged/replayed calls — the per-controller signature verification
+(`Webhook::constructEvent` / Svix) stays the primary gate and is unchanged. 120/min/IP
+sits comfortably above real Stripe/Resend delivery and retry volume, so legitimate
+bursts pass; tested that 10 normal calls are never 429 and that a 130-call flood does
+trip the limiter.
+
+### SEC-P3.2 — Production security checklist
+
+Documentation only (the enforceable parts ship in code via SEC-P3.1/P1.1). Added a
+"Production security" section to SETUP.md covering the deployment/env-dependent
+hardening the app can't do for itself: HTTPS-only + redirect, `SESSION_SECURE_COOKIE=true`,
+`APP_DEBUG=false`, a single canonical HTTPS host, and the owner/infra responsibilities
+(TLS renewal, patching, restricting `/admin` + `/horizon`, CDN/WAF).
+
+This completes all five open items in `security-review/SECURITY-AUDIT.md`
+(SEC-P1.1, P2.1, P3.1, P3.2, P3.3); everything was additive — no prior decision weakened.
+
+**Dependency audit at close:** `composer audit` is clean (incl. the newly added
+`sentry/sentry-laravel`). `npm audit` reports one pre-existing **dev-only** advisory —
+`shell-quote` pulled in transitively by `concurrently` (the `composer dev` runner). The
+advisory range covers the latest published `shell-quote`, so there is no non-breaking
+fix; it is never part of the production asset bundle. Left as-is rather than force a
+major `concurrently` bump that could break the local dev script — flagged here for the
+owner to revisit when an upstream fix ships.

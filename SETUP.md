@@ -24,6 +24,31 @@ Livewire 4 forms and a Filament v5 admin panel at `/admin`.
    (appears in every email header).
 5. After deploys that add settings properties: `php artisan settings:clear-cache`.
 
+## Production security
+
+Hardening that must be in place before the site is public (the app ships the
+defence-in-depth headers and webhook throttling automatically — these are the parts
+that depend on deployment/env):
+
+- **Serve only over HTTPS.** Terminate TLS at your host/load balancer and redirect all
+  HTTP → HTTPS. With HTTPS live, the app emits HSTS automatically (production + secure
+  request only). Get a certificate (Let's Encrypt is fine).
+- **`SESSION_SECURE_COOKIE=true`** so the session cookie is only ever sent over HTTPS.
+  (`http_only` and `same_site=lax` are already set in `config/session.php`.)
+- **`APP_DEBUG=false`** (and `APP_ENV=production`) — never expose stack traces / config
+  in error pages. Already in the checklist above; it is also a security requirement.
+- **Canonical HTTPS host.** Set `APP_URL=https://your-domain` and serve a single
+  canonical host (redirect `www`/bare and any IP/hostname to it) so cookies, CORS and
+  generated links all line up and there's no http fallback.
+- **Owner/infra responsibilities (outside the app):** keep TLS certificates valid and
+  auto-renewing; keep PHP and the OS patched; restrict `/admin` and `/horizon` exposure
+  (they already require an admin login — consider IP allow-listing too); and put the site
+  behind a CDN/WAF (e.g. Cloudflare) for TLS, DDoS protection and a web application
+  firewall. These are deployment-layer concerns the application cannot enforce itself.
+- The Content-Security-Policy currently ships in **Report-Only** mode; after the first
+  production deploy, confirm a clean browser console (real Stripe redirect + any remote
+  image hosts) and then switch it to enforcing — see DECISIONS.md (SEC-P3.1).
+
 ## First run
 
 ```bash
@@ -240,3 +265,55 @@ balances, read messages and leave reviews.
   **Site content → Testimonials** (the nav badge shows how many are waiting).
 - Edit the pre-jump info shown to customers under **Site content → Before-your-jump
   info**.
+
+## Data protection & retention (GDPR)
+
+Subject-access and erasure requests are handled from the **Customers** resource
+(`/admin/customers`), one customer at a time:
+
+- **Export** (subject-access request): the *Export data* row action streams a single
+  JSON file with everything tied to that customer — their record, bookings (incl. the
+  `customer_details` JSON: DOB, weight, height, sex, medical notes), enquiries and
+  message threads, payments, reviews, purchased vouchers and newsletter status. It is
+  scoped strictly to that customer (joined by their id and email); no other customer's
+  data is included. Send the file to the requester.
+- **Erase / anonymise** (right to erasure): the *Erase / anonymise* row action is
+  **irreversible** and behind a confirmation modal. It anonymises in place rather than
+  hard-deleting: personal and medical fields (name, contact, address, postcode, DOB,
+  weight, height, sex, medical notes), message bodies, reviews and the newsletter
+  subscription are removed or blanked; **anonymised booking and payment records
+  (references, amounts, dates) are retained** for finance/audit. The customer row is
+  marked `erased_at` and its email anonymised, so the person can no longer request a
+  sign-in link.
+- **Retention**: keep anonymised financial records for as long as tax/accounting law
+  requires (UK: typically 6 years). Personal/medical data should be erased once it is no
+  longer needed for the booking it was collected for and there is no other legal basis to
+  keep it — run *Erase / anonymise* on request, or periodically for long-past customers.
+- The activity log records that an erasure happened (not the erased content). No PII is
+  copied to logs or error tracking — see the Sentry scrubber notes below.
+
+## Error tracking (Sentry)
+
+Optional but recommended in production. Disabled until a DSN is set, so it's a no-op
+locally and in tests.
+
+- **Owner task:** create a project at <https://sentry.io> (platform: Laravel) and paste
+  its DSN into `SENTRY_LARAVEL_DSN`. Nothing else is required.
+- **Privacy:** `send_default_pii` is **off** (no IPs, cookies or authenticated user
+  attached), and a `before_send` scrubber (`App\Support\SentryScrubber`) drops request
+  bodies wholesale and redacts any personal/medical/secret key (name, email, phone,
+  address, postcode, DOB, weight, height, sex, medical notes, message bodies, card/auth
+  tokens, Stripe ids) from the request, query string and our `extra` context — so Sentry
+  never becomes a second, unaudited PII store.
+- **Sampling:** all errors are captured; `SENTRY_TRACES_SAMPLE_RATE` (default `0.2`)
+  controls performance tracing — lower it on a busy site, raise it while debugging.
+- **Verify after adding the DSN:** run `php artisan sentry:test` (sends one test event),
+  confirm it appears in Sentry and that the event contains **no** customer PII, then
+  you're done — there is no test trigger left in the app to remove.
+
+> **Monitored services:** Horizon (the queue worker) and the `schedule:run` cron are
+> **must-always-be-running** in production — if either stops, queued emails (booking
+> confirmations, reminders, sign-in links) and the daily reminder/hold-release jobs
+> silently stop. Supervisor `autorestart`/launchd `KeepAlive` cover crashes; also add an
+> uptime/heartbeat check (e.g. Sentry Crons or a cron-monitor ping) so a stuck worker is
+> noticed, not discovered via a missed email.

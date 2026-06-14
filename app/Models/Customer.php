@@ -21,6 +21,7 @@ use Illuminate\Support\Carbon;
  * — there are no stored passwords.
  *
  * @property Carbon|null $last_login_at
+ * @property Carbon|null $erased_at
  */
 class Customer extends Model implements Authenticatable
 {
@@ -32,19 +33,32 @@ class Customer extends Model implements Authenticatable
         'email',
         'phone',
         'last_login_at',
+        'erased_at',
     ];
 
     protected function casts(): array
     {
         return [
             'last_login_at' => 'datetime',
+            'erased_at' => 'datetime',
         ];
+    }
+
+    public function isErased(): bool
+    {
+        return $this->erased_at !== null;
     }
 
     /** @return HasMany<CustomerLoginLink, $this> */
     public function loginLinks(): HasMany
     {
         return $this->hasMany(CustomerLoginLink::class);
+    }
+
+    /** @return HasMany<Testimonial, $this> */
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Testimonial::class);
     }
 
     /** @return HasMany<Enquiry, $this> */

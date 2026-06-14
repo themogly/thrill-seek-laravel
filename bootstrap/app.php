@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Middleware\EnsureFeatureEnabled;
+use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Sentry\Laravel\Integration;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -18,6 +20,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'webhooks/resend',
         ]);
 
+        // Defence-in-depth response headers (incl. a report-only CSP) on every
+        // web response — public site and admin panel alike.
+        $middleware->web(append: [
+            SecurityHeaders::class,
+        ]);
+
         $middleware->alias([
             'feature' => EnsureFeatureEnabled::class,
         ]);
@@ -29,6 +37,9 @@ return Application::configure(basePath: dirname(__DIR__))
             : '/admin/login');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        // Report exceptions to Sentry (no-op when SENTRY_LARAVEL_DSN is unset).
+        Integration::handles($exceptions);
+
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*'),
         );

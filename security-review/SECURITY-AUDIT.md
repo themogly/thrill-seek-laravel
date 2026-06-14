@@ -118,8 +118,8 @@ None — every fix is additive and consistent with the existing architecture and
 
 ## Status
 
-- [ ] SEC-P1.1 — webhook throttle (defence-in-depth)
-- [ ] SEC-P2.1 — customer data export + erasure action + retention docs
-- [ ] SEC-P3.1 — security headers middleware
-- [ ] SEC-P3.2 — production HTTPS/cookie/debug SETUP note
-- [ ] SEC-P3.3 — Sentry, privacy-scrubbed
+- [x] SEC-P1.1 — webhook throttle (defence-in-depth)
+- [x] SEC-P2.1 — customer data export + erasure action + retention docs
+- [x] SEC-P3.1 — security headers middleware
+- [x] SEC-P3.2 — production HTTPS/cookie/debug SETUP note
+- [x] SEC-P3.3 — Sentry, privacy-scrubbed
