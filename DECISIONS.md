@@ -825,3 +825,23 @@ booking/payment/enquiry/testimonial machinery — no duplicated business logic.
   deferred.
 - **No news in the account**: news is public and needs no account; the account links
   out to the public `/news` at most. Documented to avoid duplicating it behind auth.
+
+## Code-style audit (chore/code-style-audit)
+
+Branched off main `237392c`. A report-first idiomatic-Laravel audit
+(`code-review/CODE-AUDIT.md`). The codebase was already clean and consistent; only two
+items were actioned, no documented decision was revisited.
+
+- **Breadcrumb JSON-LD positions were all `1`** — `StructuredData::breadcrumbs()` built
+  positions with `$position++` inside an arrow function (arrow fns capture by value, so
+  the increment never persisted). Fixed to derive the position from the explicit 1-based
+  index; pinned by a test. Real bug in shipped structured data, not a style change.
+- **Payment-receipt emails consolidated** — the duplicated `sendEmails`/`sendReceipt`
+  bodies in `ConvertEnquiryToBooking` and `ConfirmHeldBooking` are now a single
+  `App\Actions\SendPaymentReceipt` both delegate to (reinforces "one way to do
+  everything"; the two webhook success paths can't drift). Behaviour identical, covered
+  by `StripeWebhookTest`.
+- **Deliberately not changed**: inline `$request->validate()` in the simple account
+  controllers (idiomatic, no reuse to justify Form Requests); `CourseMessageMail`'s
+  `Queueable`-without-`ShouldQueue` (documented — the per-recipient job queues it); the
+  `ProtectsAgainstSpam` honeypot concern. All confirmed as correct-by-design.
