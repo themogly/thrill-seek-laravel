@@ -68,7 +68,8 @@
             </div>
         </div>
 
-        @if ($booking->scheduled_at?->isFuture())
+        @if ($booking->isTandem() && $booking->scheduled_at?->isFuture())
+            {{-- Tandem only — see Booking::isTandem(). --}}
             @inject('jumpPrep', 'App\Settings\JumpPrepSettings')
             <div class="mt-6 border-2 border-border p-6">
                 <h2 class="font-display text-2xl uppercase tracking-wide">Before your jump</h2>

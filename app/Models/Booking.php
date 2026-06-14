@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\BookingPaymentState;
 use App\Enums\BookingStatus;
 use App\Enums\PaymentStatus;
+use App\Enums\ProductType;
 use App\Observers\BookingObserver;
 use App\Support\Money;
 use Database\Factories\BookingFactory;
@@ -124,6 +125,17 @@ class Booking extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    /**
+     * Tandem jumps are the only product the "before your jump" prep info
+     * (arrival/what-to-bring/what-to-expect) applies to — AFF courses and
+     * coaching have their own briefings. Drives the account panel and the
+     * tandem-only pre-jump block in confirmation/reminder emails.
+     */
+    public function isTandem(): bool
+    {
+        return $this->product?->type === ProductType::Tandem;
     }
 
     /** @return BelongsTo<Enquiry, $this> */
