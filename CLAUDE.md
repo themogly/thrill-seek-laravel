@@ -61,6 +61,15 @@ that manages all site content, enquiries, payments and bookings.
    return type-hints required everywhere.
 
 ## Conventions (match these exactly — no second ways of doing things)
+- **SEO / meta**: `<head>` meta is centralised in `layouts/app.blade.php` — every page
+  gets a unique title, self-referencing canonical, full OG/Twitter and an absolute
+  `og:image`. A page overrides only what's unique via `@section('title' |
+  'description' | 'og_image' | 'og_type' | 'robots')`. Section values are echoed with
+  `{!! !!}` (Blade already escapes inline section content — `{{ }}` double-escapes).
+  Structured data is built from **real** model/CMS data in `App\Support\StructuredData`
+  and rendered via `<x-seo.json-ld :data="..." />` (push per-page into `@stack('json-ld')`);
+  never invent prices, dates, addresses or review counts. New indexable page → it
+  inherits meta automatically; add JSON-LD if it has a rich entity.
 - Money is **integer pence**; format with `App\Support\Money::formatPence()`.
 - Statuses are string-backed **enums** in `app/Enums` implementing Filament's
   `HasLabel`/`HasColor`.

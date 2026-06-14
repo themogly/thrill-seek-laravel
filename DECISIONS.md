@@ -675,3 +675,25 @@ Mailchimp-style block builder.
 - **Scheduling — groundwork only**: the status enum (draft/scheduled/sent) and a
   `scheduled_at` column exist, but a scheduled dispatcher command was deferred as
   future work to keep this round focused; sending is immediate via the Send action.
+
+## SEO audit pass (seo/audit-pass)
+
+Branched off main `2491973`. Report-first (design-review/SEO-AUDIT.md); baseline was
+already good (unique titles/descriptions, one h1, crawlable server-rendered links).
+
+- **Meta mechanism**: centralised in the layout (not copy-pasted tags). Section
+  content is echoed raw with `{!! !!}` because Blade's `startSection()` already
+  HTML-escapes inline `@section` content — using `{{ }}` double-escaped titles with
+  apostrophes/ampersands. Defaults are `e()`'d to match.
+- **Sitemap**: absolute `<loc>` URLs (relative are invalid) + published news articles
+  with `lastmod` via the cached gateway. **robots.txt** made a dynamic route so its
+  `Sitemap:` line is absolute on any host.
+- **og:image**: the seeded value was an external build-tool placeholder; a settings
+  migration repoints it to a bundled site image and the admin field accepts a path or
+  URL (dropped the `->url()` rule).
+- **Structured data**: `App\Support\StructuredData` builds JSON-LD from real model/CMS
+  data only. The business is typed **SportsActivityLocation** (a dropzone) with
+  phone/email/areaServed (Devon + Seville); a full **postal address was NOT invented**
+  — it's an owner CMS task and the type upgrades to a full LocalBusiness once added.
+- **Local-SEO copy** (location in titles/descriptions) left to the owner via the CMS
+  `seo_*` fields — guardrail: no hardcoded marketing copy in views.

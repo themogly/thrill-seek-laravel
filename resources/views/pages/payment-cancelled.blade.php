@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Payment cancelled — G-Force Skydiving')
+@section('robots', 'noindex,follow')
 
 @php
     $flow = request()->query('flow');

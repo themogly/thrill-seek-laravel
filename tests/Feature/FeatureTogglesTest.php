@@ -34,11 +34,11 @@ class FeatureTogglesTest extends TestCase
 
     public function test_sitemap_includes_shop_only_when_enabled(): void
     {
-        $this->get('/sitemap.xml')->assertOk()->assertDontSee('<loc>/shop</loc>', false);
+        $this->get('/sitemap.xml')->assertOk()->assertDontSee('<loc>'.url('/shop').'</loc>', false);
 
         $this->setFeature('shop_enabled', true);
 
-        $this->get('/sitemap.xml')->assertOk()->assertSee('<loc>/shop</loc>', false);
+        $this->get('/sitemap.xml')->assertOk()->assertSee('<loc>'.url('/shop').'</loc>', false);
     }
 
     public function test_calendar_navigation_is_hidden_until_a_booking_exists(): void

@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Payment complete — G-Force Skydiving')
+@section('robots', 'noindex,follow')
 
 @section('content')
     @if ($booking !== null && $payment !== null && $payment->isPaid())

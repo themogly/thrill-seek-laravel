@@ -163,3 +163,28 @@ The booking calendar only appears in the admin once at least one booking exists.
 - Sends are queued (one per confirmed subscriber) and idempotent (a per-recipient
   claim row), so the queue worker must be running (see Queues above). Scheduling is
   groundwork only (status + scheduled_at columns exist) — see DECISIONS.md.
+
+## SEO
+
+- **Meta** is centralised in `layouts/app.blade.php`: every page gets a unique
+  `<title>`/description, a self-referencing `<link rel="canonical">`, complete
+  Open Graph/Twitter tags and an absolute `og:image`. Pages override via
+  `@section('title' | 'description' | 'og_image' | 'og_type' | 'robots')`.
+- **Sitemap**: `https://<host>/sitemap.xml` (absolute URLs, includes every published
+  news article with `lastmod`). **Robots**: `https://<host>/robots.txt` (dynamic
+  route, references the sitemap, disallows `/admin` and `/dev`).
+  - Note: some nginx/Valet configs have a `location = /robots.txt` block that serves
+    a static file and 404s when absent — ensure the server falls through to
+    `index.php` so the dynamic route is hit (standard Laravel nginx `try_files` does).
+- **Structured data** (JSON-LD) is built from real data in `App\Support\StructuredData`
+  and emitted via `<x-seo.json-ld>` (Organization sitewide; Product/Event/Article/
+  AggregateRating/Breadcrumb per page).
+- **Production SEO steps** (owner/infra):
+  - Enforce one canonical host (www vs apex) and HTTPS — canonical tags then point at
+    the live host.
+  - Verify the domain in **Google Search Console** and submit `sitemap.xml`.
+  - Create/claim a **Google Business Profile** for the Devon dropzone (local SEO).
+  - Replace the `og:image` (Settings → General) with a branded 1200×630 share image,
+    and provide a square 512px app icon for the web manifest.
+  - Add the real business **postal address** (Settings → General, once the fields
+    exist) so the structured data upgrades to a full LocalBusiness address.

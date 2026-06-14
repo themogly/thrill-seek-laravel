@@ -1,14 +1,32 @@
 @extends('layouts.app')
 
 @php
+    use Illuminate\Support\Str;
+
     $seoTitle = filled($article->seo_title) ? $article->seo_title : $article->title;
     $seoDescription = filled($article->seo_description)
         ? $article->seo_description
-        : \Illuminate\Support\Str::limit(strip_tags($article->body), 150);
+        : Str::limit(strip_tags($article->body), 150);
+
+    // Article's own social image (absolute) when it has a featured photo.
+    $articleOgImage = $article->featured_image_url
+        ? (Str::startsWith($article->featured_image_url, ['http://', 'https://'])
+            ? $article->featured_image_url
+            : url($article->featured_image_url))
+        : null;
 @endphp
 
 @section('title', $seoTitle.' — G-Force Skydiving')
 @section('description', $seoDescription)
+@section('og_type', 'article')
+@if ($articleOgImage)
+    @section('og_image', $articleOgImage)
+@endif
+
+@push('json-ld')
+    <x-seo.json-ld :data="\App\Support\StructuredData::article($article, url('/news/'.$article->slug), $articleOgImage)" />
+    <x-seo.json-ld :data="\App\Support\StructuredData::breadcrumbs(['Home' => url('/'), 'News' => url('/news'), $article->title => url('/news/'.$article->slug)])" />
+@endpush
 
 @section('content')
     <x-site.page-hero :title="$article->title" :subtitle="$article->lead" :image="$article->featured_image_url" />
