@@ -34,18 +34,7 @@
                             {!! $body !!}
                         </td>
                     </tr>
-                    <tr>
-                        <td class="gf-pad" style="padding:8px 40px 36px;font-family:Arial,Helvetica,sans-serif;">
-                            <p style="margin:0 0 4px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.6;color:#52525b;">Blue skies,</p>
-                            <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.6;color:#0a0f23;font-weight:bold;">The G-Force team</p>
-                            <hr style="border:0;border-top:1px solid #e4e4e7;margin:24px 0;height:1px;line-height:1px;" />
-                            <p style="margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#a1a1aa;">
-                                You're receiving this because you confirmed your subscription to the G-Force Skydiving newsletter.
-                                <a href="{{ $unsubscribeUrl }}" style="color:#2f8de4;text-decoration:underline;">Unsubscribe instantly</a> — one click, no login.
-                            </p>
-                            <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#a1a1aa;">{{ $copyright }}</p>
-                        </td>
-                    </tr>
+                    @include('mail.newsletter.footer', ['unsubscribeUrl' => $unsubscribeUrl])
                 </table>
             </td>
         </tr>

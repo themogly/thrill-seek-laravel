@@ -56,7 +56,6 @@ class NewsletterCampaignMail extends Mailable implements ShouldQueue
             view('mail.newsletter.shell', [
                 'subject' => $this->campaign->subject,
                 'preheader' => $this->campaign->preheader,
-                'copyright' => app(GeneralSettings::class)->footer_copyright,
                 'body' => $body,
                 'unsubscribeUrl' => $unsubscribeUrl,
             ])->render()
