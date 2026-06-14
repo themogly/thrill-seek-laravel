@@ -24,6 +24,31 @@ Livewire 4 forms and a Filament v5 admin panel at `/admin`.
    (appears in every email header).
 5. After deploys that add settings properties: `php artisan settings:clear-cache`.
 
+## Production security
+
+Hardening that must be in place before the site is public (the app ships the
+defence-in-depth headers and webhook throttling automatically — these are the parts
+that depend on deployment/env):
+
+- **Serve only over HTTPS.** Terminate TLS at your host/load balancer and redirect all
+  HTTP → HTTPS. With HTTPS live, the app emits HSTS automatically (production + secure
+  request only). Get a certificate (Let's Encrypt is fine).
+- **`SESSION_SECURE_COOKIE=true`** so the session cookie is only ever sent over HTTPS.
+  (`http_only` and `same_site=lax` are already set in `config/session.php`.)
+- **`APP_DEBUG=false`** (and `APP_ENV=production`) — never expose stack traces / config
+  in error pages. Already in the checklist above; it is also a security requirement.
+- **Canonical HTTPS host.** Set `APP_URL=https://your-domain` and serve a single
+  canonical host (redirect `www`/bare and any IP/hostname to it) so cookies, CORS and
+  generated links all line up and there's no http fallback.
+- **Owner/infra responsibilities (outside the app):** keep TLS certificates valid and
+  auto-renewing; keep PHP and the OS patched; restrict `/admin` and `/horizon` exposure
+  (they already require an admin login — consider IP allow-listing too); and put the site
+  behind a CDN/WAF (e.g. Cloudflare) for TLS, DDoS protection and a web application
+  firewall. These are deployment-layer concerns the application cannot enforce itself.
+- The Content-Security-Policy currently ships in **Report-Only** mode; after the first
+  production deploy, confirm a clean browser console (real Stripe redirect + any remote
+  image hosts) and then switch it to enforcing — see DECISIONS.md (SEC-P3.1).
+
 ## First run
 
 ```bash

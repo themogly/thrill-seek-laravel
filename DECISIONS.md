@@ -990,3 +990,22 @@ against a flood of forged/replayed calls — the per-controller signature verifi
 sits comfortably above real Stripe/Resend delivery and retry volume, so legitimate
 bursts pass; tested that 10 normal calls are never 429 and that a 130-call flood does
 trip the limiter.
+
+### SEC-P3.2 — Production security checklist
+
+Documentation only (the enforceable parts ship in code via SEC-P3.1/P1.1). Added a
+"Production security" section to SETUP.md covering the deployment/env-dependent
+hardening the app can't do for itself: HTTPS-only + redirect, `SESSION_SECURE_COOKIE=true`,
+`APP_DEBUG=false`, a single canonical HTTPS host, and the owner/infra responsibilities
+(TLS renewal, patching, restricting `/admin` + `/horizon`, CDN/WAF).
+
+This completes all five open items in `security-review/SECURITY-AUDIT.md`
+(SEC-P1.1, P2.1, P3.1, P3.2, P3.3); everything was additive — no prior decision weakened.
+
+**Dependency audit at close:** `composer audit` is clean (incl. the newly added
+`sentry/sentry-laravel`). `npm audit` reports one pre-existing **dev-only** advisory —
+`shell-quote` pulled in transitively by `concurrently` (the `composer dev` runner). The
+advisory range covers the latest published `shell-quote`, so there is no non-breaking
+fix; it is never part of the production asset bundle. Left as-is rather than force a
+major `concurrently` bump that could break the local dev script — flagged here for the
+owner to revisit when an upstream fix ships.
