@@ -91,5 +91,5 @@ is nothing to escalate.
 
 ## Status
 
-- [ ] CA-P1.1 — fix breadcrumb positions (+ pin test)
+- [x] CA-P1.1 — fix breadcrumb positions (+ pin test) — **done**
 - [ ] CA-P2.1 — extract shared `SendPaymentReceipt` action
