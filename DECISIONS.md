@@ -675,3 +675,23 @@ Mailchimp-style block builder.
 - **Scheduling — groundwork only**: the status enum (draft/scheduled/sent) and a
   `scheduled_at` column exist, but a scheduled dispatcher command was deferred as
   future work to keep this round focused; sending is immediate via the Send action.
+
+## Admin Help guide rebuild (feature/admin-docs)
+- **One page, not many**: the whole guide stays on the single `HelpGuide` Filament
+  page (`/admin/help-guide`, nav group "Help", label "How it all works") with an
+  on-page Contents card of jump links to per-topic anchors. A non-technical owner
+  scans/searches one place; splitting 17 short topics across many nav items would
+  bury them and clutter the sidebar. The page is wide enough for comfortable reading
+  at desktop and tablet (`max-w-3xl`).
+- **Developer-maintained, NOT CMS-editable**: the guide describes how the admin works,
+  so it must change in lockstep with the code that ships features — a CMS-editable
+  copy would drift and could misdescribe the panel. Content lives in code as
+  `HelpGuide::sections()` (a plain array of structured sections) so a developer edits
+  it in the same PR that adds the feature. No new settings/model, no migration.
+- **Structured content, not prose**: each section is `{id, icon, title, intro,
+  steps[], cta}` rendered as a Filament `<x-filament::section>` card (icon + heading,
+  short intro, a bullet list of steps, an "Open … →" button to the live admin screen).
+  This replaced the Round 9 wall-of-text and makes every topic scannable. Admin-screen
+  links are built from each resource's `getUrl()` so they can never 404 — a test
+  (`test_every_open_screen_link_resolves`) GETs every link and asserts success, and
+  `test_the_guide_covers_every_major_area` guards coverage so a removed topic fails CI.
