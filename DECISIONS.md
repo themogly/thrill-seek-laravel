@@ -647,3 +647,31 @@ structural rules — so the pass was short and real, no redesign:
 - Content artifact fixed in dev only: the home "What we do" lead held leftover test
   text ("i dont want it here") — restored to the seeded copy; flagged as an owner
   content field, not a code defect.
+
+## Newsletter block builder (feature/newsletter-builder)
+
+Branched off main `2491973` (the SEO branch `seo/audit-pass` was unmerged — these
+branches will need merging later). Upgrades the Round 7 plain compose into a
+Mailchimp-style block builder.
+
+- **Email engine — Laravel Markdown Mail + the gforce theme**, not a hand-rolled
+  inliner or MJML. Markdown mailables already produce table-based HTML and run
+  Laravel's CSS-to-inline-styles step, and the gforce theme is reused. Each block is
+  a self-contained, inline-styled partial (web-safe fonts, absolute image URLs, no
+  flexbox/grid), wrapped by the message shell — proven and email-client-safe.
+- **Block storage — a `blocks` JSON column** on NewsletterCampaign (not a child
+  table): it maps 1:1 onto Filament's Builder field, keeps a campaign in one row, and
+  is trivial to render. The legacy `body` column is kept (nullable) for Round 7
+  campaigns.
+- **Brand-locked blocks**: blocks carry content and order only — no colour/font
+  fields — so every newsletter is on-brand and can't introduce email-breaking CSS.
+- **Dynamic blocks** (latest news, featured course) resolve to **static HTML at send
+  time**: `SendNewsletterCampaign` renders once and stores `rendered_html`, so a sent
+  newsletter is frozen even if the underlying article/course changes later.
+- **Idempotency**: a per-(campaign, subscriber) claim row (unique constraint) is taken
+  before queueing, so a job retry or overlapping scheduler tick can never double-send.
+- **Compliance unchanged**: sends target the `confirmed` scope only; every email keeps
+  the signed one-click unsubscribe footer.
+- **Scheduling — groundwork only**: the status enum (draft/scheduled/sent) and a
+  `scheduled_at` column exist, but a scheduled dispatcher command was deferred as
+  future work to keep this round focused; sending is immediate via the Send action.

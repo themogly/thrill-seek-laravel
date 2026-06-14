@@ -80,6 +80,13 @@ that manages all site content, enquiries, payments and bookings.
 - Images are plain `FileUpload`s to the public disk; stored values are either bundled
   paths (`/images/x.jpg`) or upload paths, resolved by `image_url` accessors /
   `imageUrl()` helpers. No medialibrary.
+- **Newsletter emails are block-based**: a campaign's `blocks` JSON renders through
+  `App\Support\NewsletterRenderer` — each block is a self-contained, inline-styled
+  partial in `resources/views/mail/blocks/` (web-safe fonts, tables, absolute image
+  URLs, no flexbox), wrapped by the gforce Markdown-Mail shell which inlines CSS. To
+  add a block type: a partial + a Filament Builder block (content fields only — no
+  colour/font; keep it brand-locked) + the `NewsletterRenderer::BLOCK_TYPES` list.
+  Dynamic blocks resolve live but are frozen into `rendered_html` at send.
 - Customer-facing automated emails go through editable `EmailTemplate` records +
   `TemplatedMail`; all mail is queued and wrapped so failures log instead of breaking
   the request.
