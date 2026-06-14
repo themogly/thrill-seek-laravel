@@ -2,36 +2,52 @@
 
 namespace App\Actions;
 
+use App\Enums\NewsletterCampaignStatus;
 use App\Mail\NewsletterCampaignMail;
 use App\Models\NewsletterCampaign;
+use App\Models\NewsletterCampaignRecipient;
 use App\Models\NewsletterSubscriber;
-use App\Models\User;
+use App\Support\NewsletterRenderer;
 use Illuminate\Support\Facades\Mail;
 
 class SendNewsletterCampaign
 {
+    public function __construct(private readonly NewsletterRenderer $renderer) {}
+
     /**
-     * Record the campaign and queue one send per confirmed subscriber. Only
-     * the `confirmed` scope is targeted, so pending (un-opted-in) and
-     * unsubscribed/suppressed addresses are never sent to. Each mail queues
-     * independently, so one bad address cannot fail the batch.
+     * Freeze the rendered HTML, then queue one send per confirmed, non-
+     * suppressed subscriber. Idempotent: a per-(campaign, subscriber) row is
+     * claimed before queueing, so a job retry or an overlapping scheduler tick
+     * can never double-send. Pending/unsubscribed addresses are never targeted.
      */
-    public function handle(string $subject, string $body, ?User $sender): NewsletterCampaign
+    public function handle(NewsletterCampaign $campaign): NewsletterCampaign
     {
-        $recipients = NewsletterSubscriber::confirmed()->get();
+        // Resolve dynamic blocks once and store the static HTML for the record.
+        if ($campaign->rendered_html === null) {
+            $campaign->update(['rendered_html' => $this->renderer->renderBody($campaign)]);
+        }
 
-        $campaign = NewsletterCampaign::create([
-            'subject' => $subject,
-            'body' => $body,
-            'recipient_count' => $recipients->count(),
-            'sent_at' => now(),
-            'user_id' => $sender?->id,
-        ]);
+        NewsletterSubscriber::confirmed()->each(function (NewsletterSubscriber $subscriber) use ($campaign): void {
+            $claim = NewsletterCampaignRecipient::firstOrCreate([
+                'newsletter_campaign_id' => $campaign->id,
+                'newsletter_subscriber_id' => $subscriber->id,
+            ]);
 
-        $recipients->each(function (NewsletterSubscriber $subscriber) use ($campaign): void {
+            // Already claimed (retry/overlap) — never send twice.
+            if (! $claim->wasRecentlyCreated) {
+                return;
+            }
+
             Mail::to($subscriber->email)->queue(new NewsletterCampaignMail($campaign, $subscriber));
+            $claim->update(['sent_at' => now()]);
         });
 
-        return $campaign;
+        $campaign->update([
+            'status' => NewsletterCampaignStatus::Sent,
+            'recipient_count' => $campaign->recipients()->count(),
+            'sent_at' => $campaign->sent_at ?? now(),
+        ]);
+
+        return $campaign->refresh();
     }
 }

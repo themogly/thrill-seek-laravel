@@ -5,6 +5,7 @@ namespace App\Mail;
 use App\Models\NewsletterCampaign;
 use App\Models\NewsletterSubscriber;
 use App\Settings\GeneralSettings;
+use App\Support\NewsletterRenderer;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -15,8 +16,9 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\URL;
 
 /**
- * One newsletter broadcast to one confirmed subscriber. Carries a working
- * one-click unsubscribe link (signed, no login) as compliance requires.
+ * One block-based newsletter to one confirmed subscriber. Renders the campaign
+ * blocks to email-safe HTML (or reuses the HTML frozen at send), wraps them in
+ * the gforce shell, and carries a signed one-click unsubscribe footer.
  */
 class NewsletterCampaignMail extends Mailable implements ShouldQueue
 {
@@ -37,11 +39,24 @@ class NewsletterCampaignMail extends Mailable implements ShouldQueue
 
     public function content(): Content
     {
+        $renderer = app(NewsletterRenderer::class);
+
+        // Frozen HTML for a sent campaign; legacy plain body; else render live.
+        $body = $this->campaign->rendered_html
+            ?? ($this->campaign->blocks !== null
+                ? $renderer->renderBody($this->campaign)
+                : nl2br(e((string) $this->campaign->body)));
+
+        $unsubscribeUrl = URL::signedRoute('newsletter.unsubscribe', ['subscriber' => $this->subscriber->getKey()]);
+
         return new Content(
-            markdown: 'mail.newsletter-campaign',
+            markdown: 'mail.newsletter',
+            text: 'mail.newsletter-text',
             with: [
-                'body' => $this->campaign->body,
-                'unsubscribeUrl' => URL::signedRoute('newsletter.unsubscribe', ['subscriber' => $this->subscriber->getKey()]),
+                'body' => $body,
+                'preheader' => $this->campaign->preheader,
+                'textBody' => $renderer->plainText($body),
+                'unsubscribeUrl' => $unsubscribeUrl,
             ],
         );
     }

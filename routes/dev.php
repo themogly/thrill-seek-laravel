@@ -115,9 +115,18 @@ function devMailPreviews(): array
         },
         'newsletter-campaign' => function () {
             $subscriber = NewsletterSubscriber::factory()->create(['email' => 'fan@example.com']);
-            $campaign = NewsletterCampaign::factory()->sent()->create([
+            $campaign = NewsletterCampaign::factory()->create([
                 'subject' => 'Summer jump days just dropped',
-                'body' => "We've opened a fresh batch of tandem dates and a Seville AFF course.\n\nGrab a slot before they're gone — see you in the sky!",
+                'preheader' => 'Fresh tandem dates and a Seville AFF course.',
+                'rendered_html' => null,
+                'blocks' => [
+                    ['type' => 'heading', 'data' => ['text' => 'The skies are open', 'level' => 'h1']],
+                    ['type' => 'paragraph', 'data' => ['text' => '<p>We’ve opened a fresh batch of tandem dates and a Seville AFF course. <strong>Grab a slot before they’re gone.</strong></p>']],
+                    ['type' => 'image', 'data' => ['image' => '/images/hero-skydive.jpg', 'caption' => 'Freefall over the dropzone', 'link' => '/tandem']],
+                    ['type' => 'button', 'data' => ['label' => 'Book a tandem', 'url' => '/tandem']],
+                    ['type' => 'divider', 'data' => []],
+                    ['type' => 'two_column', 'data' => ['image' => '/images/aff.jpg', 'heading' => 'Go all the way', 'text' => 'Our AFF course takes you from first jump to a licence in eight levels.', 'button_label' => 'See AFF', 'button_url' => '/aff', 'image_side' => 'left']],
+                ],
             ]);
 
             return new NewsletterCampaignMail($campaign, $subscriber);
