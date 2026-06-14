@@ -904,3 +904,30 @@ FAQ page — the answers differ per page and each emits its own FAQPage schema.
   Resolves the "FAQPage N/A" note from the SEO audit.
 - Starter FAQs are general, clearly-editable placeholders — no fabricated safety/medical
   specifics; the owner refines them in the admin.
+
+## Email content consistency (feature/email-content-consistency)
+
+Branched off main `5c5b613`.
+
+### Item 1 — "Before your jump" panel is tandem-only
+
+`Booking::isTandem()` (`product?->type === ProductType::Tandem`) gates the account
+dashboard + booking-detail prep panel. The dashboard shows the single next upcoming
+booking, so the panel is tied to that booking and only renders when it's a tandem; AFF
+courses and coaching (own briefings) never show it.
+
+### Item 2 — Single source of truth for the pre-jump content
+
+The "before your jump" info has ONE home: `JumpPrepSettings` (arrival/bring/expect), which
+the account panel already reads. To surface the same content in the tandem confirmation +
+reminder emails without duplicating it, `JumpPrepSettings::emailBlock()` formats those
+three fields as a plain-text block, injected via a new `{{ jump_prep }}` variable on the
+`booking_confirmed` and `jump_reminder` templates (placed just before the sign-off).
+- **Why a token, not view-rendered:** it reuses the existing editable-template +
+  `{{ placeholder }}` system (one way of doing things) rather than inventing a parallel
+  mechanism. The value is resolved live from `JumpPrepSettings` at send — never stored in
+  the template — so editing the CMS field updates the panel and both emails at once.
+- **Tandem branching:** the senders (`BookingObserver`, `SendBookingReminders`) pass
+  `jump_prep = isTandem() ? JumpPrepSettings::emailBlock() : ''`. For AFF/coaching the
+  token resolves to an empty string and the block is absent. The token carries its own
+  leading blank lines, so the empty case leaves no stray whitespace.
