@@ -46,7 +46,9 @@
             </div>
         </div>
 
-        @if ($upcoming)
+        @if ($upcoming?->isTandem())
+            {{-- Tandem only: AFF/coaching have their own briefings, so the
+                 arrival/bring/expect prep is tied to the upcoming tandem jump. --}}
             @inject('jumpPrep', 'App\Settings\JumpPrepSettings')
             <div class="mt-6 border-2 border-border p-6">
                 <h2 class="font-display text-2xl uppercase tracking-wide">Before your jump</h2>

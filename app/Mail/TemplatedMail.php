@@ -23,6 +23,8 @@ class TemplatedMail extends Mailable implements ShouldQueue
 
     public string $renderedBody;
 
+    public ?string $recipientName;
+
     /**
      * @param  array<string, string>  $variables
      */
@@ -31,6 +33,8 @@ class TemplatedMail extends Mailable implements ShouldQueue
         $rendered = TemplateRenderer::render($template, $variables);
         $this->renderedSubject = $rendered['subject'];
         $this->renderedBody = $rendered['body'];
+        // The greeting now lives in the shared mail layout, not the template body.
+        $this->recipientName = $variables['name'] ?? null;
     }
 
     public function envelope(): Envelope
@@ -42,7 +46,10 @@ class TemplatedMail extends Mailable implements ShouldQueue
     {
         return new Content(
             markdown: 'mail.templated',
-            with: ['body' => $this->renderedBody],
+            with: [
+                'body' => $this->renderedBody,
+                'name' => $this->recipientName,
+            ],
         );
     }
 }

@@ -3,8 +3,11 @@
 namespace Tests\Feature\Bookings;
 
 use App\Enums\BookingStatus;
+use App\Enums\ProductType;
 use App\Mail\TemplatedMail;
 use App\Models\Booking;
+use App\Models\Product;
+use App\Settings\JumpPrepSettings;
 use Database\Seeders\EmailTemplateSeeder;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
@@ -17,6 +20,57 @@ class AutomatedEmailsTest extends TestCase
 
         $this->seed(EmailTemplateSeeder::class);
         Mail::fake();
+    }
+
+    private function bookingOfType(ProductType $type, array $attributes = []): Booking
+    {
+        return Booking::factory()->create([
+            'product_id' => Product::factory()->create(['type' => $type])->id,
+            ...$attributes,
+        ]);
+    }
+
+    public function test_tandem_confirmation_carries_the_single_source_prejump_info(): void
+    {
+        app(JumpPrepSettings::class)->fill(['what_to_bring' => 'PREP_SENTINEL_BRING'])->save();
+
+        $tandem = $this->bookingOfType(ProductType::Tandem);
+        $tandem->update(['status' => BookingStatus::Confirmed, 'scheduled_at' => now()->addMonth()]);
+
+        Mail::assertQueued(TemplatedMail::class, fn (TemplatedMail $mail): bool => $mail->hasTo($tandem->email)
+            && str_contains($mail->renderedBody, 'Before your jump')
+            && str_contains($mail->renderedBody, 'PREP_SENTINEL_BRING'));
+    }
+
+    public function test_aff_and_coaching_confirmations_omit_the_tandem_prejump_info(): void
+    {
+        app(JumpPrepSettings::class)->fill(['what_to_bring' => 'PREP_SENTINEL_BRING'])->save();
+
+        foreach ([ProductType::Aff, ProductType::Coaching] as $type) {
+            $booking = $this->bookingOfType($type);
+            $booking->update(['status' => BookingStatus::Confirmed, 'scheduled_at' => now()->addMonth()]);
+
+            Mail::assertQueued(TemplatedMail::class, fn (TemplatedMail $mail): bool => $mail->hasTo($booking->email)
+                && ! str_contains($mail->renderedBody, 'PREP_SENTINEL_BRING')
+                && ! str_contains($mail->renderedBody, '{{ jump_prep }}'));
+        }
+    }
+
+    public function test_tandem_reminder_carries_the_prejump_info_but_aff_does_not(): void
+    {
+        app(JumpPrepSettings::class)->fill(['what_to_bring' => 'PREP_SENTINEL_BRING'])->save();
+
+        $tandem = $this->bookingOfType(ProductType::Tandem, ['status' => BookingStatus::Confirmed, 'scheduled_at' => now()->addDays(3)]);
+        $aff = $this->bookingOfType(ProductType::Aff, ['status' => BookingStatus::Confirmed, 'scheduled_at' => now()->addDays(3)]);
+
+        $this->artisan('bookings:send-reminders')->assertSuccessful();
+
+        Mail::assertQueued(TemplatedMail::class, fn (TemplatedMail $mail): bool => $mail->hasTo($tandem->email)
+            && str_contains($mail->renderedSubject, 'coming up')
+            && str_contains($mail->renderedBody, 'PREP_SENTINEL_BRING'));
+        Mail::assertQueued(TemplatedMail::class, fn (TemplatedMail $mail): bool => $mail->hasTo($aff->email)
+            && str_contains($mail->renderedSubject, 'coming up')
+            && ! str_contains($mail->renderedBody, 'PREP_SENTINEL_BRING'));
     }
 
     public function test_confirming_a_booking_emails_the_customer(): void

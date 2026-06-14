@@ -28,6 +28,9 @@ class GeneralSettings extends Settings
 
     public string $footer_copyright;
 
+    /** Sign-off rendered once at the foot of every transactional email. */
+    public string $email_signoff;
+
     /** @phpstan-var array<int, array{icon: string, value: string, label: string}> */
     public array $trust_items;
 

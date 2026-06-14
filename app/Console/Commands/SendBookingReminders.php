@@ -6,6 +6,7 @@ use App\Enums\BookingStatus;
 use App\Mail\TemplatedMail;
 use App\Models\Booking;
 use App\Models\EmailTemplate;
+use App\Settings\JumpPrepSettings;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 
@@ -44,6 +45,8 @@ class SendBookingReminders extends Command
                 'product' => $booking->product->name ?? 'your jump',
                 'date' => (string) $booking->scheduledLabel(),
                 'location' => $booking->locationName() ?? 'to be confirmed',
+                // Single-source pre-jump info, tandem bookings only.
+                'jump_prep' => $booking->isTandem() ? app(JumpPrepSettings::class)->emailBlock() : '',
             ]));
 
             $booking->forceFill(['reminder_sent_at' => now()])->saveQuietly();

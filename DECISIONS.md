@@ -1029,3 +1029,54 @@ its double-opt-in pipeline — NOT a second signup path.
   without `.window`, so a form only toasts its own result. Verified with Playwright: a
   footer subscribe and a contact submit each show exactly one toast, no console errors,
   at 1440 and 390. Applied uniformly across all five forms + the shared spam trait.
+
+## Email content consistency (feature/email-content-consistency)
+
+Branched off main `5c5b613`.
+
+### Item 1 — "Before your jump" panel is tandem-only
+
+`Booking::isTandem()` (`product?->type === ProductType::Tandem`) gates the account
+dashboard + booking-detail prep panel. The dashboard shows the single next upcoming
+booking, so the panel is tied to that booking and only renders when it's a tandem; AFF
+courses and coaching (own briefings) never show it.
+
+### Item 2 — Single source of truth for the pre-jump content
+
+The "before your jump" info has ONE home: `JumpPrepSettings` (arrival/bring/expect), which
+the account panel already reads. To surface the same content in the tandem confirmation +
+reminder emails without duplicating it, `JumpPrepSettings::emailBlock()` formats those
+three fields as a plain-text block, injected via a new `{{ jump_prep }}` variable on the
+`booking_confirmed` and `jump_reminder` templates (placed just before the sign-off).
+- **Why a token, not view-rendered:** it reuses the existing editable-template +
+  `{{ placeholder }}` system (one way of doing things) rather than inventing a parallel
+  mechanism. The value is resolved live from `JumpPrepSettings` at send — never stored in
+  the template — so editing the CMS field updates the panel and both emails at once.
+- **Tandem branching:** the senders (`BookingObserver`, `SendBookingReminders`) pass
+  `jump_prep = isTandem() ? JumpPrepSettings::emailBlock() : ''`. For AFF/coaching the
+  token resolves to an empty string and the block is absent. The token carries its own
+  leading blank lines, so the empty case leaves no stray whitespace.
+
+### Item 3 — Shared greeting + sign-off (consistency by construction)
+
+The greeting (`Hi {name},`) and sign-off (`Blue skies, / The G-Force team`) were repeated
+verbatim in every template body and designed mail view — and had already drifted
+(account-login said "The G-Force **Skydiving** team"). Both now live ONCE in a shared mail
+layout, so every transactional email opens and closes identically.
+- **`<x-mail.layout :name="…">`** (`resources/views/components/mail/layout.blade.php`)
+  wraps Laravel's `<x-mail::message>` and renders: the greeting (omitted when no `name`,
+  e.g. the email-only newsletter confirmation), the unique body slot, then the sign-off.
+- **Sign-off is a single setting** — `GeneralSettings::email_signoff` (default
+  "Blue skies,\nThe G-Force team"), so the owner changes it everywhere from one place. It
+  is NOT independently editable per-template (more consistent, simpler for a non-technical
+  owner) — documented as the deliberate choice.
+- **Editable templates carry only their unique body.** Removed the greeting prefix and
+  sign-off suffix from all seven `EmailTemplate` seeder bodies; `TemplatedMail` passes the
+  recipient `name` to the layout. Designed customer mails (account login, course message,
+  voucher gift, newsletter confirmation) were refactored onto `<x-mail.layout>` too.
+- **Excluded:** admin-facing notifications (enquiry/payment-received) and the block-based
+  marketing `NewsletterCampaign` shell don't use the transactional layout; the admin's
+  free-text `EnquiryReply` keeps its own wording (the admin writes the whole message).
+  Verified every refactored email in `/dev/mail` at desktop + mobile widths — greeting/
+  body/sign-off render once, tandem prep only on tandem emails, no console errors;
+  `TemplatedMail` is now exercised by `MailRenderTest`.

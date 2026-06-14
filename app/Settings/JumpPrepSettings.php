@@ -21,4 +21,19 @@ class JumpPrepSettings extends Settings
     {
         return 'jump_prep';
     }
+
+    /**
+     * The same pre-jump info as the account "before your jump" panel, formatted
+     * as a plain-text block for the tandem confirmation/reminder emails — so the
+     * owner edits it in ONE place and it stays in sync everywhere. The leading
+     * blank lines let it drop into a templated email body via {{ jump_prep }}
+     * without the surrounding template needing to know whether it's present.
+     */
+    public function emailBlock(): string
+    {
+        return "\n\nBefore your jump"
+            ."\n\nArrival & timing: ".$this->arrival_info
+            ."\n\nWhat to bring: ".$this->what_to_bring
+            ."\n\nWhat to expect: ".$this->what_to_expect;
+    }
 }

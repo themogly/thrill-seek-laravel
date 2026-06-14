@@ -3,22 +3,25 @@
 namespace Tests\Feature\Account;
 
 use App\Enums\BookingStatus;
+use App\Enums\ProductType;
 use App\Enums\VoucherStatus;
 use App\Models\Booking;
 use App\Models\Customer;
+use App\Models\Product;
 use App\Models\Voucher;
 use App\Settings\JumpPrepSettings;
 use Tests\TestCase;
 
 class JumpDetailsTest extends TestCase
 {
-    public function test_upcoming_booking_shows_the_before_your_jump_info(): void
+    public function test_upcoming_tandem_booking_shows_the_before_your_jump_info(): void
     {
         app(JumpPrepSettings::class)->fill(['what_to_bring' => 'BRING_SENTINEL trainers and ID'])->save();
 
         $customer = Customer::factory()->create();
         $booking = Booking::factory()->create([
             'customer_id' => $customer->id,
+            'product_id' => Product::factory()->tandem()->create()->id,
             'status' => BookingStatus::Confirmed,
             'scheduled_at' => now()->addWeek(),
             'email' => $customer->email,
@@ -29,6 +32,39 @@ class JumpDetailsTest extends TestCase
             ->assertOk()
             ->assertSee('Before your jump')
             ->assertSee('BRING_SENTINEL trainers and ID');
+
+        // Dashboard surfaces it for the next upcoming tandem too.
+        $this->actingAs($customer, 'customer')
+            ->get('/account')
+            ->assertOk()
+            ->assertSee('Before your jump');
+    }
+
+    public function test_aff_and_coaching_bookings_never_show_the_tandem_pre_jump_panel(): void
+    {
+        app(JumpPrepSettings::class)->fill(['what_to_bring' => 'BRING_SENTINEL trainers and ID'])->save();
+
+        foreach ([ProductType::Aff, ProductType::Coaching] as $type) {
+            $customer = Customer::factory()->create();
+            $product = Product::factory()->create(['type' => $type]);
+            $booking = Booking::factory()->create([
+                'customer_id' => $customer->id,
+                'product_id' => $product->id,
+                'status' => BookingStatus::Confirmed,
+                'scheduled_at' => now()->addWeek(),
+                'email' => $customer->email,
+            ]);
+
+            $this->actingAs($customer, 'customer')
+                ->get('/account/bookings/'.$booking->id)
+                ->assertOk()
+                ->assertDontSee('Before your jump');
+
+            $this->actingAs($customer, 'customer')
+                ->get('/account')
+                ->assertOk()
+                ->assertDontSee('Before your jump');
+        }
     }
 
     public function test_dashboard_shows_redeemable_vouchers_the_customer_bought(): void

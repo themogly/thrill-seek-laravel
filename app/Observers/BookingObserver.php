@@ -6,6 +6,7 @@ use App\Enums\BookingStatus;
 use App\Mail\TemplatedMail;
 use App\Models\Booking;
 use App\Models\EmailTemplate;
+use App\Settings\JumpPrepSettings;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
@@ -40,6 +41,8 @@ class BookingObserver
                     'product' => $booking->product->name ?? 'your jump',
                     'date' => $booking->scheduledLabel() ?? 'to be confirmed',
                     'location' => $booking->locationName() ?? 'to be confirmed',
+                    // Single-source pre-jump info, tandem bookings only.
+                    'jump_prep' => $booking->isTandem() ? app(JumpPrepSettings::class)->emailBlock() : '',
                 ],
             ));
         } catch (\Throwable $e) {
