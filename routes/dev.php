@@ -12,6 +12,7 @@ use App\Mail\VoucherGiftMail;
 use App\Models\Booking;
 use App\Models\CourseDate;
 use App\Models\CourseMessage;
+use App\Models\Customer;
 use App\Models\EmailTemplate;
 use App\Models\Enquiry;
 use App\Models\Location;
@@ -21,6 +22,7 @@ use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Voucher;
 use Illuminate\Mail\Mailable;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
@@ -32,6 +34,23 @@ use Illuminate\Support\Facades\Route;
 | rolled-back transaction so nothing persists. Loaded only when
 | app()->environment('local') — see routes/web.php.
 */
+
+/*
+ * Local-only shortcut into the customer account area — skips the magic-link email.
+ * Optionally pass a customer id (/dev/account-login/5); otherwise it picks the most
+ * recent customer that has bookings so the dashboard is populated. This route only
+ * exists in the local environment (routes/dev.php is loaded only there), so it can
+ * never be reached in production.
+ */
+Route::get('/dev/account-login/{customer?}', function (?Customer $customer = null) {
+    $customer ??= Customer::has('bookings')->latest()->first() ?? Customer::latest()->first();
+
+    abort_if($customer === null, 404, 'No customers exist yet — seed the database or create one first.');
+
+    Auth::guard('customer')->login($customer);
+
+    return redirect()->route('account.dashboard');
+})->name('dev.account-login');
 
 Route::prefix('dev/mail')->group(function (): void {
     Route::get('/', function () {
