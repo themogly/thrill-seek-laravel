@@ -7,6 +7,7 @@ use App\Models\CourseDate;
 use App\Settings\GeneralSettings;
 use App\Support\SiteContent;
 use App\ViewModels\PaymentSuccessPage;
+use App\ViewModels\PrivacyPage;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -147,9 +148,9 @@ class PageController extends Controller
         return view('pages.contact');
     }
 
-    public function privacy(): View
+    public function privacy(PrivacyPage $page): View
     {
-        return view('pages.privacy');
+        return view('pages.privacy', $page->viewData());
     }
 
     public function terms(): View

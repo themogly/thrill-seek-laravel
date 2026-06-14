@@ -28,6 +28,25 @@ class ManageSimplePagesSettings extends SettingsPage
         return SimplePagesSettings::class;
     }
 
+    /**
+     * Stamp the privacy "last updated" date automatically whenever the policy
+     * body changes, so the public page's date stays truthful without the owner
+     * having to remember to set it (spatie's settings row has no usable
+     * per-property updated_at — see App\ViewModels\PrivacyPage).
+     */
+    public function save(): void
+    {
+        $previousBody = app(SimplePagesSettings::class)->privacy_body;
+
+        parent::save();
+
+        if (($this->form->getState()['privacy_body'] ?? null) !== $previousBody) {
+            $settings = app(SimplePagesSettings::class);
+            $settings->privacy_updated_at = now()->toDateString();
+            $settings->save();
+        }
+    }
+
     public function form(Schema $schema): Schema
     {
         return $schema->components([

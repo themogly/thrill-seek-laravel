@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Filament\Pages\Settings\ManageGeneralSettings;
+use App\Filament\Pages\Settings\ManageSimplePagesSettings;
 use App\Filament\Resources\Bookings\BookingResource;
 use App\Filament\Resources\CourseDates\CourseDateResource;
 use App\Filament\Resources\Documents\DocumentResource;
@@ -76,6 +77,19 @@ class HelpGuide extends Page
                     '<strong>To change a photo:</strong> drag a file onto the upload box. Images are resized for the web automatically.',
                 ],
                 'cta' => ['label' => 'Open General settings', 'url' => ManageGeneralSettings::getUrl()],
+            ],
+            [
+                'id' => 'privacy-policy',
+                'icon' => 'heroicon-o-shield-check',
+                'title' => 'Your privacy policy',
+                'intro' => 'The site ships with a strong, UK-GDPR-aware privacy policy as a starting draft. Edit it under <strong>Other pages → Privacy policy</strong>. Your business name, contact email and the "last updated" date fill in automatically from your settings — don\'t type them in by hand.',
+                'steps' => [
+                    '<strong>⚠️ This is a strong starting draft, NOT legal advice.</strong> Because the business processes medical (special-category) data and may process under-18s\' data, <strong>have a solicitor review it before you go live.</strong>',
+                    'Complete the two <strong>[Owner: …]</strong> lines with your real policy: your <strong>minimum age &amp; guardian-consent process</strong>, and your <strong>retention period</strong> (how long you keep records, e.g. for insurance/accounting).',
+                    'Leave the <code>{{ business_name }}</code>, <code>{{ contact_email }}</code> and <code>{{ last_updated }}</code> markers in place — they fill in live from your settings. Change your business name or email under General settings and the policy updates everywhere.',
+                    'The "Last updated" date refreshes automatically each time you save a change to the policy.',
+                ],
+                'cta' => ['label' => 'Open Other pages', 'url' => ManageSimplePagesSettings::getUrl()],
             ],
             [
                 'id' => 'products',

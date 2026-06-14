@@ -17,7 +17,7 @@ class SimplePagesSettingsTest extends TestCase
         $this->get('/testimonials')->assertOk()->assertSee('Real stories from the people who&#039;ve jumped with us.', false);
         $this->get('/hall-of-fame')->assertOk()->assertSee('The students, graduates and coaches that make G-Force what it is.');
         $this->get('/contact')->assertOk()->assertSee('Send a message')->assertSee('Direct contact');
-        $this->get('/privacy')->assertOk()->assertSee('G-Force Skydiving respects your privacy.', false);
+        $this->get('/privacy')->assertOk()->assertSee('protecting your personal data', false);
         $this->get('/terms')->assertOk()->assertSee('A £50 rebooking fee applies when you need to reschedule.', false);
     }
 
