@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Account;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Customer;
+use App\Models\Enquiry;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -31,5 +32,12 @@ abstract class AccountController extends Controller
         abort_unless($booking->customer_id === $this->customer()->getKey(), 404);
 
         return $booking;
+    }
+
+    protected function ownedEnquiry(Enquiry $enquiry): Enquiry
+    {
+        abort_unless($enquiry->customer_id === $this->customer()->getKey(), 404);
+
+        return $enquiry;
     }
 }
