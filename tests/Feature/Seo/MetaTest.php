@@ -40,4 +40,21 @@ class MetaTest extends TestCase
             ->assertOk()
             ->assertSee('<link rel="canonical" href="'.url('/news/meta-test-article').'"', false);
     }
+
+    public function test_news_description_uses_the_clean_lead_not_run_together_body(): void
+    {
+        // No seo_description → the clean one-line lead is used, never the body run
+        // together by strip_tags (which would join "…here.</p><p>Second…" as "here.Second").
+        $article = NewsArticle::factory()->create([
+            'slug' => 'desc-test',
+            'seo_description' => null,
+            'lead' => 'A clean one-line summary of the article.',
+            'body' => '<p>First paragraph ends here.</p><p>Second paragraph starts here.</p>',
+        ]);
+
+        $this->get('/news/desc-test')
+            ->assertOk()
+            ->assertSee('<meta name="description" content="A clean one-line summary of the article."', false)
+            ->assertDontSee('here.Second', false);
+    }
 }
