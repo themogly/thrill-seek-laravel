@@ -35,6 +35,15 @@ that manages all site content, enquiries, payments and bookings.
 - **Extras**: gift vouchers (redeemable as payments), editable email templates,
   automated confirmation/reminder emails (`bookings:send-reminders`, scheduled daily),
   dashboard stats, activity log on bookings/payments, customers deduped by email.
+- **Help guide**: a developer-maintained, in-panel owner's manual at
+  `/admin/help-guide` ("How it all works", Help nav group). Content is structured data
+  in `HelpGuide::sections()` (not CMS-editable, not prose) rendered as Filament section
+  cards with jump-link contents and "Open … →" buttons to each admin screen.
+  **When you ship a new admin-manageable feature, add a section to it** in the same PR:
+  append a `{id, icon, title, intro, steps[], cta}` entry to `HelpGuide::sections()`
+  (build any `cta` URL from the resource's `getUrl()`, never a hardcoded path) — the
+  guide's tests then check the new link resolves and coverage holds. Task-oriented,
+  plain English for a non-technical owner; pounds like `260.00` go in `<code>`.
 
 ## Architecture rules (one way of doing everything — learn from the named examples)
 1. **Data access**: CMS/display content (page copy, products for display,
