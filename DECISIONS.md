@@ -1135,3 +1135,31 @@ mature backup/restore + replica ecosystem.
   The `--set-gtid-purged=OFF` flag is mandatory or the restore aborts. Chose mysqldump+cron
   over `spatie/laravel-backup` to avoid a new dependency; managed-DB PITR preferred where
   available. Full risk inventory + step log in `db-migration/MYSQL-NOTES.md`.
+
+## Functional QA sweep (qa/functional-sweep)
+
+Branched off main `87791a1`. Walked every user flow on the running local site (MySQL,
+Redis/Horizon, Stripe keys empty → voucher/non-Stripe paths driven end-to-end, mail → log
++ `/dev/mail`). Report: `qa/QA-REPORT.md`. The site was already in strong shape (one real
+defect; everything else pass or owner-manual — consistent with the 341-test suite and
+prior audits).
+
+- **Defect fixed — emails fail under a stale settings cache.** The shared `<x-mail.layout>`
+  read `GeneralSettings::email_signoff` as a raw typed property; a Redis settings cache
+  predating that property (e.g. a deploy that forgot `settings:clear-cache`) makes the
+  property uninitialised, throwing "must not be accessed before initialization" and
+  **silently failing every queued transactional email** (booking confirmations, magic-link
+  logins, …), while the public site stays up (only the mail layout reads it). Fixed by
+  reading through `GeneralSettings::emailSignoff()`, which falls back to the default
+  sign-off when the property is uninitialised/blank — emails degrade gracefully instead of
+  going dark. Pinned with a test using `unset()` to reproduce the uninitialised case. The
+  documented `settings:clear-cache` deploy step remains the primary mitigation.
+- **Verified passing:** full public crawl (0 broken links/images/console errors), tandem
+  booking via full voucher redemption (+ double-redeem refused), AFF booking to the deposit
+  step, contact/enquiry validation + creation, newsletter double-opt-in, the customer
+  account area incl. **IDOR denial** (another customer's booking → 404), balance/paid-in-full
+  display, all 14 `/dev/mail` templates (pre-jump block tandem-only, sign-off correct),
+  admin resource lists/calendar/create-forms + export/erase, and feature toggles.
+- **Owner-manual (cannot verify locally):** real Stripe Checkout → webhook → booking +
+  abandoned-checkout release, real emails in Gmail/Outlook, real inbound-email round-trip,
+  signed newsletter/magic-link clicks from a real inbox.

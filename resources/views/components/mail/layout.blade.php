@@ -5,7 +5,7 @@
      The sign-off wording is a single CMS value (GeneralSettings::email_signoff),
      so the owner can change it everywhere from one place. Marketing
      (NewsletterCampaign) and admin-facing notifications do not use this. --}}
-@php($signoff = app(\App\Settings\GeneralSettings::class)->email_signoff)
+@php($signoff = app(\App\Settings\GeneralSettings::class)->emailSignoff())
 <x-mail::message>
 @if (filled($name))
 Hi {{ $name }},
