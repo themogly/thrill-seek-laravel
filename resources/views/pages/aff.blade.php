@@ -157,8 +157,11 @@
                 />
             </div>
 
-            {{-- AFF enquiry --}}
-            <livewire:aff-enquiry-form />
+            {{-- AFF enquiry — id target for the "/aff#enquiry" CTA (e.g. the book-AFF
+                 empty state); scroll-mt clears the sticky header when anchored. --}}
+            <div id="enquiry" class="scroll-mt-24">
+                <livewire:aff-enquiry-form />
+            </div>
         </div>
     </x-site.section>
 @endsection
