@@ -24,6 +24,7 @@ class Enquiry extends Model
 
     protected $fillable = [
         'reference',
+        'reply_token',
         'name',
         'email',
         'phone',
@@ -49,6 +50,7 @@ class Enquiry extends Model
     {
         static::creating(function (self $enquiry): void {
             $enquiry->reference ??= self::generateReference();
+            $enquiry->reply_token ??= Str::random(32);
         });
     }
 
@@ -59,6 +61,34 @@ class Enquiry extends Model
         } while (self::where('reference', $reference)->exists());
 
         return $reference;
+    }
+
+    /**
+     * The unguessable reply-to address customer replies are threaded by
+     * (enquiry+{token}@{inbound_domain}). Null when no inbound domain is
+     * configured, so callers fall back to the plain site address.
+     */
+    public function replyToAddress(): ?string
+    {
+        $domain = config('services.resend.inbound_domain');
+
+        return $domain ? "enquiry+{$this->reply_token}@{$domain}" : null;
+    }
+
+    /** Resolve an enquiry from an inbound `to` address, by its reply token. */
+    public static function findByReplyToken(string $token): ?self
+    {
+        return $token === '' ? null : self::where('reply_token', $token)->first();
+    }
+
+    /** Extract the token from an `enquiry+{token}@domain` address, if present. */
+    public static function extractReplyToken(string $address): ?string
+    {
+        if (preg_match('/enquiry\+([A-Za-z0-9]+)@/', $address, $m) === 1) {
+            return $m[1];
+        }
+
+        return null;
     }
 
     /** @return BelongsTo<Product, $this> */

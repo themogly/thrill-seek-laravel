@@ -22,9 +22,14 @@ class EnquiryReplyMail extends Mailable implements ShouldQueue
     {
         $enquiry = $this->message->enquiry;
 
+        // Reply to the per-enquiry inbound address so the customer's reply threads
+        // straight back into this conversation; fall back to the plain site address
+        // when no inbound domain is configured.
+        $replyTo = $enquiry->replyToAddress() ?? app(GeneralSettings::class)->email;
+
         return new Envelope(
             subject: "Re: your enquiry {$enquiry->reference} — G-Force Skydiving",
-            replyTo: [new Address(app(GeneralSettings::class)->email, 'G-Force Skydiving')],
+            replyTo: [new Address($replyTo, 'G-Force Skydiving')],
         );
     }
 
