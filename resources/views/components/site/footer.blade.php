@@ -1,5 +1,5 @@
 @inject('general', 'App\Settings\GeneralSettings')
-<footer class="band-ink mt-24 border-t-4 border-primary">
+<footer class="band-ink border-t-4 border-primary">
     <div class="mx-auto max-w-7xl px-4 py-16 lg:px-8">
         <p class="font-display text-4xl uppercase leading-none tracking-wide text-white md:text-6xl">
             {{ $general->tagline }}
