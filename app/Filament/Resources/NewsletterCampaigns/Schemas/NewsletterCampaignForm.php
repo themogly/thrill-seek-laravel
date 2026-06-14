@@ -54,6 +54,10 @@ class NewsletterCampaignForm
                         ->collapsible()
                         ->blockNumbers(false)
                         ->blocks([
+                            Block::make('logo')
+                                ->label('Logo header')
+                                ->icon('heroicon-o-sparkles')
+                                ->schema([]),
                             Block::make('heading')
                                 ->icon('heroicon-o-h1')
                                 ->schema([

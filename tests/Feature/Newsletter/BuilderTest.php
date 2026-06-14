@@ -113,6 +113,18 @@ class BuilderTest extends TestCase
             ->assertSee('Add a block');
     }
 
+    public function test_logo_block_renders_with_an_absolute_url_and_alt(): void
+    {
+        $html = $this->renderBody([['type' => 'logo', 'data' => []]]);
+
+        $this->assertStringContainsString('src="'.url('/images/logo.png').'"', $html);
+        $this->assertStringContainsString('alt="G-Force Skydiving"', $html);
+        // Explicit dimensions for email clients; no flexbox.
+        $this->assertStringContainsString('width="180"', $html);
+        $this->assertStringContainsString('height="64"', $html);
+        $this->assertStringNotContainsString('display:flex', $html);
+    }
+
     public function test_livewire_morph_markers_are_stripped(): void
     {
         // Livewire injects these conditional comments around @if/@foreach in any
@@ -136,6 +148,7 @@ class BuilderTest extends TestCase
         $campaign = NewsletterCampaign::factory()->create([
             'rendered_html' => null,
             'blocks' => [
+                ['type' => 'logo', 'data' => []],
                 ['type' => 'heading', 'data' => ['text' => 'All blocks', 'level' => 'h1']],
                 ['type' => 'paragraph', 'data' => ['text' => '<p>Intro.</p>']],
                 ['type' => 'image', 'data' => ['image' => '/images/hero-skydive.jpg', 'caption' => 'Sky', 'link' => '/tandem']],

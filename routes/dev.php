@@ -120,6 +120,7 @@ function devMailPreviews(): array
                 'preheader' => 'Fresh tandem dates and a Seville AFF course.',
                 'rendered_html' => null,
                 'blocks' => [
+                    ['type' => 'logo', 'data' => []],
                     ['type' => 'heading', 'data' => ['text' => 'The skies are open', 'level' => 'h1']],
                     ['type' => 'paragraph', 'data' => ['text' => '<p>We’ve opened a fresh batch of tandem dates and a Seville AFF course. <strong>Grab a slot before they’re gone.</strong></p>']],
                     ['type' => 'image', 'data' => ['image' => '/images/hero-skydive.jpg', 'caption' => 'Freefall over the dropzone', 'link' => '/tandem']],

@@ -16,6 +16,7 @@ class NewsletterRenderer
 {
     /** @var list<string> */
     public const BLOCK_TYPES = [
+        'logo',
         'heading',
         'paragraph',
         'image',
