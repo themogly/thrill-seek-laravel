@@ -90,5 +90,5 @@ page (verified earlier this session). FAQPage is **N/A** — the site has no FAQ
 
 ## Status
 
-- [ ] SEO-P2.1 — news auto-description uses `lead` (+ de-spaced body fallback)
+- [x] SEO-P2.1 — news auto-description now uses `lead` (+ de-spaced body fallback) — done, tested
 - [x] Everything else — already implemented and verified; no work needed

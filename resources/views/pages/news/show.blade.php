@@ -4,9 +4,11 @@
     use Illuminate\Support\Str;
 
     $seoTitle = filled($article->seo_title) ? $article->seo_title : $article->title;
-    $seoDescription = filled($article->seo_description)
-        ? $article->seo_description
-        : Str::limit(strip_tags($article->body), 150);
+    // Prefer a hand-written seo_description, then the clean one-line `lead`; only fall
+    // back to the body — de-spaced so stripped block tags don't run sentences together.
+    $seoDescription = filled($article->seo_description) ? $article->seo_description
+        : (filled($article->lead) ? $article->lead
+            : Str::limit(trim((string) preg_replace('/\s+/', ' ', strip_tags(str_replace(['</p>', '</li>', '<br>', '<br/>', '<br />'], ' ', (string) $article->body)))), 150));
 
     // Article's own social image (absolute) when it has a featured photo.
     $articleOgImage = $article->featured_image_url

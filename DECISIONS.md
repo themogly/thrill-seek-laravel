@@ -845,3 +845,15 @@ items were actioned, no documented decision was revisited.
   controllers (idiomatic, no reuse to justify Form Requests); `CourseMessageMail`'s
   `Queueable`-without-`ShouldQueue` (documented — the per-recipient job queues it); the
   `ProtectsAgainstSpam` honeypot concern. All confirmed as correct-by-design.
+
+## SEO verification pass (seo/audit-pass, second run)
+
+Re-ran as a verification/inventory pass (the SEO was already built in the first
+seo/audit-pass round and is on main). Confirmed complete and correct across all three
+phases — shared meta mechanism, dynamic news/AFF meta, full JSON-LD, sitemap/robots,
+noindex on thin pages, hero preload, icons/manifest, and the breadcrumb-position fix.
+One genuine gap fixed: the news auto-description fell back to `strip_tags($body)`, which
+ran paragraphs together; it now prefers the article's clean `lead` field (a hand-written
+`seo_description` still wins), with a de-spaced body fallback. Owner tasks (real postal
+address → LocalBusiness upgrade, Search Console, Google Business Profile, canonical host)
+remain owner-only and were not faked.
