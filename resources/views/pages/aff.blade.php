@@ -22,9 +22,9 @@
 
     {{-- INTRO: image bleeds off the left edge --}}
     <section class="overflow-hidden border-b-2 border-secondary">
-        <div class="mx-auto grid max-w-7xl items-stretch gap-12 px-4 py-16 lg:grid-cols-2 lg:px-8 lg:py-24">
+        <div class="mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 lg:grid-cols-2 lg:px-8 lg:py-24">
             <div class="relative order-last lg:order-first lg:-ml-24" data-reveal>
-                <img src="{{ $page->imageUrl($page->intro_image) }}" alt="AFF training" class="h-full min-h-[24rem] w-full object-cover" loading="lazy" width="1280" height="896" />
+                <img src="{{ $page->imageUrl($page->intro_image) }}" alt="AFF training" class="h-[22rem] w-full object-cover lg:h-[30rem]" loading="lazy" width="1280" height="896" />
             </div>
             <div data-reveal>
                 <x-site.section-heading :eyebrow="$page->intro_eyebrow" :title="$page->intro_title" :lead="$page->intro_lead" class="mb-8" />
