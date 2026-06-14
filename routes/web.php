@@ -3,6 +3,7 @@
 use App\Http\Controllers\Account\BookingController as AccountBookingController;
 use App\Http\Controllers\Account\DashboardController as AccountDashboardController;
 use App\Http\Controllers\Account\LoginController as AccountLoginController;
+use App\Http\Controllers\Account\PaymentController as AccountPaymentController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ResendWebhookController;
@@ -53,6 +54,9 @@ Route::prefix('account')->name('account.')->group(function (): void {
         Route::get('/bookings', [AccountBookingController::class, 'index'])->name('bookings');
         Route::get('/bookings/{booking}', [AccountBookingController::class, 'show'])->name('bookings.show');
         Route::post('/bookings/{booking}/pay', [AccountBookingController::class, 'pay'])->name('bookings.pay');
+        Route::get('/bookings/{booking}/receipt', [AccountPaymentController::class, 'receipt'])->name('bookings.receipt');
+
+        Route::get('/payments', [AccountPaymentController::class, 'index'])->name('payments');
     });
 });
 

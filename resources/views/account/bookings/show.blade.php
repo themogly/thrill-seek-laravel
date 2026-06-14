@@ -68,8 +68,9 @@
             </div>
         </div>
 
-        <div class="mt-6">
+        <div class="mt-6 flex flex-wrap items-center justify-between gap-4">
             <x-ui.button variant="link" :href="route('account.bookings')">&larr; All bookings</x-ui.button>
+            <x-ui.button variant="outline" size="sm" :href="route('account.bookings.receipt', $booking)">Download receipt (PDF)</x-ui.button>
         </div>
     </x-site.section>
 @endsection
