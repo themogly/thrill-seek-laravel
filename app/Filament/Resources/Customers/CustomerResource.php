@@ -2,10 +2,13 @@
 
 namespace App\Filament\Resources\Customers;
 
+use App\Enums\EnquiryStatus;
 use App\Filament\Resources\Customers\Pages\EditCustomer;
 use App\Filament\Resources\Customers\Pages\ListCustomers;
 use App\Filament\Resources\Customers\Pages\ViewCustomer;
+use App\Filament\Resources\Enquiries\EnquiryResource;
 use App\Models\Customer;
+use App\Models\Enquiry;
 use BackedEnum;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -16,8 +19,12 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
 
 class CustomerResource extends Resource
@@ -87,7 +94,10 @@ class CustomerResource extends Resource
                         ->hiddenLabel()
                         ->placeholder('No enquiries yet.')
                         ->components([
-                            TextEntry::make('reference')->hiddenLabel(),
+                            TextEntry::make('reference')
+                                ->hiddenLabel()
+                                ->weight('bold')
+                                ->url(fn (Enquiry $record): string => EnquiryResource::getUrl('view', ['record' => $record])),
                             TextEntry::make('product.name')->hiddenLabel()->placeholder('General'),
                             TextEntry::make('status')->hiddenLabel()->badge(),
                             TextEntry::make('created_at')->hiddenLabel()->since(),
@@ -100,8 +110,17 @@ class CustomerResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            // Surface who's waiting on a reply: unread-enquiry count + latest reply time.
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query
+                ->withCount(['enquiries as unread_enquiries_count' => fn (Builder $q): Builder => $q->whereNull('read_at')])
+                ->withMax('enquiries', 'last_customer_message_at'))
             ->defaultSort('created_at', 'desc')
             ->columns([
+                IconColumn::make('new_message')
+                    ->label('')
+                    ->icon(fn (Customer $record): ?string => ($record->unread_enquiries_count ?? 0) > 0 ? 'heroicon-s-bell-alert' : null)
+                    ->color('danger')
+                    ->tooltip('Has an unanswered message'),
                 TextColumn::make('name')
                     ->label('Name')
                     ->searchable()
@@ -109,16 +128,36 @@ class CustomerResource extends Resource
                 TextColumn::make('email')
                     ->label('Email')
                     ->searchable(),
+                TextColumn::make('unread_enquiries_count')
+                    ->label('Unread')
+                    ->badge()
+                    ->color(fn (int $state): string => $state > 0 ? 'danger' : 'gray')
+                    ->sortable(),
                 TextColumn::make('bookings_count')
                     ->label('Bookings')
                     ->counts('bookings'),
                 TextColumn::make('enquiries_count')
                     ->label('Enquiries')
                     ->counts('enquiries'),
-                TextColumn::make('created_at')
-                    ->label('First seen')
-                    ->date()
+                TextColumn::make('enquiries_max_last_customer_message_at')
+                    ->label('Last reply')
+                    ->since()
+                    ->placeholder('—')
                     ->sortable(),
+            ])
+            ->filters([
+                TernaryFilter::make('has_unread')
+                    ->label('Has unread')
+                    ->queries(
+                        true: fn (Builder $query): Builder => $query->whereHas('enquiries', fn (Builder $q): Builder => $q->whereNull('read_at')),
+                        false: fn (Builder $query): Builder => $query->whereDoesntHave('enquiries', fn (Builder $q): Builder => $q->whereNull('read_at')),
+                    ),
+                Filter::make('awaiting_reply')
+                    ->label('Awaiting our reply')
+                    ->query(fn (Builder $query): Builder => $query->whereHas('enquiries', fn (Builder $q): Builder => $q->whereIn('status', [
+                        EnquiryStatus::New->value,
+                        EnquiryStatus::CustomerReplied->value,
+                    ]))),
             ])
             ->recordActions([
                 ViewAction::make(),

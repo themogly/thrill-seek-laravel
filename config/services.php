@@ -20,6 +20,10 @@ return [
 
     'resend' => [
         'key' => env('RESEND_API_KEY'),
+        // Inbound email: the receiving domain replies are addressed to
+        // (enquiry+{token}@{inbound_domain}) and the webhook signing secret.
+        'inbound_domain' => env('MAIL_INBOUND_DOMAIN'),
+        'webhook_secret' => env('RESEND_WEBHOOK_SECRET'),
     ],
 
     'ses' => [

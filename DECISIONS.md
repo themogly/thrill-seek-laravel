@@ -760,3 +760,38 @@ Branched off main `a2b3547` (after the newsletter builder + admin docs + SEO mer
 - **Mobile preview (5c)**: the email is now responsive (viewport meta +
   `max-width:600px` media query), so the admin preview's mobile pane is a fixed 375px
   phone frame with overflow clipped — no sideways scroll. Email output unchanged.
+
+## Inbound email threading (feature/inbound-email)
+
+Branched off main `a2b3547`. Customer email replies thread back into the enquiry
+conversation, built on Resend inbound (no second mail provider).
+
+- **Token scheme**: each enquiry carries a 32-char `Str::random` `reply_token`
+  (unguessable — not derived from the id), and replies are addressed to
+  `enquiry+{token}@{MAIL_INBOUND_DOMAIN}`. Routing is by token, not the sender's
+  address, so it's robust to forwarding/aliases. Inbound domain + webhook secret are
+  env-config (`services.resend.inbound_domain` / `webhook_secret`), never hardcoded.
+- **Webhook = sibling of Stripe**: `ResendWebhookController` verifies the Svix
+  signature only (`ResendWebhookSignature`, HMAC-SHA256 over
+  `{id}.{timestamp}.{body}`) and dispatches a queued `ProcessInboundEmail` job →
+  `HandleInboundEmail` action. The slow **second Resend fetch** (metadata → full
+  body/attachments) runs in the job, behind an `InboundEmailFetcher` interface that
+  tests fake — the real `ResendInboundEmailFetcher` is the single API seam.
+- **Reply parser**: `EmailReplyParser` is a line-by-line heuristic (cut at the first
+  `On … wrote:` / `>` quote / Outlook divider / `-- ` signature / "Sent from my …"),
+  tuned for Gmail/Apple/Outlook — NOT a full RFC parser. The full original is always
+  kept in `raw_body`, so an over-aggressive cut is recoverable.
+- **Idempotent + guarded**: dedupe on the Resend `email_id` (re-delivery never threads
+  twice); auto-replies/bounces are detected (Auto-Submitted / Precedence / X-Autoreply
+  headers, bounce senders, out-of-office subjects) and never threaded.
+- **Nothing dropped**: unroutable mail (unknown/missing token, fetch failure) goes to
+  an `unmatched_inbound_messages` table surfaced as a read-only "Unmatched messages"
+  admin list, not silently discarded.
+- **Status/triage**: a threaded reply flips the enquiry to `customer_replied`, records
+  `last_customer_message_at` and re-marks it unread. Enquiries and Customers lists gain
+  needs-attention indicators, snippets, last-activity, sort and "Needs reply"/"Has
+  unread" filters; opening an enquiry marks it read.
+- **BCC dropbox deferred**: capturing the owner's own outgoing mail via a BCC dropbox
+  is documented as future work (SETUP.md) rather than half-built — it needs reliable
+  match-by-customer-address and a manual-outbound message type; the inbound
+  webhook/action are the foundation to add it on.

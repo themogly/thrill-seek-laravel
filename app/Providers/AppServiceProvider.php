@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Contracts\InboundEmailFetcher;
 use App\Services\Newsletter\NativeNewsletterService;
 use App\Services\Newsletter\NewsletterService;
+use App\Support\Inbound\ResendInboundEmailFetcher;
 use Illuminate\Support\ServiceProvider;
 use Stripe\StripeClient;
 
@@ -16,6 +18,9 @@ class AppServiceProvider extends ServiceProvider
     {
         // Swap this binding to move list management to another provider.
         $this->app->bind(NewsletterService::class, NativeNewsletterService::class);
+
+        // Second-step inbound fetch (webhook → full body); faked in tests.
+        $this->app->bind(InboundEmailFetcher::class, ResendInboundEmailFetcher::class);
 
         $this->app->bind(StripeClient::class, function (): StripeClient {
             $secret = config('services.stripe.secret');
