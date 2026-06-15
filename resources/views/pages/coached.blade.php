@@ -31,6 +31,9 @@
         </div>
     </section>
 
+    {{-- WHO TEACHES THIS --}}
+    <x-site.discipline-instructors :instructors="$instructors" label="Coaching" />
+
     {{-- FAQS --}}
     <x-site.faq-section :faqs="$faqs" />
 

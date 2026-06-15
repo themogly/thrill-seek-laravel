@@ -139,6 +139,9 @@
         </div>
     </section>
 
+    {{-- WHO TEACHES THIS --}}
+    <x-site.discipline-instructors :instructors="$instructors" label="AFF" />
+
     {{-- FAQS --}}
     <x-site.faq-section :faqs="$faqs" />
 
