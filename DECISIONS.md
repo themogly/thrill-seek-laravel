@@ -1339,3 +1339,35 @@ additive here so it composes cleanly).
    under "Site content" (owner can rename/add). Three seeded: Tandem / AFF / Coaching.
 Building now in logical commits: model+migration+seed → CMS → cache gateway → Meet the Team page +
 nav → homepage teaser → discipline strips → visuals.
+
+### BUILT (feature/instructors-disciplines)
+Shipped in logical commits, `composer check` green before each (361 tests):
+- **Data model**: `disciplines` lookup + `discipline_instructor` pivot;
+  `Instructor::disciplines()` many-to-many. `SiteContent::instructors()` carries
+  disciplines in the cached plain-array payload (no cached objects) and rehydrates
+  them as a relation; `instructorsForDiscipline(slug)` filters the cached set.
+  `DisciplineSeeder` seeds Tandem/AFF/Coaching and assigns them (matched on first
+  name, so it survives the content-seed branch's surname additions).
+- **CMS**: CheckboxList on the instructor form + a Disciplines resource ("Site
+  content"). HelpGuide gains a "Your team & their disciplines" section.
+- **Meet the Team page** (`/meet-the-team`, third in the Why Us dropdown): static
+  responsive grid, all instructors visible (no desktop scroll, stacks on mobile),
+  discipline tag chips (`<x-site.discipline-tags>`, palette only), longer bios.
+  Settings copy under "Other pages → Meet the Team"; in sitemap (0.6).
+- **Homepage teaser** REPLACED the scroll rail: a compact band of overlapping
+  avatars + an editable trust line + "Meet the team →". No desktop carousel; far
+  less vertical space; bios moved to the team page. Hidden when no instructors.
+- **Course-page strips**: "Meet your <discipline> team" on Tandem/AFF/Coached,
+  tag-filtered (each instructor once), above the FAQs; hidden when none tagged.
+
+**KEPT vs REPLACED**: the homepage team *section heading* (eyebrow/title/lead from
+`HomePageSettings`) was KEPT; only the scroll *rail* beneath it was REPLACED by the
+teaser. Instructor name/role/bio fields KEPT as-is (bio field already `text` — room
+for the longer Meet-the-Team bios; the actual long bio TEXT comes from the
+content-seed branch). The editorial card aesthetic (navy plate, primary top-rule,
+monogram fallback) was reused so the team page reads as a sibling of Testimonials /
+Hall of Fame.
+
+**Cross-branch**: both this and `chore/seed-real-content` touch `InstructorSeeder`
+(this branch doesn't — only `DisciplineSeeder`, which is additive), so they compose;
+whichever merges second is a clean fast-forward of the other's instructor changes.
