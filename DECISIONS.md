@@ -1542,3 +1542,26 @@ app's canonical navy exactly.
   get the original **SVG/vector** logo from the designer and change the blue fill to `#00226b`
   there — crisp at every size, and the icons can be re-exported from it. Flagging so the raster
   result isn't mistaken for the proper source-of-truth fix.
+
+## Logo: make "SKYDIVING" readable (chore/logo-skydiving-fix)
+Branch off main `4798387`.
+- **Format: RASTER** (`public/images/logo.png` RGBA + `logo.webp`; icons embed the logo). No SVG.
+- **Diagnosis**: "SKYDIVING" is a **hollow double-contour OUTLINE** with transparent interiors
+  in a pale neutral grey (~`#b6b6b7`), which is why it's hard to read on the white header.
+- **Tried for a true SOLID fill (the ideal)** — both failed cleanliness:
+  1. *Even-odd ray-casting* → venetian-blind streak artefacts (italic strokes flip horizontal
+     ray parity row-to-row).
+  2. *Connectivity region-fill* (level regions by stroke-crossings, fill odd levels) → clean for
+     most letters and correctly preserved the **D** counter, BUT the leading **"S"** body
+     connects to the exterior past the adjacent navy swoosh and wouldn't fill — an inconsistent,
+     un-shippable result. Confirms a hollow raster outline can't be reliably solid-filled.
+- **Shipped (safe improvement)**: darkened the SKYDIVING outline to **`#495766`** =
+  `muted-foreground` (the token for secondary text), **7.40:1 on white (WCAG AA pass)**.
+  Luminance-preserving recolour keeps the AA edges crisp; navy "G-FORCE" untouched; two-tone
+  identity intact and SKYDIVING stays visibly secondary. Regenerated `logo.webp` + the
+  apple-touch/192/512 icons (favicon-32 too small to carry the word). Footer uses a white TEXT
+  wordmark (no image) — nothing to change there.
+- **⚠️ Still needs the VECTOR/SVG source for a true SOLID two-tone (owner task).** The darkened
+  outline is a legibility improvement, not the requested solid fill — filling hollow letters in
+  raster can't be done cleanly (see the "S" failure). With the designer's SVG, set the
+  "SKYDIVING" glyphs to a solid `#495766` fill (and re-export the icons) — crisp at every size.
