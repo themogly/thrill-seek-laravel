@@ -119,6 +119,37 @@ as the fast CI/`composer check` test driver — see below). See
 - **Retention:** keep enough daily backups to recover from a problem discovered late
   (e.g. 14–30 dailies + a few monthlies); managed-DB point-in-time recovery is ideal.
 
+## Deploying (each release — Ploi/Hetzner)
+
+Run these **in order** on every deploy (Ploi runs them as the deploy script). Steps 1–3
+prepare the new code, 4–6 update state, and the worker restarts **last** so it never runs
+stale code:
+
+1. **Pull the release** — `git pull` (Ploi does this automatically).
+2. **PHP deps** — `composer install --no-dev --optimize-autoloader`.
+3. **Assets** — `npm ci && npm run build`.
+4. **Migrate** — `php artisan migrate --force`. **NEVER `migrate:fresh`, `migrate:refresh`
+   or `db:wipe` in production** — they drop every table. Only forward-only `migrate` is safe.
+5. **Storage symlink** — `php artisan storage:link`. Required so owner-uploaded images on
+   the `public` disk are served (bundled `/images/*` paths work without it). Idempotent and
+   only needed once per environment — but **keep it in the Ploi deploy script**, because
+   zero-downtime deploys that swap the release directory must recreate the symlink each
+   release.
+6. **Refresh caches** — `php artisan config:cache` (or at least `config:clear`),
+   `php artisan cache:clear`, and **`php artisan settings:clear-cache`**. The settings clear
+   is not optional: a deploy that adds a settings property otherwise leaves a **stale
+   typed-settings cache** that silently fails queued email and 500s pages reading the new
+   key (the mail layer now falls back gracefully for the sign-off, but other reads don't —
+   clearing on every deploy is the mitigation).
+7. **Restart the worker LAST** — `php artisan horizon:terminate` so Horizon restarts on the
+   new code. Doing this before steps 4–6 would leave the worker running stale code.
+
+**Must-be-running services (configure once — see "Queues, Horizon & scheduler"):**
+- **Horizon** under Supervisor with `autorestart=true` — the queue worker; **without it
+  nothing sends** (confirmations, reminders, magic-link logins).
+- **`schedule:run` cron** (`* * * * * php …/artisan schedule:run`) — **silent if missing**:
+  reminders, abandoned-checkout hold releases and balance chasers just stop, with no error.
+
 ## First run
 
 ```bash

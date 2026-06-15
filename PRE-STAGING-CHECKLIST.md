@@ -11,13 +11,14 @@ audit *says* it did.
 ## Verdict: ✅ GO for staging
 
 The codebase is clean, complete and safely configured. All three go-live blockers are
-present **in code** (GDPR erasure, privacy-scrubbed Sentry, MySQL). Two MINOR
-config/doc gaps remain (below) — neither blocks leaving local; both are server-setup
-items the owner handles during deploy. Staging exists to surface environment issues, and
-the bar to leave local ("clean, complete, safely configured") is met.
+present **in code** (GDPR erasure, privacy-scrubbed Sentry, MySQL). Staging exists to
+surface environment issues, and the bar to leave local ("clean, complete, safely
+configured") is met.
 
-Fix-first-if-you-want-them-tidy (not blockers): add `SESSION_SECURE_COOKIE` to
-`.env.example`; add `php artisan storage:link` to the deploy steps in SETUP.md.
+> **Update (`chore/pre-staging-tidyups`):** the two MINOR doc gaps below are now
+> **RESOLVED** — `SESSION_SECURE_COOKIE` added to `.env.example` (default `false`, comment
+> to set `true` in prod), and `php artisan storage:link` added to a new ordered "Deploying"
+> deploy sequence in SETUP.md. Findings retained below for the record, marked RESOLVED.
 
 ---
 
@@ -69,9 +70,10 @@ None missing. (Sentry only *reports* once the owner sets the real DSN — see §
 
 - **`.env.example` coverage:** documents APP_KEY/URL/DEBUG, full Stripe (key/secret/webhook
   secret), Resend (key + from-address + webhook secret + inbound domain), Redis, DB,
-  `SENTRY_LARAVEL_DSN`, mail, session, cache/queue. **One gap:** `SESSION_SECURE_COOKIE` is
-  read in `config/session.php:172` and required by SETUP.md for production, but is **not in
-  `.env.example`**. → MINOR: add it (commented) so it's not forgotten in prod.
+  `SENTRY_LARAVEL_DSN`, mail, session, cache/queue. ~~**One gap:** `SESSION_SECURE_COOKIE`
+  is read in `config/session.php:172` and required by SETUP.md for production, but is not in
+  `.env.example`.~~ → **RESOLVED** (`chore/pre-staging-tidyups`): `SESSION_SECURE_COOKIE=false`
+  added to `.env.example`'s session block with a comment to set `true` in production.
 - **Local-only routes gated:** `routes/web.php:82` loads `routes/dev.php` **only** under
   `app()->environment('local')`. The dev account-login shortcut (`/dev/account-login`) and
   `/dev/mail` previews therefore **cannot be reached in production** (APP_ENV=production).
@@ -85,7 +87,8 @@ None missing. (Sentry only *reports* once the owner sets the real DSN — see §
 - **Filesystem:** owner-uploaded images use `Storage::disk('public')` (e.g.
   `Product::imageUrl`, `Instructor`, `Testimonial`, `HallOfFameEntry`), so the server needs
   **`php artisan storage:link`** or uploaded images 404. Bundled `/images/*` paths work
-  without it. → MINOR: this step is **not in SETUP.md** (see §5).
+  without it. → **RESOLVED** (`chore/pre-staging-tidyups`): added to the SETUP.md "Deploying"
+  sequence (step 5).
 - **Drivers production-appropriate:** `.env.example` has `QUEUE_CONNECTION=redis`,
   `CACHE_STORE=redis`, `SESSION_DRIVER=database` (sessions table exists in
   `0001_01_01_000000_create_users_table.php`). No `sync`/`array`/`file` dev leftovers. (The
@@ -108,8 +111,8 @@ Ordered; specifics from SETUP.md where present, gaps flagged.
 5. **Deploy build step** — `composer install --no-dev`, `npm ci && npm run build`.
 6. **`php artisan migrate --force`** on deploy. **NEVER `migrate:fresh`/`refresh`/`db:wipe`
    on production** (SETUP "Production database").
-7. **`php artisan storage:link`** — ⚠️ **NOT in SETUP.md**; required so owner-uploaded
-   images on the public disk are served. Add to the deploy script.
+7. **`php artisan storage:link`** — required so owner-uploaded images on the public disk
+   are served. ✅ Now documented in SETUP.md "Deploying" (step 5).
 8. **`php artisan settings:clear-cache`** after any deploy that adds a settings property
    (otherwise pages/emails 500 on the missing key — SETUP notes this; the email layer now
    also degrades gracefully per the QA fix).
@@ -146,7 +149,7 @@ These need the live server/domain and are the owner's post-deploy verification l
 
 - **Before real data is entered:** GDPR erasure ✅ and privacy-scrubbed Sentry ✅ are
   already in. Set the real `SENTRY_LARAVEL_DSN` so monitoring is live from day one.
-- **Two MINOR tidy-ups** (optional before staging, recommended before production):
-  1. Add `SESSION_SECURE_COOKIE` (commented) to `.env.example`.
-  2. Add `php artisan storage:link` to the deploy steps in SETUP.md.
+- **Two MINOR tidy-ups — ✅ DONE** (`chore/pre-staging-tidyups`):
+  1. `SESSION_SECURE_COOKIE` added to `.env.example` (default `false`; set `true` in prod).
+  2. `php artisan storage:link` added to a new ordered SETUP.md "Deploying" sequence.
 - Everything else: **GO**.
