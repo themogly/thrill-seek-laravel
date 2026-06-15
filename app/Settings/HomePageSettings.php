@@ -37,14 +37,6 @@ class HomePageSettings extends Settings
 
     public string $about_body;
 
-    /**
-     * No `@var` tag: spatie's docblock reflector can't parse array shapes,
-     * and an absent tag means "no cast", which is correct for plain arrays.
-     *
-     * @phpstan-var array<int, array{icon: string, value: string, label: string}>
-     */
-    public array $about_stats;
-
     public string $about_image_1;
 
     public string $about_image_2;
@@ -53,15 +45,9 @@ class HomePageSettings extends Settings
 
     public string $trust_title;
 
-    public string $team_eyebrow;
-
-    public string $team_title;
-
     public string $team_lead;
 
     public string $instagram_caption;
-
-    public string $instagram_note;
 
     public string $testimonials_eyebrow;
 

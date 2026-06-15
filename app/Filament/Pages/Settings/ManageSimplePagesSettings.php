@@ -81,12 +81,6 @@ class ManageSimplePagesSettings extends SettingsPage
                     TextInput::make('meet_the_team_hero_subtitle')->label('Text under the heading')->maxLength(500),
                     TextInput::make('meet_the_team_seo_title')->label('SEO page title')->required()->maxLength(255),
                     Textarea::make('meet_the_team_seo_description')->label('SEO description')->rows(2)->required(),
-                    TextInput::make('home_team_teaser_line')
-                        ->label('Homepage team teaser line')
-                        ->helperText('The short trust line shown beside the team avatars on the homepage.')
-                        ->required()
-                        ->maxLength(255)
-                        ->columnSpanFull(),
                 ]),
             Section::make('Contact page')
                 ->columns(2)

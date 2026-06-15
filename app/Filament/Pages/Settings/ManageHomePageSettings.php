@@ -3,11 +3,8 @@
 namespace App\Filament\Pages\Settings;
 
 use App\Settings\HomePageSettings;
-use App\Support\SiteIcons;
 use BackedEnum;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -85,16 +82,6 @@ class ManageHomePageSettings extends SettingsPage
                     TextInput::make('about_eyebrow')->label('Small line')->required()->maxLength(255),
                     TextInput::make('about_title')->label('Heading')->required()->maxLength(255),
                     Textarea::make('about_body')->label('Paragraph')->rows(4)->required(),
-                    Repeater::make('about_stats')
-                        ->label('Statistics')
-                        ->columns(3)
-                        ->components([
-                            Select::make('icon')->options(SiteIcons::options())->required(),
-                            TextInput::make('value')->label('Big number/text')->required()->maxLength(50),
-                            TextInput::make('label')->label('Caption')->required()->maxLength(100),
-                        ])
-                        ->reorderable()
-                        ->minItems(1),
                     FileUpload::make('about_image_1')
                         ->label('Left photo')
                         ->helperText('Leave empty to keep the current image.')
@@ -116,22 +103,15 @@ class ManageHomePageSettings extends SettingsPage
                     TextInput::make('trust_eyebrow')->label('Small line')->required()->maxLength(255),
                     TextInput::make('trust_title')->label('Heading')->required()->maxLength(255),
                 ]),
-            Section::make('“Meet the team” heading')
-                ->columns(3)
+            Section::make('“Meet the team” teaser')
                 ->components([
-                    TextInput::make('team_eyebrow')->label('Small line')->required()->maxLength(255),
-                    TextInput::make('team_title')->label('Heading')->required()->maxLength(255),
-                    TextInput::make('team_lead')->label('Lead text')->maxLength(500),
+                    TextInput::make('team_lead')->label('Lead text (shown above the “Meet the Team” button on the home page)')->maxLength(500),
                 ]),
-            Section::make('Instagram feed')
+            Section::make('“Follow us” card')
                 ->description('The “Latest News” block next to it is managed under News.')
                 ->components([
                     TextInput::make('instagram_caption')
                         ->label('Instagram caption')
-                        ->required()
-                        ->maxLength(255),
-                    TextInput::make('instagram_note')
-                        ->label('Instagram small print')
                         ->required()
                         ->maxLength(255),
                 ]),
