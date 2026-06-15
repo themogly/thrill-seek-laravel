@@ -1441,3 +1441,54 @@ Hall of Fame.
 **Cross-branch**: both this and `chore/seed-real-content` touch `InstructorSeeder`
 (this branch doesn't — only `DisciplineSeeder`, which is additive), so they compose;
 whichever merges second is a clean fast-forward of the other's instructor changes.
+
+## Team display design fixes (ui/team-design-fixes) — DESIGN CHECKPOINT (proposal, awaiting approval)
+Branch off main `3e188de`. Presentation only — the disciplines DATA model is unchanged.
+Current state (screenshots in `ui-review/team-fixes/00-*`):
+- **Home teaser** says "meet the team" twice (eyebrow MEET THE TEAM + a big "THE COACHES"
+  title + lead), then a heavy bordered box with 3 NAMELESS avatars + a trust line + a
+  "MEET THE TEAM →" link. Heavy and redundant.
+- **Tandem/AFF strip** is a near-identical heavy box ("MEET YOUR TANDEM TEAM" + nameless
+  avatars + a comma-joined name list + link).
+- **Team page tags** render as bare outlined boxes "TANDEM AFF COACHING" — ambiguous (could
+  read as sizes/filters); card body padding/rhythm looks off (tags butt the top, uneven bottoms).
+
+### A. Homepage team mention (remove the heavy box + duplicated heading)
+- **A1 (recommended): weave one elegant line into the existing About band.** Delete the whole
+  standalone teaser section. At the end of the navy About story add a single understated
+  sentence with an inline `arrow-link` — e.g. *"The people behind it — meet the instructors
+  who'll fly with you →"*. No box, no big heading, no avatars on the homepage (which also
+  removes the nameless-avatar problem here entirely). Most subtle; contextually correct (the
+  story → the people). The link text comes from the existing `home_team_teaser_line` setting.
+- **A2: slim named-avatar row, no box.** Keep a team mention where the teaser sits but strip
+  the border/heading: a single row of 3–4 SMALL avatars each WITH a name beneath, a short
+  inline lead, and a "Meet the team →" link. Faces stay (named), but lighter than today.
+- *Reasoning:* A1 is the cleaner answer to "subtle, woven, not its own section". A2 keeps
+  faces on the homepage if you value that for trust.
+
+### B. Avatars (resolve the nameless-thumbnail problem everywhere)
+Rule: avatars only ever appear **WITH names**. Home = no avatars (A1) or named row (A2);
+Tandem/AFF = named (section C); Team page keeps full portrait cards. No nameless rows anywhere.
+
+### C. Tandem/AFF compact element (the opposite of the heavy home block)
+A small, NAMED, discipline-filtered element above the FAQs (same slot as today), via a new
+shared `<x-site.instructor-chip>` partial (avatar + name + role) reused across pages — one
+source of truth, no per-page duplication. Queries the existing `instructorsForDiscipline(slug)`
+(tandem→tandem, aff→aff); a multi-discipline instructor still shows once.
+- **C1 (recommended): a row of small "person" chips** — small avatar with the name + one-line
+  role beneath each, 2–4 across, under a quiet small label ("Your tandem instructors", text-xs
+  uppercase — NOT a display heading), with a trailing "Meet the team →" link. Compact, named,
+  scannable.
+- **C2: inline horizontal chips** — avatar + name + role on one line each, stacked in a tidy
+  list. Even more compact; better when there are many instructors.
+
+### D. Team-page discipline tags + card padding
+- **D1 (recommended): label the tags "Teaches".** Prefix the chips with a small muted
+  "TEACHES" label (text-xs uppercase tracking) so meaning is unmistakable, keep the chips.
+- **D2: drop the boxes for a labelled text line** — *"Teaches — Tandem · AFF · Coaching"*
+  with the disciplines in brand primary. Lightest, very clear, no boxy ambiguity.
+- **Padding fix (both):** standardise the card body to a consistent pad + rhythm — the
+  "Teaches" line, a hairline `border-border` divider, then the bio, with even top/bottom
+  spacing so cards with short and long bios read consistently. Reused monogram empty state kept.
+
+Awaiting owner choice on A, C, D (B follows). Build only after approval.
