@@ -51,7 +51,7 @@
 
     {{-- SERVICES: full-bleed photographic tiles, text on the image --}}
     <section class="border-b-2 border-secondary">
-        <div class="mx-auto max-w-7xl px-4 pt-16 lg:px-8 lg:pt-24">
+        <div class="mx-auto max-w-7xl px-4 pt-section-sm lg:px-8 lg:pt-section">
             <x-site.section-heading :eyebrow="$home->services_eyebrow" :title="$home->services_title" :lead="$home->services_lead" />
         </div>
         <div class="grid gap-px bg-secondary md:grid-cols-3" data-reveal>
@@ -74,13 +74,13 @@
 
     {{-- ABOUT: navy band, photos bleed to the edge --}}
     <section class="band-ink overflow-hidden">
-        <div class="mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 lg:grid-cols-2 lg:px-8 lg:py-32">
+        <div class="mx-auto grid max-w-7xl items-center gap-12 px-4 py-section lg:grid-cols-2 lg:px-8 lg:py-section-lg">
             <div data-reveal>
-                <p class="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.3em] text-sky-bright">
+                <p class="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.25em] text-sky-bright">
                     <span class="inline-block h-0.5 w-10 bg-primary"></span>{{ $home->about_eyebrow }}
                 </p>
-                <h2 class="heading-rule mt-4 font-display text-5xl uppercase leading-[0.95] tracking-wide md:text-7xl">{{ $home->about_title }}</h2>
-                <p class="mt-6 text-lg text-white/85">
+                <h2 class="heading-rule mt-4 font-display text-h2 uppercase tracking-wide">{{ $home->about_title }}</h2>
+                <p class="mt-6 max-w-measure text-lead text-white/85">
                     {{ $home->about_body }}
                 </p>
                 <div class="mt-10 grid grid-cols-3 divide-x divide-white/15 border-y border-white/15">
@@ -101,11 +101,11 @@
 
     {{-- TRUST: typographic statement band --}}
     <section class="border-b-2 border-secondary bg-secondary text-white">
-        <div class="mx-auto max-w-7xl px-4 py-16 lg:px-8 lg:py-20">
-            <p class="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.3em] text-sky-bright">
+        <div class="mx-auto max-w-7xl px-4 py-section-sm lg:px-8 lg:py-section">
+            <p class="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.25em] text-sky-bright">
                 <span class="inline-block h-0.5 w-10 bg-primary"></span>{{ $home->trust_eyebrow }}
             </p>
-            <h2 class="mt-3 font-display text-4xl uppercase leading-none tracking-wide md:text-6xl">{{ $home->trust_title }}</h2>
+            <h2 class="mt-3 font-display text-h2 uppercase tracking-wide">{{ $home->trust_title }}</h2>
             <x-site.trust-grid />
         </div>
     </section>
@@ -207,24 +207,24 @@
     </x-site.section>
 
     {{-- NEWSLETTER --}}
-    <section class="band-ink border-y-4 border-primary py-20">
+    <section class="band-ink border-y-4 border-primary py-section lg:py-section-lg">
         <div class="mx-auto max-w-3xl px-4 text-center">
-            <h2 class="font-display text-5xl uppercase leading-none tracking-wide md:text-6xl">{{ $home->newsletter_title }}</h2>
+            <h2 class="font-display text-h2 uppercase tracking-wide">{{ $home->newsletter_title }}</h2>
             @if (filled($home->newsletter_subtitle))
-                <p class="mt-4 text-lg text-white/85">{{ $home->newsletter_subtitle }}</p>
+                <p class="mx-auto mt-4 max-w-measure text-lead text-white/85">{{ $home->newsletter_subtitle }}</p>
             @endif
             <livewire:newsletter-signup variant="banner" />
         </div>
     </section>
 
     {{-- CONTACT CTA: full-bleed photographic close --}}
-    <section class="relative isolate overflow-hidden py-28 text-white lg:py-40">
+    <section class="relative isolate overflow-hidden py-section lg:py-section-lg text-white">
         <img src="{{ $home->imageUrl($home->hero_image) }}" alt="" aria-hidden="true" class="absolute inset-0 -z-10 h-full w-full object-cover" loading="lazy" width="1920" height="1280" />
         <div class="absolute inset-0 -z-10 bg-photo-scrim"></div>
         <div class="mx-auto max-w-4xl px-4 text-center" data-reveal>
-            <h2 class="font-display text-6xl uppercase leading-[0.92] tracking-wide md:text-8xl">{{ $home->cta_title }}</h2>
+            <h2 class="font-display text-h1 uppercase tracking-wide">{{ $home->cta_title }}</h2>
             @if (filled($home->cta_subtitle))
-                <p class="mx-auto mt-5 max-w-xl text-lg text-white/90">{{ $home->cta_subtitle }}</p>
+                <p class="mx-auto mt-5 max-w-measure text-lead text-white/90">{{ $home->cta_subtitle }}</p>
             @endif
             <x-ui.button href="/contact" size="lg" class="mt-10">
                 {{ $home->cta_button_label }}
