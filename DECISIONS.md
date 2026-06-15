@@ -1441,3 +1441,22 @@ Hall of Fame.
 **Cross-branch**: both this and `chore/seed-real-content` touch `InstructorSeeder`
 (this branch doesn't — only `DisciplineSeeder`, which is additive), so they compose;
 whichever merges second is a clean fast-forward of the other's instructor changes.
+
+## Recolour logo blue → brand navy (chore/logo-recolour)
+Branch off main `3e188de`. Goal: the logo's blue "G-FORCE" (and swoosh) should match the
+app's canonical navy exactly.
+- **Navy used: `#00226b`** = the `--secondary` token (`oklch(0.28 0.14 255)`, "Secondary =
+  deep navy"), which is the navy the headings / nav / brand use. Converted oklch→sRGB precisely
+  (OKLab matrices, not eyeballed); the logo's recoloured core measures exactly `#00226b`.
+- **Format found: RASTER** — `public/images/logo.png` (520×197 RGBA) + a derived
+  `logo.webp`; the apple-touch / 192 / 512 / favicon-32 icons + `favicon.ico` embed the same
+  logo on white. (No SVG source exists in the repo.)
+- **Method**: luminance-preserving recolour — the blue pixels (blue-dominant, `b−r ≥ 10`) are
+  remapped along core-blue→navy and light-edge→white, so anti-aliasing stays clean on BOTH the
+  transparent logo and the white-background icons; the grey "SKYDIVING", transparency and edges
+  are untouched. Regenerated `logo.webp` (cwebp) and repacked `favicon.ico` from the recoloured
+  32px PNG. Footer uses a white TEXT wordmark (no image) — nothing to recolour there.
+- **⚠️ Raster recolour is a WORKAROUND, not as clean as a vector edit.** IDEAL fix (owner task):
+  get the original **SVG/vector** logo from the designer and change the blue fill to `#00226b`
+  there — crisp at every size, and the icons can be re-exported from it. Flagging so the raster
+  result isn't mistaken for the proper source-of-truth fix.
