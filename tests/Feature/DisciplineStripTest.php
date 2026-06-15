@@ -25,13 +25,13 @@ class DisciplineStripTest extends TestCase
         $both->disciplines()->sync([$tandem->id, $aff->id]);
 
         $tandemHtml = $this->get('/tandem')->assertOk()->getContent();
-        $this->assertStringContainsString('Meet your Tandem team', $tandemHtml);
+        $this->assertStringContainsString('Your Tandem instructors', $tandemHtml);
         $this->assertStringContainsString('Tess Tandem', $tandemHtml);
         $this->assertStringContainsString('Bo Both', $tandemHtml);
         $this->assertStringNotContainsString('Andy Aff', $tandemHtml);
 
         $affHtml = $this->get('/aff')->assertOk()->getContent();
-        $this->assertStringContainsString('Meet your AFF team', $affHtml);
+        $this->assertStringContainsString('Your AFF instructors', $affHtml);
         $this->assertStringContainsString('Andy Aff', $affHtml);
         $this->assertStringContainsString('Bo Both', $affHtml);
         $this->assertStringNotContainsString('Tess Tandem', $affHtml);
@@ -47,6 +47,6 @@ class DisciplineStripTest extends TestCase
 
         $this->get('/tandem')
             ->assertOk()
-            ->assertDontSee('Meet your Tandem team');
+            ->assertDontSee('Your Tandem instructors');
     }
 }
