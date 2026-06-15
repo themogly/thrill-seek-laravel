@@ -19,6 +19,7 @@
     $whyUs = [
         ['to' => '/testimonials', 'label' => 'Testimonials'],
         ['to' => '/hall-of-fame', 'label' => 'Hall of Fame'],
+        ['to' => '/meet-the-team', 'label' => 'Meet the Team'],
     ];
 
     $isActive = function (string $to) {

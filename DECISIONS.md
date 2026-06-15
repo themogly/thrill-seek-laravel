@@ -1336,3 +1336,108 @@ the booking flow should *charge*:
 - **Consolidation jumps** (£600) — a separate product; should it be a paid step after AFF?
 - **P6 insurance** (£24.73) — paid on the day direct to British Skydiving; correctly NOT a
   site charge.
+
+## Instructors: disciplines + Meet the Team page + homepage teaser (CHECKPOINT — proposal, awaiting approval)
+Branch `feature/instructors-disciplines` off main (start `179d8fb`). Proposal only; no code yet.
+
+### 1. Current state (inspected)
+- **Model/storage**: `instructors` table = `name, role, bio (text), photo (nullable), sort_order`.
+  Read through the cached `SiteContent::instructors()` gateway (caches raw attribute arrays then
+  `Instructor::hydrate()` — Eloquent objects are never cached). Filament `InstructorResource`
+  ("Site content" group) with `InstructorForm` (name/role/bio/photo upload).
+- **Homepage roster**: `pages/home.blade.php` TEAM section is a horizontal scroll-snap rail
+  (`flex snap-x overflow-x-auto`, 2-up mobile / 4-up desktop) showing the FULL roster with photo,
+  name plate, role and the FULL bio per card. This is the scroll we're replacing.
+- **"Why Us" is a DROPDOWN, not a page**: `$whyUs` array in `components/site/header.blade.php`
+  = Testimonials + Hall of Fame, rendered as a desktop hover/click dropdown and a mobile
+  expandable group. Those pages: `routes/web.php` → `PageController::testimonials()/hallOfFame()`,
+  views `pages/testimonials.blade.php` + `pages/hall-of-fame.blade.php`, data via `SiteContent`.
+  Meet the Team slots in as a THIRD `$whyUs` entry the same way (no new top-level nav, no Why-Us
+  landing page).
+
+### 2. Proposed data model — disciplines as a first-class lookup + pivot
+Mirrors how `Location` is already first-class; idiomatic here, and keeps "one way of doing things".
+- New `disciplines` table: `id, name, slug (unique), sort_order, timestamps`. Seed three to match
+  the existing `ProductType` enum: **Tandem / AFF / Coaching** (slugs `tandem`/`aff`/`coaching`).
+- New `discipline_instructor` pivot (composite-unique `instructor_id, discipline_id`).
+- `Instructor::disciplines(): BelongsToMany` + `Discipline::instructors(): BelongsToMany`.
+  One instructor carries MANY disciplines, rendered ONCE with all its tag chips — no duplication,
+  no per-discipline buckets.
+- Discipline-page query (no dupes): `Instructor::whereHas('disciplines', fn ($q) => $q->where('slug', $slug))->ordered()`.
+- **CMS**: add a `CheckboxList::make('disciplines')->relationship('disciplines','name')` to
+  `InstructorForm` (multi-select, mass-assignment safe via the relationship, not `$fillable`).
+  Plus a small **Disciplines** Filament resource under "Site content" so the owner can rename/add
+  disciplines (matches Locations being editable). Pivot is sync'd by Filament's relationship field.
+- **Cache interaction**: `SiteContent::instructors()` caches plain attribute arrays, so the pivot
+  won't ride along automatically. Plan: enrich the cached payload to carry a small
+  `disciplines: [{name, slug}, …]` array per instructor and re-attach it as a relation on the
+  hydrated model (stays within the gateway's "cache plain arrays, rehydrate on read" rule — no
+  cached objects). Add `Discipline::class` (and a pivot-touch) to `SiteContent::KEYS_BY_MODEL` /
+  the observer so editing disciplines or the assignment busts the `instructors` key.
+
+### 3. Proposed design (follows the structure; existing tokens/components only)
+- **Homepage teaser** (replaces the scroll): a COMPACT band — section heading + one tidy,
+  wrapping row of small circular avatars (photo or monogram fallback) + a single trust line, and
+  an `x-ui.arrow-link href="/meet-the-team"` "Meet the team →". No desktop carousel, no per-person
+  bios. One short band vs the tall card rail → far less vertical space; on mobile the avatars wrap,
+  they don't scroll. (RECOMMENDED — see question below for alternatives.)
+- **Meet the Team page** (`/meet-the-team`, `PageController::meetTheTeam()`,
+  `pages/meet-the-team.blade.php`, data `SiteContent::instructors()`): compact navy-gradient
+  `<x-site.page-hero>` (secondary page → no photo hero, per design rules), then a STATIC
+  responsive grid of full instructor cards (1-col / 2-col md / 3-col lg) — all visible, no desktop
+  scroll, cards stack on mobile (no swipe needed). Each card = photo (aspect-[4/5]) or monogram
+  fallback, name plate, role, **discipline tag chips** (palette only — e.g. `border-current`/
+  sky-bright on the navy plate), and the LONGER bio below. Added to the Why Us dropdown after
+  Hall of Fame, and to the sitemap (priority 0.6, like Testimonials).
+- **Discipline pages**: optionally surface "instructors who teach this" on `/tandem`, `/aff`,
+  `/coached` as a small tag-filtered avatar strip linking to Meet the Team (no duplicated records).
+  See question below — default is team-page-only unless you want the strips.
+
+### 4. Bios (fit-to-slot)
+Bio field is already `text` → supports long copy. Long bios live on the **Meet the Team cards**;
+the homepage teaser shows NONE (avatars + names only). The content-seed prompt
+(`chore/seed-real-content`, currently unmerged) holds the actual bio text — this branch only
+guarantees the field + the room for it. **Cross-branch note**: both branches touch
+`InstructorSeeder`; whichever merges second reconciles (disciplines assignment seeding will be
+additive here so it composes cleanly).
+
+### APPROVED (owner, 2026-06-15)
+1. **Homepage teaser** = compact avatar row + one trust line + "Meet the team →" (no bios, no carousel).
+2. **Discipline strips** = YES — add a tag-filtered avatar strip ("Meet your AFF instructors →") to
+   `/tandem`, `/aff`, `/coached`, linking to Meet the Team (queried by tag, no duplication).
+3. **Disciplines CMS** = CheckboxList on the instructor form PLUS a small Disciplines resource
+   under "Site content" (owner can rename/add). Three seeded: Tandem / AFF / Coaching.
+Building now in logical commits: model+migration+seed → CMS → cache gateway → Meet the Team page +
+nav → homepage teaser → discipline strips → visuals.
+
+### BUILT (feature/instructors-disciplines)
+Shipped in logical commits, `composer check` green before each (361 tests):
+- **Data model**: `disciplines` lookup + `discipline_instructor` pivot;
+  `Instructor::disciplines()` many-to-many. `SiteContent::instructors()` carries
+  disciplines in the cached plain-array payload (no cached objects) and rehydrates
+  them as a relation; `instructorsForDiscipline(slug)` filters the cached set.
+  `DisciplineSeeder` seeds Tandem/AFF/Coaching and assigns them (matched on first
+  name, so it survives the content-seed branch's surname additions).
+- **CMS**: CheckboxList on the instructor form + a Disciplines resource ("Site
+  content"). HelpGuide gains a "Your team & their disciplines" section.
+- **Meet the Team page** (`/meet-the-team`, third in the Why Us dropdown): static
+  responsive grid, all instructors visible (no desktop scroll, stacks on mobile),
+  discipline tag chips (`<x-site.discipline-tags>`, palette only), longer bios.
+  Settings copy under "Other pages → Meet the Team"; in sitemap (0.6).
+- **Homepage teaser** REPLACED the scroll rail: a compact band of overlapping
+  avatars + an editable trust line + "Meet the team →". No desktop carousel; far
+  less vertical space; bios moved to the team page. Hidden when no instructors.
+- **Course-page strips**: "Meet your <discipline> team" on Tandem/AFF/Coached,
+  tag-filtered (each instructor once), above the FAQs; hidden when none tagged.
+
+**KEPT vs REPLACED**: the homepage team *section heading* (eyebrow/title/lead from
+`HomePageSettings`) was KEPT; only the scroll *rail* beneath it was REPLACED by the
+teaser. Instructor name/role/bio fields KEPT as-is (bio field already `text` — room
+for the longer Meet-the-Team bios; the actual long bio TEXT comes from the
+content-seed branch). The editorial card aesthetic (navy plate, primary top-rule,
+monogram fallback) was reused so the team page reads as a sibling of Testimonials /
+Hall of Fame.
+
+**Cross-branch**: both this and `chore/seed-real-content` touch `InstructorSeeder`
+(this branch doesn't — only `DisciplineSeeder`, which is additive), so they compose;
+whichever merges second is a clean fast-forward of the other's instructor changes.

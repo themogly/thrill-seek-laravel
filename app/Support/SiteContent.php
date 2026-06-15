@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Enums\FaqPage;
 use App\Enums\ProductType;
+use App\Models\Discipline;
 use App\Models\Faq;
 use App\Models\GalleryImage;
 use App\Models\HallOfFameEntry;
@@ -33,6 +34,7 @@ final class SiteContent
     /** @var array<class-string<Model>, list<string>> */
     public const KEYS_BY_MODEL = [
         Instructor::class => ['instructors'],
+        Discipline::class => ['instructors'],
         Faq::class => ['faqs.tandem', 'faqs.aff', 'faqs.coached'],
         Testimonial::class => ['testimonials.featured', 'testimonials.all'],
         GalleryImage::class => ['gallery'],
@@ -43,10 +45,49 @@ final class SiteContent
         NewsArticle::class => ['news.published'],
     ];
 
-    /** @return EloquentCollection<int, Instructor> */
+    /**
+     * Instructors in display order, each with its disciplines relation attached.
+     *
+     * The cache still holds only plain arrays (the gateway's rule); disciplines
+     * ride along as a nested array and are rehydrated as a relation on read, so
+     * the discipline tag chips render without an extra query and without ever
+     * caching an Eloquent object.
+     *
+     * @return EloquentCollection<int, Instructor>
+     */
     public function instructors(): EloquentCollection
     {
-        return Instructor::hydrate($this->rows('instructors', fn () => Instructor::ordered()->get()));
+        $rows = Cache::rememberForever(self::PREFIX.'instructors', fn (): array => Instructor::with('disciplines')
+            ->ordered()
+            ->get()
+            ->map(fn (Instructor $instructor): array => [
+                'instructor' => $instructor->getAttributes(),
+                'disciplines' => $instructor->disciplines->map->getAttributes()->all(),
+            ])
+            ->all());
+
+        $instructors = new EloquentCollection;
+
+        foreach ($rows as $row) {
+            $instructor = (new Instructor)->newFromBuilder($row['instructor']);
+            $instructor->setRelation('disciplines', Discipline::hydrate($row['disciplines']));
+            $instructors->push($instructor);
+        }
+
+        return $instructors;
+    }
+
+    /**
+     * Instructors who teach a given discipline (by slug), in display order — read
+     * from the cached set, so no duplication and no extra query.
+     *
+     * @return EloquentCollection<int, Instructor>
+     */
+    public function instructorsForDiscipline(string $slug): EloquentCollection
+    {
+        return $this->instructors()
+            ->filter(fn (Instructor $instructor): bool => $instructor->disciplines->contains('slug', $slug))
+            ->values();
     }
 
     /**

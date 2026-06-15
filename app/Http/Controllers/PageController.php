@@ -38,6 +38,7 @@ class PageController extends Controller
         return view('pages.tandem', [
             'product' => $this->content->tandemProduct(),
             'faqs' => $this->content->faqs(FaqPage::Tandem),
+            'instructors' => $this->content->instructorsForDiscipline('tandem'),
         ]);
     }
 
@@ -48,6 +49,7 @@ class PageController extends Controller
             // Live query (not cached): remaining places must always be current.
             'courseDates' => CourseDate::upcomingOpen()->with(['product', 'location'])->get(),
             'faqs' => $this->content->faqs(FaqPage::Aff),
+            'instructors' => $this->content->instructorsForDiscipline('aff'),
         ]);
     }
 
@@ -55,6 +57,7 @@ class PageController extends Controller
     {
         return view('pages.coached', [
             'faqs' => $this->content->faqs(FaqPage::Coached),
+            'instructors' => $this->content->instructorsForDiscipline('coaching'),
         ]);
     }
 
@@ -76,6 +79,13 @@ class PageController extends Controller
     {
         return view('pages.hall-of-fame', [
             'entries' => $this->content->hallOfFame(),
+        ]);
+    }
+
+    public function meetTheTeam(): View
+    {
+        return view('pages.meet-the-team', [
+            'instructors' => $this->content->instructors(),
         ]);
     }
 

@@ -83,6 +83,9 @@
     </section>
     @endif
 
+    {{-- WHO TEACHES THIS --}}
+    <x-site.discipline-instructors :instructors="$instructors" label="Tandem" />
+
     {{-- FAQS --}}
     <x-site.faq-section :faqs="$faqs" />
 
