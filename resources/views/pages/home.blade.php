@@ -2,6 +2,7 @@
 
 @inject('home', 'App\Settings\HomePageSettings')
 @inject('general', 'App\Settings\GeneralSettings')
+@inject('pages', 'App\Settings\SimplePagesSettings')
 
 @section('title', 'G-Force Skydiving — One Life. One Adventure. Live It.')
 @section('description', 'UK-based skydiving school offering tandem jumps, AFF courses and advanced coaching. Book your jump today.')
@@ -110,42 +111,31 @@
         </div>
     </section>
 
-    {{-- TEAM: editorial portraits with name plates --}}
-    <x-site.section>
-        <x-site.section-heading :eyebrow="$home->team_eyebrow" :title="$home->team_title" :lead="$home->team_lead" />
-        {{-- Horizontal scroll-snap rail: 2-up on mobile, 4-up on desktop. Each
-             card uses flex-1 with a per-view min-width, so a few coaches stretch
-             to fill the row (no stranded card) while five or more overflow into a
-             left/right scroll instead of stacking. The rail is keyboard-focusable
-             and touch-draggable; scrollbar styling keeps it discoverable. --}}
-        <div
-            tabindex="0"
-            role="list"
-            aria-label="{{ $home->team_title }}"
-            class="flex snap-x snap-mandatory gap-px overflow-x-auto bg-secondary pb-3 [scrollbar-color:var(--primary)_transparent] [scrollbar-width:thin] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-            data-reveal
-        >
-            @foreach ($instructors as $instructor)
-                <div role="listitem" class="group flex min-w-[50%] flex-1 snap-start flex-col bg-background lg:min-w-[25%]">
-                    <div class="relative aspect-[4/5] overflow-hidden bg-secondary">
-                        @if ($instructor->photo)
-                            <img src="{{ $instructor->photo_url }}" alt="{{ $instructor->name }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" width="800" height="1000" />
-                        @else
-                            {{-- Intentional editorial fallback: giant monogram on navy --}}
-                            <div class="band-ink flex h-full w-full items-center justify-center">
-                                <span class="font-display text-[10rem] leading-none text-white/20">{{ \Illuminate\Support\Str::substr($instructor->name, 0, 1) }}</span>
-                            </div>
-                        @endif
-                        <div class="absolute inset-x-0 bottom-0 border-t-4 border-primary bg-secondary/95 px-6 py-4 text-white">
-                            <h3 class="font-display text-3xl uppercase leading-none">{{ $instructor->name }}</h3>
-                            <p class="mt-1 text-xs font-bold uppercase tracking-[0.25em] text-sky-bright">{{ $instructor->role }}</p>
-                        </div>
-                    </div>
-                    <p class="flex-1 border-2 border-t-0 border-border p-6 text-muted-foreground">{{ $instructor->bio }}</p>
+    {{-- TEAM TEASER: a compact trust line + the team's faces, linking to the full
+         Meet the Team page. Replaces the old full-roster scroll rail — far less
+         vertical space, no desktop carousel, and the bios/cards live on the
+         dedicated page instead. --}}
+    @if ($instructors->isNotEmpty())
+        <x-site.section>
+            <x-site.section-heading :eyebrow="$home->team_eyebrow" :title="$home->team_title" :lead="$home->team_lead" />
+            <div class="mt-8 flex flex-col items-start gap-6 border-2 border-border p-6 sm:flex-row sm:items-center sm:justify-between lg:p-8" data-reveal>
+                <div class="flex items-center gap-5">
+                    {{-- Overlapping portrait thumbnails (photo or initial fallback); the
+                         ring separates them against the page. Decorative — the real
+                         names + roles are one click away on Meet the Team. --}}
+                    <ul class="flex items-center -space-x-3" aria-hidden="true">
+                        @foreach ($instructors as $instructor)
+                            <li>
+                                <x-site.avatar :name="$instructor->name" :url="$instructor->photo_url" size="h-14 w-14" class="ring-2 ring-background" />
+                            </li>
+                        @endforeach
+                    </ul>
+                    <p class="max-w-md text-lg font-semibold text-secondary">{{ $pages->home_team_teaser_line }}</p>
                 </div>
-            @endforeach
-        </div>
-    </x-site.section>
+                <x-ui.arrow-link href="/meet-the-team" class="shrink-0">Meet the team</x-ui.arrow-link>
+            </div>
+        </x-site.section>
+    @endif
 
     {{-- NEWS + SOCIAL — real, dynamic news leads (dominant left column); an honest
          "Follow us" block sits beside it. No live-feed framing, no dead links. --}}
