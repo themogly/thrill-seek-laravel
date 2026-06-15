@@ -1207,3 +1207,26 @@ colours). The components were already a decent shared system — this tightens c
   + in-card usages. The home "Explore" border-b cue is deferred to pass 3 (home polish).
 - No new tokens needed. Verified at 1440/1280/1024/390 + short-height; `composer check`
   green (344). Detail in `ui-review/COMPONENTS.md`; before/after in `ui-review/c-*`.
+
+## UI level-up 3/4 — page layout, hierarchy & homepage (ui/03-pages)
+
+Branched off main `041e272`. Pass 3 works at the page level — applying passes 1–2's tokens
+and components to section composition, hierarchy and rhythm; the pass allowed the most
+visible structural change. Brand unchanged (navy/blue/white, sharp corners, photo-led).
+
+- **Rhythm is now a 2-step system.** Added `--spacing-section-lg` (128px) for dramatic
+  dark/photo feature bands; standard sections stay `py-section`. Replaced the drifting
+  `py-20/28/32/40` hand-rolled paddings across home/tandem/aff/coached/testimonials.
+- **Section headings migrated to the type scale** (the ones that bypassed it → `text-h2`,
+  or `text-h1` for the home CTA close), leads → `text-lead`/`max-w-measure`, news card
+  titles → `text-h3`; eyebrows standardised on `tracking-[0.25em]`.
+- **Homepage News+social rebuilt (the headline change).** The old block put a manual
+  gallery *mislabelled as a live Instagram feed* in the dominant left, squeezing real News
+  into the right. Now **Latest News leads the dominant 2/3 column** and a compact navy
+  **"Follow us"** card (real CMS social links, hidden when empty; a clearly-labelled curated
+  "From the dropzone" photo grid — not a feed) sits in the right 1/3. The
+  "connects via Meta Graph API — ask to enable" note is **gone** (closes the
+  COMPLETENESS-CHECK item). Stacks News-first on mobile.
+- One new token; no ad-hoc values added. Verified 1440/1280/1024/390 + short-height;
+  `composer check` green (344). Detail in `ui-review/PAGES.md`; before/after in
+  `ui-review/p-*`. Pass 4 distils all this into `ui-guidelines.md`.

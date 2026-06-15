@@ -151,9 +151,12 @@ that manages all site content, enquiries, payments and bookings.
 - **Type scale + spacing are tokens** (UI pass 1 — `resources/css/app.css` `@theme`, see
   `ui-review/FOUNDATIONS.md`): headings use the fluid `text-display / text-h1 / text-h2 /
   text-h3` tokens, body copy `text-lead` (19px leads) and the 16px/1.65 base; sections use
-  `py-section-sm lg:py-section` and reading columns `max-w-measure`. Use these tokens, NOT
-  ad-hoc `text-5xl`/`py-24`/arbitrary `text-[Nrem]` values. Headings go through
-  `<x-site.section-heading>` / `<x-site.page-hero>`. Letter-spacing stays on `tracking-*`.
+  the 2-step rhythm — standard `py-section-sm lg:py-section`, dramatic dark/photo feature
+  bands `py-section lg:py-section-lg` (UI pass 3) — and reading columns `max-w-measure`. Use
+  these tokens, NOT ad-hoc `text-5xl`/`py-24`/arbitrary `text-[Nrem]` values. Headings go
+  through `<x-site.section-heading>` / `<x-site.page-hero>`. Letter-spacing stays on
+  `tracking-*` (eyebrow labels standardise on `tracking-[0.25em]`). The homepage News+social
+  block is News-dominant (2/3) + an honest "Follow us" card (no live-feed framing).
 - **Buttons**: every button/CTA renders through `<x-ui.button>` with its three
   variants — `primary`, `outline` (border-current; adapts to dark bands), `link`
   (inline text action). States (hover/active/focus-visible/disabled) and the icon

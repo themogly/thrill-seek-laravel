@@ -58,4 +58,38 @@ photo-led. The **social + news block is backwards**:
 
 ## Step 2–4 — implemented
 
-_(filled in as implemented.)_
+### Step 2 — hierarchy & rhythm (all pages)
+- **New token `--spacing-section-lg` (128px)** for dramatic dark/photo feature bands. The
+  rhythm is now a clean 2-step system: standard sections `py-section-sm lg:py-section`
+  (64/96), feature bands `py-section lg:py-section-lg` (96/128). Replaced the drifting
+  `py-20/28/32/40` hand-rolled values across home (about/trust/newsletter/cta), tandem
+  (gift band), aff (trust), coached (intro), testimonials (featured band).
+- **Section headings migrated to the type scale:** the ones that bypassed it
+  (`text-5xl md:text-7xl` etc.) now use `text-h2` (or `text-h1` for the home Contact CTA
+  close); their leads use `text-lead` + `max-w-measure`. News card titles → `text-h3`.
+- **Eyebrows standardised** to `tracking-[0.25em]` on the sections touched.
+- Verified the About / gift / trust bands across the range — consistent heading step,
+  readable leads, even cadence; brand look unchanged.
+
+### Step 3 — homepage News + Social rebuild (feat)
+- Replaced the backwards 50/50 "Instagram gallery (left) + News (right)" block. Now:
+  **Latest News dominates the left 2/3** (text-h2 heading, article cards with date /
+  text-h3 headline / lead, `arrow-link` "All news →"); a compact navy **"Follow us"** card
+  fills the right 1/3 — real CMS social links (icon + handle + arrow, new tab, hidden when
+  the URL is empty) and a small clearly-labelled **"From the dropzone"** curated photo grid
+  (the CMS Gallery — curated, NOT a feed).
+- **Removed the "Live Instagram feed … ask to enable" framing entirely** (resolves the
+  COMPLETENESS-CHECK finding). Stacks News-first then social on mobile (verified 390).
+- Owner content: real Instagram/Facebook URLs + curated gallery photos.
+
+### Step 4 — consistency
+- Heroes (`<x-site.page-hero>`), section headers (`<x-site.section-heading>` or the
+  migrated `text-h2` pattern) and CTAs (`<x-ui.button>`) are now consistent page-to-page;
+  no page hand-rolls a divergent heading/rhythm. Empty states (AFF "coming soon", hidden
+  calendar) are intentional and unchanged.
+
+### Verified
+1440 / 1280 / 1024 / 390 + short-height across home, tandem, aff, coached, testimonials,
+news, hall-of-fame. `composer check` green (344). Before/after in `ui-review/p-*`. One new
+token (`--spacing-section-lg`).
+
