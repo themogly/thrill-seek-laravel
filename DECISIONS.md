@@ -1492,3 +1492,15 @@ source of truth, no per-page duplication. Queries the existing `instructorsForDi
   spacing so cards with short and long bios read consistently. Reused monogram empty state kept.
 
 Awaiting owner choice on A, C, D (B follows). Build only after approval.
+
+### APPROVED (owner, 2026-06-15)
+- **A = A1**: remove the standalone homepage teaser; weave ONE elegant line + inline
+  "meet the team →" into the navy About band. No avatars on the homepage.
+- **C = C1**: Tandem/AFF get a compact row of named person chips (shared
+  `<x-site.instructor-chip>`: avatar + name + role) under a quiet small label, filtered by
+  discipline, with a "Meet the team →" link. No heavy box.
+- **D = D1**: team-page tags get a small "TEACHES" label; card body padding/rhythm
+  standardised (Teaches line → hairline divider → bio, even spacing).
+Note: the home `team_eyebrow/title/lead` settings become unused on the homepage but are KEPT
+(no data change). Building now in steps: chip partial + course element → homepage About line →
+team-page tags + padding.
