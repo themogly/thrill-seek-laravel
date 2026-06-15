@@ -2,7 +2,6 @@
 
 @inject('home', 'App\Settings\HomePageSettings')
 @inject('general', 'App\Settings\GeneralSettings')
-@inject('pages', 'App\Settings\SimplePagesSettings')
 
 @section('title', 'G-Force Skydiving — One Life. One Adventure. Live It.')
 @section('description', 'UK-based skydiving school offering tandem jumps, AFF courses and advanced coaching. Book your jump today.')
@@ -84,20 +83,13 @@
                 <p class="mt-6 max-w-measure text-lead text-white/85">
                     {{ $home->about_body }}
                 </p>
-                {{-- Subtle team mention woven into the story (no standalone section): a
-                     quiet trust line + the one directional cue to the full team page. --}}
+                {{-- One prominent route to the team. Replaces the old faint text link AND
+                     the duplicate stat tiles — the trust credentials now live ONCE, in the
+                     "Trusted. Certified. Experienced." band below. --}}
                 @if ($instructors->isNotEmpty())
-                    <p class="mt-6 max-w-measure text-white/70">{{ $pages->home_team_teaser_line }}</p>
-                    <x-ui.arrow-link href="/meet-the-team" class="mt-3 !text-sky-bright">Meet the instructors who'll fly with you</x-ui.arrow-link>
+                    <p class="mt-10 text-lead text-white/85">{{ $home->team_lead }}</p>
+                    <x-ui.button href="/meet-the-team" class="mt-5">Meet the Team</x-ui.button>
                 @endif
-                <div class="mt-10 grid grid-cols-3 divide-x divide-white/15 border-y border-white/15">
-                    @foreach ($home->about_stats as $stat)
-                        <div class="px-4 py-6 first:pl-0">
-                            <p class="font-display text-4xl leading-none md:text-5xl">{{ $stat['value'] }}</p>
-                            <p class="mt-2 text-xs font-bold uppercase tracking-[0.2em] text-sky-bright">{{ $stat['label'] }}</p>
-                        </div>
-                    @endforeach
-                </div>
             </div>
             <div class="relative grid grid-cols-2 gap-px bg-white/15 lg:-mr-24" data-reveal>
                 <img src="{{ $home->imageUrl($home->about_image_1) }}" alt="" class="aspect-[3/4] h-full w-full object-cover" loading="lazy" width="1280" height="896" />

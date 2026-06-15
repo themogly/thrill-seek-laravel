@@ -23,7 +23,9 @@ class HomePageSettingsTest extends TestCase
         $response->assertSee('One Life.');
         $response->assertSee('One Adventure.');
         $response->assertSee('Established 2017. Built on experience.');
-        $response->assertSee('Highest UK Tandem');
+        // about_stats tiles were removed from the About section (they duplicated the
+        // Trust band); the credentials now appear once, in the band below.
+        $response->assertDontSee('Highest UK Tandem');
         $response->assertSee('Follow @gforceskydiving for jumps from the weekend.');
         $response->assertSee('Trusted. Certified. Experienced.');
         $response->assertSee('Ex-Military');

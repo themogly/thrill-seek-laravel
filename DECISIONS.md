@@ -1574,3 +1574,15 @@ Current state confirms the duplication:
 
 Confirm: the trust band is untouched; the stats now appear ONCE (in the band).
 Awaiting owner choice on B + button style. Build only after approval.
+
+### APPROVED + BUILT (owner, 2026-06-15)
+Chosen: **B-i** (bold solid-blue `<x-ui.button>` "Meet the Team") — no orange exists in the
+palette; "primary" is the bright blue (`#008fe6`, same as Book Now / hero CTAs).
+- **Removed** the `about_stats` 3 tiles (15k ft / 30+ yrs / BS·USPA) from the About section AND
+  the faint woven trust line + arrow-link — both duplicated the Trust band (and the About body).
+- **Rebalanced** the About left column: eyebrow → title → body → `team_lead` lead ("The people
+  you'll fly with.") → bold **Meet the Team** button; `items-center` centres it against the
+  two-photo column (no gap). Gated on instructors existing (intentional empty state).
+- **Trust band untouched** — the credentials (EX-MILITARY / 30+ YEARS / BS·USPA / EST. 2017) now
+  appear ONCE. Removed the now-unused `$pages` inject from the home view; `about_stats` setting
+  KEPT (no data change), just not rendered. Verified 1440/1280/1024/390 (`ui-review/homepage-dedupe/`).
