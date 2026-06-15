@@ -34,9 +34,18 @@
                                 <p class="mt-1 text-xs font-bold uppercase tracking-[0.25em] text-sky-bright">{{ $instructor->role }}</p>
                             </div>
                         </div>
-                        <div class="flex flex-1 flex-col gap-4 border-2 border-t-0 border-border p-6">
-                            <x-site.discipline-tags :disciplines="$instructor->disciplines" />
-                            <p class="text-muted-foreground">{{ $instructor->bio }}</p>
+                        <div class="flex flex-1 flex-col border-2 border-t-0 border-border p-6 lg:p-7">
+                            {{-- A labelled "Teaches" block so the discipline chips read
+                                 unambiguously, divided from the bio for a clear rhythm. --}}
+                            @if ($instructor->disciplines->isNotEmpty())
+                                <div class="mb-5 border-b-2 border-border pb-5">
+                                    <p class="text-[0.7rem] font-bold uppercase tracking-[0.25em] text-muted-foreground">Teaches</p>
+                                    <x-site.discipline-tags :disciplines="$instructor->disciplines" class="mt-2.5" />
+                                </div>
+                            @endif
+                            @if ($instructor->bio)
+                                <p class="text-muted-foreground">{{ $instructor->bio }}</p>
+                            @endif
                         </div>
                     </article>
                 @endforeach
