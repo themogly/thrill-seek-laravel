@@ -156,9 +156,19 @@ that manages all site content, enquiries, payments and bookings.
   `<x-site.section-heading>` / `<x-site.page-hero>`. Letter-spacing stays on `tracking-*`.
 - **Buttons**: every button/CTA renders through `<x-ui.button>` with its three
   variants — `primary`, `outline` (border-current; adapts to dark bands), `link`
-  (inline text action). Never style a one-off button or pass colour classes to it;
-  don't pass display classes either (`hidden` fights the base `inline-flex` — wrap
-  instead, see the header). The same action looks the same everywhere.
+  (inline text action). States (hover/active/focus-visible/disabled) and the icon
+  convention (lead for action, trail for directional; `size="icon"` needs `aria-label`)
+  are baked in; loading is wired per-use with `wire:loading`. Never style a one-off
+  button or pass colour classes to it; don't pass display classes either (`hidden`
+  fights the base `inline-flex` — wrap instead, see the header). The same action looks
+  the same everywhere.
+- **Interactive components (UI pass 2)**: form controls (`<x-ui.input>` / `textarea` /
+  `select`) all share ONE focus treatment — `focus-visible:ring-2 ring-ring` + border
+  in brand blue; labels via `<x-ui.label for>`; inline errors via `<x-booking.field>`
+  (`role="alert"`), simple forms use the toast pattern. Navigational arrow links
+  ("All news →", "Read more →") use `<x-ui.arrow-link>` (href → `<a>`; no href → in-card
+  `<span>` cue). The FAQ accordion is the reference disclosure pattern. See
+  `ui-review/COMPONENTS.md`.
 - **No flat-black hero bands on secondary pages**: `<x-site.page-hero>` without an
   image renders the compact navy-gradient hero; only tandem/AFF/coached get
   photographic CMS heroes. Dark `band-ink` sections stay only where already

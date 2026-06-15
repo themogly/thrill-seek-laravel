@@ -27,7 +27,7 @@
         :aria-activedescendant="open && highlighted >= 0 ? $id('select-option', highlighted) : null"
         @click="toggle()"
         @keydown="onKeydown($event)"
-        {{ $attributes->merge(['class' => 'flex h-11 w-full items-center justify-between whitespace-nowrap border-2 border-input bg-transparent px-3 py-2 text-sm ring-offset-background cursor-pointer focus:border-primary focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1']) }}
+        {{ $attributes->merge(['class' => 'flex h-11 w-full items-center justify-between whitespace-nowrap border-2 border-input bg-transparent px-3 py-2 text-sm ring-offset-background cursor-pointer focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1']) }}
     >
         <span x-text="value ? label : placeholder" :class="!value && 'text-muted-foreground'"></span>
         <x-icon name="chevron-down" class="h-4 w-4 opacity-50" />

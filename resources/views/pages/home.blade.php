@@ -64,7 +64,7 @@
                         <h3 class="mt-1 font-display text-4xl uppercase leading-none tracking-wide lg:text-5xl">{{ $s->name }}</h3>
                         <p class="mt-3 max-w-xs text-sm text-white/85">{{ $s->summary }}</p>
                         <span class="mt-5 inline-flex items-center gap-2 border-b-2 border-primary pb-1 text-sm font-bold uppercase tracking-widest">
-                            Explore <x-icon name="arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                            Explore <x-icon name="arrow-right" class="h-4 w-4 transition-transform motion-reduce:transition-none group-hover:translate-x-1" />
                         </span>
                     </div>
                 </a>
@@ -179,9 +179,7 @@
                                 </a>
                             @endforeach
                         </div>
-                        <a href="/news" class="mt-4 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-primary hover:underline">
-                            All news <x-icon name="arrow-right" class="h-4 w-4" />
-                        </a>
+                        <x-ui.arrow-link href="/news" class="mt-4">All news</x-ui.arrow-link>
                     </div>
                 @endif
             </div>

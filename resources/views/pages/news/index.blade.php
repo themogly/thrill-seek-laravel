@@ -31,9 +31,7 @@
                             @if (filled($article->lead))
                                 <p class="mt-2 text-muted-foreground">{{ $article->lead }}</p>
                             @endif
-                            <span class="mt-4 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-primary">
-                                Read more <x-icon name="arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                            </span>
+                            <x-ui.arrow-link class="mt-4 text-primary">Read more</x-ui.arrow-link>
                         </div>
                     </a>
                 @endforeach
