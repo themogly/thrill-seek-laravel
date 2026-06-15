@@ -1330,3 +1330,12 @@ the homepage teaser shows NONE (avatars + names only). The content-seed prompt
 guarantees the field + the room for it. **Cross-branch note**: both branches touch
 `InstructorSeeder`; whichever merges second reconciles (disciplines assignment seeding will be
 additive here so it composes cleanly).
+
+### APPROVED (owner, 2026-06-15)
+1. **Homepage teaser** = compact avatar row + one trust line + "Meet the team →" (no bios, no carousel).
+2. **Discipline strips** = YES — add a tag-filtered avatar strip ("Meet your AFF instructors →") to
+   `/tandem`, `/aff`, `/coached`, linking to Meet the Team (queried by tag, no duplication).
+3. **Disciplines CMS** = CheckboxList on the instructor form PLUS a small Disciplines resource
+   under "Site content" (owner can rename/add). Three seeded: Tandem / AFF / Coaching.
+Building now in logical commits: model+migration+seed → CMS → cache gateway → Meet the Team page +
+nav → homepage teaser → discipline strips → visuals.

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Storage;
 
 #[ObservedBy([SiteContentObserver::class, ImageOptimizationObserver::class])]
@@ -49,6 +50,17 @@ class Instructor extends Model
                 ? $this->photo
                 : Storage::disk('public')->url($this->photo);
         });
+    }
+
+    /**
+     * Disciplines this instructor teaches (Tandem / AFF / Coaching). Many-to-many
+     * so a multi-discipline instructor is shown once with all their tags.
+     *
+     * @return BelongsToMany<Discipline, $this>
+     */
+    public function disciplines(): BelongsToMany
+    {
+        return $this->belongsToMany(Discipline::class)->ordered();
     }
 
     /**
