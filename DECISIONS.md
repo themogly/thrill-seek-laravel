@@ -1230,3 +1230,28 @@ visible structural change. Brand unchanged (navy/blue/white, sharp corners, phot
 - One new token; no ad-hoc values added. Verified 1440/1280/1024/390 + short-height;
   `composer check` green (344). Detail in `ui-review/PAGES.md`; before/after in
   `ui-review/p-*`. Pass 4 distils all this into `ui-guidelines.md`.
+
+## Branded date picker — desktop custom / mobile native (feature/date-picker)
+
+Branched off main `d100559`. Native `<input type="date">` only opened on the icon and
+rendered in the browser's own (per-browser) style — out of place. Replaced with a shared
+`<x-ui.date-field>`.
+
+**Date-field inventory (all public; none in the account area), all bind `YYYY-MM-DD`:**
+- `TandemEnquiryForm` (`/tandem`): `date` (preferred date, `after_or_equal:today` → min
+  today) and `dob` (`before:today` → max yesterday).
+- `BookTandem` / `BookAff` (`/book/*` step 2): `date_of_birth` (`before:-18 years` → max =
+  18 years ago, so the picker also opens ~18 years back — no endless "prev").
+
+**Approach (value-safe):** the native `<input type="date">` stays the **single source of
+truth** — same `wire:model`, same submitted `YYYY-MM-DD`, same validation/`required`/
+min-max. On a **fine-pointer ≥1024px desktop** an Alpine calendar (`dateField` in app.js)
+overlays it: click anywhere opens a branded popover (navy/blue/white, sharp corners, pass
+1–2 tokens + focus rings), month **and year** `<select>`s for quick jumps, full keyboard
+(arrows/Enter/Esc/PageUp-Down), outside-click/Esc to close; selecting a day writes the ISO
+value back to the native input and fires `input`/`change` so Livewire syncs. On
+touch/small screens the native OS picker is used (best touch UX, accessible for free).
+Because the carrier is unchanged, the booking/enquiry suites (which set the wire property
+directly) pass untouched; `DateFieldTest` pins that the native carrier + min/max stay wired.
+Verified at 1440/1280/1024/390 — desktop popover + year-jump + selection (`1995-05-15`),
+mobile native, no console errors.

@@ -75,7 +75,7 @@
                     <x-ui.input id="ba-phone" type="tel" wire:model="phone" autocomplete="tel" inputmode="tel" required />
                 </x-booking.field>
                 <x-booking.field label="Date of birth" for="ba-dob" :error="$errors->first('date_of_birth')" hint="You must be 18 or over.">
-                    <x-ui.input id="ba-dob" type="date" wire:model="date_of_birth" autocomplete="bday" required />
+                    <x-ui.date-field id="ba-dob" model="date_of_birth" label="Date of birth" :max="now()->subYears(18)->toDateString()" autocomplete="bday" required />
                 </x-booking.field>
                 <x-booking.field label="Weight (kg)" for="ba-weight" :error="$errors->first('weight_kg')">
                     <x-ui.input id="ba-weight" type="number" wire:model="weight_kg" inputmode="numeric" required />
