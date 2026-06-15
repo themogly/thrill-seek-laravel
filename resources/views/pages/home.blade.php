@@ -27,12 +27,12 @@
             <p class="mb-5 flex items-center gap-3 text-sm font-bold uppercase tracking-[0.4em] text-sky-bright">
                 <span class="inline-block h-0.5 w-12 bg-primary"></span>{{ $home->hero_eyebrow }}
             </p>
-            <h1 class="font-display text-6xl uppercase leading-[0.88] tracking-wide sm:text-8xl lg:text-[10.5rem]">
+            <h1 class="font-display text-display uppercase tracking-wide">
                 {{ $home->hero_title_1 }}<br />
                 <span class="text-sky-bright">{{ $home->hero_title_highlight }}</span><br />
                 {{ $home->hero_title_2 }}
             </h1>
-            <p class="mt-8 max-w-xl border-l-4 border-primary pl-4 text-lg text-white/90 md:text-xl">
+            <p class="mt-8 max-w-measure border-l-4 border-primary pl-4 text-lead text-white/90">
                 {{ $home->hero_subtitle }}
             </p>
             <div class="mt-10 flex flex-col gap-4 sm:flex-row">

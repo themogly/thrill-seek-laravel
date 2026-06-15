@@ -5,10 +5,10 @@
             <span class="inline-block h-0.5 w-10 bg-primary"></span>{{ $eyebrow }}
         </p>
     @endif
-    <h2 class="heading-rule font-display text-5xl uppercase leading-[0.95] tracking-wide {{ $light ? 'text-white' : 'text-secondary' }} md:text-7xl">
+    <h2 class="heading-rule font-display text-h2 uppercase tracking-wide {{ $light ? 'text-white' : 'text-secondary' }}">
         {{ $title }}
     </h2>
     @if ($lead)
-        <p class="mt-5 max-w-2xl text-lg {{ $light ? 'text-white/80' : 'text-muted-foreground' }}">{{ $lead }}</p>
+        <p class="mt-5 max-w-measure text-lead {{ $light ? 'text-white/80' : 'text-muted-foreground' }}">{{ $lead }}</p>
     @endif
 </div>

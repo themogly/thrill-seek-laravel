@@ -1163,3 +1163,26 @@ prior audits).
 - **Owner-manual (cannot verify locally):** real Stripe Checkout → webhook → booking +
   abandoned-checkout release, real emails in Gmail/Outlook, real inbound-email round-trip,
   signed newsletter/magic-link clicks from a real inbox.
+
+## UI level-up 1/4 — type scale + spacing foundations (ui/01-foundations)
+
+Branched off main `4099068`. First of a 4-pass UI craft level-up: establish intentional
+type-scale + spacing tokens so the site stops feeling AI-generated/templated, WITHOUT a
+rebrand (navy/blue/white, sharp corners, photo-led, Bebas display all kept).
+
+- **Type is now a named, fluid scale** (`--text-display/h1/h2/h3/lead/body` in `app.css`
+  `@theme`), using `clamp()` so headings stay bold on desktop and don't overflow mobile —
+  replacing per-breakpoint class soup (`text-5xl md:text-7xl …`) and magic one-offs
+  (`text-[10.5rem]`). Applied via the shared components (`section`, `section-heading`,
+  `page-hero`) + the home hero, so it propagates site-wide. Base body is now 16px / **1.65**
+  line-height (was 1.5) — the biggest readability win.
+- **Spacing rhythm tokenised** — `py-section`/`py-section-sm` (96/64px) on the shared
+  section + hero components; `max-w-measure` (68ch) for reading columns. Kept the existing
+  4px grid; just formalised which steps similar sections use.
+- **Font loading:** dropped unused Barlow 800 (0 `font-extrabold` usages) — one fewer file;
+  loading was already self-hosted/subset/swap.
+- **Why keep heading sizes ≈ current** (not shrink dramatically): the brief says refine,
+  not regress the brand look — so display maxes near the old sizes (hero 10.5rem→8.5rem is
+  the one deliberate refinement of an oversized value). Verified at 1440/1280/1024/390 +
+  short-height across 5 pages, no regressions. Later passes (buttons, page polish) migrate
+  the remaining ad-hoc values to these tokens. Full detail in `ui-review/FOUNDATIONS.md`.

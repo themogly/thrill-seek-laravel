@@ -65,6 +65,61 @@ inconsistency is in WHICH step each section picks.
 3. Section rhythm and grid gaps drift between similar sections.
 4. A handful of magic-number sizes and an unused font weight.
 
-## Step 2–4 — the new system
+## Step 2–4 — the new system (implemented)
 
-_(filled in as implemented; documented here so later passes + future work reuse it.)_
+All tokens live in `resources/css/app.css` `@theme inline`. They are the **canonical**
+scale — new UI must use them, not raw `text-*`/`py-*` guesses.
+
+### Type scale (`--text-*` → `text-{name}` utilities)
+Fluid (`clamp`) so headings stay bold on desktop without overflowing small screens; the
+condensed Bebas character is preserved. Letter-spacing stays on the existing `tracking-*`
+utilities (the brand already manages it there).
+
+| token | size (clamp min → max) | line-height | used for |
+| --- | --- | --- | --- |
+| `text-display` | 3.25rem → **8.5rem** | 0.9 | home / monster hero (was the `text-[10.5rem]` one-off — refined down, still huge) |
+| `text-h1` | 2.75rem → **5.5rem** | 0.92 | page-hero titles |
+| `text-h2` | 2.25rem → **4.25rem** | 0.95 | section headings (`<x-site.section-heading>`) |
+| `text-h3` | 1.5rem → **1.875rem** | 1.05 | card / sub-headings |
+| `text-lead` | **1.1875rem** (19px) | 1.6 | lead paragraphs / hero subtitles |
+| `text-body` | **1rem** (16px) | **1.65** | base reading text (set on `body`) |
+
+- **Base body** now renders at 16px / **1.65** line-height (was the default 1.5) with
+  `optimizeLegibility` + antialiasing — the biggest readability win, applies everywhere.
+- The default Tailwind steps (`text-sm`, `text-xs`, `text-2xl`, …) remain available for
+  small UI text and are untouched this pass; later passes migrate more of them.
+
+### Spacing system (`--spacing-*` / `--container-*`)
+The site is already on Tailwind's 4px grid; these tokens formalise the rhythm.
+
+| token | value | utility | used for |
+| --- | --- | --- | --- |
+| `--spacing-section` | 6rem (96px) | `py-section` | desktop section block |
+| `--spacing-section-sm` | 4rem (64px) | `py-section-sm` | mobile section block |
+| `--container-measure` | 68ch | `max-w-measure` | reading column for body/lead text |
+
+- `<x-site.section>` and `<x-site.page-hero>` now use `py-section-sm lg:py-section` (same
+  64/96 rhythm, tokenised) so every section that goes through them shares one rhythm.
+- Lead/body text columns use `max-w-measure` (≈68ch) for a comfortable reading length.
+
+### Font loading
+- Dropped the unused **Barlow 800** weight from `vite.config.js` (0 `font-extrabold`
+  usages) — one fewer font file. Loaded weights are now 400/500/600/700 + Bebas 400.
+- Loading was already good (self-hosted woff2, `unicode-range` subset, `font-display:
+  swap`). A `<link rel="preload">` for the body weight remains a possible future tweak
+  (the hashed filename makes a hardcoded preload fragile, so deferred).
+
+### Applied this pass (shared infra — propagates everywhere)
+`resources/css/app.css` (tokens + base body), `components/site/section.blade.php`,
+`section-heading.blade.php`, `page-hero.blade.php`, `pages/home.blade.php` (hero),
+`vite.config.js`. Verified at 1440 / 1280 / 1024 / 390 and a short 1440×560 height across
+home, tandem, AFF, privacy and contact — hierarchy reads clearly, body is more readable,
+section rhythm is consistent, and the brand look (navy/blue/white, sharp corners, bold
+Bebas headings) is unchanged. Before/after screenshots in `ui-review/before` and
+`ui-review/after`.
+
+### For later passes (2–4)
+- Pass 2 (buttons/components) and pass 3 (page polish) should migrate remaining ad-hoc
+  `text-*`/`py-*` to these tokens (card titles → `text-h3`, more sections → `py-section`,
+  the footer tagline, etc.) and tidy the `tracking-*` spread into a small set.
+
