@@ -82,7 +82,7 @@
                     <x-ui.input id="bt-phone" type="tel" wire:model="phone" autocomplete="tel" inputmode="tel" required />
                 </x-booking.field>
                 <x-booking.field label="Date of birth" for="bt-dob" :error="$errors->first('date_of_birth')" hint="You must be 18 or over.">
-                    <x-ui.input id="bt-dob" type="date" wire:model="date_of_birth" autocomplete="bday" required />
+                    <x-ui.date-field id="bt-dob" model="date_of_birth" label="Date of birth" :max="now()->subYears(18)->toDateString()" autocomplete="bday" required />
                 </x-booking.field>
                 <x-booking.field label="Weight (kg)" for="bt-weight" :error="$errors->first('weight_kg')" hint="Needed for kit and weight surcharges — see the tandem page.">
                     <x-ui.input id="bt-weight" type="number" wire:model="weight_kg" inputmode="numeric" required />

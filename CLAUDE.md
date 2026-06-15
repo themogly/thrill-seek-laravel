@@ -172,6 +172,11 @@ that manages all site content, enquiries, payments and bookings.
   ("All news →", "Read more →") use `<x-ui.arrow-link>` (href → `<a>`; no href → in-card
   `<span>` cue). The FAQ accordion is the reference disclosure pattern. See
   `ui-review/COMPONENTS.md`.
+- **Dates** use the ONE `<x-ui.date-field>` (never a bare `<input type="date">`): pass
+  `model` (the wire:model prop), `label`, and `min`/`max` (Y-m-d). It keeps a native
+  `<input type="date">` as the value carrier (same submitted `YYYY-MM-DD` + validation)
+  and overlays a branded Alpine calendar (with month + year jump) only on fine-pointer
+  desktops; mobile uses the native OS picker. `dateField` lives in `app.js`.
 - **No flat-black hero bands on secondary pages**: `<x-site.page-hero>` without an
   image renders the compact navy-gradient hero; only tandem/AFF/coached get
   photographic CMS heroes. Dark `band-ink` sections stay only where already

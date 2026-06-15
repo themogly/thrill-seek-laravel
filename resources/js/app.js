@@ -217,4 +217,116 @@ document.addEventListener('alpine:init', () => {
             }, 600);
         },
     }));
+
+    // Branded date picker (<x-ui.date-field>). The native <input type="date"> stays
+    // the single source of truth (value carrier + accessible mobile control); on a
+    // fine-pointer desktop this overlays a styled, keyboard-accessible calendar that
+    // writes YYYY-MM-DD back to the native input — so the SUBMITTED value never changes.
+    Alpine.data('dateField', () => ({
+        open: false,
+        enhanced: false,
+        viewYear: new Date().getFullYear(),
+        viewMonth: new Date().getMonth(),
+        selected: '',
+        focusDay: null,
+
+        init() {
+            this.enhanced = window.matchMedia('(pointer: fine) and (min-width: 1024px)').matches;
+            this.selected = this.native.value || '';
+            this.setView();
+            // Stay in sync if Livewire morphs the native value (e.g. a validation re-render).
+            this.native.addEventListener('input', () => { this.selected = this.native.value || ''; });
+        },
+
+        get native() { return this.$refs.native; },
+        get min() { return this.native.min || null; },
+        get max() { return this.native.max || null; },
+
+        pad(n) { return String(n).padStart(2, '0'); },
+        iso(y, m, d) { return `${y}-${this.pad(m + 1)}-${this.pad(d)}`; },
+        parse(s) { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); },
+
+        setView() {
+            const base = this.selected ? this.parse(this.selected) : (this.max ? this.parse(this.max) : new Date());
+            this.viewYear = base.getFullYear();
+            this.viewMonth = base.getMonth();
+        },
+
+        get display() {
+            if (!this.selected) return '';
+            return this.parse(this.selected).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+        },
+        get months() {
+            return Array.from({ length: 12 }, (_, m) => new Date(2000, m, 1).toLocaleDateString('en-GB', { month: 'long' }));
+        },
+        get years() {
+            const now = new Date().getFullYear();
+            const start = this.min ? this.parse(this.min).getFullYear() : now - 120;
+            const end = this.max ? this.parse(this.max).getFullYear() : now + 2;
+            const out = [];
+            for (let y = end; y >= start; y--) out.push(y);
+            return out;
+        },
+        get grid() {
+            const startDow = (new Date(this.viewYear, this.viewMonth, 1).getDay() + 6) % 7; // Mon-first
+            const days = new Date(this.viewYear, this.viewMonth + 1, 0).getDate();
+            const cells = [];
+            for (let i = 0; i < startDow; i++) cells.push(null);
+            for (let d = 1; d <= days; d++) cells.push(d);
+            return cells;
+        },
+
+        disabled(d) {
+            if (d == null) return true;
+            const iso = this.iso(this.viewYear, this.viewMonth, d);
+            return (this.min && iso < this.min) || (this.max && iso > this.max);
+        },
+        isSelected(d) { return d != null && this.iso(this.viewYear, this.viewMonth, d) === this.selected; },
+        isToday(d) {
+            const t = new Date();
+            return d != null && this.viewYear === t.getFullYear() && this.viewMonth === t.getMonth() && d === t.getDate();
+        },
+
+        prevMonth() { this.viewMonth === 0 ? (this.viewMonth = 11, this.viewYear--) : this.viewMonth--; },
+        nextMonth() { this.viewMonth === 11 ? (this.viewMonth = 0, this.viewYear++) : this.viewMonth++; },
+
+        toggle() { this.open ? this.close() : this.openCal(); },
+        openCal() {
+            this.open = true;
+            this.setView();
+            this.focusDay = this.selected ? this.parse(this.selected).getDate() : 1;
+            this.$nextTick(() => this.focusGrid());
+        },
+        close() { this.open = false; this.$nextTick(() => this.$refs.trigger?.focus()); },
+        focusGrid() { this.$refs.cal?.querySelector('[data-focus="true"]')?.focus(); },
+
+        pick(d) {
+            if (this.disabled(d)) return;
+            this.selected = this.iso(this.viewYear, this.viewMonth, d);
+            this.native.value = this.selected;
+            this.native.dispatchEvent(new Event('input', { bubbles: true }));
+            this.native.dispatchEvent(new Event('change', { bubbles: true }));
+            this.close();
+        },
+
+        onGridKey(e) {
+            const moves = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 };
+            if (e.key in moves) { e.preventDefault(); this.moveFocus(moves[e.key]); }
+            else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (this.focusDay) this.pick(this.focusDay); }
+            else if (e.key === 'PageUp') { e.preventDefault(); this.prevMonth(); this.clampFocus(); this.$nextTick(() => this.focusGrid()); }
+            else if (e.key === 'PageDown') { e.preventDefault(); this.nextMonth(); this.clampFocus(); this.$nextTick(() => this.focusGrid()); }
+        },
+        clampFocus() {
+            const days = new Date(this.viewYear, this.viewMonth + 1, 0).getDate();
+            if (this.focusDay > days) this.focusDay = days;
+        },
+        moveFocus(delta) {
+            let d = (this.focusDay || 1) + delta;
+            let days = new Date(this.viewYear, this.viewMonth + 1, 0).getDate();
+            if (d < 1) { this.prevMonth(); d = new Date(this.viewYear, this.viewMonth + 1, 0).getDate() + d; }
+            else if (d > days) { d -= days; this.nextMonth(); }
+            this.focusDay = d;
+            this.$nextTick(() => this.focusGrid());
+        },
+    }));
 });
