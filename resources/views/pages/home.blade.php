@@ -51,7 +51,7 @@
 
     {{-- SERVICES: full-bleed photographic tiles, text on the image --}}
     <section class="border-b-2 border-secondary">
-        <div class="mx-auto max-w-7xl px-4 pt-16 lg:px-8 lg:pt-24">
+        <div class="mx-auto max-w-7xl px-4 pt-section-sm lg:px-8 lg:pt-section">
             <x-site.section-heading :eyebrow="$home->services_eyebrow" :title="$home->services_title" :lead="$home->services_lead" />
         </div>
         <div class="grid gap-px bg-secondary md:grid-cols-3" data-reveal>
@@ -74,13 +74,13 @@
 
     {{-- ABOUT: navy band, photos bleed to the edge --}}
     <section class="band-ink overflow-hidden">
-        <div class="mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 lg:grid-cols-2 lg:px-8 lg:py-32">
+        <div class="mx-auto grid max-w-7xl items-center gap-12 px-4 py-section lg:grid-cols-2 lg:px-8 lg:py-section-lg">
             <div data-reveal>
-                <p class="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.3em] text-sky-bright">
+                <p class="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.25em] text-sky-bright">
                     <span class="inline-block h-0.5 w-10 bg-primary"></span>{{ $home->about_eyebrow }}
                 </p>
-                <h2 class="heading-rule mt-4 font-display text-5xl uppercase leading-[0.95] tracking-wide md:text-7xl">{{ $home->about_title }}</h2>
-                <p class="mt-6 text-lg text-white/85">
+                <h2 class="heading-rule mt-4 font-display text-h2 uppercase tracking-wide">{{ $home->about_title }}</h2>
+                <p class="mt-6 max-w-measure text-lead text-white/85">
                     {{ $home->about_body }}
                 </p>
                 <div class="mt-10 grid grid-cols-3 divide-x divide-white/15 border-y border-white/15">
@@ -101,11 +101,11 @@
 
     {{-- TRUST: typographic statement band --}}
     <section class="border-b-2 border-secondary bg-secondary text-white">
-        <div class="mx-auto max-w-7xl px-4 py-16 lg:px-8 lg:py-20">
-            <p class="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.3em] text-sky-bright">
+        <div class="mx-auto max-w-7xl px-4 py-section-sm lg:px-8 lg:py-section">
+            <p class="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.25em] text-sky-bright">
                 <span class="inline-block h-0.5 w-10 bg-primary"></span>{{ $home->trust_eyebrow }}
             </p>
-            <h2 class="mt-3 font-display text-4xl uppercase leading-none tracking-wide md:text-6xl">{{ $home->trust_title }}</h2>
+            <h2 class="mt-3 font-display text-h2 uppercase tracking-wide">{{ $home->trust_title }}</h2>
             <x-site.trust-grid />
         </div>
     </section>
@@ -147,41 +147,69 @@
         </div>
     </x-site.section>
 
-    {{-- SOCIAL + NEWS --}}
+    {{-- NEWS + SOCIAL — real, dynamic news leads (dominant left column); an honest
+         "Follow us" block sits beside it. No live-feed framing, no dead links. --}}
     <section class="border-y-2 border-secondary">
-        <div class="mx-auto max-w-7xl px-4 py-20 lg:px-8">
-            <div class="grid gap-14 @if ($latestNews->isNotEmpty()) lg:grid-cols-2 @endif">
-                <div data-reveal>
-                    <h2 class="flex items-center gap-3 font-display text-4xl uppercase tracking-wide text-secondary"><x-icon name="instagram" class="text-primary" /> Instagram</h2>
-                    <p class="mt-2 text-muted-foreground">{{ $home->instagram_caption }}</p>
-                    <div class="mt-6 grid grid-cols-3 gap-px bg-secondary">
-                        @foreach ($galleryImages as $galleryImage)
-                            <a href="{{ $general->instagram_url }}" target="_blank" rel="noreferrer" class="group relative aspect-square overflow-hidden bg-secondary">
-                                <img src="{{ $galleryImage->image_url }}" alt="{{ $galleryImage->alt_text }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
-                                <div class="absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/40"></div>
-                            </a>
-                        @endforeach
-                    </div>
-                    <p class="mt-3 text-xs text-muted-foreground">{{ $home->instagram_note }}</p>
-                </div>
+        <div class="mx-auto max-w-7xl px-4 py-section-sm lg:px-8 lg:py-section">
+            <div class="grid gap-10 lg:grid-cols-3 lg:gap-12">
                 @if ($latestNews->isNotEmpty())
-                    <div data-reveal>
-                        <h2 class="flex items-center gap-3 font-display text-4xl uppercase tracking-wide text-secondary"><x-icon name="newspaper" class="text-primary" /> Latest News</h2>
+                    {{-- Latest News — the dominant, real content (2/3 width). --}}
+                    <div class="lg:col-span-2" data-reveal>
+                        <h2 class="flex items-center gap-3 font-display text-h2 uppercase tracking-wide text-secondary">
+                            <x-icon name="newspaper" class="h-8 w-8 shrink-0 text-primary" /> Latest News
+                        </h2>
                         <p class="mt-2 text-muted-foreground">Fresh from the dropzone.</p>
-                        <div class="mt-6 divide-y-2 divide-border border-2 border-border">
+                        <div class="mt-8 divide-y-2 divide-border border-2 border-border">
                             @foreach ($latestNews as $article)
-                                <a href="{{ route('news.show', $article->slug) }}" class="block p-5 transition-colors hover:bg-accent/40">
-                                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-primary">{{ $article->published_at->format('j M Y') }}</p>
-                                    <p class="mt-1 font-display text-xl uppercase leading-tight text-secondary">{{ $article->title }}</p>
+                                <a href="{{ route('news.show', $article->slug) }}" class="group block p-6 transition-colors hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring">
+                                    <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary">{{ $article->published_at->format('j M Y') }}</p>
+                                    <p class="mt-2 font-display text-h3 uppercase leading-tight text-secondary transition-colors group-hover:text-primary">{{ $article->title }}</p>
                                     @if (filled($article->lead))
-                                        <p class="mt-1 text-sm text-muted-foreground">{{ $article->lead }}</p>
+                                        <p class="mt-2 text-muted-foreground">{{ $article->lead }}</p>
                                     @endif
                                 </a>
                             @endforeach
                         </div>
-                        <x-ui.arrow-link href="/news" class="mt-4">All news</x-ui.arrow-link>
+                        <x-ui.arrow-link href="/news" class="mt-6">All news</x-ui.arrow-link>
                     </div>
                 @endif
+
+                {{-- Follow us — honest social block (1/3). Links come from CMS settings;
+                     an empty URL is hidden (never a dead/generic link). --}}
+                <div @class(['lg:mx-auto lg:max-w-md lg:col-span-3' => $latestNews->isEmpty()]) data-reveal>
+                    <div class="band-ink h-full border-l-4 border-primary p-8">
+                        <h2 class="font-display text-h3 uppercase tracking-wide">Follow us</h2>
+                        <p class="mt-2 text-sm text-white/70">{{ $home->instagram_caption }}</p>
+                        <div class="mt-6 flex flex-col gap-3">
+                            @if (filled($general->instagram_url))
+                                <a href="{{ $general->instagram_url }}" target="_blank" rel="noreferrer" class="group flex items-center gap-3 border border-white/20 px-4 py-3.5 transition-colors hover:border-primary hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary">
+                                    <x-icon name="instagram" class="h-5 w-5 shrink-0 text-sky-bright" />
+                                    <span class="text-sm font-bold uppercase tracking-widest">{{ $general->instagram_handle ?: 'Instagram' }}</span>
+                                    <x-icon name="arrow-right" class="ml-auto h-4 w-4 shrink-0 text-white/50 transition-transform motion-reduce:transition-none group-hover:translate-x-1" />
+                                </a>
+                            @endif
+                            @if (filled($general->facebook_url))
+                                <a href="{{ $general->facebook_url }}" target="_blank" rel="noreferrer" class="group flex items-center gap-3 border border-white/20 px-4 py-3.5 transition-colors hover:border-primary hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary">
+                                    <x-icon name="facebook" class="h-5 w-5 shrink-0 text-sky-bright" />
+                                    <span class="text-sm font-bold uppercase tracking-widest">Facebook</span>
+                                    <x-icon name="arrow-right" class="ml-auto h-4 w-4 shrink-0 text-white/50 transition-transform motion-reduce:transition-none group-hover:translate-x-1" />
+                                </a>
+                            @endif
+                        </div>
+                        {{-- A small CURATED set of dropzone photos (CMS Gallery) — clearly
+                             owner-picked, not a live feed. Linked to Instagram when set. --}}
+                        @if ($galleryImages->isNotEmpty())
+                            <p class="mt-8 text-xs font-bold uppercase tracking-[0.25em] text-white/50">From the dropzone</p>
+                            <div class="mt-3 grid grid-cols-3 gap-px">
+                                @foreach ($galleryImages->take(6) as $galleryImage)
+                                    <a @if (filled($general->instagram_url)) href="{{ $general->instagram_url }}" target="_blank" rel="noreferrer" @endif class="group relative aspect-square overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary">
+                                        <img src="{{ $galleryImage->image_url }}" alt="{{ $galleryImage->alt_text }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
+                                    </a>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -207,24 +235,24 @@
     </x-site.section>
 
     {{-- NEWSLETTER --}}
-    <section class="band-ink border-y-4 border-primary py-20">
+    <section class="band-ink border-y-4 border-primary py-section lg:py-section-lg">
         <div class="mx-auto max-w-3xl px-4 text-center">
-            <h2 class="font-display text-5xl uppercase leading-none tracking-wide md:text-6xl">{{ $home->newsletter_title }}</h2>
+            <h2 class="font-display text-h2 uppercase tracking-wide">{{ $home->newsletter_title }}</h2>
             @if (filled($home->newsletter_subtitle))
-                <p class="mt-4 text-lg text-white/85">{{ $home->newsletter_subtitle }}</p>
+                <p class="mx-auto mt-4 max-w-measure text-lead text-white/85">{{ $home->newsletter_subtitle }}</p>
             @endif
             <livewire:newsletter-signup variant="banner" />
         </div>
     </section>
 
     {{-- CONTACT CTA: full-bleed photographic close --}}
-    <section class="relative isolate overflow-hidden py-28 text-white lg:py-40">
+    <section class="relative isolate overflow-hidden py-section lg:py-section-lg text-white">
         <img src="{{ $home->imageUrl($home->hero_image) }}" alt="" aria-hidden="true" class="absolute inset-0 -z-10 h-full w-full object-cover" loading="lazy" width="1920" height="1280" />
         <div class="absolute inset-0 -z-10 bg-photo-scrim"></div>
         <div class="mx-auto max-w-4xl px-4 text-center" data-reveal>
-            <h2 class="font-display text-6xl uppercase leading-[0.92] tracking-wide md:text-8xl">{{ $home->cta_title }}</h2>
+            <h2 class="font-display text-h1 uppercase tracking-wide">{{ $home->cta_title }}</h2>
             @if (filled($home->cta_subtitle))
-                <p class="mx-auto mt-5 max-w-xl text-lg text-white/90">{{ $home->cta_subtitle }}</p>
+                <p class="mx-auto mt-5 max-w-measure text-lead text-white/90">{{ $home->cta_subtitle }}</p>
             @endif
             <x-ui.button href="/contact" size="lg" class="mt-10">
                 {{ $home->cta_button_label }}

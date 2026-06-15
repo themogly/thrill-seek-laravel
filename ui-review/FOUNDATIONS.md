@@ -96,6 +96,7 @@ The site is already on Tailwind's 4px grid; these tokens formalise the rhythm.
 | --- | --- | --- | --- |
 | `--spacing-section` | 6rem (96px) | `py-section` | desktop section block |
 | `--spacing-section-sm` | 4rem (64px) | `py-section-sm` | mobile section block |
+| `--spacing-section-lg` | 8rem (128px) | `py-section-lg` | dramatic dark/photo feature bands (added pass 3) |
 | `--container-measure` | 68ch | `max-w-measure` | reading column for body/lead text |
 
 - `<x-site.section>` and `<x-site.page-hero>` now use `py-section-sm lg:py-section` (same

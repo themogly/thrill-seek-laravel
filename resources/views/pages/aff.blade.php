@@ -36,12 +36,12 @@
 
     {{-- TRUST: dark typographic band --}}
     <section class="border-b-2 border-secondary bg-secondary text-white">
-        <div class="mx-auto max-w-7xl px-4 py-16 lg:px-8 lg:py-20">
-            <div class="max-w-3xl">
-                <p class="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.3em] text-sky-bright">
+        <div class="mx-auto max-w-7xl px-4 py-section-sm lg:px-8 lg:py-section">
+            <div class="max-w-measure">
+                <p class="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.25em] text-sky-bright">
                     <span class="inline-block h-0.5 w-10 bg-primary"></span>{{ $page->trust_eyebrow }}
                 </p>
-                <h2 class="mt-3 font-display text-4xl uppercase leading-none tracking-wide md:text-6xl">{{ $page->trust_title }}</h2>
+                <h2 class="mt-3 font-display text-h2 uppercase tracking-wide">{{ $page->trust_title }}</h2>
                 <p class="mt-4 text-white/80">
                     {{ $page->trust_body }}
                 </p>

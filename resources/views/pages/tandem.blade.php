@@ -116,10 +116,10 @@
     </x-site.section>
 
     {{-- GIFT VOUCHERS: full-bleed navy band --}}
-    <section class="band-ink border-y-4 border-primary py-20 lg:py-28">
+    <section class="band-ink border-y-4 border-primary py-section lg:py-section-lg">
         <div class="mx-auto max-w-4xl px-4 text-center" data-reveal>
-            <h2 class="font-display text-5xl uppercase leading-[0.95] tracking-wide md:text-7xl">{{ $page->gift_title }}</h2>
-            <p class="mx-auto mt-5 max-w-xl text-lg text-white/85">{{ $page->gift_body }}</p>
+            <h2 class="font-display text-h2 uppercase tracking-wide">{{ $page->gift_title }}</h2>
+            <p class="mx-auto mt-5 max-w-measure text-lead text-white/85">{{ $page->gift_body }}</p>
             <x-ui.button href="/vouchers" size="lg" class="mt-9">
                 {{ $page->gift_button_label }}
             </x-ui.button>

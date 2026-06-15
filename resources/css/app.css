@@ -61,6 +61,7 @@
        mobile uses --spacing-section-sm. Consumable as `py-section`. ────────── */
     --spacing-section: 6rem; /* 96px desktop section block */
     --spacing-section-sm: 4rem; /* 64px mobile section block */
+    --spacing-section-lg: 8rem; /* 128px — dramatic dark/photo feature bands */
 
     /* Comfortable reading measure for text columns → `max-w-measure`. */
     --container-measure: 68ch;

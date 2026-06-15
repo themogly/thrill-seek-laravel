@@ -10,13 +10,13 @@
 
     {{-- INTRO: image bleeds off the left edge --}}
     <section class="overflow-hidden border-b-2 border-secondary">
-        <div class="py-16 lg:py-24">
+        <div class="py-section-sm lg:py-section">
             <x-site.feature-split :image="$page->imageUrl($page->image)" alt="Advanced freefly coaching" side="left">
-                <p class="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.3em] text-primary">
+                <p class="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.25em] text-primary">
                     <span class="inline-block h-0.5 w-10 bg-primary"></span>{{ $page->price_eyebrow }}
                 </p>
-                <h2 class="heading-rule mt-4 font-display text-5xl uppercase leading-[0.95] tracking-wide text-secondary md:text-7xl">{{ $page->heading }}</h2>
-                <p class="mt-6 text-lg text-muted-foreground">
+                <h2 class="heading-rule mt-4 font-display text-h2 uppercase tracking-wide text-secondary">{{ $page->heading }}</h2>
+                <p class="mt-6 max-w-measure text-lead text-muted-foreground">
                     {{ $page->body }}
                 </p>
                 <ul class="mt-8 space-y-3">
