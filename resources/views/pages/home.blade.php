@@ -84,6 +84,12 @@
                 <p class="mt-6 max-w-measure text-lead text-white/85">
                     {{ $home->about_body }}
                 </p>
+                {{-- Subtle team mention woven into the story (no standalone section): a
+                     quiet trust line + the one directional cue to the full team page. --}}
+                @if ($instructors->isNotEmpty())
+                    <p class="mt-6 max-w-measure text-white/70">{{ $pages->home_team_teaser_line }}</p>
+                    <x-ui.arrow-link href="/meet-the-team" class="mt-3 !text-sky-bright">Meet the instructors who'll fly with you</x-ui.arrow-link>
+                @endif
                 <div class="mt-10 grid grid-cols-3 divide-x divide-white/15 border-y border-white/15">
                     @foreach ($home->about_stats as $stat)
                         <div class="px-4 py-6 first:pl-0">
@@ -110,32 +116,6 @@
             <x-site.trust-grid />
         </div>
     </section>
-
-    {{-- TEAM TEASER: a compact trust line + the team's faces, linking to the full
-         Meet the Team page. Replaces the old full-roster scroll rail — far less
-         vertical space, no desktop carousel, and the bios/cards live on the
-         dedicated page instead. --}}
-    @if ($instructors->isNotEmpty())
-        <x-site.section>
-            <x-site.section-heading :eyebrow="$home->team_eyebrow" :title="$home->team_title" :lead="$home->team_lead" />
-            <div class="mt-8 flex flex-col items-start gap-6 border-2 border-border p-6 sm:flex-row sm:items-center sm:justify-between lg:p-8" data-reveal>
-                <div class="flex items-center gap-5">
-                    {{-- Overlapping portrait thumbnails (photo or initial fallback); the
-                         ring separates them against the page. Decorative — the real
-                         names + roles are one click away on Meet the Team. --}}
-                    <ul class="flex items-center -space-x-3" aria-hidden="true">
-                        @foreach ($instructors as $instructor)
-                            <li>
-                                <x-site.avatar :name="$instructor->name" :url="$instructor->photo_url" size="h-14 w-14" class="ring-2 ring-background" />
-                            </li>
-                        @endforeach
-                    </ul>
-                    <p class="max-w-md text-lg font-semibold text-secondary">{{ $pages->home_team_teaser_line }}</p>
-                </div>
-                <x-ui.arrow-link href="/meet-the-team" class="shrink-0">Meet the team</x-ui.arrow-link>
-            </div>
-        </x-site.section>
-    @endif
 
     {{-- NEWS + SOCIAL — real, dynamic news leads (dominant left column); an honest
          "Follow us" block sits beside it. No live-feed framing, no dead links. --}}
