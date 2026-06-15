@@ -1255,3 +1255,14 @@ Because the carrier is unchanged, the booking/enquiry suites (which set the wire
 directly) pass untouched; `DateFieldTest` pins that the native carrier + min/max stay wired.
 Verified at 1440/1280/1024/390 — desktop popover + year-jump + selection (`1995-05-15`),
 mobile native, no console errors.
+
+## UI level-up 4/4 — guidelines doc (ui/04-guidelines)
+
+Branched off main `7349671`. Docs-only final pass: distilled the design system that passes
+1–3 + the date-picker built into one project reference, `ui-guidelines.md` (type/spacing
+tokens with real values, the palette, the `x-ui`/`x-site` component catalogue, the
+conventions — eyebrows, focus rings, native-control handling, CMS/empty-state, motion — and
+an "adding a new page" checklist). CLAUDE.md points at it as the canonical system (the
+`frontend-design` skill is the general craft; this is our specifics). No code/style/token
+changes. Captured the known gaps for later (the h3→h2 type-scale mid gap; the home "Explore"
+cue not yet on `arrow-link`; a few deliberate one-off `tracking-*`).

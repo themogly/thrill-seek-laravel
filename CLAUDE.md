@@ -144,6 +144,10 @@ that manages all site content, enquiries, payments and bookings.
   objects (`cache.serializable_classes = false`). Settings caching is fine (plain values).
 
 ## Design rules (Round 5B/6 — owner-approved; see design-review/round5/SUMMARY.md)
+- **UI conventions: see `ui-guidelines.md`** — the canonical design system for this project
+  (the real type/spacing tokens, palette, and the `x-ui`/`x-site` component catalogue, after
+  the 4-pass UI level-up). The `frontend-design` skill is the general craft; that doc is our
+  specifics. Read it before building new UI; the rules below are the headline points.
 - **Palette only**: text and UI colours come exclusively from the established brand
   tokens in `resources/css/app.css` (`primary`, `secondary`, `sky-bright`, `sky-deep`,
   `ink`, `muted`, `destructive`, …). Never invent a new shade, hex value or oklch —
