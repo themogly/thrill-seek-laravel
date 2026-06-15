@@ -11,6 +11,7 @@ use App\Filament\Resources\Documents\DocumentResource;
 use App\Filament\Resources\EmailTemplates\EmailTemplateResource;
 use App\Filament\Resources\Enquiries\EnquiryResource;
 use App\Filament\Resources\Faqs\FaqResource;
+use App\Filament\Resources\Instructors\InstructorResource;
 use App\Filament\Resources\Locations\LocationResource;
 use App\Filament\Resources\News\NewsResource;
 use App\Filament\Resources\NewsletterCampaigns\NewsletterCampaignResource;
@@ -78,6 +79,19 @@ class HelpGuide extends Page
                     '<strong>To change a photo:</strong> drag a file onto the upload box. Images are resized for the web automatically.',
                 ],
                 'cta' => ['label' => 'Open General settings', 'url' => ManageGeneralSettings::getUrl()],
+            ],
+            [
+                'id' => 'team',
+                'icon' => 'heroicon-o-user-group',
+                'title' => 'Your team & their disciplines',
+                'intro' => 'The <strong>Instructors</strong> list (Site content) is your team. Each instructor shows on the <strong>Meet the Team</strong> page with their photo, bio and <strong>discipline tags</strong>; the homepage shows a compact taster that links through to it.',
+                'steps' => [
+                    '<strong>To add or edit an instructor:</strong> open Instructors, fill in their name, role and bio, and drag on a photo (leave it blank for a tidy initial badge). The bio shows in full on Meet the Team, so a paragraph or two is fine.',
+                    '<strong>To say what they teach:</strong> tick their <strong>Disciplines</strong> (Tandem, AFF, Coaching). Tick more than one — they appear once with all their tags, never duplicated.',
+                    '<strong>To rename or add a discipline:</strong> use the <strong>Disciplines</strong> screen. Each discipline also lists who teaches it on the matching course page.',
+                    '<strong>To reorder the team:</strong> drag the rows on the Instructors list — that order is used on the website.',
+                ],
+                'cta' => ['label' => 'Open Instructors', 'url' => InstructorResource::getUrl()],
             ],
             [
                 'id' => 'privacy-policy',

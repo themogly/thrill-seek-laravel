@@ -26,6 +26,7 @@ Route::middleware('feature:news')->group(function (): void {
 });
 Route::get('/testimonials', [PageController::class, 'testimonials'])->name('testimonials');
 Route::get('/hall-of-fame', [PageController::class, 'hallOfFame'])->name('hall-of-fame');
+Route::get('/meet-the-team', [PageController::class, 'meetTheTeam'])->name('meet-the-team');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::get('/privacy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/terms', [PageController::class, 'terms'])->name('terms');
@@ -109,6 +110,7 @@ Route::get('/sitemap.xml', function () {
         ['path' => '/coached', 'priority' => '0.8'],
         ['path' => '/testimonials', 'priority' => '0.6'],
         ['path' => '/hall-of-fame', 'priority' => '0.6'],
+        ['path' => '/meet-the-team', 'priority' => '0.6'],
         ['path' => '/contact', 'priority' => '0.8'],
         ['path' => '/privacy', 'priority' => '0.3'],
         ['path' => '/terms', 'priority' => '0.3'],

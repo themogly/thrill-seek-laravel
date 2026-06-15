@@ -34,6 +34,17 @@ class SimplePagesSettings extends Settings
 
     public string $hall_of_fame_hero_subtitle;
 
+    public string $meet_the_team_seo_title;
+
+    public string $meet_the_team_seo_description;
+
+    public string $meet_the_team_hero_title;
+
+    public string $meet_the_team_hero_subtitle;
+
+    /** Short trust line shown beside the team avatars on the homepage teaser. */
+    public string $home_team_teaser_line;
+
     public string $contact_seo_title;
 
     public string $contact_seo_description;

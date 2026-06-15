@@ -79,6 +79,13 @@ class PageController extends Controller
         ]);
     }
 
+    public function meetTheTeam(): View
+    {
+        return view('pages.meet-the-team', [
+            'instructors' => $this->content->instructors(),
+        ]);
+    }
+
     public function bookTandem(): View
     {
         return view('pages.book-tandem');
