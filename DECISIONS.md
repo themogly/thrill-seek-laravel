@@ -1186,3 +1186,24 @@ rebrand (navy/blue/white, sharp corners, photo-led, Bebas display all kept).
   the one deliberate refinement of an oversized value). Verified at 1440/1280/1024/390 +
   short-height across 5 pages, no regressions. Later passes (buttons, page polish) migrate
   the remaining ad-hoc values to these tokens. Full detail in `ui-review/FOUNDATIONS.md`.
+
+## UI level-up 2/4 — buttons, inputs & links polish (ui/02-components)
+
+Branched off main `f868ac3`. Pass 2 polishes the interactive layer to the same intentional
+standard as pass 1, staying inside the brand (navy/blue/white, sharp corners, no new
+colours). The components were already a decent shared system — this tightens craft + states.
+
+- **Buttons:** added `active:` press states + a `motion-reduce` transition guard to
+  `<x-ui.button>`; folded the last hand-styled button (header mobile "Book Now") into the
+  component (`w-full`). Zero one-off buttons remain in public views. Documented the icon
+  lead/trail + icon-only `aria-label` convention.
+- **Inputs:** unified ONE focus convention — `focus-visible:ring-2 ring-ring` + brand-blue
+  border across input/textarea/select (was a `ring-1` / `focus:`-vs-`focus-visible:` mix);
+  clearer, accessible keyboard focus that matches the buttons. Kept the documented toast
+  error pattern for simple forms + the inline `<x-booking.field role="alert">` for booking
+  forms (not converting toasts→inline — that's a prior decision, not a defect).
+- **Links:** new `<x-ui.arrow-link>` for the "All news → / Read more →" navigational arrow
+  pattern (consistent hover-slide + focus-visible + reduced-motion); migrated the standalone
+  + in-card usages. The home "Explore" border-b cue is deferred to pass 3 (home polish).
+- No new tokens needed. Verified at 1440/1280/1024/390 + short-height; `composer check`
+  green (344). Detail in `ui-review/COMPONENTS.md`; before/after in `ui-review/c-*`.

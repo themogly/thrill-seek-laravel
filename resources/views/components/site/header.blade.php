@@ -170,9 +170,9 @@
             <a href="{{ $accountUrl }}" @click="open = false" class="px-4 py-3.5 text-sm font-bold uppercase tracking-widest text-secondary">
                 {{ $accountLabel }}
             </a>
-            <a href="/book/tandem" @click="open = false" class="bg-primary px-4 py-3.5 text-sm font-bold uppercase tracking-widest text-primary-foreground transition-colors hover:bg-primary/85">
-                Book Now
-            </a>
+            <div class="px-4 pt-2">
+                <x-ui.button href="/book/tandem" class="w-full" x-on:click="open = false">Book Now</x-ui.button>
+            </div>
         </nav>
     </div>
 </header>
