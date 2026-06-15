@@ -11,7 +11,10 @@
 
     <x-site.section>
         <x-site.section-heading :eyebrow="$eyebrow" :title="$title" />
-        <div class="mx-auto max-w-3xl divide-y-2 divide-border border-y-2 border-border" data-reveal>
+        {{-- Constrained to the reading measure and LEFT-aligned to match the (left)
+             section heading — a tidy single column, chevron close to its question,
+             not a full-bleed band with content pinned to the edges. --}}
+        <div class="max-w-measure divide-y-2 divide-border border-y-2 border-border" data-reveal>
             @foreach ($faqs as $faq)
                 <div x-data="{ open: false }">
                     <h3>
