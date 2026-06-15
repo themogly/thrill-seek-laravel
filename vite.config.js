@@ -13,7 +13,9 @@ export default defineConfig({
                     weights: [400],
                 }),
                 bunny('Barlow', {
-                    weights: [400, 500, 600, 700, 800],
+                    // 400 body, 500 medium, 600 semibold, 700 bold — the weights the UI
+                    // actually uses. (800/extrabold dropped: 0 usages — saves a font file.)
+                    weights: [400, 500, 600, 700],
                 }),
             ],
         }),

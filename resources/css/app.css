@@ -38,6 +38,32 @@
     --color-ink: var(--ink);
     --font-display: 'Bebas Neue', 'Impact', sans-serif;
     --font-sans: 'Barlow', 'Inter', system-ui, sans-serif;
+
+    /* ── Type scale (UI pass 1 — the canonical scale; use these, not ad-hoc
+       text-* steps). Display/headings are the condensed Bebas face with tight
+       leading; sizes are fluid (clamp) so they stay bold on desktop without
+       overflowing small screens. Letter-spacing stays on `tracking-*`
+       utilities (the brand already manages it there). ─────────────────────── */
+    --text-display: clamp(3.25rem, 9vw, 8.5rem); /* home / monster hero */
+    --text-display--line-height: 0.9;
+    --text-h1: clamp(2.75rem, 6.5vw, 5.5rem); /* page-hero titles */
+    --text-h1--line-height: 0.92;
+    --text-h2: clamp(2.25rem, 5.2vw, 4.25rem); /* section headings */
+    --text-h2--line-height: 0.95;
+    --text-h3: clamp(1.5rem, 2.3vw, 1.875rem); /* card / sub headings */
+    --text-h3--line-height: 1.05;
+    --text-lead: 1.1875rem; /* 19px — lead paragraphs */
+    --text-lead--line-height: 1.6;
+    --text-body: 1rem; /* 16px — base reading size */
+    --text-body--line-height: 1.65;
+
+    /* ── Spacing rhythm (4px grid). Sections breathe at --spacing-section;
+       mobile uses --spacing-section-sm. Consumable as `py-section`. ────────── */
+    --spacing-section: 6rem; /* 96px desktop section block */
+    --spacing-section-sm: 4rem; /* 64px mobile section block */
+
+    /* Comfortable reading measure for text columns → `max-w-measure`. */
+    --container-measure: 68ch;
 }
 
 :root {
@@ -117,6 +143,11 @@
         color: var(--color-foreground);
         font-family: var(--font-sans);
         font-feature-settings: 'ss01', 'cv01';
+        /* Readable base: 16px at a comfortable 1.65 leading (was the default 1.5). */
+        font-size: var(--text-body);
+        line-height: var(--text-body--line-height);
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
     }
     h1,
     h2,
