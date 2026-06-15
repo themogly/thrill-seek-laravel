@@ -1266,3 +1266,73 @@ an "adding a new page" checklist). CLAUDE.md points at it as the canonical syste
 `frontend-design` skill is the general craft; this is our specifics). No code/style/token
 changes. Captured the known gaps for later (the h3→h2 type-scale mid gap; the home "Explore"
 cue not yet on `arrow-link`; a few deliberate one-off `tracking-*`).
+
+## Seed real content + logo (chore/seed-real-content)
+
+Branched off main `179d8fb`. Seeded the owner's real facts into the existing models/seeders
+(no schema/checkout-logic change). **Hard exclusions honoured:** no bank details, internal
+back-office workflow, per-student checklists, safety-critical AFF training material, or
+private/informal pricing notes were put anywhere in the repo.
+
+### Logo
+Processed the owner's file (`storage/app/brand/G-Force Logo Blue & Grey JPEG.jpg`,
+white-bg, padded) → cropped, white→transparent 520px PNG + WebP for the header (via
+`<picture>`), square app icons (apple-touch 180, manifest 192/512) and a real
+`favicon.ico` (was 0 bytes). **Footer keeps its text wordmark** — the blue/grey logo
+doesn't read on the navy band; **owner task: a reversed/white logo for dark surfaces.**
+(Local Herd 404s `/favicon.ico`; the file is valid on disk and production nginx serves it,
+plus a PNG favicon link covers browsers.)
+
+### What changed per field (KEPT / ENRICHED / REPLACED)
+- **Homepage About body — ENRICHED (fact fix):** "founded by ex-military jumpers" was
+  inaccurate (the founders are mixed-background) → "founded in 2017 by friends with a
+  shared passion…"; length/tone kept. Title "Established 2017. Built on experience." KEPT.
+- **Instructor bios — ENRICHED + surnames:** Joby → **Joby Chadd** (military 2004; BS &
+  USPA rated; signs off A Licence); Lucy → **Lucy Davies** (joined in Portugal 2018, AFF
+  in 5 days). Ricky KEPT (no new detail supplied). Short, card-length; **no phone numbers.**
+- **Tandem + AFF page copy / product pricing — KEPT:** already accurate — tandem £260,
+  camera £140/£100, P6 £24.73, rebooking £50, weight surcharges, AFF £1,750, consolidation
+  £600, the "15,000ft / highest tandem in the UK" hook, the AFF how-it-works explainer, and
+  the charity-tandem line. Per the fit-to-slot rule these well-fitted slots were left alone.
+- **FAQs (tandem + AFF) — ENRICHED/REPLACED placeholders with real facts:** weight
+  surcharges, camera prices, the charity option, AFF 8-levels+10-consolidation→A Licence,
+  A-Licence recognition, **BS membership not included / seasonal / provisional for ground
+  school+L1**, kit list, and the trips/travel logistics (general, not personal specifics).
+- **Social URLs — REPLACED generic placeholders** with the real Instagram
+  (`/gforceskydiving/`) + Facebook (`/Gforceskydiving.co.uk/`). Email/phone already correct
+  (`info@gforceskydiving.co.uk`, `+44 (0)7583 155 951`). **No staff mobile numbers anywhere.**
+- **Locations (Devon, Swansea, Hinton, Seville/Spain) + AFF course dates — KEPT:** locations
+  already seeded; course dates are dynamic future demos. The provided "Spain 8–12 June" is
+  past/ambiguous → **owner enters real upcoming course dates in admin** (CourseDates).
+
+### ⚠️ Testimonials — NOT seeded (owner content)
+14 **real reviewer names** were provided (Leigh Bulmer, Anais Housley, Eddie Wilkins, Cam
+Jones, Jordan Cooksley, Anthony 'Taff' Rabey, Matt Oakley, Lewis Cashel, Damian Muzsal,
+Chris Fowler, James Martin, Susie Hay, Kevin T Hannam Bowen, Wayne Barnes) but the **actual
+quotes were not in my materials** (the "prior version of this prompt" / legacy testimonials
+page wasn't accessible, and the source React app isn't present). I **did not fabricate
+quotes attributed to real named people.** The generic placeholder testimonials remain until
+the owner supplies the real 2018–19 quotes — and should confirm they're happy to keep
+displaying reviews that old.
+
+### [VERIFY] — owner to confirm before publishing
+- Tandem: the **"highest tandem in the UK at 15,000ft"** claim; exact **weight & minimum-age
+  limits**; **wind limit** (~20kt).
+- AFF: **upper age limit** (~55); **repeat-level / extra-jump pricing**; **packing fee**
+  (~£5/jump?); **BS membership cost** (~£125/yr sliding scale); that **consolidation jumps**
+  are sold as described (£600 / 10 jumps); real **course dates & year**.
+
+### Owner image uploads (still placeholders)
+Testimonial photos; **instructor photos** (bundled stock with mismatched filenames); hero /
+gallery / about / Hall-of-Fame photos; and the **reversed/white logo** for the dark footer.
+
+### Display-vs-checkout LOGIC questions (NOT wired in this pass — feature decisions)
+All prices above are seeded as **displayed content only**. The owner should decide whether
+the booking flow should *charge*:
+- **Camera add-ons** (£140/£100) — already modelled as purchasable add-ons; confirm the
+  checkout actually charges them.
+- **Weight surcharges** (£20/£40/£60) — currently display-only; should checkout add them
+  based on the entered weight?
+- **Consolidation jumps** (£600) — a separate product; should it be a paid step after AFF?
+- **P6 insurance** (£24.73) — paid on the day direct to British Skydiving; correctly NOT a
+  site charge.
