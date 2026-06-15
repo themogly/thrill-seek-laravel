@@ -1504,3 +1504,22 @@ Awaiting owner choice on A, C, D (B follows). Build only after approval.
 Note: the home `team_eyebrow/title/lead` settings become unused on the homepage but are KEPT
 (no data change). Building now in steps: chip partial + course element → homepage About line →
 team-page tags + padding.
+
+### BUILT (ui/team-design-fixes)
+Shipped in 3 commits, `composer check` green before each (360 tests); verified across
+1440/1280/1024/390 + short height (`ui-review/team-fixes/*`).
+- **A1 — homepage**: REPLACED the standalone teaser (bordered box + duplicated "MEET THE
+  TEAM" heading + nameless avatars) with a single woven mention in the navy About band —
+  the trust line (`home_team_teaser_line`) + one sky-bright "Meet the instructors who'll fly
+  with you →" cue. No box, no avatars on the homepage. KEPT the About story and stats intact.
+- **C1 — Tandem/AFF**: REPLACED the heavy "Meet your <discipline> team" box with a compact
+  NAMED row — a quiet "Your <discipline> instructors" label + a new shared
+  `<x-site.instructor-chip>` (avatar + name + role) per tagged instructor + "Meet the team →".
+  Still `instructorsForDiscipline(slug)` (each once). Verified: tandem→Joby+Lucy, aff→Joby+Ricky.
+- **D1 — team page**: discipline chips now sit under a muted "TEACHES" label, divided from the
+  bio by a hairline rule; card body padding standardised (`p-6 lg:p-7`) with even rhythm and
+  intact no-photo / no-bio empty states.
+- **Avatars (B)**: no nameless avatar rows remain anywhere — home has none, course pages name
+  them, the team page keeps full portraits.
+- KEPT (unused on the homepage now, but no data change): the `team_eyebrow/title/lead`
+  HomePageSettings. Disciplines DATA model untouched (presentation-only change).
