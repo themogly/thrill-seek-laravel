@@ -1542,3 +1542,35 @@ app's canonical navy exactly.
   get the original **SVG/vector** logo from the designer and change the blue fill to `#00226b`
   there — crisp at every size, and the icons can be re-exported from it. Flagging so the raster
   result isn't mistaken for the proper source-of-truth fix.
+
+## Homepage: remove duplicate trust stats + prominent team link (ui/homepage-dedupe) — CHECKPOINT
+Branch off main `4798387`. Presentation only. Screenshots: `ui-review/homepage-dedupe/00-*`.
+Current state confirms the duplication:
+- **Trust band** (`<x-site.trust-grid>`, `bg-secondary`): "WHY JUMP WITH US / TRUSTED. CERTIFIED.
+  EXPERIENCED." + 4 tiles — EX-MILITARY / **30+ YEARS** / **BS·USPA** / EST. 2017. → KEEP.
+- **About band** ("OUR STORY / ESTABLISHED 2017. BUILT ON EXPERIENCE."): prose + a faint trust
+  line + the faint "MEET THE INSTRUCTORS…" link + a 3-tile grid `about_stats` — 15K FT /
+  **30+ YRS** / **BS·USPA** (right column = two tall photos). → the stat tiles DUPLICATE the band.
+
+### A. About section after removing the stat tiles (keep it balanced, no gap)
+- Remove the `about_stats` 3-tile grid. Also drop the **faint trust line** ("Your jumps are run by
+  British Skydiving and USPA-rated instructors") — it repeats BS/USPA, which is already in the band
+  AND in the About body ("holds both British Skydiving and USPA certifications"). Triple redundancy.
+- Left column becomes: eyebrow → title → body → **one prominent team element** (below). The band
+  grid stays `items-center`, so the (now shorter) text column centres against the two-photo column
+  — balanced symmetric whitespace, not a gap. A short one-line lead above the element anchors the
+  bottom of the column. Photos unchanged. Net: prose + photos + a strong CTA = complete, calmer.
+
+### B. The prominent team element (2 options)
+- **B-i (recommended): a bold `<x-ui.button href="/meet-the-team">Meet the Team</x-ui.button>`**
+  with a short lead line above ("The people you'll jump with."). Prominent, on-brand (matches the
+  hero CTAs), routes clearly, zero new components/CSS. Clean and unmistakable.
+- **B-ii: a small named team teaser** — a row of 3–4 instructor avatars WITH names (reusing
+  `<x-site.instructor-chip>`, queried from the team, no duplication) + the bold button beneath.
+  More human/visual, but heavier and re-introduces faces on the homepage (the earlier task made it
+  deliberately face-free). Use if you want faces back, prominently and named.
+- Button style on the navy band: **primary (orange)** for maximum prominence (matches hero CTAs),
+  or **outline** (white border, subtler). See question.
+
+Confirm: the trust band is untouched; the stats now appear ONCE (in the band).
+Awaiting owner choice on B + button style. Build only after approval.
