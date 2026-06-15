@@ -8,9 +8,11 @@
         : 'border-primary text-secondary';
 @endphp
 @if ($disciplines->isNotEmpty())
-    <ul {{ $attributes->merge(['class' => 'flex flex-wrap gap-2']) }} aria-label="Disciplines taught">
+    <ul {{ $attributes->merge(['class' => 'flex flex-wrap gap-2.5']) }} aria-label="Disciplines taught">
         @foreach ($disciplines as $discipline)
-            <li class="border-2 px-2.5 py-1 text-[0.7rem] font-bold uppercase leading-none tracking-widest {{ $toneClasses }}">
+            {{-- Balanced chip: even h/v padding; moderate tracking so left/right read
+                 symmetric (tracking-widest pushed the glyphs left of centre). --}}
+            <li class="inline-flex items-center border-2 px-3 py-1.5 text-[0.7rem] font-bold uppercase leading-none tracking-[0.1em] {{ $toneClasses }}">
                 {{ $discipline->name }}
             </li>
         @endforeach
