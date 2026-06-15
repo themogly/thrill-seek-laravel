@@ -1266,3 +1266,67 @@ an "adding a new page" checklist). CLAUDE.md points at it as the canonical syste
 `frontend-design` skill is the general craft; this is our specifics). No code/style/token
 changes. Captured the known gaps for later (the h3→h2 type-scale mid gap; the home "Explore"
 cue not yet on `arrow-link`; a few deliberate one-off `tracking-*`).
+
+## Instructors: disciplines + Meet the Team page + homepage teaser (CHECKPOINT — proposal, awaiting approval)
+Branch `feature/instructors-disciplines` off main (start `179d8fb`). Proposal only; no code yet.
+
+### 1. Current state (inspected)
+- **Model/storage**: `instructors` table = `name, role, bio (text), photo (nullable), sort_order`.
+  Read through the cached `SiteContent::instructors()` gateway (caches raw attribute arrays then
+  `Instructor::hydrate()` — Eloquent objects are never cached). Filament `InstructorResource`
+  ("Site content" group) with `InstructorForm` (name/role/bio/photo upload).
+- **Homepage roster**: `pages/home.blade.php` TEAM section is a horizontal scroll-snap rail
+  (`flex snap-x overflow-x-auto`, 2-up mobile / 4-up desktop) showing the FULL roster with photo,
+  name plate, role and the FULL bio per card. This is the scroll we're replacing.
+- **"Why Us" is a DROPDOWN, not a page**: `$whyUs` array in `components/site/header.blade.php`
+  = Testimonials + Hall of Fame, rendered as a desktop hover/click dropdown and a mobile
+  expandable group. Those pages: `routes/web.php` → `PageController::testimonials()/hallOfFame()`,
+  views `pages/testimonials.blade.php` + `pages/hall-of-fame.blade.php`, data via `SiteContent`.
+  Meet the Team slots in as a THIRD `$whyUs` entry the same way (no new top-level nav, no Why-Us
+  landing page).
+
+### 2. Proposed data model — disciplines as a first-class lookup + pivot
+Mirrors how `Location` is already first-class; idiomatic here, and keeps "one way of doing things".
+- New `disciplines` table: `id, name, slug (unique), sort_order, timestamps`. Seed three to match
+  the existing `ProductType` enum: **Tandem / AFF / Coaching** (slugs `tandem`/`aff`/`coaching`).
+- New `discipline_instructor` pivot (composite-unique `instructor_id, discipline_id`).
+- `Instructor::disciplines(): BelongsToMany` + `Discipline::instructors(): BelongsToMany`.
+  One instructor carries MANY disciplines, rendered ONCE with all its tag chips — no duplication,
+  no per-discipline buckets.
+- Discipline-page query (no dupes): `Instructor::whereHas('disciplines', fn ($q) => $q->where('slug', $slug))->ordered()`.
+- **CMS**: add a `CheckboxList::make('disciplines')->relationship('disciplines','name')` to
+  `InstructorForm` (multi-select, mass-assignment safe via the relationship, not `$fillable`).
+  Plus a small **Disciplines** Filament resource under "Site content" so the owner can rename/add
+  disciplines (matches Locations being editable). Pivot is sync'd by Filament's relationship field.
+- **Cache interaction**: `SiteContent::instructors()` caches plain attribute arrays, so the pivot
+  won't ride along automatically. Plan: enrich the cached payload to carry a small
+  `disciplines: [{name, slug}, …]` array per instructor and re-attach it as a relation on the
+  hydrated model (stays within the gateway's "cache plain arrays, rehydrate on read" rule — no
+  cached objects). Add `Discipline::class` (and a pivot-touch) to `SiteContent::KEYS_BY_MODEL` /
+  the observer so editing disciplines or the assignment busts the `instructors` key.
+
+### 3. Proposed design (follows the structure; existing tokens/components only)
+- **Homepage teaser** (replaces the scroll): a COMPACT band — section heading + one tidy,
+  wrapping row of small circular avatars (photo or monogram fallback) + a single trust line, and
+  an `x-ui.arrow-link href="/meet-the-team"` "Meet the team →". No desktop carousel, no per-person
+  bios. One short band vs the tall card rail → far less vertical space; on mobile the avatars wrap,
+  they don't scroll. (RECOMMENDED — see question below for alternatives.)
+- **Meet the Team page** (`/meet-the-team`, `PageController::meetTheTeam()`,
+  `pages/meet-the-team.blade.php`, data `SiteContent::instructors()`): compact navy-gradient
+  `<x-site.page-hero>` (secondary page → no photo hero, per design rules), then a STATIC
+  responsive grid of full instructor cards (1-col / 2-col md / 3-col lg) — all visible, no desktop
+  scroll, cards stack on mobile (no swipe needed). Each card = photo (aspect-[4/5]) or monogram
+  fallback, name plate, role, **discipline tag chips** (palette only — e.g. `border-current`/
+  sky-bright on the navy plate), and the LONGER bio below. Added to the Why Us dropdown after
+  Hall of Fame, and to the sitemap (priority 0.6, like Testimonials).
+- **Discipline pages**: optionally surface "instructors who teach this" on `/tandem`, `/aff`,
+  `/coached` as a small tag-filtered avatar strip linking to Meet the Team (no duplicated records).
+  See question below — default is team-page-only unless you want the strips.
+
+### 4. Bios (fit-to-slot)
+Bio field is already `text` → supports long copy. Long bios live on the **Meet the Team cards**;
+the homepage teaser shows NONE (avatars + names only). The content-seed prompt
+(`chore/seed-real-content`, currently unmerged) holds the actual bio text — this branch only
+guarantees the field + the room for it. **Cross-branch note**: both branches touch
+`InstructorSeeder`; whichever merges second reconciles (disciplines assignment seeding will be
+additive here so it composes cleanly).
