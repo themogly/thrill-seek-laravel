@@ -31,6 +31,14 @@ class MeetTheTeamPageTest extends TestCase
         $this->assertStringNotContainsString('overflow-x-auto', $html);
     }
 
+    public function test_page_renders_instructors_in_sort_order(): void
+    {
+        Instructor::factory()->create(['name' => 'Zara', 'sort_order' => 2]);
+        Instructor::factory()->create(['name' => 'Adam', 'sort_order' => 1]);
+
+        $this->get('/meet-the-team')->assertOk()->assertSeeInOrder(['Adam', 'Zara']);
+    }
+
     public function test_page_is_reachable_from_the_why_us_dropdown(): void
     {
         $html = $this->get('/')->assertOk()->getContent();
