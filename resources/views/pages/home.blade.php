@@ -83,15 +83,18 @@
                 <p class="mt-6 max-w-measure text-lead text-white/85">
                     {{ $home->about_body }}
                 </p>
-                {{-- One prominent route to the team. Replaces the old faint text link AND
-                     the duplicate stat tiles — the trust credentials now live ONCE, in the
-                     "Trusted. Certified. Experienced." band below. --}}
+                {{-- A quiet cross-link to the team — modelled on the service cards'
+                     eyebrow + animated "EXPLORE →" cue, NOT a second dominant heading.
+                     team_lead reads as a small label; the link is the shared
+                     <x-ui.arrow-link> (same sliding arrow as the service tiles), so it
+                     sits naturally in the About band without competing with the title. --}}
                 @if ($instructors->isNotEmpty())
-                    {{-- Same heading treatment as the about title above (heading-rule =
-                         the blue accent line + uppercase display) so the team teaser
-                         reads as a proper section heading, not weak small text. --}}
-                    <h3 class="heading-rule mt-10 font-display text-h2 uppercase tracking-wide">{{ $home->team_lead }}</h3>
-                    <x-ui.button href="/meet-the-team" class="mt-6">Meet the Team</x-ui.button>
+                    <div class="mt-10">
+                        <p class="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.25em] text-sky-bright">
+                            <span class="inline-block h-0.5 w-10 bg-primary"></span>{{ $home->team_lead }}
+                        </p>
+                        <x-ui.arrow-link href="/meet-the-team" class="mt-4">Meet the Team</x-ui.arrow-link>
+                    </div>
                 @endif
             </div>
             <div class="relative grid grid-cols-2 gap-px bg-white/15 lg:-mr-24" data-reveal>

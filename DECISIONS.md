@@ -1624,3 +1624,24 @@ verified 1440/1280/1024/390 — `ui-review/team-polish/`):
   treatment (`heading-rule` blue accent line + `font-display text-h2 uppercase tracking-wide`,
   as `<h3>`), so it's a proper section heading above the Meet the Team button, not weak text.
 No data/model changes; reused existing components/tokens throughout.
+
+## Team display fixes v2 + UI passes (ui/team-fixes-v2)
+Branch off main `01d560b`. Fully autonomous run (owner away). Decided, reuse-existing fixes;
+`composer check` green before every commit; verified by Playwright at 1440/1280/1024/390
+(`ui-review/team-fixes-v2/`).
+
+- **Spec substitution (noted, not blocked):** the prompt referenced a `frontend-design` skill
+  and a `ui-passes/01–04` directory that do **not exist** in this repo. The equivalent material
+  lives in `ui-guidelines.md` (the concrete design system = "pass 4 / guidelines") and
+  `ui-review/{FOUNDATIONS,COMPONENTS,PAGES}.md` (the retrospective pass 1–3 audits). I treated
+  those as the passes and ran them as a craft sweep (tokens → components → page rhythm →
+  guidelines) over the changed team elements + any drift. Made the most on-brand choice per the
+  established system rather than waiting for input.
+- **Fix 1 — homepage About team mention:** replaced the prior `text-h2`+`heading-rule` heading
+  (team-polish) and the solid button with a **modest sky-bright eyebrow label** (`team_lead`,
+  with the standard `h-0.5 w-10` rule) + the shared **`<x-ui.arrow-link href="/meet-the-team">`
+  "Meet the Team"** — the canonical animated arrow that the service-card "EXPLORE →" cue is the
+  bespoke ancestor of (closing the ui-guidelines "Explore uses a bespoke border-b" gap by
+  adopting the real component for the team link). Now sits quietly in the About band, not a
+  second dominant header. Still gated on instructors existing. `HomeTeamMentionTest` retitled
+  button→arrow-link (assertions unchanged: href + "Meet the Team" + the lead are all present).
