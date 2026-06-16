@@ -1836,3 +1836,28 @@ Branch off main `647408a`. Cleared the punch-list from `docs/ui-guidelines`:
   card (dropped `rounded-2xl border shadow-sm`); now matches every other card (2px border, sharp,
   no shadow — verified). Content/behaviour unchanged.
 - Updated the `ui-guidelines.md` punch-list to mark both resolved. `composer check` green.
+
+## Vector SVG logo — brand navy, readable SKYDIVING (ui/logo-svg)
+Branch off main `f073fc5`. Replaced the raster header logo with a true-vector inline SVG.
+- **Source + tools:** the owner's vector PDF (`storage/app/brand/G-Force Logo Blue & Grey pdf.pdf`)
+  → `pdf2svg` (Homebrew) → recolour → `svgo` (npx, multipass). Conversion was **clean** (17 paths,
+  no mangling); svgo merged to 3 paths and **4.9 KB** (from 15.5 KB).
+- **Colour mapping (the "wrong blue" fix):** the print CMYK-derived blue
+  `rgb(9.02%,43.53%,75.49%)` (≈ `#176FC1`) on the swoosh + G-FORCE, plus SKYDIVING's white fill and
+  grey `rgb(65%,…)` outline, were ALL mapped to **`currentColor`**, so the logo themes via text
+  colour: **`text-secondary` (brand navy)** in the header, `text-white` for reversed/dark use. No
+  off-brand blue or CMYK remains.
+- **SKYDIVING decision:** it was a white fill + a thin grey 2px outline → invisible/faint on the
+  white header (the readability bug). Changed to a **solid fill** (now navy via currentColor) — the
+  unified-wordmark, highest-contrast option. The two words stay distinct by **typography** (G-FORCE
+  blocky upright vs SKYDIVING italic), not a faint outline. Verified legible at 1440→**390**.
+- **viewBox crop:** the PDF exported on a full A4 page (`0 0 841.9 595.3`) with the logo centred;
+  `getBBox` gave unreliable bounds on this old Illustrator file, so I measured the true ink box by
+  **rendering at 1:1 and scanning canvas pixels** → cropped to `viewBox="62 162 720 272"` (+12
+  margin), no width/height so it scales by CSS. Verified not clipped at any size.
+- **Wiring:** new `<x-site.logo>` partial (inline SVG, `currentColor`, `role="img"
+  aria-label="G-Force Skydiving"`), used in the header (`h-10 w-auto text-secondary`). The **footer**
+  uses a Bebas **text wordmark** (not an image logo) on the dark band — already correct, left as-is.
+- **Out of scope (flagged):** the newsletter EMAIL block still uses the raster `images/logo.png`
+  (old blue) — emails need a raster; regenerating it as a navy PNG from the new SVG is a follow-up.
+`composer check` green (361). Pushed, not merged.

@@ -43,10 +43,7 @@
 <header x-data="{ open: false, whyUsOpen: false }" class="sticky top-0 z-50 w-full border-b-2 border-secondary bg-background shadow-[0_1px_8px_oklch(0.12_0.03_250_/_0.12)]">
     <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 lg:px-8">
         <a href="/" class="flex items-center" @click="open = false">
-            <picture>
-                <source srcset="/images/logo.webp" type="image/webp" />
-                <img src="/images/logo.png" alt="G-Force Skydiving" width="520" height="197" class="h-10 w-auto" />
-            </picture>
+            <x-site.logo class="h-10 w-auto text-secondary" />
         </a>
         <nav class="hidden items-center lg:flex" aria-label="Primary">
             @foreach ($primaryNav as $item)
