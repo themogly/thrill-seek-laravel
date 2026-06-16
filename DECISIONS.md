@@ -1714,3 +1714,16 @@ Branch off main `b414abb`. One decided fix to the home About section:
   in place — flagged here for a later CMS-field cleanup, not removed in this UI-only task.
 - `HomeTeamMentionTest` updated: asserts the EXPLORE-style team link + that the teaser label is
   gone, and gates the About link on instructors via a cache-flushed link-count comparison.
+
+## Meet the Team — drop the "TEACHES" label (ui/drop-teaches-label)
+Branch off main `a1c5c3a`. One fix to the instructor cards:
+- Removed the "Teaches" eyebrow above the discipline chips (it read awkwardly — "teaches
+  coaching" — and under the name + role the chips are self-explanatory). The chips now stand on
+  their own. Removed the chips' `mt-2.5` (it had spaced them below the label) and gave the row
+  `mb-6 mt-1` so it sits deliberately between the navy role band (card `p-6` top padding) and the
+  bio, cramped against neither. Chips themselves (style/padding/navy outline), photo, name, role
+  and bio are unchanged.
+- The visible "Teaches" text only existed here. The discipline chips are already the shared
+  `<x-site.discipline-tags>` partial; the *label* was inline to this page only, so there was one
+  place to change. (The `{{-- WHO TEACHES THIS --}}` strings on the discipline pages are code
+  comments, not rendered.) No stray "Teaches" text remains on the site.
