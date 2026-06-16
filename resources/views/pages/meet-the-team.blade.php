@@ -37,14 +37,13 @@
                             </div>
                         </div>
                         <div class="flex flex-1 flex-col border-2 border-t-0 border-border p-6 lg:p-7">
-                            {{-- A labelled "Teaches" block so the discipline chips read
-                                 unambiguously. No divider line beneath — the chips sat
-                                 directly on a grey border which read as touching them;
-                                 plain margin separates it from the bio instead. --}}
+                            {{-- Discipline chips stand on their own (no "Teaches" label — it
+                                 read awkwardly as "teaches coaching"). Deliberate top/bottom
+                                 spacing so the row sits intentionally between the role band
+                                 and the bio, cramped against neither. --}}
                             @if ($instructor->disciplines->isNotEmpty())
-                                <div class="mb-6">
-                                    <p class="text-[0.7rem] font-bold uppercase tracking-[0.25em] text-muted-foreground">Teaches</p>
-                                    <x-site.discipline-tags :disciplines="$instructor->disciplines" class="mt-2.5" />
+                                <div class="mb-6 mt-1">
+                                    <x-site.discipline-tags :disciplines="$instructor->disciplines" />
                                 </div>
                             @endif
                             @if ($instructor->bio)
