@@ -1875,3 +1875,30 @@ newspaper ICON, no eyebrow and no accent line — out of step with every other s
   (describes the curated shots). Verified only one "From the dropzone" remains on the page; both
   labels are on-brand and use the standard eyebrow style.
 Verified 1440/1280/1024/390. `composer check` green (361). Pushed, not merged.
+
+## White footer logo (SVG) + new logo in all mailers (PNG) (ui/logo-footer-mailers)
+Branch off main `5b21538`.
+- **Part 1 — footer white logo (web SVG):** the footer showed a plain Bebas **text wordmark**
+  (`<span>G-Force Skydiving</span>`), not the mark. Replaced it with the shared
+  `<x-site.logo class="h-11 w-auto text-white">` wrapped in a home link — the new vector logo,
+  reversed to **white** via `currentColor` (`text-white`) so it reads on the dark `band-ink`
+  footer. Same mark as the navy header logo, just reversed. `aria-label` keeps the accessible
+  name. Verified crisp + clearly visible at 1440 / 390.
+- **Part 2 — new logo in all emails (PNG, NOT SVG):** email clients (Outlook/Gmail) don't render
+  SVG, so the email logo must be a raster **PNG referenced by an absolute URL**.
+  - **Export:** rasterised the new logo SVG to a **navy** (`#00226b`, the `secondary` token), **transparent**
+    PNG via a headless-Chrome canvas render at **360×136** (2× of the 180×68 display), saved to
+    `public/images/email/logo.png` (~5 KB). Navy because the email card is light (`#ffffff`).
+  - **Two render paths, both updated to the new PNG via `url()` (APP_URL-absolute, never relative):**
+    (1) the transactional **markdown mailers** show the app-name *text* via Laravel's default
+    `mail::header` — overrode it at `resources/views/vendor/mail/html/header.blade.php` to render the
+    logo `<img>` instead, so every email through `<x-mail.layout>` (confirmations, reminders, enquiry
+    acks/replies, vouchers, booking, login link, course messages, payment notices) gets the mark;
+    (2) the **newsletter** builder's `logo` block (`mail/blocks/logo.blade.php`, shared by
+    `NewsletterRenderer`) now points at the same PNG.
+  - **Verified by rendering the real mailables** (`/dev/mail`): booking-confirmed, voucher, enquiry-ack
+    and the newsletter all show the PNG (`naturalWidth=360`, absolute URL, **no `<svg>`** in the
+    email, app-name text gone). `BuilderTest` updated to assert the new path + no inline SVG.
+  - **Out of scope:** the old `public/images/logo.png` stays (still used by the JSON-LD Organization
+    `logo` in `StructuredData` — SEO, not email); regenerating that to the new mark is a follow-up.
+`composer check` green (361). Pushed, not merged.

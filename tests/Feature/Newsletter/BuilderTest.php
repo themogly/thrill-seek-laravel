@@ -174,11 +174,14 @@ class BuilderTest extends TestCase
     {
         $html = $this->renderBody([['type' => 'logo', 'data' => []]]);
 
-        $this->assertStringContainsString('src="'.url('/images/logo.png').'"', $html);
+        // The new logo PNG, referenced by an ABSOLUTE URL (email clients can't resolve
+        // relative paths) — never an inline SVG (Outlook/Gmail won't render SVG).
+        $this->assertStringContainsString('src="'.url('/images/email/logo.png').'"', $html);
         $this->assertStringContainsString('alt="G-Force Skydiving"', $html);
+        $this->assertStringNotContainsString('<svg', $html);
         // Explicit dimensions for email clients; no flexbox.
         $this->assertStringContainsString('width="180"', $html);
-        $this->assertStringContainsString('height="64"', $html);
+        $this->assertStringContainsString('height="68"', $html);
         $this->assertStringNotContainsString('display:flex', $html);
     }
 

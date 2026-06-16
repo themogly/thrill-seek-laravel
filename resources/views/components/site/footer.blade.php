@@ -16,7 +16,11 @@
     </div>
     <div class="mx-auto grid max-w-7xl gap-10 border-t border-white/15 px-4 py-14 lg:grid-cols-4 lg:px-8">
         <div>
-            <span class="font-display text-3xl uppercase tracking-wider text-white">G-Force Skydiving</span>
+            {{-- The new vector logo, reversed to WHITE (text-white → currentColor) so it
+                 reads on the dark footer band — the same mark as the navy header logo. --}}
+            <a href="/" class="inline-block" aria-label="G-Force Skydiving — home">
+                <x-site.logo class="h-11 w-auto text-white" />
+            </a>
             <div class="mt-6 flex gap-3">
                 <a href="{{ $general->instagram_url }}" target="_blank" rel="noreferrer" aria-label="Instagram" class="flex h-11 w-11 items-center justify-center border border-white/30 text-white transition-colors hover:border-primary hover:bg-primary">
                     <x-icon name="instagram" class="h-4 w-4" />
