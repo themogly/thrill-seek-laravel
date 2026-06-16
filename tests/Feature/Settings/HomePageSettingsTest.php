@@ -7,12 +7,30 @@ use App\Models\GalleryImage;
 use App\Models\User;
 use App\Settings\GeneralSettings;
 use App\Settings\HomePageSettings;
+use App\Settings\SimplePagesSettings;
 use Database\Seeders\GalleryImageSeeder;
 use Livewire\Livewire;
 use Tests\TestCase;
 
 class HomePageSettingsTest extends TestCase
 {
+    public function test_settings_resolve_after_removing_orphaned_keys(): void
+    {
+        // Removing the orphaned keys + properties must not break settings access
+        // (Spatie throws MissingSettings if a declared property has no stored key).
+        $home = app(HomePageSettings::class);
+        $this->assertIsString($home->team_lead);
+        $this->assertIsString($home->instagram_caption);
+
+        foreach (['about_stats', 'team_eyebrow', 'team_title', 'instagram_note'] as $removed) {
+            $this->assertFalse(property_exists($home, $removed), "HomePageSettings::{$removed} should be gone");
+        }
+
+        $simple = app(SimplePagesSettings::class);
+        $this->assertIsString($simple->meet_the_team_hero_title);
+        $this->assertFalse(property_exists($simple, 'home_team_teaser_line'));
+    }
+
     public function test_home_page_renders_the_seeded_settings_content(): void
     {
         $this->seed(GalleryImageSeeder::class);
