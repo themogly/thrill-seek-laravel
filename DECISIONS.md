@@ -1659,3 +1659,10 @@ Branch off main `01d560b`. Fully autonomous run (owner away). Decided, reuse-exi
   them — the "All news →" placement). Discipline filtering + the empty-state guard are unchanged;
   verified the new card renders on all three pages (AFF: Joby/Ricky, Tandem: Joby/Lucy,
   Coaching: Joby/Ricky — tags absent).
+- **Fix 4 — consistency:** the rebuilt teaser no longer uses `instructor-chip` (the small-avatar
+  partial) and nothing else did, so **deleted `components/site/instructor-chip.blade.php`** (the
+  last bit of the old stretched-avatar markup). Sitewide, every team cross-link is now the shared
+  `<x-ui.arrow-link>` (home About + the three discipline pages) and every instructor photo is a
+  square `object-cover` crop (team page cards + the discipline teaser cards). The header nav
+  "Meet the Team" item is a normal nav link (unchanged). Testimonial avatars use `<x-site.avatar>`
+  and are out of scope (not instructors).
