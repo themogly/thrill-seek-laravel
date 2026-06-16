@@ -1650,3 +1650,12 @@ Branch off main `01d560b`. Fully autonomous run (owner away). Decided, reuse-exi
   from the bio now. Switched the photo crop from `aspect-[4/5]` portrait to **`aspect-square`
   (1:1)** so cards are uniform and shorter (less vertical space). Navy name/role band overlay and
   the discipline chips (with the even padding from team-polish) are unchanged.
+- **Fix 3 — AFF/Tandem/Coaching instructor teaser** (`discipline-instructors`): rebuilt from the
+  old tiny-avatar (`instructor-chip`) row with a floating top-right link into the **Meet the Team
+  card language** — a `aspect-square w-40/sm:w-44` photo with the navy `border-t-4 border-primary`
+  name/role band overlaid, exactly like the team page but **without the discipline tags** (a
+  single-discipline page doesn't need them) and no bio. Eyebrow label on top; the
+  `<x-ui.arrow-link>` "Meet the Team" sits **beneath the cards** (grouped, not floating beside
+  them — the "All news →" placement). Discipline filtering + the empty-state guard are unchanged;
+  verified the new card renders on all three pages (AFF: Joby/Ricky, Tandem: Joby/Lucy,
+  Coaching: Joby/Ricky — tags absent).
