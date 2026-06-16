@@ -9,7 +9,7 @@
     <x-site.page-hero :title="$page->hero_title" :subtitle="$page->hero_subtitle" :image="$page->imageUrl($page->hero_image)" />
 
     {{-- INTRO: image bleeds off the left edge --}}
-    <section class="overflow-hidden border-b-2 border-secondary">
+    <section class="overflow-hidden">
         <div class="py-section-sm lg:py-section">
             <x-site.feature-split :image="$page->imageUrl($page->image)" alt="Advanced freefly coaching" side="left">
                 <p class="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.25em] text-primary">

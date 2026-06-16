@@ -50,7 +50,7 @@
     </section>
 
     {{-- SERVICES: full-bleed photographic tiles, text on the image --}}
-    <section class="border-b-2 border-secondary">
+    <section>
         <div class="mx-auto max-w-7xl px-4 pt-section-sm lg:px-8 lg:pt-section">
             <x-site.section-heading :eyebrow="$home->services_eyebrow" :title="$home->services_title" :lead="$home->services_lead" />
         </div>
@@ -102,7 +102,7 @@
     </section>
 
     {{-- TRUST: typographic statement band --}}
-    <section class="border-b-2 border-secondary bg-secondary text-white">
+    <section class="bg-secondary text-white">
         <div class="mx-auto max-w-7xl px-4 py-section-sm lg:px-8 lg:py-section">
             <p class="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.25em] text-sky-bright">
                 <span class="inline-block h-0.5 w-10 bg-primary"></span>{{ $home->trust_eyebrow }}
@@ -114,7 +114,7 @@
 
     {{-- NEWS + SOCIAL — real, dynamic news leads (dominant left column); an honest
          "Follow us" block sits beside it. No live-feed framing, no dead links. --}}
-    <section class="border-y-2 border-secondary">
+    <section>
         <div class="mx-auto max-w-7xl px-4 py-section-sm lg:px-8 lg:py-section">
             <div class="grid gap-10 lg:grid-cols-3 lg:gap-12">
                 @if ($latestNews->isNotEmpty())
