@@ -1609,3 +1609,18 @@ palette; "primary" is the bright blue (`#008fe6`, same as Book Now / hero CTAs).
 - **Trust band untouched** — the credentials (EX-MILITARY / 30+ YEARS / BS·USPA / EST. 2017) now
   appear ONCE. Removed the now-unused `$pages` inject from the home view; `about_stats` setting
   KEPT (no data change), just not rendered. Verified 1440/1280/1024/390 (`ui-review/homepage-dedupe/`).
+
+## Team display polish (ui/team-polish)
+Branch off main `f96b426`. Three decided, reuse-existing fixes (3 commits, gate green each;
+verified 1440/1280/1024/390 — `ui-review/team-polish/`):
+- **Fix 1 — discipline chips** (`discipline-tags`): even padding (`px-3 py-1.5`), moderate
+  tracking (`tracking-[0.1em]` — `tracking-widest` had pushed glyphs off-centre) and centred
+  text so the "TEACHES" chips read deliberate; even gaps. One source of truth.
+- **Fix 2 — Tandem/AFF instructor element** (`discipline-instructors` + `instructor-chip`):
+  regrouped the floating "Meet the team →" into a header row with the label (same pattern as the
+  home Latest-News header) + a hairline rule; compact avatar row beneath — smaller uniform
+  `h-14` square `object-cover` crops, `w-24` chips, tighter gaps. Clearly less vertical space.
+- **Fix 3 — homepage About team lead**: gave "The people you'll fly with." the EXACT about-title
+  treatment (`heading-rule` blue accent line + `font-display text-h2 uppercase tracking-wide`,
+  as `<h3>`), so it's a proper section heading above the Meet the Team button, not weak text.
+No data/model changes; reused existing components/tokens throughout.

@@ -87,8 +87,11 @@
                      the duplicate stat tiles — the trust credentials now live ONCE, in the
                      "Trusted. Certified. Experienced." band below. --}}
                 @if ($instructors->isNotEmpty())
-                    <p class="mt-10 text-lead text-white/85">{{ $home->team_lead }}</p>
-                    <x-ui.button href="/meet-the-team" class="mt-5">Meet the Team</x-ui.button>
+                    {{-- Same heading treatment as the about title above (heading-rule =
+                         the blue accent line + uppercase display) so the team teaser
+                         reads as a proper section heading, not weak small text. --}}
+                    <h3 class="heading-rule mt-10 font-display text-h2 uppercase tracking-wide">{{ $home->team_lead }}</h3>
+                    <x-ui.button href="/meet-the-team" class="mt-6">Meet the Team</x-ui.button>
                 @endif
             </div>
             <div class="relative grid grid-cols-2 gap-px bg-white/15 lg:-mr-24" data-reveal>
