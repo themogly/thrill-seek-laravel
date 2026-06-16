@@ -120,11 +120,8 @@
                 @if ($latestNews->isNotEmpty())
                     {{-- Latest News — the dominant, real content (2/3 width). --}}
                     <div class="lg:col-span-2" data-reveal>
-                        <h2 class="flex items-center gap-3 font-display text-h2 uppercase tracking-wide text-secondary">
-                            <x-icon name="newspaper" class="h-8 w-8 shrink-0 text-primary" /> Latest News
-                        </h2>
-                        <p class="mt-2 text-muted-foreground">Fresh from the dropzone.</p>
-                        <div class="mt-8 divide-y-2 divide-border border-2 border-border">
+                        <x-site.section-heading eyebrow="From the dropzone" title="Latest News" />
+                        <div class="divide-y-2 divide-border border-2 border-border">
                             @foreach ($latestNews as $article)
                                 <a href="{{ route('news.show', $article->slug) }}" class="group block p-6 transition-colors hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring">
                                     <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary">{{ $article->published_at->format('j M Y') }}</p>
@@ -164,7 +161,7 @@
                         {{-- A small CURATED set of dropzone photos (CMS Gallery) — clearly
                              owner-picked, not a live feed. Linked to Instagram when set. --}}
                         @if ($galleryImages->isNotEmpty())
-                            <p class="mt-8 text-xs font-bold uppercase tracking-[0.25em] text-white/50">From the dropzone</p>
+                            <p class="mt-8 text-xs font-bold uppercase tracking-[0.25em] text-white/50">Recent jumps</p>
                             <div class="mt-3 grid grid-cols-3 gap-px">
                                 @foreach ($galleryImages->take(6) as $galleryImage)
                                     <a @if (filled($general->instagram_url)) href="{{ $general->instagram_url }}" target="_blank" rel="noreferrer" @endif class="group relative aspect-square overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary">

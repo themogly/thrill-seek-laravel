@@ -1836,3 +1836,17 @@ Branch off main `647408a`. Cleared the punch-list from `docs/ui-guidelines`:
   card (dropped `rounded-2xl border shadow-sm`); now matches every other card (2px border, sharp,
   no shadow — verified). Content/behaviour unchanged.
 - Updated the `ui-guidelines.md` punch-list to mark both resolved. `composer check` green.
+
+## LATEST NEWS heading matches the standard section pattern (ui/latest-news-heading)
+Branch off main `f073fc5`. The homepage "Latest News" heading was a hand-rolled `<h2>` with a
+newspaper ICON, no eyebrow and no accent line — out of step with every other section heading.
+- Replaced it with the shared **`<x-site.section-heading>`** (eyebrow + `text-h2` + heading-rule
+  accent line), so it now matches "THREE WAYS TO FLY" / "FREQUENTLY ASKED QUESTIONS" exactly.
+  Removed the newspaper icon (no other heading has one) and the redundant "Fresh from the dropzone."
+  subtitle.
+- **Eyebrow clash resolved (no duplicate on the page):** used **"From the dropzone"** as the LATEST
+  NEWS eyebrow (news literally comes from the dropzone — it fits, and replaces the old subtitle's
+  vibe), and renamed the FOLLOW US photo-grid label from "From the dropzone" → **"Recent jumps"**
+  (describes the curated shots). Verified only one "From the dropzone" remains on the page; both
+  labels are on-brand and use the standard eyebrow style.
+Verified 1440/1280/1024/390. `composer check` green (361). Pushed, not merged.
