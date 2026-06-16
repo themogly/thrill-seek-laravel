@@ -1714,3 +1714,26 @@ Branch off main `b414abb`. One decided fix to the home About section:
   in place — flagged here for a later CMS-field cleanup, not removed in this UI-only task.
 - `HomeTeamMentionTest` updated: asserts the EXPLORE-style team link + that the teaser label is
   gone, and gates the About link on instructors via a cache-flushed link-count comparison.
+
+## Discipline-page instructor section: heading, cards, spacing (ui/instructor-section-fix)
+Branch off main `a1c5c3a`. Fixed the AFF/Tandem/Coaching "your instructors" cross-link section
+(verified on all three + the team page at 1440/1280/1024/390 — `ui-review/instructor-section-fix/`):
+- **One shared card** — extracted `<x-site.instructor-card :instructor :showDisciplines :showBio
+  :heading>` as the single source of truth. The Meet the Team page renders it in full (chips +
+  bio); the discipline pages reuse the SAME partial with `:show-disciplines="false"
+  :show-bio="false"` (square photo + navy name/role band only), so they're genuinely identical in
+  style, not a near-copy. `heading` sets the name tag (h2 under the team hero, h3 under the
+  discipline section-heading).
+- **Proper section heading** — the discipline section now uses the same `<x-site.section-heading>`
+  the FAQ uses, with eyebrow **"The team"** + per-page title (**Your AFF Instructors** /
+  **Your Tandem Instructors** / **Your Coaches**), matching the FAQ's eyebrow+heading pattern
+  directly below it. Replaced the lone eyebrow; the component prop changed `label` → `heading`.
+- **Spacing** — the section is the standard `<x-site.section>` rhythm; cards → `mt-8` arrow-link
+  (grouped, not floating); the old sprawl came from tiny content under full padding — now the
+  heading + full-size cards fill it. Grid is `gap-4` (NOT the team page's seamless
+  `gap-px bg-secondary`) so an empty cell from a small/variable instructor count reads as
+  background, not a stray navy block.
+- The shared card omits the old "Teaches" label (consistent with the parallel
+  `ui/drop-teaches-label` branch) — so on the team page this also drops that label; the two
+  branches are coherent. Built as one cohesive refactor (shared partial touches both surfaces).
+- `DisciplineStripTest` updated to the new heading casing ("Your AFF/Tandem Instructors").
