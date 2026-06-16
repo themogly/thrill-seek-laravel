@@ -1682,3 +1682,9 @@ Ran the four passes as `ui-review/{FOUNDATIONS,COMPONENTS,PAGES}.md` + `ui-guide
   group hover) while keeping its distinct dark-tile `border-b-2` underline via the class merge.
   Now **every** arrow cue sitewide (team links + service tiles + "All news") is one component.
   Visually identical; verified.
+- **Pass 3 — pages (layout/hierarchy/rhythm):** verified the changed elements sit with the
+  established 2-step section rhythm. The discipline teaser renders through `<x-site.section>`
+  (`py-section-sm lg:py-section`) so it spaces correctly between neighbours (e.g. tandem: between
+  "What it costs" and the FAQ); the home About column reads title → body → quiet team label +
+  arrow without the old competing heading. No page hand-rolls a divergent rhythm; no change
+  needed beyond the team work. Full-page captures at 1280 in `ui-review/team-fixes-v2/pass3-*`.
