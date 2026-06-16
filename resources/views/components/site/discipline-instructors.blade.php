@@ -25,9 +25,11 @@
                             </div>
                         @endif
                         <div class="absolute inset-x-0 bottom-0 border-t-4 border-primary bg-secondary/95 px-3 py-2.5 text-white">
-                            <p class="font-display text-lg uppercase leading-none">{{ $instructor->name }}</p>
+                            <p class="font-display text-xl uppercase leading-none">{{ $instructor->name }}</p>
                             @if ($instructor->role)
-                                <p class="mt-1 text-[0.6rem] font-bold uppercase leading-tight tracking-[0.2em] text-sky-bright">{{ $instructor->role }}</p>
+                                {{-- Role plate matches the Meet the Team card: text-xs / sky-bright
+                                     (no raw text-[Nrem]); tracking eased to [0.2em] for the narrow card. --}}
+                                <p class="mt-1 text-xs font-bold uppercase leading-tight tracking-[0.2em] text-sky-bright">{{ $instructor->role }}</p>
                             @endif
                         </div>
                     </li>

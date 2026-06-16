@@ -1666,3 +1666,12 @@ Branch off main `01d560b`. Fully autonomous run (owner away). Decided, reuse-exi
   square `object-cover` crop (team page cards + the discipline teaser cards). The header nav
   "Meet the Team" item is a normal nav link (unchanged). Testimonial avatars use `<x-site.avatar>`
   and are out of scope (not instructors).
+
+### UI passes (craft sweep over the changed team elements + site)
+Ran the four passes as `ui-review/{FOUNDATIONS,COMPONENTS,PAGES}.md` + `ui-guidelines.md`.
+- **Pass 1 — foundations (type/spacing):** audited pages/components — section rhythm already on
+  the `py-section*` tokens (no `py-20/28/32/40` drift left), and the remaining raw display sizes
+  (service-tile titles, stat numerals, monograms, footer tagline) are the documented intentional
+  display-type exceptions, left as-is. Only fix: the new teaser role plate used a raw
+  `text-[0.6rem]` → moved to **`text-xs` + `text-sky-bright`** to match the Meet the Team card
+  exactly; bumped the teaser name to `text-xl`. Verified desktop + 390 (role wraps gracefully).
