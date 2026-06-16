@@ -19,11 +19,7 @@
                 <p class="mt-6 max-w-measure text-lead text-muted-foreground">
                     {{ $page->body }}
                 </p>
-                <ul class="mt-8 space-y-3">
-                    @foreach ($page->skills as $b)
-                        <li class="flex items-center gap-3 border-l-2 border-primary pl-3"><x-icon name="target" class="h-5 w-5 shrink-0 text-primary" />{{ $b }}</li>
-                    @endforeach
-                </ul>
+                <x-ui.feature-list :items="$page->skills" class="mt-8" />
                 <x-ui.button href="#enquiry" size="lg" class="mt-10">
                     {{ $page->button_label }}
                 </x-ui.button>

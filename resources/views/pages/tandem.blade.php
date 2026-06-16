@@ -21,11 +21,7 @@
         <div class="py-16 lg:py-24">
             <x-site.feature-split :image="$page->imageUrl($page->intro_image)" alt="Tandem skydive" side="right">
                 <x-site.section-heading :eyebrow="$page->intro_eyebrow" :title="$page->intro_title" :lead="$page->intro_lead" class="mb-8" />
-                <ul class="space-y-3">
-                    @foreach ($page->bullets as $b)
-                        <li class="flex items-start gap-3 border-l-2 border-primary pl-3"><x-icon name="check" class="mt-1 h-5 w-5 flex-shrink-0 text-primary" /><span>{{ $b }}</span></li>
-                    @endforeach
-                </ul>
+                <x-ui.feature-list :items="$page->bullets" />
             </x-site.feature-split>
 
             <div class="mx-auto mt-16 max-w-7xl px-4 lg:px-8" data-reveal>
