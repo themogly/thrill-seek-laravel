@@ -1792,3 +1792,20 @@ instructor/FAQ sections had none.
   divider line on a `<section>` wrapper", and the guidelines add a consistency-pass note to compare
   the SAME transition zone ACROSS 3+ pages (per-page review misses cross-page drift — exactly how
   these dividers crept in).
+
+## Consistent feature lists + codify the rule (ui/feature-list-consistency)
+Branch off main `af60553`. The product-page "what's included" lists had drifted (same cross-page
+class as the section dividers): all three carried a left vertical line (`border-l-2 border-primary`)
+and Coaching used `target`/concentric-circle icons while Tandem/AFF used checkmarks.
+- **Consolidated into one shared `<x-ui.feature-list :items>`** — blue **checkmark** + text row, **no
+  left vertical line** — and used it on Tandem, AFF and Coaching. One source of truth, so they can't
+  diverge again. The CMS content (`$page->bullets` / `$page->skills`) is unchanged; only the icon +
+  row styling is now identical (checkmarks read as "what's included" better than targets). Verified
+  1280/390 — all three render an identical treatment (`hasLeftBorder:false`, check path on each).
+- **Codified the rule**: `ui-guidelines.md` documents `<x-ui.feature-list>` in the component
+  catalogue ("blue checkmark + text, no left line; don't vary the icon/row per page"), and the
+  cross-page consistency note now explicitly covers any repeated element (feature lists, dividers,
+  cards, eyebrows, CTAs) — compare across pages, confirm a single shared component.
+- The pay-card's own feature highlights (sky-bright checks on the dark booking CTA) are a separate
+  dark-band sub-element of `<x-site.pay-card>`, already consistent — left as-is (not the page
+  "what's included" lists this rule governs).

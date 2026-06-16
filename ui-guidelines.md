@@ -92,6 +92,10 @@ a raw hex/oklch.
 - **`<x-ui.arrow-link>`** — the navigational "All news → / Read more →" link. With `href`
   → an `<a>` (own focus ring + hover); without → an in-card `<span>` cue (arrow slides on
   the parent card's `group` hover).
+- **`<x-ui.feature-list :items>`** — the ONE feature / "what's included" list (the product-page
+  benefit lists). Renders a blue **checkmark** (`text-primary`) + text row per item, **no left
+  vertical line**. Pass the CMS items; add spacing via a merged class (`class="mt-8"`). Do **not**
+  vary the bullet icon or row treatment per page — every "what's included" list looks identical.
 - **`<x-icon name>`** — inline lucide SVGs; auto-sized in buttons.
 - **`<x-ui.toaster>`** — the toast stack (success/error feedback; the simple-form pattern).
 
@@ -152,7 +156,9 @@ cross-page drift (it's how the section dividers crept onto some pages but not ot
 passed its own check). As part of any consistency/UI pass, take the SAME transition zone (e.g. the
 gap between two content sections, a hero→section boundary, a form-under-heading) on 3+ different
 pages, screenshot them side by side, and reconcile — the inconsistency only shows when they're
-compared together.
+compared together. This applies to any **repeated element** rendered on multiple pages — feature/
+"what's included" lists, section transitions, instructor cards, eyebrows, CTAs: compare them across
+pages (not just within one) and confirm they come from a single shared component.
 
 ## Known gaps / follow-ups (noticed during this pass; NOT fixed here)
 
