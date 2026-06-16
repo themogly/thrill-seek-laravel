@@ -43,6 +43,14 @@ utility; **never** a raw `text-5xl`/`text-[Nrem]`.
   accordion). Text shouldn't run full-width.
 - **Page shell:** `mx-auto max-w-7xl px-4 lg:px-8` (the `<x-site.section>` default).
 - 4px grid throughout (Tailwind default `--spacing`); gaps `gap-4`/`gap-6` etc.
+- **Section transitions use vertical spacing ONLY** (the section rhythm above). Do **not** add a
+  full-width horizontal divider line between top-level sections — no `border-b/-y border-secondary`
+  (or any rule) on a `<section>` wrapper to separate it from the next. Adjacent sections are
+  separated by their own `py-section*` padding; a colour change (white → `band-ink`/`bg-secondary`)
+  is its own edge. (Component-internal rules are fine and unaffected: FAQ item separators
+  (`divide-y` ), table/input borders, the eyebrow accent (`h-0.5 w-10 bg-primary` / `heading-rule`),
+  and the brand **blue** accent rules — `border-*-4 border-primary` on the page-hero underline,
+  the newsletter/gift band frames and card tops. The rule below is about navy *section* dividers.)
 
 ## Palette (`:root` in `app.css` — semantic tokens, oklch)
 
@@ -135,7 +143,16 @@ a raw hex/oklch.
 6. CMS-drive the content; hide empty bits; intentional empty state.
 7. New indexable page inherits `<head>` meta automatically; add JSON-LD if it has a rich
    entity (see `App\Support\StructuredData`).
-8. Verify at 1440 / 1280 / 1024 / 390 + a short laptop height; keyboard focus visible.
+8. Section transitions are **spacing only** — no full-width divider line between sections (see
+   Spacing & layout).
+9. Verify at 1440 / 1280 / 1024 / 390 + a short laptop height; keyboard focus visible.
+
+**Consistency passes — compare ACROSS pages, not just within one.** Per-page review misses
+cross-page drift (it's how the section dividers crept onto some pages but not others — each page
+passed its own check). As part of any consistency/UI pass, take the SAME transition zone (e.g. the
+gap between two content sections, a hero→section boundary, a form-under-heading) on 3+ different
+pages, screenshot them side by side, and reconcile — the inconsistency only shows when they're
+compared together.
 
 ## Known gaps / follow-ups (noticed during this pass; NOT fixed here)
 

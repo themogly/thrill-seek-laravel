@@ -21,7 +21,7 @@
     <x-site.page-hero :title="$page->hero_title" :subtitle="$page->hero_subtitle" :image="$page->imageUrl($page->hero_image)" />
 
     {{-- INTRO: image bleeds off the left edge --}}
-    <section class="overflow-hidden border-b-2 border-secondary">
+    <section class="overflow-hidden">
         <div class="py-16 lg:py-24">
             <x-site.feature-split :image="$page->imageUrl($page->intro_image)" alt="AFF training" side="left">
                 <x-site.section-heading :eyebrow="$page->intro_eyebrow" :title="$page->intro_title" :lead="$page->intro_lead" class="mb-8" />
@@ -35,7 +35,7 @@
     </section>
 
     {{-- TRUST: dark typographic band --}}
-    <section class="border-b-2 border-secondary bg-secondary text-white">
+    <section class="bg-secondary text-white">
         <div class="mx-auto max-w-7xl px-4 py-section-sm lg:px-8 lg:py-section">
             <div class="max-w-measure">
                 <p class="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.25em] text-sky-bright">
@@ -51,7 +51,7 @@
     </section>
 
     {{-- PRICING --}}
-    <section class="border-b-2 border-secondary">
+    <section>
         <div class="mx-auto max-w-7xl px-4 py-16 lg:px-8 lg:py-24">
             <x-site.section-heading :eyebrow="$page->pricing_eyebrow" :title="$page->pricing_title" />
             <div class="grid gap-px bg-secondary md:grid-cols-2" data-reveal>
@@ -124,7 +124,7 @@
     </x-site.section>
 
     {{-- INFO: ruled columns, no cards --}}
-    <section class="border-y-2 border-secondary">
+    <section>
         <div class="mx-auto max-w-7xl px-4 py-16 lg:px-8 lg:py-24">
             <x-site.section-heading :eyebrow="$page->info_eyebrow" :title="$page->info_title" :lead="$page->info_lead" />
             <div class="grid gap-10 md:grid-cols-3 md:gap-0 md:divide-x-2 md:divide-border" data-reveal>

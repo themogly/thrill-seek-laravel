@@ -17,7 +17,7 @@
     <x-site.page-hero :title="$page->hero_title" :subtitle="$page->hero_subtitle" :image="$page->imageUrl($page->hero_image)" />
 
     {{-- INTRO: copy beside a bleed photo, with Locations grouped below --}}
-    <section class="overflow-hidden border-b-2 border-secondary">
+    <section class="overflow-hidden">
         <div class="py-16 lg:py-24">
             <x-site.feature-split :image="$page->imageUrl($page->intro_image)" alt="Tandem skydive" side="right">
                 <x-site.section-heading :eyebrow="$page->intro_eyebrow" :title="$page->intro_title" :lead="$page->intro_lead" class="mb-8" />
@@ -44,7 +44,7 @@
 
     @if ($product)
     {{-- PRICING: flat tabular rules, no card chrome --}}
-    <section class="border-b-2 border-secondary">
+    <section>
         <div class="mx-auto max-w-7xl px-4 py-16 lg:px-8 lg:py-24">
             <x-site.section-heading :eyebrow="$page->pricing_eyebrow" :title="$page->pricing_title" />
             <div class="grid gap-12 lg:grid-cols-2 lg:gap-16" data-reveal>
