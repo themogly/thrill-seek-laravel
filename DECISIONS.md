@@ -1809,3 +1809,21 @@ and Coaching used `target`/concentric-circle icons while Tandem/AFF used checkma
 - The pay-card's own feature highlights (sky-bright checks on the dark booking CTA) are a separate
   dark-band sub-element of `<x-site.pay-card>`, already consistent — left as-is (not the page
   "what's included" lists this rule governs).
+
+## Consolidate complete ui-guidelines.md from the real system (docs/ui-guidelines)
+Branch off main `dddfed4`. Doc-only — derived `ui-guidelines.md` from what the codebase actually
+does (no site styling changed) and folded in the existing rules. Now covers: the type-scale tokens
+(values + line-heights + use), the spacing rhythm + spacing-only section transitions, the **exact
+oklch palette** + the radius scale being pinned to 0 (so `rounded-*` always renders square) +
+shadows-removed, the full shared-component catalogue (added `<x-ui.feature-list>`,
+`<x-site.instructor-card>`, `<x-site.discipline-instructors>`, `<x-site.discipline-tags>`), the
+section pattern, imagery (square instructor photos), icon/motion/a11y conventions, and a new
+**Cross-page consistency** table naming every repeated element + its single shared source of truth,
+with the rule that a UI pass must compare each element ACROSS pages (the anti-drift defence).
+- **⚠️ Inconsistencies to resolve** (listed at the top of the doc for the owner, NOT fixed here):
+  (1) the dead `.dark {}` block in `app.css` with an off-brand **orange** `--primary` (inert on the
+  public site, contradicts "no dark mode / no new colours" — delete it); (2) the `/newsletter`
+  "Join the list" card uses `border` + `shadow-sm` instead of the standard `border-2 border-secondary`
+  flat card (swap it); (3) the known type-scale mid-gap (low priority). Each is a small follow-up
+  branch.
+`composer check` green (docs only). Pushed, not merged.

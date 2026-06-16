@@ -13,6 +13,30 @@ bold condensed display headings. No new brand colours, no dark mode, no rounded-
 
 ---
 
+## ⚠️ Inconsistencies to resolve (owner punch-list — derived from the code, NOT yet fixed)
+
+These are real drifts/risks found while deriving this doc. They are **not** fixed here (doc-only);
+each is a small follow-up branch. Listed so they don't hide.
+
+1. **Dead `.dark {}` block in `app.css`** (≈ lines 110-130) — a leftover from the shadcn/Lovable
+   template that redefines the palette for a `.dark` ancestor, including an **off-brand orange**
+   `--primary` (`oklch(0.72 0.21 45)`). The public site never adds `.dark` (only the Filament admin
+   uses Tailwind's `dark:` variant, which is separate), so it's inert — but it contradicts the
+   "no dark mode / no new colours" rule and would turn the brand orange if a `.dark` class ever
+   landed on `<html>`. **Fix:** delete the `.dark` block.
+2. **`/newsletter` "Join the list" card is off-pattern** (`newsletter.blade.php`) — it uses
+   `rounded-2xl border bg-card p-8 shadow-sm`, i.e. a 1px border **plus a `shadow-sm`**, where the
+   established card treatment everywhere else is `border-2 border-secondary` with **no shadow**
+   (sharp, flat). The `rounded-2xl` renders sharp anyway (the radius tokens are pinned to 0 — see
+   Palette), but the shadow + thin border are a visual mismatch. **Fix:** swap to the standard
+   `border-2 border-secondary` flat card.
+3. **Type-scale mid gap** (low priority, intentional for now) — see "Known gaps" at the bottom;
+   a few display titles (service tiles, stat numerals, instructor name plates `text-3xl`) sit as
+   explicit sizes between `text-h3` and `text-h2`. Not a bug; a future `display-card` token could
+   absorb them.
+
+---
+
 ## Type scale (`resources/css/app.css` `@theme`)
 
 Fluid (`clamp`) so headings stay bold on desktop without overflowing mobile. Use the token
@@ -57,21 +81,29 @@ utility; **never** a raw `text-5xl`/`text-[Nrem]`.
 Use the **semantic token names** (`bg-primary`, `text-secondary`, `border-border`…), never
 a raw hex/oklch.
 
-| Token | Role |
-| --- | --- |
-| `background` / `foreground` | white page / near-black navy ink text |
-| `primary` (bright mid-blue) / `primary-foreground` | the brand action colour + on-primary text |
-| `secondary` (deep navy) | dark surfaces, borders, headings on light |
-| `sky-deep` / `sky-bright` | gradient + accents (sky-bright = accent on dark bands) |
-| `ink` | the darkest band (`band-ink`) |
-| `muted` / `muted-foreground` | quiet surfaces / secondary text |
-| `accent` | subtle hover wash |
-| `destructive` | errors only |
-| `border` / `input` / `ring` | hairlines / field borders / focus ring (= primary) |
+| Token | Value (oklch) | Role |
+| --- | --- | --- |
+| `background` / `foreground` | `1 0 0` / `0.15 0.04 250` | white page / near-black navy ink text |
+| `primary` / `primary-foreground` | `0.62 0.18 240` / `0.99 0 0` | brand action colour (bright mid-blue) + on-primary text |
+| `secondary` (deep navy) | `0.28 0.14 255` | dark surfaces, borders, headings on light |
+| `sky-deep` / `sky-bright` | `0.22 0.12 258` / `0.7 0.16 235` | gradient + accents (sky-bright = accent on dark bands) |
+| `ink` | `0.12 0.03 250` | the darkest band (`band-ink`) |
+| `muted` / `muted-foreground` | `0.96 0.01 250` / `0.45 0.03 250` | quiet surfaces / secondary text |
+| `accent` | `0.88 0.06 240` | subtle hover wash |
+| `destructive` | `0.6 0.24 27` | errors only |
+| `border` / `input` / `ring` | `0.9 0.02 250` / … / `=primary` | hairlines / field borders / focus ring (= primary) |
 
-`--radius: 0` — **everything is sharp-cornered.** Helpers: `band-ink` (darkest band),
-`bg-photo-scrim` (text-over-photo), `heading-rule` (short accent rule under a heading),
-`.reveal` (JS scroll-in, reduced-motion-safe).
+**No new shades** — use these tokens only; never a raw hex/oklch or a new colour (not in views,
+CSS or PDFs). Fonts: `font-display` = Bebas Neue (headings, `uppercase`), `font-sans` = Barlow
+400/500/600/700 (body).
+
+`--radius: 0` — **everything is sharp-cornered.** The radius scale (`--radius-sm…-2xl`) is **all
+pinned to `var(--radius)` = 0**, so even `rounded-2xl` renders square — there is no way to get a
+rounded corner from the utilities; don't rely on a `rounded-*` class to imply roundness. Shadows
+are removed sitewide except the header's functional sticky shadow (no decorative `shadow-*` on
+content). Helpers: `band-ink` (darkest band), `bg-photo-scrim` (text-over-photo), `heading-rule`
+(short accent rule under a heading), `.reveal` (JS scroll-in, reduced-motion-safe), `bg-sky-gradient`
+(compact hero band).
 
 ## Components — the catalogue
 
@@ -112,10 +144,25 @@ a raw hex/oklch.
   disclosure pattern**: real `<button>`, `aria-expanded`, focus-visible ring, motion-reduce,
   answers always in the DOM + FAQPage JSON-LD). Constrained to `max-w-measure`.
 - **`<x-site.feature-split>`** — image-bleeds-to-edge + text column.
+- **`<x-site.instructor-card :instructor :showDisciplines :showBio :heading>`** — the ONE
+  instructor card: a **square (1:1) `object-cover`** photo with the navy name/role band
+  overlaid, optional discipline chips + bio beneath. Meet the Team renders it in full
+  (`showDisciplines`/`showBio` default true, `heading="h2"`); the discipline-page teaser reuses
+  the SAME partial with both false and `heading="h3"` (photo + band only). One source of truth —
+  the two surfaces are identical by construction, never a near-copy.
+- **`<x-site.discipline-instructors :instructors :heading>`** — the per-discipline "your
+  instructors" cross-link section (Tandem/AFF/Coaching): a `<x-site.section-heading>` (eyebrow
+  "The team" + per-page heading) + a `gap-4` grid of `<x-site.instructor-card>` (chips/bio hidden)
+  + a grouped `<x-ui.arrow-link href="/meet-the-team">`. Tag-filtered; renders nothing when empty.
+- **`<x-site.discipline-tags :disciplines :tone>`** — the discipline chips (Tandem / AFF /
+  Coaching): a `border-2` primary-bordered chip, navy text on light / white text + `sky-bright`
+  border on dark. No "Teaches" label above them — the chips stand alone.
 - **`<x-site.price-card>` / `<x-site.pay-card>` / `<x-site.trust-grid>` / `<x-site.stars>`
-  / `<x-site.avatar>`** — pricing, payment CTA, trust badges, ratings, avatars.
+  / `<x-site.avatar>`** — pricing, payment CTA, trust badges, ratings, avatars. (`avatar` =
+  square brand avatar: photo or navy monogram fallback.)
 - **`<x-site.header>` / `<x-site.footer>`** — chrome (header has the footer newsletter +
-  the Why-Us dropdown; footer has the newsletter signup).
+  the Why-Us dropdown; footer has the newsletter signup). The header's sticky bottom rule
+  (`border-b-2 border-secondary`) is chrome, **not** a section divider.
 
 ## Conventions
 
@@ -128,6 +175,21 @@ a raw hex/oklch.
   scroll-in never hides content without JS.
 - **Native controls:** branded custom on fine-pointer desktop, native on touch/mobile (see
   `date-field`); DOB pickers open ~18 years back / offer a year jump.
+- **Section pattern (every section follows this):** small blue **eyebrow** (caps label + the
+  `h-0.5 w-10 bg-primary` accent line) → **heading** (`text-h2`, `heading-rule`) → optional
+  `text-lead` → content. `<x-site.section-heading>` produces it; the FAQ and the discipline
+  "your instructors" sections use the SAME component so they match.
+- **Imagery:** instructor photos are **square (1:1) `object-cover`** (via `<x-site.instructor-card>`);
+  service/hero photos are full-bleed `object-cover` behind a `bg-photo-scrim`; the editorial
+  fallback for a missing photo is a navy monogram, never a generic placeholder. Images are plain
+  `FileUpload`s resolved by `image_url`/`imageUrl()` (bundled `/images/...` path or upload path).
+- **Icons:** lucide via `<x-icon>`. Feature/"what's included" lists use the **blue checkmark**
+  (`check`, `text-primary`); trust badges use their CMS `icon` in `sky-bright` on the dark band.
+  Don't swap an established icon per page (the Coaching list used `target` and drifted — now `check`).
+- **Motion stack:** Alpine.js for small interactive state (header/menu, select, FAQ); CSS
+  `.reveal` scroll-in (added by `app.js` via IntersectionObserver, and **skipped entirely** under
+  `prefers-reduced-motion: reduce` so content is never hidden). Every transition is
+  `motion-reduce:`-guarded.
 - **Content is CMS-driven.** Pull copy/links/images from settings + content models; **hide**
   a link/section when its data is empty (e.g. a social link with no URL) rather than
   rendering a dead/generic one. Empty states are intentional (e.g. AFF "New course dates
@@ -135,6 +197,31 @@ a raw hex/oklch.
 - **Homepage News+social:** Latest News is the dominant left column (real content); a
   compact navy "Follow us" card (real social links + a clearly-labelled curated photo grid)
   sits right. No "live feed" framing.
+
+## Cross-page consistency (the anti-drift rule)
+
+The recurring failure mode here is **cross-page drift**: an element is fine on each page in
+isolation but differs between pages, because per-page review never compares them. It's how the
+section dividers, the feature-list icons/lines, and the instructor cards each drifted. Defence:
+every repeated element comes from ONE shared component and **must look identical on every page**.
+
+| Repeated element | Shared source of truth | The rule |
+| --- | --- | --- |
+| Buttons / CTAs | `<x-ui.button>` (primary/outline/link) | no hand-styled buttons; no colour classes passed in |
+| Arrow links (EXPLORE / MEET THE TEAM / All news) | `<x-ui.arrow-link>` | one animated arrow everywhere |
+| Feature / "what's included" lists | `<x-ui.feature-list>` | blue checkmark + text, **no** left line; same icon every page |
+| Section headings + eyebrows | `<x-site.section-heading>` | eyebrow `tracking-[0.25em]` + `text-h2` + `heading-rule` |
+| Section transitions | — (spacing only) | **no** full-width divider line between sections |
+| Instructor cards | `<x-site.instructor-card>` | square photo + navy band; Team = full, discipline = no chips/bio |
+| Discipline chips | `<x-site.discipline-tags>` | bordered chip, no "Teaches" label |
+| Forms under a heading | the page section | left-aligned to the heading's content edge (not `mx-auto`-centred) |
+| Inputs / labels / date fields | `<x-ui.input>`/`select`/`textarea`/`label`/`date-field` | one focus treatment, labelled |
+| Section rhythm | `py-section-sm lg:py-section` (bands `…-lg`) | same cadence on every page |
+
+**A UI/consistency pass MUST compare across pages, not just within one** — take the SAME element
+(a feature list, a section transition, a card, an eyebrow, a form-under-heading) on 3+ pages,
+screenshot them side by side, and confirm they're identical and from the shared component. Drift
+only shows when they're viewed together.
 
 ## Adding a new page or section — checklist
 
