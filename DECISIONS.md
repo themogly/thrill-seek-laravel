@@ -1688,3 +1688,13 @@ Ran the four passes as `ui-review/{FOUNDATIONS,COMPONENTS,PAGES}.md` + `ui-guide
   "What it costs" and the FAQ); the home About column reads title → body → quiet team label +
   arrow without the old competing heading. No page hand-rolls a divergent rhythm; no change
   needed beyond the team work. Full-page captures at 1280 in `ui-review/team-fixes-v2/pass3-*`.
+- **Pass 4 — guidelines (final consistency):** captured home + the three discipline pages + Meet
+  the Team at **1440 / 1280 / 1024 / 390**. All consistent: every team cross-link is the shared
+  animated `<x-ui.arrow-link>` (keyboard focus ring intact); instructor photos are uniform square
+  `object-cover` crops; the discipline teaser matches the team card language minus tags; no
+  stretched/floating old markup remains; brand look (navy/blue/white, sharp corners, Bebas
+  display) unchanged. Role labels wrap gracefully on the narrow 390 cards. Captures in
+  `ui-review/team-fixes-v2/pass4-*`.
+
+**Net:** 4 fixes + 4 craft-pass commits, each `composer check` green (361 tests). No model/data
+changes; reused existing components/tokens throughout; one component deleted (`instructor-chip`).
