@@ -1902,3 +1902,18 @@ Branch off main `5b21538`.
   - **Out of scope:** the old `public/images/logo.png` stays (still used by the JSON-LD Organization
     `logo` in `StructuredData` — SEO, not email); regenerating that to the new mark is a follow-up.
 `composer check` green (361). Pushed, not merged.
+
+## Refresh the JSON-LD / SEO logo to the new mark (chore/jsonld-logo)
+Branch off main `fc60055`. The follow-up flagged in the logo-footer-mailers work: `StructuredData`
+(the Organization schema `logo` + an `ImageObject` logo) still pointed at the OLD blue raster
+`public/images/logo.png`.
+- **Regenerated `public/images/logo.png`** from the new logo SVG — **navy on solid white** (a brand
+  logo for SEO must read on any background; white guarantees it, vs a transparent PNG that would
+  vanish on a dark knowledge-panel/social surface), **600×227** raster, ~7.6 KB. The URL is
+  unchanged, so both `StructuredData` references now serve the new mark with **no code change**.
+  Verified the homepage JSON-LD emits `"logo":"…/images/logo.png"` (absolute) and the asset serves
+  `200 image/png`.
+- **Removed the orphaned `public/images/logo.webp`** — it only existed for the old header
+  `<picture>`, which now uses the inline SVG; zero references remained.
+`composer check` green (361). The new logo mark is now consistent across header (SVG), footer
+(SVG white), emails (PNG navy) and structured data (PNG navy-on-white).
