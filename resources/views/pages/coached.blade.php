@@ -41,7 +41,9 @@
     <section id="enquiry">
         <div class="mx-auto max-w-7xl px-4 py-16 lg:px-8 lg:py-24">
             <x-site.section-heading :eyebrow="$page->enquiry_eyebrow" :title="$page->enquiry_title" :lead="$page->enquiry_lead" />
-            <div class="mx-auto max-w-3xl">
+            {{-- Left-aligned to the same content edge as the heading + FAQ above (was
+                 mx-auto-centred, which floated the form away from its left heading). --}}
+            <div class="max-w-3xl">
                 <livewire:coached-enquiry-form />
             </div>
         </div>
