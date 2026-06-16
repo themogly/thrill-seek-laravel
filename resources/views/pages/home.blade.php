@@ -83,18 +83,15 @@
                 <p class="mt-6 max-w-measure text-lead text-white/85">
                     {{ $home->about_body }}
                 </p>
-                {{-- A quiet cross-link to the team — modelled on the service cards'
-                     eyebrow + animated "EXPLORE →" cue, NOT a second dominant heading.
-                     team_lead reads as a small label; the link is the shared
-                     <x-ui.arrow-link> (same sliding arrow as the service tiles), so it
-                     sits naturally in the About band without competing with the title. --}}
+                {{-- Cross-link to the team, styled EXACTLY like the service-tile
+                     "EXPLORE →" cue: white text, blue underline accent, arrow sliding on
+                     hover. Same <x-ui.arrow-link> span variant inside a link (the service
+                     cards' pattern), so it's visually identical — just labelled differently.
+                     No teaser label line above it. --}}
                 @if ($instructors->isNotEmpty())
-                    <div class="mt-10">
-                        <p class="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.25em] text-sky-bright">
-                            <span class="inline-block h-0.5 w-10 bg-primary"></span>{{ $home->team_lead }}
-                        </p>
-                        <x-ui.arrow-link href="/meet-the-team" class="mt-4">Meet the Team</x-ui.arrow-link>
-                    </div>
+                    <a href="/meet-the-team" class="group mt-10 inline-flex text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring">
+                        <x-ui.arrow-link class="border-b-2 border-primary pb-1">Meet the Team</x-ui.arrow-link>
+                    </a>
                 @endif
             </div>
             <div class="relative grid grid-cols-2 gap-px bg-white/15 lg:-mr-24" data-reveal>

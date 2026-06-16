@@ -1698,3 +1698,19 @@ Ran the four passes as `ui-review/{FOUNDATIONS,COMPONENTS,PAGES}.md` + `ui-guide
 
 **Net:** 4 fixes + 4 craft-pass commits, each `composer check` green (361 tests). No model/data
 changes; reused existing components/tokens throughout; one component deleted (`instructor-chip`).
+
+## Homepage team link as an EXPLORE-style arrow (ui/homepage-team-link)
+Branch off main `b414abb`. One decided fix to the home About section:
+- **Dropped the "THE PEOPLE YOU'LL FLY WITH." teaser label** (the `team_lead` eyebrow line above
+  the link). It's no longer rendered anywhere on the home page.
+- **Restyled "MEET THE TEAM →" to match the service-tile "EXPLORE →" exactly:** white text + the
+  blue `border-b-2 border-primary` underline + the sliding arrow. Reuses the **same**
+  `<x-ui.arrow-link>` span variant the service cards use, wrapped in an `<a href="/meet-the-team"
+  class="group text-white …">` (so the arrow slides on the link's own group hover, text inherits
+  white, focus-visible ring is `ring-inset` for the dark band). Visually identical to EXPLORE,
+  just labelled differently. Still gated on instructors existing; `prefers-reduced-motion` honoured
+  (the shared component's `motion-reduce:transition-none`).
+- **`team_lead` setting is now unused** (`HomePageSettings::$team_lead`, still seeded/editable). Left
+  in place — flagged here for a later CMS-field cleanup, not removed in this UI-only task.
+- `HomeTeamMentionTest` updated: asserts the EXPLORE-style team link + that the teaser label is
+  gone, and gates the About link on instructors via a cache-flushed link-count comparison.
