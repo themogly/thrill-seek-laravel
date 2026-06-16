@@ -84,7 +84,7 @@
     @endif
 
     {{-- WHO TEACHES THIS --}}
-    <x-site.discipline-instructors :instructors="$instructors" label="Tandem" />
+    <x-site.discipline-instructors :instructors="$instructors" heading="Your Tandem Instructors" />
 
     {{-- FAQS --}}
     <x-site.faq-section :faqs="$faqs" />

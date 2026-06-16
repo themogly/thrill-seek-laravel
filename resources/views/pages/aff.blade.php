@@ -140,7 +140,7 @@
     </section>
 
     {{-- WHO TEACHES THIS --}}
-    <x-site.discipline-instructors :instructors="$instructors" label="AFF" />
+    <x-site.discipline-instructors :instructors="$instructors" heading="Your AFF Instructors" />
 
     {{-- FAQS --}}
     <x-site.faq-section :faqs="$faqs" />
