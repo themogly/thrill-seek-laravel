@@ -7,13 +7,14 @@ use Tests\TestCase;
 
 class HomeTeamMentionTest extends TestCase
 {
-    public function test_about_band_shows_a_prominent_team_button_and_no_duplicate_stats(): void
+    public function test_about_band_shows_a_team_arrow_link_and_no_duplicate_stats(): void
     {
         Instructor::factory()->create();
 
         $html = $this->get('/')->assertOk()->getContent();
 
-        // A prominent button (not a faint text link) routing to the team page.
+        // A quiet label + animated arrow-link (modelled on the service-card EXPLORE
+        // cue), routing to the team page — not a second dominant heading/button.
         $this->assertStringContainsString('href="/meet-the-team"', $html);
         $this->assertStringContainsString('Meet the Team', $html);
         $this->assertStringContainsString('The people you', $html);

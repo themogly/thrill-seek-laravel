@@ -18,11 +18,13 @@
             <div class="grid grid-cols-1 gap-px bg-secondary sm:grid-cols-2 lg:grid-cols-3" data-reveal>
                 @foreach ($instructors as $instructor)
                     <article class="group flex flex-col bg-background">
-                        <div class="relative aspect-[4/5] overflow-hidden bg-secondary">
+                        {{-- Square (1:1) crop — uniform, and shorter than the old 4:5
+                             portrait so each card takes less vertical space. --}}
+                        <div class="relative aspect-square overflow-hidden bg-secondary">
                             @if ($instructor->photo)
                                 <img src="{{ $instructor->photo_url }}" alt="{{ $instructor->name }}"
                                      class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 motion-reduce:transition-none"
-                                     loading="lazy" width="800" height="1000" />
+                                     loading="lazy" width="800" height="800" />
                             @else
                                 {{-- Intentional editorial fallback: giant monogram on navy --}}
                                 <div class="band-ink flex h-full w-full items-center justify-center">
@@ -36,9 +38,11 @@
                         </div>
                         <div class="flex flex-1 flex-col border-2 border-t-0 border-border p-6 lg:p-7">
                             {{-- A labelled "Teaches" block so the discipline chips read
-                                 unambiguously, divided from the bio for a clear rhythm. --}}
+                                 unambiguously. No divider line beneath — the chips sat
+                                 directly on a grey border which read as touching them;
+                                 plain margin separates it from the bio instead. --}}
                             @if ($instructor->disciplines->isNotEmpty())
-                                <div class="mb-5 border-b-2 border-border pb-5">
+                                <div class="mb-6">
                                     <p class="text-[0.7rem] font-bold uppercase tracking-[0.25em] text-muted-foreground">Teaches</p>
                                     <x-site.discipline-tags :disciplines="$instructor->disciplines" class="mt-2.5" />
                                 </div>

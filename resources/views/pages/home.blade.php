@@ -63,9 +63,9 @@
                         <p class="font-display text-xl text-sky-bright">{{ $s->summary_price_label }}</p>
                         <h3 class="mt-1 font-display text-4xl uppercase leading-none tracking-wide lg:text-5xl">{{ $s->name }}</h3>
                         <p class="mt-3 max-w-xs text-sm text-white/85">{{ $s->summary }}</p>
-                        <span class="mt-5 inline-flex items-center gap-2 border-b-2 border-primary pb-1 text-sm font-bold uppercase tracking-widest">
-                            Explore <x-icon name="arrow-right" class="h-4 w-4 transition-transform motion-reduce:transition-none group-hover:translate-x-1" />
-                        </span>
+                        {{-- The shared arrow cue (span variant: arrow slides on the card's
+                             group hover) + the distinct dark-tile border-b underline. --}}
+                        <x-ui.arrow-link class="mt-5 border-b-2 border-primary pb-1">Explore</x-ui.arrow-link>
                     </div>
                 </a>
             @endforeach
@@ -83,15 +83,18 @@
                 <p class="mt-6 max-w-measure text-lead text-white/85">
                     {{ $home->about_body }}
                 </p>
-                {{-- One prominent route to the team. Replaces the old faint text link AND
-                     the duplicate stat tiles — the trust credentials now live ONCE, in the
-                     "Trusted. Certified. Experienced." band below. --}}
+                {{-- A quiet cross-link to the team — modelled on the service cards'
+                     eyebrow + animated "EXPLORE →" cue, NOT a second dominant heading.
+                     team_lead reads as a small label; the link is the shared
+                     <x-ui.arrow-link> (same sliding arrow as the service tiles), so it
+                     sits naturally in the About band without competing with the title. --}}
                 @if ($instructors->isNotEmpty())
-                    {{-- Same heading treatment as the about title above (heading-rule =
-                         the blue accent line + uppercase display) so the team teaser
-                         reads as a proper section heading, not weak small text. --}}
-                    <h3 class="heading-rule mt-10 font-display text-h2 uppercase tracking-wide">{{ $home->team_lead }}</h3>
-                    <x-ui.button href="/meet-the-team" class="mt-6">Meet the Team</x-ui.button>
+                    <div class="mt-10">
+                        <p class="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.25em] text-sky-bright">
+                            <span class="inline-block h-0.5 w-10 bg-primary"></span>{{ $home->team_lead }}
+                        </p>
+                        <x-ui.arrow-link href="/meet-the-team" class="mt-4">Meet the Team</x-ui.arrow-link>
+                    </div>
                 @endif
             </div>
             <div class="relative grid grid-cols-2 gap-px bg-white/15 lg:-mr-24" data-reveal>

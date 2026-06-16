@@ -1624,3 +1624,77 @@ verified 1440/1280/1024/390 — `ui-review/team-polish/`):
   treatment (`heading-rule` blue accent line + `font-display text-h2 uppercase tracking-wide`,
   as `<h3>`), so it's a proper section heading above the Meet the Team button, not weak text.
 No data/model changes; reused existing components/tokens throughout.
+
+## Team display fixes v2 + UI passes (ui/team-fixes-v2)
+Branch off main `01d560b`. Fully autonomous run (owner away). Decided, reuse-existing fixes;
+`composer check` green before every commit; verified by Playwright at 1440/1280/1024/390
+(`ui-review/team-fixes-v2/`).
+
+- **Spec substitution (noted, not blocked):** the prompt referenced a `frontend-design` skill
+  and a `ui-passes/01–04` directory that do **not exist** in this repo. The equivalent material
+  lives in `ui-guidelines.md` (the concrete design system = "pass 4 / guidelines") and
+  `ui-review/{FOUNDATIONS,COMPONENTS,PAGES}.md` (the retrospective pass 1–3 audits). I treated
+  those as the passes and ran them as a craft sweep (tokens → components → page rhythm →
+  guidelines) over the changed team elements + any drift. Made the most on-brand choice per the
+  established system rather than waiting for input.
+- **Fix 1 — homepage About team mention:** replaced the prior `text-h2`+`heading-rule` heading
+  (team-polish) and the solid button with a **modest sky-bright eyebrow label** (`team_lead`,
+  with the standard `h-0.5 w-10` rule) + the shared **`<x-ui.arrow-link href="/meet-the-team">`
+  "Meet the Team"** — the canonical animated arrow that the service-card "EXPLORE →" cue is the
+  bespoke ancestor of (closing the ui-guidelines "Explore uses a bespoke border-b" gap by
+  adopting the real component for the team link). Now sits quietly in the About band, not a
+  second dominant header. Still gated on instructors existing. `HomeTeamMentionTest` retitled
+  button→arrow-link (assertions unchanged: href + "Meet the Team" + the lead are all present).
+- **Fix 2 — Meet the Team cards:** removed the `border-b-2 border-border` divider under the
+  "Teaches" chips (it read as a grey line butting the chips) — plain `mb-6` separates the block
+  from the bio now. Switched the photo crop from `aspect-[4/5]` portrait to **`aspect-square`
+  (1:1)** so cards are uniform and shorter (less vertical space). Navy name/role band overlay and
+  the discipline chips (with the even padding from team-polish) are unchanged.
+- **Fix 3 — AFF/Tandem/Coaching instructor teaser** (`discipline-instructors`): rebuilt from the
+  old tiny-avatar (`instructor-chip`) row with a floating top-right link into the **Meet the Team
+  card language** — a `aspect-square w-40/sm:w-44` photo with the navy `border-t-4 border-primary`
+  name/role band overlaid, exactly like the team page but **without the discipline tags** (a
+  single-discipline page doesn't need them) and no bio. Eyebrow label on top; the
+  `<x-ui.arrow-link>` "Meet the Team" sits **beneath the cards** (grouped, not floating beside
+  them — the "All news →" placement). Discipline filtering + the empty-state guard are unchanged;
+  verified the new card renders on all three pages (AFF: Joby/Ricky, Tandem: Joby/Lucy,
+  Coaching: Joby/Ricky — tags absent).
+- **Fix 4 — consistency:** the rebuilt teaser no longer uses `instructor-chip` (the small-avatar
+  partial) and nothing else did, so **deleted `components/site/instructor-chip.blade.php`** (the
+  last bit of the old stretched-avatar markup). Sitewide, every team cross-link is now the shared
+  `<x-ui.arrow-link>` (home About + the three discipline pages) and every instructor photo is a
+  square `object-cover` crop (team page cards + the discipline teaser cards). The header nav
+  "Meet the Team" item is a normal nav link (unchanged). Testimonial avatars use `<x-site.avatar>`
+  and are out of scope (not instructors).
+
+### UI passes (craft sweep over the changed team elements + site)
+Ran the four passes as `ui-review/{FOUNDATIONS,COMPONENTS,PAGES}.md` + `ui-guidelines.md`.
+- **Pass 1 — foundations (type/spacing):** audited pages/components — section rhythm already on
+  the `py-section*` tokens (no `py-20/28/32/40` drift left), and the remaining raw display sizes
+  (service-tile titles, stat numerals, monograms, footer tagline) are the documented intentional
+  display-type exceptions, left as-is. Only fix: the new teaser role plate used a raw
+  `text-[0.6rem]` → moved to **`text-xs` + `text-sky-bright`** to match the Meet the Team card
+  exactly; bumped the teaser name to `text-xl`. Verified desktop + 390 (role wraps gracefully).
+- **Pass 2 — components (buttons/inputs/links):** the new team elements already use the shared
+  `<x-ui.arrow-link>` (own focus-visible ring) and `<x-ui.button>`; cards guard motion with
+  `motion-reduce`. Closed the documented "home EXPLORE cue is a bespoke arrow" gap — folded the
+  service-tile `Explore →` into `<x-ui.arrow-link>` (span variant; arrow slides on the card's
+  group hover) while keeping its distinct dark-tile `border-b-2` underline via the class merge.
+  Now **every** arrow cue sitewide (team links + service tiles + "All news") is one component.
+  Visually identical; verified.
+- **Pass 3 — pages (layout/hierarchy/rhythm):** verified the changed elements sit with the
+  established 2-step section rhythm. The discipline teaser renders through `<x-site.section>`
+  (`py-section-sm lg:py-section`) so it spaces correctly between neighbours (e.g. tandem: between
+  "What it costs" and the FAQ); the home About column reads title → body → quiet team label +
+  arrow without the old competing heading. No page hand-rolls a divergent rhythm; no change
+  needed beyond the team work. Full-page captures at 1280 in `ui-review/team-fixes-v2/pass3-*`.
+- **Pass 4 — guidelines (final consistency):** captured home + the three discipline pages + Meet
+  the Team at **1440 / 1280 / 1024 / 390**. All consistent: every team cross-link is the shared
+  animated `<x-ui.arrow-link>` (keyboard focus ring intact); instructor photos are uniform square
+  `object-cover` crops; the discipline teaser matches the team card language minus tags; no
+  stretched/floating old markup remains; brand look (navy/blue/white, sharp corners, Bebas
+  display) unchanged. Role labels wrap gracefully on the narrow 390 cards. Captures in
+  `ui-review/team-fixes-v2/pass4-*`.
+
+**Net:** 4 fixes + 4 craft-pass commits, each `composer check` green (361 tests). No model/data
+changes; reused existing components/tokens throughout; one component deleted (`instructor-chip`).
