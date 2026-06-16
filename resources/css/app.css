@@ -109,25 +109,9 @@
     --shadow-deep: 0 30px 80px -30px oklch(0.15 0.08 250 / 0.6);
 }
 
-.dark {
-    --background: oklch(0.12 0.03 250);
-    --foreground: oklch(0.98 0 0);
-    --card: oklch(0.18 0.04 250);
-    --card-foreground: oklch(0.98 0 0);
-    --popover: oklch(0.18 0.04 250);
-    --popover-foreground: oklch(0.98 0 0);
-    --primary: oklch(0.72 0.21 45);
-    --primary-foreground: oklch(0.12 0.03 250);
-    --secondary: oklch(0.6 0.18 240);
-    --secondary-foreground: oklch(0.12 0.03 250);
-    --muted: oklch(0.22 0.04 250);
-    --muted-foreground: oklch(0.7 0.03 250);
-    --accent: oklch(0.28 0.14 255);
-    --accent-foreground: oklch(0.98 0 0);
-    --border: oklch(1 0 0 / 12%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.72 0.21 45);
-}
+/* No dark mode — the public site is light only. (The old shadcn `.dark {}` override,
+   which redefined the palette incl. an off-brand orange --primary, has been removed;
+   the Filament admin themes itself separately via Tailwind's `dark:` variant.) */
 
 @layer base {
     * {
