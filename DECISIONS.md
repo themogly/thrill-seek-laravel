@@ -1675,3 +1675,10 @@ Ran the four passes as `ui-review/{FOUNDATIONS,COMPONENTS,PAGES}.md` + `ui-guide
   display-type exceptions, left as-is. Only fix: the new teaser role plate used a raw
   `text-[0.6rem]` → moved to **`text-xs` + `text-sky-bright`** to match the Meet the Team card
   exactly; bumped the teaser name to `text-xl`. Verified desktop + 390 (role wraps gracefully).
+- **Pass 2 — components (buttons/inputs/links):** the new team elements already use the shared
+  `<x-ui.arrow-link>` (own focus-visible ring) and `<x-ui.button>`; cards guard motion with
+  `motion-reduce`. Closed the documented "home EXPLORE cue is a bespoke arrow" gap — folded the
+  service-tile `Explore →` into `<x-ui.arrow-link>` (span variant; arrow slides on the card's
+  group hover) while keeping its distinct dark-tile `border-b-2` underline via the class merge.
+  Now **every** arrow cue sitewide (team links + service tiles + "All news") is one component.
+  Visually identical; verified.
