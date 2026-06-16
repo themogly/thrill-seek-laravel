@@ -13,23 +13,18 @@ bold condensed display headings. No new brand colours, no dark mode, no rounded-
 
 ---
 
-## ⚠️ Inconsistencies to resolve (owner punch-list — derived from the code, NOT yet fixed)
+## ⚠️ Inconsistencies to resolve (owner punch-list — derived from the code)
 
-These are real drifts/risks found while deriving this doc. They are **not** fixed here (doc-only);
-each is a small follow-up branch. Listed so they don't hide.
+Real drifts/risks found while deriving this doc. Two were since fixed (kept here as a record);
+the remainder is a low-priority follow-up.
 
-1. **Dead `.dark {}` block in `app.css`** (≈ lines 110-130) — a leftover from the shadcn/Lovable
-   template that redefines the palette for a `.dark` ancestor, including an **off-brand orange**
-   `--primary` (`oklch(0.72 0.21 45)`). The public site never adds `.dark` (only the Filament admin
-   uses Tailwind's `dark:` variant, which is separate), so it's inert — but it contradicts the
-   "no dark mode / no new colours" rule and would turn the brand orange if a `.dark` class ever
-   landed on `<html>`. **Fix:** delete the `.dark` block.
-2. **`/newsletter` "Join the list" card is off-pattern** (`newsletter.blade.php`) — it uses
-   `rounded-2xl border bg-card p-8 shadow-sm`, i.e. a 1px border **plus a `shadow-sm`**, where the
-   established card treatment everywhere else is `border-2 border-secondary` with **no shadow**
-   (sharp, flat). The `rounded-2xl` renders sharp anyway (the radius tokens are pinned to 0 — see
-   Palette), but the shadow + thin border are a visual mismatch. **Fix:** swap to the standard
-   `border-2 border-secondary` flat card.
+1. **~~Dead `.dark {}` block in `app.css`~~ — RESOLVED.** The leftover shadcn `.dark` palette
+   override (with an off-brand orange `--primary`) was inert on the public site and contradicted
+   "no dark mode / no new colours"; it has been **deleted**. The Filament admin themes itself
+   separately via Tailwind's `dark:` variant.
+2. **~~`/newsletter` "Join the list" card off-pattern~~ — RESOLVED.** It used
+   `rounded-2xl border … shadow-sm`; now the standard **`border-2 border-secondary` flat card**
+   (no shadow), matching every other card.
 3. **Type-scale mid gap** (low priority, intentional for now) — see "Known gaps" at the bottom;
    a few display titles (service tiles, stat numerals, instructor name plates `text-3xl`) sit as
    explicit sizes between `text-h3` and `text-h2`. Not a bug; a future `display-card` token could

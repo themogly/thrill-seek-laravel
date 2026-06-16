@@ -1827,3 +1827,12 @@ with the rule that a UI pass must compare each element ACROSS pages (the anti-dr
   flat card (swap it); (3) the known type-scale mid-gap (low priority). Each is a small follow-up
   branch.
 `composer check` green (docs only). Pushed, not merged.
+
+## Resolve the two flagged ui-guideline inconsistencies (fix/ui-guideline-inconsistencies)
+Branch off main `647408a`. Cleared the punch-list from `docs/ui-guidelines`:
+- **Removed the dead `.dark {}` block** in `app.css` (off-brand orange `--primary`, never applied on
+  the public site) — no visual change; eliminates the latent risk and the rule contradiction.
+- **`/newsletter` "Join the list" card** → standard `border-2 border-secondary bg-card p-8` flat
+  card (dropped `rounded-2xl border shadow-sm`); now matches every other card (2px border, sharp,
+  no shadow — verified). Content/behaviour unchanged.
+- Updated the `ui-guidelines.md` punch-list to mark both resolved. `composer check` green.

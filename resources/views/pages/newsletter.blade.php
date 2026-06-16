@@ -12,7 +12,7 @@
     />
     <x-site.section>
         <div class="mx-auto max-w-xl">
-            <div class="rounded-2xl border bg-card p-8 shadow-sm">
+            <div class="border-2 border-secondary bg-card p-8">
                 <h2 class="font-display text-2xl uppercase text-secondary">Join the list</h2>
                 <p class="mt-2 text-muted-foreground">
                     Pop your email in and we'll send a quick confirmation link. Once you confirm,
