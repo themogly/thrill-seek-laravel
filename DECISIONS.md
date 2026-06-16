@@ -1645,3 +1645,8 @@ Branch off main `01d560b`. Fully autonomous run (owner away). Decided, reuse-exi
   adopting the real component for the team link). Now sits quietly in the About band, not a
   second dominant header. Still gated on instructors existing. `HomeTeamMentionTest` retitled
   button→arrow-link (assertions unchanged: href + "Meet the Team" + the lead are all present).
+- **Fix 2 — Meet the Team cards:** removed the `border-b-2 border-border` divider under the
+  "Teaches" chips (it read as a grey line butting the chips) — plain `mb-6` separates the block
+  from the bio now. Switched the photo crop from `aspect-[4/5]` portrait to **`aspect-square`
+  (1:1)** so cards are uniform and shorter (less vertical space). Navy name/role band overlay and
+  the discipline chips (with the even padding from team-polish) are unchanged.
