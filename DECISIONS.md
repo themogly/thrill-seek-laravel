@@ -1769,3 +1769,26 @@ mismatch (verified 1440/1280/1024/390 — `ui-review/form-alignment/`):
 - **Already correct (no change):** the **contact** form (left column of a `2fr_1fr` grid, left edge
   32px) and the **tandem/AFF enquiry** forms (left column beside the pay-card in a 2-col grid).
 - Alignment/layout only — no form fields, validation or behaviour touched.
+
+## Remove section-divider lines + codify the rule (ui/remove-section-dividers)
+Branch off main `a6cfbc6`. Section transitions had drifted inconsistent (added piecemeal across
+branches; per-page review never caught it): tandem/AFF/home carried full-width **navy**
+`border-b-2`/`border-y-2 border-secondary` lines between sections, while coached and the newer
+instructor/FAQ sections had none.
+- **Part 1 — removed all 10 navy section-divider classes** across home/tandem/aff/coached so
+  transitions use the section `py-section*` spacing only (a colour change to a dark band is its own
+  edge). KEPT (not section dividers): the brand **blue** `border-*-4 border-primary` rules — the
+  `<x-site.page-hero>` underline, the newsletter/gift band frames, card tops — plus header chrome
+  and all component-internal lines (FAQ separators, tables, inputs, eyebrow accents). Spacing model
+  is unchanged (sections are flush; the rhythm is their internal padding, which I didn't touch), so
+  nothing cramped — verified 1440/1280/390 on home/tandem/aff/coached; other pages were already
+  divider-free.
+- **Homepage included** per this task's explicit scope ("apply across ALL pages (home, …)") — a
+  deliberate owner decision that supersedes the earlier consistency-pass "don't touch home" guard
+  (which was specific to that pass). Home's navy lines around the services/trust/news sections are
+  gone; the newsletter band's blue frame stays.
+- **Part 2 — codified the rule**: `ui-guidelines.md` (Spacing & layout + the new-page checklist)
+  and `CLAUDE.md` design rules now state "section transitions use spacing only — no full-width
+  divider line on a `<section>` wrapper", and the guidelines add a consistency-pass note to compare
+  the SAME transition zone ACROSS 3+ pages (per-page review misses cross-page drift — exactly how
+  these dividers crept in).

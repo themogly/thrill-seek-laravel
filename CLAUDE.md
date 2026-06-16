@@ -161,6 +161,12 @@ that manages all site content, enquiries, payments and bookings.
   through `<x-site.section-heading>` / `<x-site.page-hero>`. Letter-spacing stays on
   `tracking-*` (eyebrow labels standardise on `tracking-[0.25em]`). The homepage News+social
   block is News-dominant (2/3) + an honest "Follow us" card (no live-feed framing).
+- **No section-divider lines — spacing only**: section transitions are separated by the
+  `py-section*` rhythm alone, NEVER a full-width horizontal rule on a `<section>` wrapper
+  (no `border-b/-y border-secondary` to divide one section from the next). A colour change
+  (white → `band-ink`/`bg-secondary`) is its own edge. Component-internal rules are fine —
+  FAQ separators, table/input borders, the eyebrow accent, and the brand **blue**
+  `border-*-4 border-primary` rules (hero underline, newsletter/gift band frames, card tops).
 - **Buttons**: every button/CTA renders through `<x-ui.button>` with its three
   variants — `primary`, `outline` (border-current; adapts to dark bands), `link`
   (inline text action). States (hover/active/focus-visible/disabled) and the icon
