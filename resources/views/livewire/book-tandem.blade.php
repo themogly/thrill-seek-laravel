@@ -1,4 +1,4 @@
-<div class="mx-auto max-w-3xl">
+<div class="max-w-3xl">
     @if ($this->enquirySent)
         <div class="border-2 border-secondary bg-card p-8 text-center">
             <span class="mx-auto flex h-14 w-14 items-center justify-center bg-primary text-primary-foreground"><x-icon name="check" class="h-7 w-7" /></span>

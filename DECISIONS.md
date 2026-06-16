@@ -1714,3 +1714,22 @@ Branch off main `b414abb`. One decided fix to the home About section:
   in place — flagged here for a later CMS-field cleanup, not removed in this UI-only task.
 - `HomeTeamMentionTest` updated: asserts the EXPLORE-style team link + that the teaser label is
   gone, and gates the About link on instructors via a cache-flushed link-count comparison.
+
+## Form/heading alignment sweep (ui/form-alignment)
+Branch off main `a1c5c3a`. Audited every form surface for the "left heading over a centred form"
+mismatch (verified 1440/1280/1024/390 — `ui-review/form-alignment/`):
+- **Coached enquiry form — realigned.** The left `<x-site.section-heading>` ("GET COACHED / TELL US
+  WHERE YOU'RE AT") sat above an `mx-auto max-w-3xl` (centred) form. Dropped `mx-auto` → the form
+  now starts at the same left content edge as its heading and the FAQ (both measured at 32px).
+- **Booking flows (book-tandem, book-aff) — realigned.** Their Livewire root was `mx-auto
+  max-w-3xl` (centred) under a left-aligned hero; dropped `mx-auto` so the funnel sits on the
+  standard left content edge (matching the nav/footer/sections), consistent with the left hero.
+  (Judgment call — a centred funnel is defensible; this favours the site-wide left edge the task
+  asked for. One-line revert if a centred funnel is preferred.)
+- **Left as deliberately-centred (heading + content both centred), noted not changed:** the
+  **vouchers** page (centred `text-center` intro + centred purchase form — an internally
+  consistent focused single-product unit) and the **newsletter** surfaces (the `/newsletter`
+  centred card and the home newsletter **banner** — centred bands by design).
+- **Already correct (no change):** the **contact** form (left column of a `2fr_1fr` grid, left edge
+  32px) and the **tandem/AFF enquiry** forms (left column beside the pay-card in a 2-col grid).
+- Alignment/layout only — no form fields, validation or behaviour touched.
