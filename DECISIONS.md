@@ -1875,3 +1875,12 @@ newspaper ICON, no eyebrow and no accent line — out of step with every other s
   (describes the curated shots). Verified only one "From the dropzone" remains on the page; both
   labels are on-brand and use the standard eyebrow style.
 Verified 1440/1280/1024/390. `composer check` green (361). Pushed, not merged.
+
+## White footer logo (SVG) + new logo in all mailers (PNG) (ui/logo-footer-mailers)
+Branch off main `5b21538`.
+- **Part 1 — footer white logo (web SVG):** the footer showed a plain Bebas **text wordmark**
+  (`<span>G-Force Skydiving</span>`), not the mark. Replaced it with the shared
+  `<x-site.logo class="h-11 w-auto text-white">` wrapped in a home link — the new vector logo,
+  reversed to **white** via `currentColor` (`text-white`) so it reads on the dark `band-ink`
+  footer. Same mark as the navy header logo, just reversed. `aria-label` keeps the accessible
+  name. Verified crisp + clearly visible at 1440 / 390.
