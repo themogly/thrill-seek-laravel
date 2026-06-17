@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Instructors\Schemas;
 
+use App\Support\ImageCrop;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
@@ -35,15 +36,15 @@ class InstructorForm
                     ->relationship('disciplines', 'name')
                     ->columns(3)
                     ->columnSpanFull(),
-                FileUpload::make('photo')
-                    ->label('Photo')
-                    ->helperText('Optional. Leave blank to show the initial-letter badge instead.')
-                    ->avatar()
-                    ->image()
-                    ->imageEditor()
-                    ->disk('public')
-                    ->directory('instructors')
-                    ->columnSpanFull(),
+                ImageCrop::ratio(
+                    FileUpload::make('photo')
+                        ->label('Photo')
+                        ->helperText('Optional, shown as a square portrait — crop to 1:1. Leave blank to show the initial-letter badge instead.')
+                        ->disk('public')
+                        ->directory('instructors')
+                        ->columnSpanFull(),
+                    '1:1',
+                ),
             ]);
     }
 }

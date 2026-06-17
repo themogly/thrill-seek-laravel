@@ -3,6 +3,7 @@
 namespace App\Filament\Pages\Settings;
 
 use App\Settings\TandemPageSettings;
+use App\Support\ImageCrop;
 use BackedEnum;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
@@ -45,13 +46,15 @@ class ManageTandemPageSettings extends SettingsPage
                 ->components([
                     TextInput::make('hero_title')->label('Heading')->required()->maxLength(255),
                     TextInput::make('hero_subtitle')->label('Text under the heading')->maxLength(500),
-                    FileUpload::make('hero_image')
-                        ->label('Hero photo')
-                        ->helperText('Full-width banner photo. Leave empty to keep the current image.')
-                        ->image()
-                        ->disk('public')
-                        ->directory('pages')
-                        ->dehydrated(fn (?string $state): bool => filled($state)),
+                    ImageCrop::ratio(
+                        FileUpload::make('hero_image')
+                            ->label('Hero photo')
+                            ->helperText('Full-width banner photo — crop to 16:9. Leave empty to keep the current image.')
+                            ->disk('public')
+                            ->directory('pages')
+                            ->dehydrated(fn (?string $state): bool => filled($state)),
+                        '16:9',
+                    ),
                 ]),
             Section::make('“The jump” section')
                 ->components([
@@ -69,13 +72,15 @@ class ManageTandemPageSettings extends SettingsPage
                         ->simple(TextInput::make('location')->required()->maxLength(255))
                         ->reorderable()
                         ->minItems(1),
-                    FileUpload::make('intro_image')
-                        ->label('Photo')
-                        ->helperText('Leave empty to keep the current image.')
-                        ->image()
-                        ->disk('public')
-                        ->directory('pages')
-                        ->dehydrated(fn (?string $state): bool => filled($state)),
+                    ImageCrop::ratio(
+                        FileUpload::make('intro_image')
+                            ->label('Photo')
+                            ->helperText('Shown beside the intro text — crop to 16:10. Leave empty to keep the current image.')
+                            ->disk('public')
+                            ->directory('pages')
+                            ->dehydrated(fn (?string $state): bool => filled($state)),
+                        '16:10',
+                    ),
                 ]),
             Section::make('Pricing section heading')
                 ->columns(2)

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Products\Schemas;
 
 use App\Enums\ProductType;
+use App\Support\ImageCrop;
 use App\Support\MoneyField;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
@@ -61,13 +62,15 @@ class ProductForm
                             ->helperText('Longer description used in emails and admin.')
                             ->rows(3)
                             ->columnSpanFull(),
-                        FileUpload::make('image')
-                            ->label('Card image')
-                            ->helperText('Shown on the home page card. Leave empty to keep the current image.')
-                            ->image()
-                            ->disk('public')
-                            ->directory('products')
-                            ->dehydrated(fn (?string $state): bool => filled($state)),
+                        ImageCrop::ratio(
+                            FileUpload::make('image')
+                                ->label('Card image')
+                                ->helperText('Shown on the square home-page card — crop to 1:1. Leave empty to keep the current image.')
+                                ->disk('public')
+                                ->directory('products')
+                                ->dehydrated(fn (?string $state): bool => filled($state)),
+                            '1:1',
+                        ),
                         TextInput::make('page_path')
                             ->label('Page link')
                             ->helperText('Where the card links to, e.g. “/tandem”.')

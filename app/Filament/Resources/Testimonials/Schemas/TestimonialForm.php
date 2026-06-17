@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Testimonials\Schemas;
 
+use App\Support\ImageCrop;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -29,22 +30,23 @@ class TestimonialForm
                     ->label('Star rating (optional)')
                     ->helperText('Shown as stars near the name. Leave blank to hide.')
                     ->options([1 => '1 ★', 2 => '2 ★', 3 => '3 ★', 4 => '4 ★', 5 => '5 ★']),
-                FileUpload::make('avatar')
-                    ->label('Headshot (optional)')
-                    ->helperText('Small round avatar. Leave blank to show the initial-letter badge instead.')
-                    ->avatar()
-                    ->image()
-                    ->imageEditor()
-                    ->disk('public')
-                    ->directory('testimonials'),
-                FileUpload::make('photo')
-                    ->label('Action photo (optional)')
-                    ->helperText('A large jump/action shot. When set, the testimonial renders as a full-bleed photo tile.')
-                    ->image()
-                    ->imageEditor()
-                    ->disk('public')
-                    ->directory('testimonials-photos')
-                    ->columnSpanFull(),
+                ImageCrop::ratio(
+                    FileUpload::make('avatar')
+                        ->label('Headshot (optional)')
+                        ->helperText('Shown as a small square avatar — crop to 1:1. Leave blank to show the initial-letter badge instead.')
+                        ->disk('public')
+                        ->directory('testimonials'),
+                    '1:1',
+                ),
+                ImageCrop::ratio(
+                    FileUpload::make('photo')
+                        ->label('Action photo (optional)')
+                        ->helperText('A large jump/action shot — crop to 16:9. When set, the testimonial renders as a full-bleed photo tile.')
+                        ->disk('public')
+                        ->directory('testimonials-photos')
+                        ->columnSpanFull(),
+                    '16:9',
+                ),
                 Textarea::make('quote')
                     ->label('Quote')
                     ->helperText('The full review shown on the Testimonials page.')

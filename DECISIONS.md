@@ -1964,3 +1964,21 @@ Branch off main `fe5afdb`.
   Cards are now uniform squares and noticeably shorter. `object-cover` was already universal across
   the shape-matters images (instructor square, gallery square, about 3:4, news 16:10, hero cover),
   so the safety net needed no new work.
+
+### Phase 2 — admin crop tool (built-in Filament editor, ratio LOCKED)
+- New `App\Support\ImageCrop::ratio($fileUpload, $ratio)` helper wraps an image `FileUpload` with
+  Filament v5's built-in editor: `imageEditor()` + `imageEditorAspectRatios([$ratio])` (single
+  option → locked crop box) + `imageAspectRatio($ratio)` + `automaticallyCropImagesToAspectRatio()`
+  (centre-crop fallback) + `automaticallyOpenImageEditorForAspectRatio()` (auto-opens the cropper
+  on a non-matching upload so the owner positions the subject). No package; no hard rejection.
+- Applied per the Phase-0 table across 10 forms: Product (1:1), Instructor (1:1, replaced the
+  misleading circular `avatar()` preset with a square editor), GalleryImage (1:1), Testimonial
+  (avatar 1:1, photo 16:9), HallOfFameEntry (3:4), News featured_image (16:10), and the Home /
+  Tandem / AFF / Coached settings (hero 16:9, about 3:4, intro/feature 16:10). Location, newsletter
+  inline images and document uploads were left free-form (no fixed display).
+- The cropped file still flows through `ImageOptimizationObserver` → `OptimizeUploadedImage` (WebP)
+  unchanged; already-uploaded images are untouched and keep rendering via the front-end `object-cover`.
+- **Verified in the real admin crop UI:** uploaded a 1920×1080 (16:9) image to the Instructor photo
+  (1:1) → the editor auto-opened with the crop box LOCKED to 1:1 (ratio 1.0) and the saved file is
+  **1080×1080 square**; uploaded the same image to News featured_image (16:10) → crop box locked to
+  1.6. `ImageCrop` unit-tested for 1:1/16:9/16:10/3:4. Screenshots in `ui-review/image-crop-ratios/`.
