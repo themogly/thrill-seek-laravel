@@ -1957,3 +1957,10 @@ Branch off main `fe5afdb`.
 - **Phase 2 (admin):** a DRY `App\Support\ImageCrop::ratio($fileUpload, $ratio)` helper applies the
   locked editor to each shape-matters field per the table; genuinely free-form fields (Location,
   newsletter inline, documents) are left unrestricted.
+
+### Phase 1 — front end (service cards squared)
+- Home service-card link: `aspect-[3/4] … md:aspect-[4/5]` → **`aspect-square`** (the image is already
+  `absolute inset-0 object-cover`, so it crops gracefully and the bottom text overlay is unchanged).
+  Cards are now uniform squares and noticeably shorter. `object-cover` was already universal across
+  the shape-matters images (instructor square, gallery square, about 3:4, news 16:10, hero cover),
+  so the safety net needed no new work.
