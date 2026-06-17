@@ -1917,3 +1917,43 @@ Branch off main `fc60055`. The follow-up flagged in the logo-footer-mailers work
   `<picture>`, which now uses the inline SVG; zero references remained.
 `composer check` green (361). The new logo mark is now consistent across header (SVG), footer
 (SVG white), emails (PNG navy) and structured data (PNG navy-on-white).
+
+## Square service cards + admin image crop with enforced ratios (feat/image-crop-ratios)
+Branch off main `fe5afdb`.
+
+### Phase 0 — investigation + plan (CHECKPOINT)
+- **Filament v5 has a built-in image editor — NO package needed.** `FileUpload` supports
+  `->imageEditor()` (Cropper.js crop/zoom/rotate), `->imageEditorAspectRatios([...])` (the ratio
+  options — pass a single ratio to LOCK it), `->imageAspectRatio('1:1')` + `->automaticallyCropImagesToAspectRatio()`
+  (centre-crops to the ratio on upload even without opening the editor), and
+  `->automaticallyOpenImageEditorForAspectRatio()` (auto-opens the cropper when the source doesn't
+  match, so the owner positions the subject). `avatar()` already bundles 1:1 + auto-crop. No hard
+  rejection — the crop tool IS the UX.
+- **Pipeline:** Filament crops BEFORE storage; the existing `ImageOptimizationObserver` /
+  `SettingsPage` then dispatch `OptimizeUploadedImage`, which re-encodes to WebP at the directory's
+  longest-edge max (keeping the cropped aspect). So a crop flows through WebP automatically; no
+  pipeline change. Existing images are NOT re-cropped — they keep displaying via the front-end
+  `object-cover` safety net (already universal).
+- **Per-field target ratios (derived from the current front-end display):**
+
+  | Field | Model / Settings | Front-end display | Crop ratio |
+  | --- | --- | --- | --- |
+  | Card image | `Product::image` | home service cards (was `aspect-[3/4]`→**now `1:1`**) | **1:1** |
+  | Photo | `Instructor::photo` | instructor-card `aspect-square` | **1:1** |
+  | Image | `GalleryImage::image` | home "Recent jumps" grid `aspect-square` | **1:1** |
+  | Avatar | `Testimonial::avatar` | `<x-site.avatar>` square | **1:1** |
+  | Photo | `Testimonial::photo` | featured band full-bleed (1920×1080) | **16:9** |
+  | Image | `HallOfFameEntry::image` | photo-tile `aspect-[3/4]` | **3:4** |
+  | Featured image | `NewsArticle::featured_image` | news cards `aspect-[16/10]` | **16:10** |
+  | Hero image | Home/Tandem/Aff/Coached `hero_image` | full-bleed wide hero band | **16:9** |
+  | Left/Right photo | Home `about_image_1` / `about_image_2` | about band `aspect-[3/4]` | **3:4** |
+  | Intro/feature image | Tandem/Aff `intro_image`, Coached `image` | feature-split `aspect-[16/10]` | **16:10** |
+  | Image | `Location::image` | no fixed public display found | **free** (no lock) |
+  | Newsletter block images / Documents | builder / course docs | inline / non-image | **free** |
+
+- **Phase 1 (front end):** square only the service-card images (`aspect-[3/4] md:aspect-[4/5]` →
+  `aspect-square`); `object-cover` is already present sitewide (safety net), other shape-matters
+  images already carry a fixed `aspect-*` + `object-cover` and stay as-is.
+- **Phase 2 (admin):** a DRY `App\Support\ImageCrop::ratio($fileUpload, $ratio)` helper applies the
+  locked editor to each shape-matters field per the table; genuinely free-form fields (Location,
+  newsletter inline, documents) are left unrestricted.
