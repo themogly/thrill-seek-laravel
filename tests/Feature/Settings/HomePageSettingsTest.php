@@ -48,7 +48,7 @@ class HomePageSettingsTest extends TestCase
         $response->assertSee('Trusted. Certified. Experienced.');
         $response->assertSee('Ex-Military');
         $response->assertSee('Ready to Jump?');
-        $response->assertSee('/images/hero-skydive.jpg');
+        $response->assertSee('/images/hero-skydive.webp');
     }
 
     public function test_updated_settings_change_the_home_page(): void

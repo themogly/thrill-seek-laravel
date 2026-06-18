@@ -6,16 +6,25 @@
 @section('title', 'G-Force Skydiving — One Life. One Adventure. Live It.')
 @section('description', 'UK-based skydiving school offering tandem jumps, AFF courses and advanced coaching. Book your jump today.')
 
+@php
+    $heroUrl = $home->imageUrl($home->hero_image);
+    $heroSrcset = \App\Support\ResponsiveImage::heroSrcset($heroUrl);
+@endphp
+
 @push('head')
-    {{-- The hero is the LCP element — preload it. --}}
-    <link rel="preload" as="image" href="{{ $home->imageUrl($home->hero_image) }}" fetchpriority="high" />
+    {{-- The hero is the LCP element — preload it, matching the <img> srcset/sizes
+         so the browser preloads the variant it will actually render. --}}
+    <link rel="preload" as="image" href="{{ $heroUrl }}"
+        @if ($heroSrcset) imagesrcset="{{ $heroSrcset }}" imagesizes="100vw" @endif
+        fetchpriority="high" />
 @endpush
 
 @section('content')
     {{-- HERO: full-height photography, left-set editorial headline --}}
     <section class="relative isolate flex min-h-[32rem] items-end overflow-hidden md:min-h-[38rem] lg:min-h-[42rem]">
         <img
-            src="{{ $home->imageUrl($home->hero_image) }}"
+            src="{{ $heroUrl }}"
+            @if ($heroSrcset) srcset="{{ $heroSrcset }}" sizes="100vw" @endif
             alt="Skydivers in freefall above mountain landscape"
             class="absolute inset-0 h-full w-full object-cover"
             width="1920"
@@ -165,7 +174,7 @@
                             <div class="mt-3 grid grid-cols-3 gap-px">
                                 @foreach ($galleryImages->take(6) as $galleryImage)
                                     <a @if (filled($general->instagram_url)) href="{{ $general->instagram_url }}" target="_blank" rel="noreferrer" @endif class="group relative aspect-square overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary">
-                                        <img src="{{ $galleryImage->image_url }}" alt="{{ $galleryImage->alt_text }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
+                                        <img src="{{ $galleryImage->image_url }}" alt="{{ $galleryImage->alt_text }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" width="400" height="400" />
                                     </a>
                                 @endforeach
                             </div>
@@ -209,7 +218,7 @@
 
     {{-- CONTACT CTA: full-bleed photographic close --}}
     <section class="relative isolate overflow-hidden py-section lg:py-section-lg text-white">
-        <img src="{{ $home->imageUrl($home->hero_image) }}" alt="" aria-hidden="true" class="absolute inset-0 -z-10 h-full w-full object-cover" loading="lazy" width="1920" height="1280" />
+        <img src="{{ $heroUrl }}" @if ($heroSrcset) srcset="{{ $heroSrcset }}" sizes="100vw" @endif alt="" aria-hidden="true" class="absolute inset-0 -z-10 h-full w-full object-cover" loading="lazy" width="1920" height="1280" />
         <div class="absolute inset-0 -z-10 bg-photo-scrim"></div>
         <div class="mx-auto max-w-4xl px-4 text-center" data-reveal>
             <h2 class="font-display text-h1 uppercase tracking-wide">{{ $home->cta_title }}</h2>

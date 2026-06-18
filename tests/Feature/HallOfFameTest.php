@@ -29,7 +29,7 @@ class HallOfFameTest extends TestCase
         $this->get('/hall-of-fame')
             ->assertSee('James Carter')
             ->assertSee('A Licence — Spain 2024')
-            ->assertSee('/images/aff.jpg')
+            ->assertSee('/images/aff.webp')
             ->assertSee('Anya Patel');
     }
 

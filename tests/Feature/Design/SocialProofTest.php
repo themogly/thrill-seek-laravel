@@ -61,7 +61,7 @@ class SocialProofTest extends TestCase
         $response = $this->get('/hall-of-fame')->assertOk();
 
         // Compact photographic hero (image + scrim), not a flat band…
-        $response->assertSee('/images/hero-skydive.jpg', false);
+        $response->assertSee('/images/hero-skydive.webp', false);
         // …and tiles carry the shared photo-tile hover zoom.
         $response->assertSee('group-hover:scale-105', false);
     }
