@@ -2087,3 +2087,29 @@ Branch off main `fe5afdb`.
   (1:1) → the editor auto-opened with the crop box LOCKED to 1:1 (ratio 1.0) and the saved file is
   **1080×1080 square**; uploaded the same image to News featured_image (16:10) → crop box locked to
   1.6. `ImageCrop` unit-tested for 1:1/16:9/16:10/3:4. Screenshots in `ui-review/image-crop-ratios/`.
+
+## UI consistency pass over the merged state (ui/consistency-pass)
+Branch off main `a6cfbc6`. A light reconciliation over the recently-merged UI work (discipline-page
+instructor sections, Meet the Team, forms) against the established system — NOT a rebuild. Ran
+passes 01→04 as a CHECK; audited each area and found it **already consistent**, so no code changes
+were made (deliberately — "don't change for the sake of it"). What was verified:
+- **One shared instructor card** — `<x-site.instructor-card>` is the single card markup, used by both
+  Meet the Team (full: chips + bio) and the discipline teaser (`:show-disciplines/:show-bio="false"`).
+  No inline near-copies remain (grep for the navy name-band markup returns only the partial).
+- **Arrow-links** — every navigational arrow in the merged areas is the shared `<x-ui.arrow-link>`
+  (EXPLORE on the home tiles, MEET THE TEAM on the About band + discipline sections). The only bespoke
+  `arrow-right` icons left are on the **homepage** (the hero CTA button and the "Follow us" social
+  rows) — protected/signed-off, intentionally untouched.
+- **Section headings/eyebrows** — the discipline instructor sections use the same
+  `<x-site.section-heading>` as the FAQ (eyebrow `tracking-[0.25em] text-primary` + `text-h2` rule);
+  eyebrow tracking is the standard `[0.25em]` (the discipline-tags chip's `[0.1em]` is the documented
+  deliberate exception).
+- **Forms** — coached + both booking funnels are left-aligned (no `mx-auto`); contact + enquiry forms
+  already left; vouchers/newsletter intentionally centred (documented). Consistent left content edge.
+- **Tokens/palette** — no ad-hoc `text-[…]`/`py-[…]` drift in the merged components (only the
+  intentional `text-[10rem]` monogram fallback); palette tokens only.
+- **Homepage left untouched / verified unchanged** — captured HOME at 1440 + 390 before and after:
+  1440 is byte-identical; 390 has identical layout/dimensions (the small pixel delta is lazy-loaded
+  gallery/news imagery rendering nondeterministically — two consecutive after-shots also differ from
+  each other). `git status` confirms zero code changes, so the homepage source is unchanged.
+No files changed except this log + the audit screenshots in `ui-review/consistency-pass/`.
