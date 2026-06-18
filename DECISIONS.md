@@ -1917,3 +1917,24 @@ Branch off main `fc60055`. The follow-up flagged in the logo-footer-mailers work
   `<picture>`, which now uses the inline SVG; zero references remained.
 `composer check` green (361). The new logo mark is now consistent across header (SVG), footer
 (SVG white), emails (PNG navy) and structured data (PNG navy-on-white).
+
+## config:cache fix — Sentry already cache-safe; real blocker was a dev-route redeclare (fix/sentry-config-cache)
+Branch off main `fe5afdb`. Investigated the reported deploy failure
+("`sentry.before_send` is non-serializable … `Closure::__set_state()`").
+- **The Sentry closure was already gone.** `config/sentry.php` has **no closures**: `before_send`
+  is the array callable `['App\Support\SentryScrubber', 'scrub']` (introduced cache-safe in
+  SEC-P3.3, `deb4dc5`, and already documented above as `var_export`-serializable for `config:cache`).
+  Production-only reporting is already enforced the simplest way — the **DSN is only set in the
+  production env**, so `config('sentry.dsn')` is `null` everywhere else and Sentry sends nothing.
+  Verified: `before_send` is not a `Closure`; local `sentry.dsn` is `NULL`; with a production DSN env
+  it resolves; and **`APP_ENV=production php artisan config:cache` succeeds (EXIT 0)** — i.e. the
+  actual deploy was already fine. No Sentry change was needed.
+- **The real reason `config:cache` failed (locally only)** was unrelated: a fatal
+  `Cannot redeclare function devMailPreviews()`. `routes/dev.php` (loaded ONLY in local) declares a
+  top-level `devMailPreviews()` helper and was pulled in with `require`; `config:cache` re-bootstraps
+  the app in the **same process**, including the file twice → redeclare fatal. Fixed by changing
+  `require` → **`require_once`** in `routes/web.php` so the local-only dev file is included idempotently.
+  (Never loaded outside local, so production is unaffected either way.)
+- **Verified:** `php artisan config:cache` now completes locally (EXIT 0), `php artisan config:clear`
+  EXIT 0, `grep -E 'function|fn\('` on `config/sentry.php` is empty, dev still boots, `composer check`
+  green (361). Net change is one line (`require` → `require_once`); the Sentry config was already correct.
