@@ -7,7 +7,7 @@
     </div>
     <div class="mx-auto flex max-w-7xl flex-col gap-6 border-t border-white/15 px-4 py-12 lg:flex-row lg:items-center lg:justify-between lg:px-8">
         <div class="max-w-md">
-            <h3 class="font-display text-2xl uppercase tracking-wide text-white">Stay in the loop</h3>
+            <h2 class="font-display text-2xl uppercase tracking-wide text-white">Stay in the loop</h2>
             <p class="mt-2 text-sm text-white/70">Jump dates, course openings and the occasional offer — straight to your inbox. Unsubscribe anytime.</p>
         </div>
         <div class="w-full lg:max-w-md">
@@ -31,7 +31,7 @@
             </div>
         </div>
         <div>
-            <h3 class="text-xs font-bold uppercase tracking-[0.25em] text-sky-bright">Explore</h3>
+            <h2 class="text-xs font-bold uppercase tracking-[0.25em] text-sky-bright">Explore</h2>
             <ul class="mt-4 space-y-2.5 text-sm">
                 <li><a href="/tandem" class="transition-colors hover:text-sky-bright">Tandem Skydive</a></li>
                 <li><a href="/aff" class="transition-colors hover:text-sky-bright">AFF Course</a></li>
@@ -47,14 +47,14 @@
             </ul>
         </div>
         <div>
-            <h3 class="text-xs font-bold uppercase tracking-[0.25em] text-sky-bright">Contact</h3>
+            <h2 class="text-xs font-bold uppercase tracking-[0.25em] text-sky-bright">Contact</h2>
             <ul class="mt-4 space-y-2.5 text-sm">
                 <li class="flex items-center gap-2"><x-icon name="phone" class="h-4 w-4" /> {{ $general->phone }}</li>
                 <li class="flex items-center gap-2"><x-icon name="mail" class="h-4 w-4" /><span>{{ $general->email }}</span></li>
             </ul>
         </div>
         <div>
-            <h3 class="text-xs font-bold uppercase tracking-[0.25em] text-sky-bright">Legal</h3>
+            <h2 class="text-xs font-bold uppercase tracking-[0.25em] text-sky-bright">Legal</h2>
             <ul class="mt-4 space-y-2.5 text-sm">
                 <li><a href="/privacy" class="transition-colors hover:text-sky-bright">Privacy Policy</a></li>
                 <li><a href="/terms" class="transition-colors hover:text-sky-bright">Terms &amp; Conditions</a></li>

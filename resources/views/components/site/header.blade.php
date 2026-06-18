@@ -64,7 +64,6 @@
                     @click="wo = true"
                     @keydown.escape="wo = false; $refs.whyUsButton.focus()"
                     :aria-expanded="wo.toString()"
-                    aria-haspopup="true"
                     aria-controls="why-us-menu"
                     class="flex items-center gap-1 border-b-2 px-3 py-2 text-sm font-bold uppercase tracking-wide transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring {{ $whyUsActive ? 'border-primary text-primary' : 'border-transparent text-secondary' }}"
                 >
@@ -80,14 +79,11 @@
                     x-transition.opacity.duration.150ms
                     @click.outside="wo = false"
                     @keydown.escape="wo = false; $refs.whyUsButton.focus()"
-                    role="menu"
-                    aria-label="Why Us"
                     class="absolute left-0 top-full mt-px w-52 border-2 border-secondary bg-background shadow-[0_4px_12px_oklch(0.12_0.03_250_/_0.15)]"
                 >
                     @foreach ($whyUs as $item)
                         <a
                             href="{{ $item['to'] }}"
-                            role="menuitem"
                             class="block px-4 py-3 text-sm font-bold uppercase tracking-wide transition-colors hover:bg-muted hover:text-primary focus-visible:bg-muted focus-visible:text-primary focus-visible:outline-none {{ $isActive($item['to']) ? 'text-primary' : 'text-secondary' }}"
                         >
                             {{ $item['label'] }}
