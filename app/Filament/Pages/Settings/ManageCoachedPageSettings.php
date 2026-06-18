@@ -3,6 +3,7 @@
 namespace App\Filament\Pages\Settings;
 
 use App\Settings\CoachedPageSettings;
+use App\Support\ImageCrop;
 use BackedEnum;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
@@ -43,13 +44,15 @@ class ManageCoachedPageSettings extends SettingsPage
                 ->components([
                     TextInput::make('hero_title')->label('Heading')->required()->maxLength(255),
                     TextInput::make('hero_subtitle')->label('Text under the heading')->maxLength(500),
-                    FileUpload::make('hero_image')
-                        ->label('Hero photo')
-                        ->helperText('Full-width banner photo. Leave empty to keep the current image.')
-                        ->image()
-                        ->disk('public')
-                        ->directory('pages')
-                        ->dehydrated(fn (?string $state): bool => filled($state)),
+                    ImageCrop::ratio(
+                        FileUpload::make('hero_image')
+                            ->label('Hero photo')
+                            ->helperText('Full-width banner photo — crop to 16:9. Leave empty to keep the current image.')
+                            ->disk('public')
+                            ->directory('pages')
+                            ->dehydrated(fn (?string $state): bool => filled($state)),
+                        '16:9',
+                    ),
                 ]),
             Section::make('Main section')
                 ->components([
@@ -65,13 +68,15 @@ class ManageCoachedPageSettings extends SettingsPage
                         ->simple(TextInput::make('skill')->required()->maxLength(255))
                         ->reorderable()
                         ->minItems(1),
-                    FileUpload::make('image')
-                        ->label('Photo')
-                        ->helperText('Leave empty to keep the current image.')
-                        ->image()
-                        ->disk('public')
-                        ->directory('pages')
-                        ->dehydrated(fn (?string $state): bool => filled($state)),
+                    ImageCrop::ratio(
+                        FileUpload::make('image')
+                            ->label('Photo')
+                            ->helperText('Shown beside the intro text — crop to 16:10. Leave empty to keep the current image.')
+                            ->disk('public')
+                            ->directory('pages')
+                            ->dehydrated(fn (?string $state): bool => filled($state)),
+                        '16:10',
+                    ),
                     TextInput::make('button_label')->label('Button text (scrolls to the enquiry form)')->required()->maxLength(100),
                 ]),
             Section::make('Coaching enquiry section')

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\HallOfFame\Schemas;
 
 use App\Support\AdminDates;
+use App\Support\ImageCrop;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
@@ -28,16 +29,17 @@ class HallOfFameEntryForm
                     ->label('Caption note (optional)')
                     ->helperText('A short extra line shown under the milestone.')
                     ->maxLength(255),
-                FileUpload::make('image')
-                    ->label('Photo')
-                    ->helperText('Portrait-style photo works best (3:4). Leave empty to keep the current photo.')
-                    ->image()
-                    ->imageEditor()
-                    ->disk('public')
-                    ->directory('hall-of-fame')
-                    ->required(fn (string $operation): bool => $operation === 'create')
-                    ->dehydrated(fn (?string $state): bool => filled($state))
-                    ->columnSpanFull(),
+                ImageCrop::ratio(
+                    FileUpload::make('image')
+                        ->label('Photo')
+                        ->helperText('Shown as a portrait photo tile — crop to 3:4. Leave empty to keep the current photo.')
+                        ->disk('public')
+                        ->directory('hall-of-fame')
+                        ->required(fn (string $operation): bool => $operation === 'create')
+                        ->dehydrated(fn (?string $state): bool => filled($state))
+                        ->columnSpanFull(),
+                    '3:4',
+                ),
             ]);
     }
 }

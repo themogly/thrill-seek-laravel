@@ -65,7 +65,7 @@
         </div>
         <div class="grid gap-px bg-secondary md:grid-cols-3" data-reveal>
             @foreach ($services as $s)
-                <a href="{{ $s->page_path }}" class="group relative isolate flex aspect-[3/4] flex-col justify-end overflow-hidden bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:aspect-[4/5]">
+                <a href="{{ $s->page_path }}" class="group relative isolate flex aspect-square flex-col justify-end overflow-hidden bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                     <img src="{{ $s->image_url }}" alt="{{ $s->name }}" class="absolute inset-0 -z-10 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" width="1280" height="896" />
                     <div class="absolute inset-0 -z-10 bg-photo-scrim"></div>
                     <div class="p-7 text-white">

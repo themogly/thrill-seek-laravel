@@ -4,6 +4,7 @@ namespace App\Filament\Resources\News\Schemas;
 
 use App\Models\CourseDate;
 use App\Support\AdminDates;
+use App\Support\ImageCrop;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -52,13 +53,15 @@ class NewsForm
                         ->label('Body')
                         ->required()
                         ->columnSpanFull(),
-                    FileUpload::make('featured_image')
-                        ->label('Featured image (optional)')
-                        ->image()
-                        ->imageEditor()
-                        ->disk('public')
-                        ->directory('news')
-                        ->columnSpanFull(),
+                    ImageCrop::ratio(
+                        FileUpload::make('featured_image')
+                            ->label('Featured image (optional)')
+                            ->helperText('Shown on the news cards — crop to 16:10.')
+                            ->disk('public')
+                            ->directory('news')
+                            ->columnSpanFull(),
+                        '16:10',
+                    ),
                 ]),
             Section::make('Publishing')
                 ->columns(2)

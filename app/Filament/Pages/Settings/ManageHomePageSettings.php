@@ -3,6 +3,7 @@
 namespace App\Filament\Pages\Settings;
 
 use App\Settings\HomePageSettings;
+use App\Support\ImageCrop;
 use BackedEnum;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
@@ -54,13 +55,15 @@ class ManageHomePageSettings extends SettingsPage
                         ->label('Heading — part 2')
                         ->required()
                         ->maxLength(100),
-                    FileUpload::make('hero_image')
-                        ->label('Background image')
-                        ->helperText('Leave empty to keep the current image.')
-                        ->image()
-                        ->disk('public')
-                        ->directory('pages')
-                        ->dehydrated(fn (?string $state): bool => filled($state)),
+                    ImageCrop::ratio(
+                        FileUpload::make('hero_image')
+                            ->label('Background image')
+                            ->helperText('Full-width hero — crop to 16:9. Leave empty to keep the current image.')
+                            ->disk('public')
+                            ->directory('pages')
+                            ->dehydrated(fn (?string $state): bool => filled($state)),
+                        '16:9',
+                    ),
                     TextInput::make('hero_cta_primary_label')
                         ->label('Orange button text (links to Tandem)')
                         ->required()
@@ -82,20 +85,24 @@ class ManageHomePageSettings extends SettingsPage
                     TextInput::make('about_eyebrow')->label('Small line')->required()->maxLength(255),
                     TextInput::make('about_title')->label('Heading')->required()->maxLength(255),
                     Textarea::make('about_body')->label('Paragraph')->rows(4)->required(),
-                    FileUpload::make('about_image_1')
-                        ->label('Left photo')
-                        ->helperText('Leave empty to keep the current image.')
-                        ->image()
-                        ->disk('public')
-                        ->directory('pages')
-                        ->dehydrated(fn (?string $state): bool => filled($state)),
-                    FileUpload::make('about_image_2')
-                        ->label('Right photo')
-                        ->helperText('Leave empty to keep the current image.')
-                        ->image()
-                        ->disk('public')
-                        ->directory('pages')
-                        ->dehydrated(fn (?string $state): bool => filled($state)),
+                    ImageCrop::ratio(
+                        FileUpload::make('about_image_1')
+                            ->label('Left photo')
+                            ->helperText('Portrait photo — crop to 3:4. Leave empty to keep the current image.')
+                            ->disk('public')
+                            ->directory('pages')
+                            ->dehydrated(fn (?string $state): bool => filled($state)),
+                        '3:4',
+                    ),
+                    ImageCrop::ratio(
+                        FileUpload::make('about_image_2')
+                            ->label('Right photo')
+                            ->helperText('Portrait photo — crop to 3:4. Leave empty to keep the current image.')
+                            ->disk('public')
+                            ->directory('pages')
+                            ->dehydrated(fn (?string $state): bool => filled($state)),
+                        '3:4',
+                    ),
                 ]),
             Section::make('“Why jump with us” heading')
                 ->columns(2)
