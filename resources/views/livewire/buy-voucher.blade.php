@@ -2,13 +2,13 @@
     @if ($this->enquirySent)
         <div class="border-2 border-secondary bg-card p-8 text-center">
             <span class="mx-auto flex h-14 w-14 items-center justify-center bg-primary text-primary-foreground"><x-icon name="check" class="h-7 w-7" /></span>
-            <h3 class="mt-4 font-display text-2xl uppercase text-secondary">Voucher request sent</h3>
+            <h2 class="mt-4 font-display text-2xl uppercase text-secondary">Voucher request sent</h2>
             <p class="mt-2 text-muted-foreground">Thanks {{ $purchaser_name }} — we've got your request and will be in touch shortly to arrange the voucher and payment.</p>
             <x-ui.button href="/" class="mt-6">Back to home</x-ui.button>
         </div>
     @elseif ($product === null || $product->price_pence === null)
         <div class="border-2 border-secondary bg-card p-8 text-center">
-            <h3 class="font-display text-2xl uppercase text-secondary">Vouchers are taking a breather</h3>
+            <h2 class="font-display text-2xl uppercase text-secondary">Vouchers are taking a breather</h2>
             <p class="mt-2 text-muted-foreground">Get in touch and we'll arrange one directly.</p>
             <x-ui.button href="/contact" class="mt-6">Contact us</x-ui.button>
         </div>
