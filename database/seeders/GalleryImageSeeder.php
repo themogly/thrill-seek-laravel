@@ -10,12 +10,12 @@ class GalleryImageSeeder extends Seeder
     public function run(): void
     {
         $images = [
-            '/images/tandem.jpg',
-            '/images/aff.jpg',
-            '/images/coached.jpg',
-            '/images/hero-skydive.jpg',
-            '/images/tandem.jpg',
-            '/images/aff.jpg',
+            '/images/tandem.webp',
+            '/images/aff.webp',
+            '/images/coached.webp',
+            '/images/hero-skydive.webp',
+            '/images/tandem.webp',
+            '/images/aff.webp',
         ];
 
         if (GalleryImage::query()->exists()) {

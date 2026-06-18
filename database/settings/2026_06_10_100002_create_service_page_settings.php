@@ -24,7 +24,7 @@ return new class extends SettingsMigration
         ]);
         $this->migrator->add('tandem_page.locations_heading', 'Locations');
         $this->migrator->add('tandem_page.locations', ['Devon', 'Swansea', 'Hinton Midlands']);
-        $this->migrator->add('tandem_page.intro_image', '/images/tandem.jpg');
+        $this->migrator->add('tandem_page.intro_image', '/images/tandem.webp');
         $this->migrator->add('tandem_page.pricing_eyebrow', 'Transparent pricing');
         $this->migrator->add('tandem_page.pricing_title', 'What it costs');
         $this->migrator->add('tandem_page.charity_note_title', 'Charity tandem?');
@@ -43,7 +43,7 @@ return new class extends SettingsMigration
             '10 consolidation jumps to A Licence',
             'All equipment and instruction included',
         ]);
-        $this->migrator->add('aff_page.intro_image', '/images/aff.jpg');
+        $this->migrator->add('aff_page.intro_image', '/images/aff.webp');
         $this->migrator->add('aff_page.trust_eyebrow', 'Train with confidence');
         $this->migrator->add('aff_page.trust_title', "You're in safe hands");
         $this->migrator->add('aff_page.trust_body', "Our AFF programme is delivered by ex-military instructors with decades of experience and the highest recognised certifications. Before you book, here's what stands behind every jump.");
@@ -66,7 +66,7 @@ return new class extends SettingsMigration
         $this->migrator->add('coached_page.heading', 'Fly Better. Fly Smarter.');
         $this->migrator->add('coached_page.body', "Whether you're chasing your B licence, working on freefly, tracking or canopy control, our coaches give you focused 1-to-1 attention with video debrief and a personalised plan.");
         $this->migrator->add('coached_page.skills', ['Belly flying & RW', 'Freefly progression', 'Tracking & angle flying', 'Canopy piloting', 'Video debrief included']);
-        $this->migrator->add('coached_page.image', '/images/coached.jpg');
+        $this->migrator->add('coached_page.image', '/images/coached.webp');
         $this->migrator->add('coached_page.button_label', 'Book a session');
     }
 };

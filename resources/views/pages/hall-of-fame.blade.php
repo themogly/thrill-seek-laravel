@@ -11,7 +11,7 @@
     <x-site.page-hero
         :title="$pages->hall_of_fame_hero_title"
         :subtitle="$pages->hall_of_fame_hero_subtitle"
-        image="/images/hero-skydive.jpg"
+        image="/images/hero-skydive.webp"
         compact
     />
     <x-site.section>

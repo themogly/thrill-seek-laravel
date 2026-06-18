@@ -11,7 +11,7 @@ return new class extends SettingsMigration
         $this->migrator->add('home.hero_title_highlight', 'One Adventure.');
         $this->migrator->add('home.hero_title_2', 'Live It.');
         $this->migrator->add('home.hero_subtitle', "Jump with the UK's most experienced skydiving coaches. Military trained. BS & USPA certified.");
-        $this->migrator->add('home.hero_image', '/images/hero-skydive.jpg');
+        $this->migrator->add('home.hero_image', '/images/hero-skydive.webp');
         $this->migrator->add('home.hero_cta_primary_label', 'Book a Tandem');
         $this->migrator->add('home.hero_cta_secondary_label', 'Learn to Skydive');
 
@@ -27,8 +27,8 @@ return new class extends SettingsMigration
             ['icon' => 'users', 'value' => '30+ yrs', 'label' => 'Combined Experience'],
             ['icon' => 'award', 'value' => 'BS / USPA', 'label' => 'Certified'],
         ]);
-        $this->migrator->add('home.about_image_1', '/images/tandem.jpg');
-        $this->migrator->add('home.about_image_2', '/images/aff.jpg');
+        $this->migrator->add('home.about_image_1', '/images/tandem.webp');
+        $this->migrator->add('home.about_image_2', '/images/aff.webp');
 
         $this->migrator->add('home.trust_eyebrow', 'Why jump with us');
         $this->migrator->add('home.trust_title', 'Trusted. Certified. Experienced.');
