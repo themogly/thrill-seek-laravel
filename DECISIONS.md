@@ -1984,3 +1984,20 @@ no-CLS) **without changing how anything looks**. Audit first, then fix in impact
 - **Fix 3 (CLS nit):** add explicit width/height to the home gallery thumb.
 - Sizing (1b): already satisfied — uploads capped by the pipeline; bundled photos are exported
   at sensible sizes (≤1920) and kept at identical dims (appearance must not change).
+
+### Outcome
+- **Fix 1 (format)** — bundled photos now WebP q82 at identical dimensions: hero
+  157→106 KB (-32%), tandem/aff/coached -39..-42%, instructors -50%. Web-page references
+  repointed (settings, seeders, Hall-of-Fame hero); email/og/JSON-LD kept JPEG/PNG.
+- **Fix 2 (responsive hero)** — generated `hero-skydive-1280.webp` (63 KB) and added
+  `srcset`/`sizes="100vw"` + a matching responsive `<link rel=preload imagesrcset>` to the
+  home hero, the home CTA close and the shared `page-hero` (so the Hall-of-Fame hero benefits
+  too). Driven by `App\Support\ResponsiveImage`, which emits a srcset **only when a `-1280`
+  sibling exists on disk** — bundled heroes get it; uploaded heroes degrade to the single
+  pipeline-capped image. Verified in-browser: 390px loads the 1280 variant, 1440px the 1920.
+  Generating per-upload variants in the pipeline is deferred (overreach — only the 1920 hero
+  is materially oversized; every other photo is ≤1280 / ~35 KB).
+- **Fix 3 (CLS)** — added explicit width/height to the home gallery thumb (the one `<img>`
+  without intrinsic dimensions). All other images already carried width/height or an
+  `aspect-*` box; loading (eager hero + preload, lazy below the fold) was already correct.
+- Site verified visually unchanged at 1440 and 390. `composer check` green (363).
