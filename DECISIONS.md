@@ -1917,3 +1917,70 @@ Branch off main `fc60055`. The follow-up flagged in the logo-footer-mailers work
   `<picture>`, which now uses the inline SVG; zero references remained.
 `composer check` green (361). The new logo mark is now consistent across header (SVG), footer
 (SVG white), emails (PNG navy) and structured data (PNG navy-on-white).
+
+## Image performance pass — audit (perf/images, off main `fe5afdb`)
+Brief: improve image performance for Core Web Vitals (WebP, sizing, responsive, lazy,
+no-CLS) **without changing how anything looks**. Audit first, then fix in impact order.
+
+**How images are served — two categories:**
+1. **Uploaded** (admin via Filament `FileUpload` → public disk → relative path). These go
+   through the optimisation pipeline: `ImageOptimizationObserver` (models) /
+   `SettingsPage` (settings) dispatch `OptimizeUploadedImage`, which `scaleDown`s to the
+   directory's longest-edge cap (`ImageOptimization::MAX_DIMENSIONS`: instructors 480,
+   testimonials 240, testimonials-photos/news/products/locations 1280, gallery 1200,
+   hall-of-fame 960, pages 1920) and re-encodes **WebP q82** (Intervention GD, also strips
+   EXIF), then rewrites every reference to the `.webp` path. **Verified working** by the
+   existing `tests/Feature/Images/ImageOptimizationTest`. So uploads are already WebP,
+   sized-to-slot and metadata-stripped — **single size each, no responsive variants**.
+2. **Bundled static** `/images/*` (the seeded/default content + the home hero). Resolved
+   as-is by the `image_url`/`imageUrl()` accessors (any `/`-prefixed path is returned
+   verbatim) and **explicitly skipped by the pipeline** (`isOptimisablePath()` returns
+   false for `/`-prefixed paths). **These ship as JPEG/PNG — the gap.**
+
+**Per-image audit (significant public images):**
+| Image | Served | File | Pixel dims | loading | w/h | srcset |
+|---|---|---|---|---|---|---|
+| Home hero `hero-skydive.jpg` (home.hero_image default) — also home CTA close | **JPEG** | **157 KB** | 1920×1080 | eager + preload + fetchpriority=high ✓ | yes | **none** |
+| Service/about/feature photos `tandem/aff/coached.jpg` | **JPEG** | ~55 KB | 1280×896 | lazy ✓ | yes | none |
+| Instructor portraits `instructors/*.jpg` | **JPEG** | ~58 KB | 800×1000 | lazy ✓ | yes | none |
+| Hall-of-Fame hero (hard-coded in blade) | **JPEG** | 157 KB | 1920×1080 | eager (hero) ✓ | yes | none |
+| Testimonials/Hall-of-Fame tiles, home gallery thumbs | bundled/uploaded | — | — | lazy ✓ | mostly yes | none |
+| News featured, page-hero (tandem/aff/coached) | uploaded → **WebP** | — | capped | lazy / eager-hero ✓ | yes | none |
+
+**Findings (worst offenders + gaps):**
+- **F1 — `hero-skydive.jpg`, 157 KB JPEG @1920, is the LCP and the single biggest asset.**
+  Used by the home hero, the home CTA close, the Hall-of-Fame hero, plus og:image / JSON-LD
+  and seeded into gallery/testimonials/hall-of-fame. WebP q82 ≈ halves it.
+- **F2 — all bundled photos are JPEG/PNG** (tandem/aff/coached ~55 KB, instructors ~58 KB).
+  The pipeline never touches them, so the *default/seeded* site ships no WebP.
+- **F3 — no responsive variants anywhere.** Pipeline emits one size; no view has
+  `srcset`/`sizes`. Phones download the desktop file. Material only for the **hero** (1920px
+  shown ~390px on a phone); every other bundled photo is ≤1280px / ~55 KB and capped near its
+  slot, so a full responsive-variant subsystem would be overreach (the brief warns against it).
+- **F4 — CLS is essentially handled.** Nearly every `<img>` has explicit width/height or an
+  `aspect-*` box. One nit: the home gallery thumb (`home.blade.php` Recent-jumps grid) has no
+  width/height — but it sits in an `aspect-square` cell with `h-full w-full`, so no real shift.
+- **F5 — loading is correct.** Hero is eager + preloaded + fetchpriority=high; everything
+  below the fold is `loading="lazy"`. No change needed.
+
+**Constraints that shape the fix (why conversion is selective, not blanket):**
+- **Email/newsletter images MUST stay JPEG/PNG** — Outlook and many mail clients don't render
+  WebP. So `NewsletterStarterTemplates`, `NewsletterCampaignSeeder`, `mail/blocks/*`,
+  `email/logo.png` are left as-is.
+- **og:image / JSON-LD stay JPEG/PNG** — social scrapers (notably LinkedIn) handle WebP
+  unreliably and it's not a page-load asset. `general.og_image` default and `StructuredData`
+  keep `/images/hero-skydive.jpg` / `/images/logo.png`. The original JPEGs/PNGs therefore
+  **remain on disk** (also as pipeline-style fallbacks); we add `.webp` alongside.
+
+**Plan (impact order):**
+- **Fix 1 (format):** generate `.webp` (q82, identical dimensions) for the web-shown bundled
+  photos (hero, tandem, aff, coached, 3 instructors) and repoint the **web-page** references
+  only — settings defaults (home/tandem/aff/coached), content seeders (Product, Instructor,
+  HallOfFame, Gallery, Testimonial), the Hall-of-Fame blade hero, and the Testimonial factory.
+  Update the 4 tests coupled to seeded/web-shown assets. Leave email/og/JSON-LD on JPEG/PNG.
+- **Fix 2 (responsive, hero only):** add a mobile hero variant + `srcset`/`sizes` and a
+  responsive preload (`imagesrcset`/`imagesizes`) on the home hero — the one image materially
+  oversized for phones. Document broader per-image variants as deferred (overreach: F3).
+- **Fix 3 (CLS nit):** add explicit width/height to the home gallery thumb.
+- Sizing (1b): already satisfied — uploads capped by the pipeline; bundled photos are exported
+  at sensible sizes (≤1920) and kept at identical dims (appearance must not change).
