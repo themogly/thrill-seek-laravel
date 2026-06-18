@@ -81,7 +81,11 @@ Route::post('/webhooks/resend', ResendWebhookController::class)
     ->name('webhooks.resend');
 
 if (app()->environment('local')) {
-    require __DIR__.'/dev.php';
+    // require_once, not require: `config:cache` re-bootstraps the app in the same
+    // process, which would otherwise include this file twice and fatally redeclare
+    // its top-level devMailPreviews() helper. Idempotent inclusion keeps `config:cache`
+    // working locally. (dev.php is never loaded outside local — see the guard above.)
+    require_once __DIR__.'/dev.php';
 }
 
 Route::get('/robots.txt', function () {
