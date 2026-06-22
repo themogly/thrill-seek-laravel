@@ -45,4 +45,10 @@ return [
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
     ],
 
+    // Bearer token the Ploi panel presents to read Horizon stats / failed jobs
+    // (see HorizonServiceProvider::gate). Empty unless set on the server.
+    'horizon' => [
+        'token' => env('HORIZON_TOKEN'),
+    ],
+
 ];
