@@ -2113,3 +2113,27 @@ were made (deliberately — "don't change for the sake of it"). What was verifie
   gallery/news imagery rendering nondeterministically — two consecutive after-shots also differ from
   each other). `git status` confirms zero code changes, so the homepage source is unchanged.
 No files changed except this log + the audit screenshots in `ui-review/consistency-pass/`.
+
+## Expose Horizon stats to the Ploi panel (feat/ploi-horizon-stats)
+Branch off main `f8fa865`. Code side of Ploi's "Laravel Horizon statistics" integration
+(Ploi panel + server `.env` token are the owner's steps, not in the repo). Three code
+changes + one documented env var:
+- **`config/cors.php`** — published the stock Laravel 13 stub (the project had none; the
+  `HandleCors` middleware is in the framework's default global stack, so it's already active)
+  and added `horizon/*` to `paths` (kept `api/*` + `sanctum/csrf-cookie`). Left
+  `allowed_origins`/`supports_credentials` at the published defaults — only the path is needed.
+- **`config/services.php`** — added `services.horizon.token` => `env('HORIZON_TOKEN')` (plain
+  `env()` read, no closure, `config:cache`-safe).
+- **`HorizonServiceProvider::gate()`** — added a bearer-token branch *in front of* the existing
+  rule, which is preserved verbatim. NOTE: the real existing rule was **not** an email allow-list
+  (the brief assumed one) — it's `$user !== null` ("every account is an admin, any authenticated
+  user may view Horizon"), so that is what the fallback keeps. Token compared with `hash_equals`
+  (constant-time). Gate reasoning (covered by `HorizonGateTest`, 4 cases):
+  - (a) bearer token present **and** `HORIZON_TOKEN` set **and** they match ⇒ allowed (no user
+    needed — Ploi calls without a session);
+  - (b) missing/incorrect token ⇒ falls through to the user rule ⇒ only authenticated admins;
+  - (c) empty/unset `HORIZON_TOKEN` ⇒ the `$configured !== ''` guard makes the bearer branch
+    unreachable (an empty bearer can never authorise), so only the user rule applies.
+- **`.env.example`** — documented `HORIZON_TOKEN=` (empty placeholder + comment; real token is
+  server-only, never committed).
+`config:cache` succeeds then `config:clear`; `composer check` green. Pushed, not merged.
