@@ -190,3 +190,21 @@ not touched.
   Run 2's "noindex at the server" condition is now met in code (022).
 - **Gap report:** none. The only unmerged branch is the withdrawn 017.
 - **Markers:** none.
+
+## 10 · Housekeeping
+- **017 withdrawn:** `ui/feature-split-ratio` (`0a37a7b`) deleted locally and on origin. It's listed under
+  *Withdrawn* in `RUNNING-ORDER.md` with Ben's reason (the 1024 imbalance is worse than the side-trim) and the sha.
+- **Remote branches:** the 9 branches fully merged into `origin/main` were deleted (each checked with
+  `git merge-base --is-ancestor` first): `docs/run3-owner-answers`, `ui/primary-strong-contrast`,
+  `fix/fk-delete-rules`, `ui/button-hover-contrast`, `fix/reschedule-capacity`, `fix/noindex-non-production`,
+  `fix/email-link-colour`, `a11y/scrollable-table-focus`, `docs/pre-staging-gate-run3`. **`origin` now holds only
+  `main`.**
+- **Dev database:**
+  - at the start, `php artisan migrate` applied run 2's two pending migrations, then `settings:clear-cache`
+    ran;
+  - after 008 merged, its FK migration was applied too (rules only; the pre-check found no orphans on a clone
+    first).
+
+  `migrate:status` shows nothing pending. No records were added or changed; the "Audit …" records are as
+  they were. Browser checks used the local dev login read-only, and the evidence scripts ran inside
+  rolled-back transactions.

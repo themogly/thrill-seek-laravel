@@ -5,10 +5,9 @@ Written 9 October 2026 to put G-Force through the September 2026 starter kit.
 
 **Merged:** everything through 24 June 2026, then (unattended run 1, `RUN-REPORT-1.md`) 001, 002, email audit, admin audit, accessibility audit, 003, completeness + CMS-field gates, then 004 (dependency refresh) and the four majors Ben asked for.
 **`main` at `3d8d555`.** 001 branched from `be9e145`.
-**Built, awaiting merge:** none. The run's eight branches are merged but still exist on GitHub, and
-can be deleted.
-**Prompt files:** `prompts/001…024-*.md`, `prompts/unattended-run-1.md`…`-3.md` (1 and 2 finished: `RUN-REPORT-1.md`, `RUN-REPORT-2.md`). The kit source is `~/Sites/starter-kit/`.
-**Withdrawn:** the two June prompts that never ran — see *Withdrawn* at the end.
+**Built, awaiting merge:** none. After run 3's housekeeping, `origin` holds only `main`.
+**Prompt files:** `prompts/001…024-*.md`, `prompts/unattended-run-1.md`…`-3.md` (all three finished: `RUN-REPORT-1.md`…`-3.md`). The kit source is `~/Sites/starter-kit/`.
+**Withdrawn:** the two June prompts that never ran, and **017** (Ben, 9 Oct) — see *Withdrawn* at the end.
 
 ## The order
 
@@ -146,3 +145,8 @@ These kit files are deliberately **not** queued. Don't pick them up.
   JSON-LD).** Never merged. Its findings are 3½ months old, so the gate re-runs at step 7 and a fresh numbered
   prompt is written from that report.
 - **June itemised consistency audit prompt.** Never run. Replaced by **003**.
+- **017 — feature-split ratio (`prompts/017-feature-split-ratio.md`).** Built on `ui/feature-split-ratio`
+  (`0a37a7b`), never merged. **Withdrawn by Ben, 9 Oct 2026:** at 1024 the text ran far past the 16:10 photo
+  (Coached: 611px of text beside a 345px photo), which is worse than the desktop side-trim it fixed. The admin
+  crop stays 16:10 and the layout stays as on `main`. The branch was deleted locally and on origin in run 3's
+  housekeeping; the sha above recovers it if ever needed. Consistency item C-8 is closed as "won't fix".
