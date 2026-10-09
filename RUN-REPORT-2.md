@@ -112,3 +112,16 @@ build on:
 - **Gap report:** 012 had left an empty "“Meet the team” teaser" section on the Home settings screen (a header with no fields). It's removed here, plus a guard `NoEmptyAdminSectionsTest` (red on `main`). Also: adding a settings property 500s an unmigrated DB (`MissingSettings`), so the dev homepage broke until this one additive settings migration was applied locally with `--path` (2 settings rows, no records touched). 012's drops are still pending for Ben's `php artisan migrate`.
 - **Markers:** none.
 - **Screenshots:** `audits/reports/run2/013-admin-home-seo.jpg` (homepage unchanged, so no homepage crops).
+
+## 10 · 014 price tokens in CMS copy
+- **Branch:** `feat/price-tokens-in-copy` → merged `30e8c89`
+- **Tests:** 468 → 475; `composer check` and MySQL green.
+- **What it did:** CMS wording can quote `{price:tandem-skydive}`, `{deposit:aff-course}` or `{addon:outside-camera}`. They resolve at render time through `Money` (FAQ accordion + FAQPage JSON-LD, meta, Product JSON-LD, hero subtitles, the charity note, the Coached price line, Terms). Seeds and settings migrations now use tokens; the inventory table is in DECISIONS. A Help guide section covers the tokens and the still-typed prices.
+- **Proof:** "changing the Tandem price changes the FAQ, hero and FAQ JSON-LD" is red on `main`. A sweep of 15 seeded public pages shows no raw token. Token output `===` the product's `formatted_price`/`formatted_deposit`. The rich-editor preview was checked in a real browser (dev FAQ not saved). Homepage 0 px at 1440/390.
+- **Gap report:**
+  - A save-blocking validation rule was built, then removed: hiding or renaming a product later would have locked every other edit on that settings page. The prompt only asks for a visible preview.
+  - Two existing render tests needed `ProductSeeder` in setup (a fresh install seeds products); their exact-text assertions are unchanged.
+  - Add-on tokens key on the slugified name (no slug column; the rules forbid new columns), so renaming an add-on breaks its token. The preview shows it.
+- **Markers:** **OWNER DECISION — PENDING** (weight surcharges typed twice: keep typed, or make them money + a `{weight:…}` token later).
+- **Owner content (existing DBs):** swap the typed figures for tokens in FAQs tandem #4, #5, #8 and aff #12; Tandem description/subtitle/charity note; AFF description; Coached description and price line; Terms.
+- **Screenshots:** `audits/reports/run2/014-admin-faq-preview.jpg`.
