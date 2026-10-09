@@ -3205,3 +3205,36 @@ Prompt 021. Ben, 9 Oct 2026: rescheduling into a full tandem slot **must be refu
   6 are red on `main`.
 - Launch checklist §5 gains the refusal check, and the Help guide's bookings section says full dates can't be
   picked.
+
+## Non-production hosts tell search engines to stay out (fix/noindex-non-production)
+
+Prompt 022. Ben, 9 Oct 2026: do it **in the app**, not only in server config.
+
+- **Premise confirmed** by code read: `/robots.txt` allowed crawling on every host, and nothing sent `noindex`
+  by environment.
+- **Unless `app()->isProduction()`** (staging, a preview host, local):
+  - `/robots.txt` returns `User-agent: *` / `Disallow: /`, with no Sitemap line (`routes/web.php`);
+  - every web response carries `X-Robots-Tag: noindex, nofollow`.
+- **Where it sits:** in the existing `SecurityHeaders` middleware on the `web` group (`bootstrap/app.php`),
+  beside the other response headers. It reads no session, so its order doesn't matter. Every route in
+  `routes/web.php` gets it (pages, `/robots.txt`, `/sitemap.xml`, the admin, the webhooks). A 404 for a URL
+  that matches no route runs no route middleware, so it has no header; a missing page isn't indexed anyway,
+  and `robots.txt` disallows it.
+- **Production is unchanged, byte for byte:** rendered in-process with `APP_ENV=production`, `main` vs the
+  branch:
+  - `/robots.txt` and `/sitemap.xml` bodies are identical, as are the headers of every page;
+  - the homepage `<head>` and `/tandem` are identical;
+  - the homepage body is identical apart from the per-request CSRF token, which differs between two renders
+    of `main` too.
+
+  `NoindexNonProductionTest` pins today's production robots file exactly and asserts no `X-Robots-Tag` there.
+- **No `<meta name="robots">` added:** the header covers every response type (HTML, txt, xml) with no `<head>`
+  change, so production's `<head>` can't drift.
+- **Docs:** SETUP.md gains a **Staging** section (basic-auth except `/webhooks/stripe` and `/webhooks/resend`;
+  the app's noindex; the Stripe TEST endpoint at API version `2026-09-30.endive`; the site email pointed at a
+  test inbox), linking to `verification/CHECKLIST.md` rather than copying it. The checklist's §0 noindex
+  item now checks the app's header and robots file instead of asking for an nginx rule.
+- **Tests:** staging robots disallows all with no sitemap; the header on HTML pages, `/robots.txt` and
+  `/sitemap.xml`; local/testing/preview are noindexed too; production robots is exactly today's file with
+  no header, and production pages carry no `noindex`. 3 are red on `main`. `RobotsTest`'s sitemap test now
+  states production explicitly (it described the production file).

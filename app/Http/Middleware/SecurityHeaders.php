@@ -20,6 +20,12 @@ use Symfony\Component\HttpFoundation\Response;
  * Livewire/Alpine inject inline `<script>`/`style` — everything else is locked to
  * `'self'`. All assets (JS, CSS, fonts) are self-hosted via Vite; the only
  * third party is Stripe, reached by a top-level redirect to its Checkout host.
+ *
+ * Only production may be indexed: every other environment (staging, a preview
+ * host, local) sends `X-Robots-Tag: noindex, nofollow` on every web response, so
+ * a forgotten basic-auth rule can't put a duplicate site in Google (prompt 022;
+ * /robots.txt disallows everything there too). It sits on the `web` group with
+ * the other headers; it reads no session, so its order doesn't matter.
  */
 class SecurityHeaders
 {
@@ -52,6 +58,10 @@ class SecurityHeaders
         $headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()');
         $headers->set('Content-Security-Policy-Report-Only', $this->contentSecurityPolicy());
+
+        if (! app()->isProduction()) {
+            $headers->set('X-Robots-Tag', 'noindex, nofollow');
+        }
 
         // HSTS only over HTTPS in production — never on local http (it would pin
         // the browser to https for a domain that has no certificate).

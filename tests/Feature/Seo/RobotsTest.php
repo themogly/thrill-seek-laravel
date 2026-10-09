@@ -22,6 +22,9 @@ class RobotsTest extends TestCase
 
     public function test_robots_txt_references_the_absolute_sitemap_and_disallows_admin(): void
     {
+        // The production file; every other environment disallows everything (NoindexNonProductionTest).
+        $this->app->detectEnvironment(fn (): string => 'production');
+
         $this->get('/robots.txt')
             ->assertOk()
             ->assertSee('Sitemap: '.url('/sitemap.xml'), false)

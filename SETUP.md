@@ -209,6 +209,24 @@ create users this way.
 **If a server was ever seeded before October 2026:** it has the old `test@example.com` / `password`
 admin. Delete it there: `php artisan tinker --execute="App\Models\User::where('email','test@example.com')->delete();"`.
 
+## Staging
+
+Staging runs with `APP_ENV=staging` (never `production`). The launch checks themselves are in
+[`verification/CHECKLIST.md`](verification/CHECKLIST.md) §0; these are the server conditions they rely on.
+
+- **Basic-auth on the whole host, except `/webhooks/stripe` and `/webhooks/resend`.** Stripe and Resend
+  can't send credentials, so without the exemption every webhook delivery 401s. The app has no basic-auth
+  of its own; set it in the Ploi/nginx config.
+- **Search engines are kept out by the app.** Any environment other than `production` sends
+  `X-Robots-Tag: noindex, nofollow` on every response and serves a `/robots.txt` of `Disallow: /` with no
+  Sitemap line. Check with `curl -I https://<staging-host>/` (with your basic-auth credentials). A server-level
+  header as well does no harm.
+- **The Stripe TEST webhook endpoint is created with API version `2026-09-30.endive`** (the version
+  stripe-php 22 sends). An endpoint delivers events in its own version, so pick it when creating the
+  endpoint; see [Stripe webhook](#stripe-webhook) for the URL and the two events.
+- **Point the site email at a test inbox before the first test booking:** Admin → Site content → General
+  settings → the site email (a database value, not env). Owner alerts and most Reply-To headers use it.
+
 ## Required environment variables
 
 | Variable | Purpose |
@@ -347,7 +365,8 @@ The booking calendar only appears in the admin once at least one booking exists.
   `@section('title' | 'description' | 'og_image' | 'og_type' | 'robots')`.
 - **Sitemap**: `https://<host>/sitemap.xml` (absolute URLs, includes every published
   news article with `lastmod`). **Robots**: `https://<host>/robots.txt` (dynamic
-  route, references the sitemap, disallows `/admin` and `/dev`).
+  route, references the sitemap, disallows `/admin` and `/dev`). Only in `production`: every other
+  environment serves `Disallow: /` and sends `X-Robots-Tag: noindex, nofollow` (see [Staging](#staging)).
   - Note: some nginx/Valet configs have a `location = /robots.txt` block that serves
     a static file and 404s when absent — ensure the server falls through to
     `index.php` so the dynamic route is hit (standard Laravel nginx `try_files` does).
