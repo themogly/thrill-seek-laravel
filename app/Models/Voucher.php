@@ -112,12 +112,16 @@ class Voucher extends Model implements GuardsDeletion
      */
     public function deletionBlocker(): ?string
     {
-        $untouched = $this->source === 'admin'
+        return $this->isUnusedHandIssued() ? null : 'This voucher was bought or has been used. Revoke it instead.';
+    }
+
+    /** Issued by hand in the admin and never spent, bought or revoked — still freely correctable. */
+    public function isUnusedHandIssued(): bool
+    {
+        return $this->source === 'admin'
             && $this->status === VoucherStatus::Active
             && $this->redeemed_at === null
             && $this->booking_id === null
             && $this->payment_id === null;
-
-        return $untouched ? null : 'This voucher was bought or has been used. Revoke it instead.';
     }
 }
