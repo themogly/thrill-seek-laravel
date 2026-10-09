@@ -178,3 +178,15 @@ not touched.
 - **Screenshots:** `ui-review/scrollable-table-focus/` (cropped JPEGs). Browsed signed in via the local dev
   login, read-only.
 - **Markers:** none.
+
+## 9 · Pre-staging gate (report only)
+- **Branch:** `docs/pre-staging-gate-run3` → merged `3d8d555` (only `PRE-STAGING-CHECKLIST.md` changed)
+- **Tests:** 520 → 520. `composer check` + MySQL 520/520 green at `3b824b4`; `config:cache` / `route:cache` /
+  `composer validate --strict` OK; composer and npm audits 0; axe 0 nodes on 20 public pages × 1440/390.
+- **Verdict: ✅ GO for staging**, on two server-side conditions:
+  - basic-auth exempting `/webhooks/stripe` and `/webhooks/resend`;
+  - `APP_ENV=staging` (the app's noindex depends on it) and the site email → a test inbox.
+
+  Run 2's "noindex at the server" condition is now met in code (022).
+- **Gap report:** none. The only unmerged branch is the withdrawn 017.
+- **Markers:** none.
