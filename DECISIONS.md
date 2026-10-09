@@ -2660,3 +2660,45 @@ Prompt `prompts/006-no-known-admin-login-on-servers.md` (unattended run 2, item 
 - SETUP "First run" is split into local and server. The "change it immediately" sentence is gone, and
   there's an ops line to delete the old admin from any server seeded before this.
 - Tests 434 → 440; `composer check` and MySQL green.
+
+## Sample testimonials off servers; honest review rating (fix/sample-testimonials)
+Prompt `prompts/007-sample-testimonials-off-public-site.md` (unattended run 2, item 3). Ben (9 Oct): samples
+off. Premise confirmed: `TestimonialSeeder` seeded 8 invented reviews as approved, on every environment,
+and `/testimonials` published `AggregateRating` 4.8 from 8.
+- **Samples are local-only.** `TestimonialSeeder` returns early unless `APP_ENV=local`. Locally they stay
+  approved, so dev pages are populated. Seeding production creates 0 testimonials (red on main).
+- **The rating counts real customers only.** `StructuredData::aggregateRating()` keeps approved
+  testimonials with a `customer_id` and a rating; the seeded samples have none, so the discriminator is
+  correct. **`MIN_REVIEWS_FOR_RATING = 3`, `OVERNIGHT-DEFAULT — CONFIRM`**, so one or two reviews never
+  publish a star figure.
+  - *Consequence to confirm:* a genuine review the **owner types into the admin** (no customer) shows on
+    the page but **doesn't count toward the rating**. That's conservative and deliberate, since a
+    self-entered review isn't verifiable.
+- **One reader per figure.** The page passes the same collection it renders to `aggregateRating()`. The test
+  asserts `reviewCount` equals the number of reviews rendered (`<cite>` count), each against the other.
+- **Empty states:**
+  - With no approved testimonials, the homepage drops the whole "Voices from the sky" section (no orphaned
+    heading). The rendering with testimonials is unchanged: a fresh capture after the change matched the
+    pre-change capture with **0 differing pixels** at 1440 and 390.
+  - `/testimonials` shows "No reviews yet…" with a "Leave a review" button (`x-ui.button` outline →
+    account sign-in), not a bare line. Screenshots:
+    `audits/reports/run2/007-home-no-testimonials-{1440,390}.jpg`,
+    `007-testimonials-empty-{1440,390}.jpg`. These were rendered by unapproving the 8 local samples for the
+    shot and restoring exactly those ids.
+- **Re-pointed tests whose premise this prompt reverses:**
+  - `TestimonialsTest::test_seeded_content_matches_the_original_static_pages` now seeds as `local` (the
+    samples' only environment); its assertions are unchanged.
+  - `StructuredDataTest::test_testimonials_has_aggregate_rating_from_real_ratings` now uses three customer
+    reviews (reviewCount 3, rating 4.7) instead of two customer-less ones.
+- **Measurement note:** the first "after" homepage capture differed from "before" by 174,583 px, all inside
+  photographs (first load straight after `cache:clear` and a rebuild). Two fresh captures of the same build
+  were identical to each other and to "before". This was an instrument artefact, not a change.
+- **Other sample content on the public site (owner content tasks, not changed):**
+  - `HallOfFameSeeder`: 8 invented graduates with stock photos.
+  - `GalleryImageSeeder`: stock images, repeated.
+  - `InstructorSeeder`: real names, stock photo crops (`jay/ren/lee.webp`).
+  - `ShopItemSeeder`: sample merch (shop off).
+  - `NewsArticleSeeder` / `NewsletterCampaignSeeder`: sample posts and a draft.
+- **Owner line:** on any database that's already seeded, unapprove the 8 sample testimonials in the
+  admin (rows aren't deleted).
+- Tests 440 → 446; `composer check` and MySQL green.

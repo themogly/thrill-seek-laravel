@@ -72,16 +72,28 @@ class StructuredData
     }
 
     /**
-     * AggregateRating from the real star ratings the owner has set.
+     * Fewer real reviews than this and no rating is published, so one or two
+     * reviews can't put a star figure in search results.
+     * See DECISIONS (OVERNIGHT-DEFAULT — CONFIRM).
+     */
+    public const MIN_REVIEWS_FOR_RATING = 3;
+
+    /**
+     * AggregateRating from REAL customers' reviews only: approved testimonials a
+     * customer submitted from their account (customer_id set) with a star rating.
+     * Seeded samples and reviews the owner typed in have no customer and never
+     * count. The page renders the same collection, so the figures agree.
      *
      * @param  Collection<int, Testimonial>  $testimonials
      * @return array<string, mixed>|null
      */
     public static function aggregateRating(Collection $testimonials): ?array
     {
-        $rated = $testimonials->whereNotNull('rating');
+        $rated = $testimonials
+            ->filter(fn (Testimonial $t): bool => $t->customer_id !== null && $t->rating !== null)
+            ->values();
 
-        if ($rated->isEmpty()) {
+        if ($rated->count() < self::MIN_REVIEWS_FOR_RATING) {
             return null;
         }
 

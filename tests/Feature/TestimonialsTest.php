@@ -43,6 +43,8 @@ class TestimonialsTest extends TestCase
 
     public function test_seeded_content_matches_the_original_static_pages(): void
     {
+        // The samples are local-dev content only (007): seed them as a developer would.
+        app()->detectEnvironment(fn (): string => 'local');
         $this->seed(TestimonialSeeder::class);
 
         // The featured testimonial becomes the hero feature (shown via its

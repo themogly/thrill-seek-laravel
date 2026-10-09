@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Seo;
 
+use App\Models\Customer;
 use App\Models\NewsArticle;
 use App\Models\Testimonial;
 use App\Settings\GeneralSettings;
@@ -33,13 +34,16 @@ class StructuredDataTest extends TestCase
 
     public function test_testimonials_has_aggregate_rating_from_real_ratings(): void
     {
-        Testimonial::factory()->create(['rating' => 5]);
-        Testimonial::factory()->create(['rating' => 4]);
+        // Real ratings = reviews real customers submitted (007): at least three of them.
+        Testimonial::factory()->create(['rating' => 5, 'customer_id' => Customer::factory()]);
+        Testimonial::factory()->create(['rating' => 4, 'customer_id' => Customer::factory()]);
+        Testimonial::factory()->create(['rating' => 5, 'customer_id' => Customer::factory()]);
 
         $this->get('/testimonials')
             ->assertOk()
             ->assertSee('"@type":"AggregateRating"', false)
-            ->assertSee('"reviewCount":2', false);
+            ->assertSee('"reviewCount":3', false)
+            ->assertSee('"ratingValue":4.7', false);
     }
 
     public function test_news_article_has_article_and_breadcrumb_jsonld(): void
