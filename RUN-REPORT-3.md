@@ -117,3 +117,24 @@ not touched.
     reduces to "needs 1".
   - The "online and reschedule agree" test exists because capacity now has two callers of the same reader.
 - **Markers:** none.
+
+## 6 · 022 noindex on non-production hosts + SETUP staging notes
+- **Branch:** `fix/noindex-non-production` → merged `b22d879`
+- **Tests:** 506 → 511; `composer check` green. (No MySQL: no queries.)
+- **What it did:** unless `APP_ENV=production`, `/robots.txt` is `Disallow: /` with no Sitemap line, and
+  `SecurityHeaders` (on the `web` group, no session) adds `X-Robots-Tag: noindex, nofollow` to every web response.
+  - **Production is byte-identical:** rendered in-process under `APP_ENV=production` on `main` vs the branch,
+    robots, sitemap, every header, the homepage `<head>` and `/tandem` are identical, and the homepage body is
+    identical apart from the per-request CSRF token.
+  - SETUP.md has a new **Staging** section (basic-auth except the two webhooks; app noindex; Stripe TEST endpoint
+    at `2026-09-30.endive`; site email → test inbox), linking to the checklist. Checklist §0's noindex item now
+    checks the app.
+  - On the local dev site, `curl -I` now shows the header (local isn't production): `X-Robots-Tag: noindex, nofollow`.
+- **Gap report:**
+  - A URL matching no route (a bare 404) runs no route middleware, so it has no header; a missing page isn't
+    indexed, and robots disallows it. Recorded, not changed.
+  - `RobotsTest`'s sitemap assertion now runs under `production`, the file it always described. Not
+    weakened; the new test pins the exact production body.
+  - The first byte comparison was invalid (the kernel re-read `APP_ENV=local` from `.env`); it was re-run with
+    the process env set.
+- **Markers:** none.
