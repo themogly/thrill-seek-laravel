@@ -68,9 +68,9 @@ class TandemDateResource extends Resource
                 }),
             TextInput::make('capacity')
                 ->label('Capacity')
-                ->helperText('How many jumpers this slot can take.')
+                ->helperText('How many jumpers this slot can take — never fewer than are already booked.')
                 ->numeric()
-                ->minValue(1)
+                ->minValue(fn (?TandemDate $record): int => max(1, $record?->activeBookingsCount() ?? 0))
                 ->required(),
             TextInput::make('notes')
                 ->label('Notes')
