@@ -97,3 +97,23 @@ not touched.
 - **Screenshots:** `ui-review/button-hover-contrast/`: hero CTA, contact submit and a link button × rest/hover/press ×
   before/after (18 cropped JPEGs).
 - **Markers:** 016's hover `OWNER DECISION` now reads "built in 020". None added.
+
+## 5 · 021 reschedule respects capacity
+- **Branch:** `fix/reschedule-capacity` → merged `eeba9cf`
+- **Tests:** 496 → 506. `composer check` green; **MySQL suite 506/506** (locking query).
+- **What it did:** the gate is in `RescheduleBooking`: a transaction locks the target slot (as the online
+  checkout does) and refuses with "That date is full (N of N places taken) and this booking needs 1…".
+  - **One reader:** the new `TandemDate::hasPlaceFor()` uses the online path's own `isFull()`.
+  - **Holds:** unpaid `PendingPayment` holds take a place, exactly as online.
+  - A booking moving within its own slot isn't counted against itself.
+  - **The screen:** the slot select marks full slots "— full" and disables them. A race after validation shows
+    a "Not rescheduled" notice. No email unless the move succeeded.
+  - The ad-hoc date/time path is unchanged and deliberately unconstrained.
+  - Launch checklist §5 and the Help guide mention it.
+- **Gap report:**
+  - **Premise:** confirmed by a failing test rather than on the dev DB, so no records were added to Ben's
+    database.
+  - **Party size:** bookings have no party-size field (one booking = one jumper), so "party size counted"
+    reduces to "needs 1".
+  - The "online and reschedule agree" test exists because capacity now has two callers of the same reader.
+- **Markers:** none.
