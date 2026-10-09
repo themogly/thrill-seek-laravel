@@ -30,7 +30,7 @@ can be deleted.
 | 11 | Staging: Ben on the server | `staging-setup-brief-gforce.md` + `PRE-STAGING-CHECKLIST.md` §5. |
 | 12 | `verification/CHECKLIST.md` + `verification/real-device-checks.md`, by hand on staging | What no automated check covers. Use `tester-feedback-triage.md` for the G-Force staff's feedback. |
 
-**Run 2 progress:** 019 PHP platform ✅ `a7c47ce` · 005 FAQ admin 500 ✅ `fc94134` · 006 no seeded admin on servers ✅ `fc9a0e4` · 007 sample testimonials ✅ `b5d6803` · 008 FK rules (Phase 1) ⏸ pushed unmerged `823d4a2` · 009 admin emails toggle ✅ `088f90e` · 010 voucher success page ✅ `ee6e64c` · 011 CID mail logo ✅ `eff136b` · 012 CMS orphans ✅ `6a7c6e8` · 013 homepage SEO ✅ `31e46bc` · 014 price tokens ✅ `30e8c89` · 015 consistency fixes ✅ `1ec6b75` · 016 primary-strong ⏸ pushed unmerged `fc0884a`
+**Run 2 progress:** 019 PHP platform ✅ `a7c47ce` · 005 FAQ admin 500 ✅ `fc94134` · 006 no seeded admin on servers ✅ `fc9a0e4` · 007 sample testimonials ✅ `b5d6803` · 008 FK rules (Phase 1) ⏸ pushed unmerged `823d4a2` · 009 admin emails toggle ✅ `088f90e` · 010 voucher success page ✅ `ee6e64c` · 011 CID mail logo ✅ `eff136b` · 012 CMS orphans ✅ `6a7c6e8` · 013 homepage SEO ✅ `31e46bc` · 014 price tokens ✅ `30e8c89` · 015 consistency fixes ✅ `1ec6b75` · 016 primary-strong ⏸ pushed unmerged `fc0884a` · 017 feature-split ⏸ pushed unmerged `0a37a7b`
 
 ## Hard constraints
 

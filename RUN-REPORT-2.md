@@ -160,3 +160,11 @@ build on:
   - **OVERNIGHT-DEFAULT — CONFIRM** ×3: white `primary-foreground`; large-display figures stay bright; message "You" label navy.
   - **OWNER DECISION — PENDING** ×1: hover/active button washes are 3.54 / 2.99:1 (keep the lighter wash, or darken on hover).
 - **Screenshots (for Ben):** `ui-review/primary-strong/` — home hero + news, Tandem pricing, AFF price card, Coached intro, contact form, account dashboard × 1440/390 × before/after (28 JPEGs).
+
+## 13 · 017 feature-split 16:10 (C-8) — ⏸ NOT MERGED, Ben looks
+- **Branch:** `ui/feature-split-ratio`, pushed unmerged at `0a37a7b`
+- **Tests:** 476 → 477 (off main, so 016's guard isn't included); `composer check` green.
+- **What it did:** option (a). The Tandem/AFF/Coached intro photo is 16:10 at every width, matching the admin crop. Before it was 1.15:1 at 1024 and 1.42:1 at 1280/1440. The intrinsic size is fixed (1280×896 → 1280×800). `FeatureSplitRatioTest` is red on `main`. The homepage doesn't use the component (grep) and is 0 px vs baseline.
+- **Gap report:** the text now runs taller than the photo: 7–28% at 1280/1440, 33–77% at 1024, with **Coached at 1024** worst (611px text vs a 345px photo, centred). Not patched with magic numbers. Options for Ben (stack until `lg`, a wider image column, or accept) are in DECISIONS. There's no `srcset` on this image today.
+- **Markers:** none (the 1024 balance is Ben's call when he looks).
+- **Screenshots (for Ben):** `ui-review/feature-split-ratio/` — 3 pages × 1024/1280/1440/390 × before/after + homepage unchanged (26 JPEGs). Start with `coached-1024-after.jpg`.
