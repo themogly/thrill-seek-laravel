@@ -55,10 +55,13 @@ class Faq extends Model
     }
 
     /**
+     * Not `scopeForPage`: that name hijacked the builder's own forPage($page, $perPage)
+     * paginator and 500'd the admin FAQ list (NoModelScopeShadowsBuilderTest guards it).
+     *
      * @param  Builder<self>  $query
      * @return Builder<self>
      */
-    public function scopeForPage(Builder $query, FaqPage $page): Builder
+    public function scopeOnPage(Builder $query, FaqPage $page): Builder
     {
         return $query->where('page', $page->value);
     }

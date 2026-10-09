@@ -99,7 +99,7 @@ final class SiteContent
     {
         return Faq::hydrate($this->rows(
             'faqs.'.$page->value,
-            fn () => Faq::active()->forPage($page)->ordered()->get(),
+            fn () => Faq::active()->onPage($page)->ordered()->get(),
         ));
     }
 

@@ -2620,3 +2620,22 @@ dependency-refresh entry.
 - SETUP now says the server must run PHP 8.4.x and explains the pin. The `php8.4-fpm` reload line was
   already corrected in 004; confirmed, not duplicated.
 - Tests 432 → 432; `composer check` and the MySQL suite are green.
+
+## FAQ admin 500: scope collision (fix/faq-scope-collision)
+Prompt `prompts/005-faq-admin-500.md` (unattended run 2, item 1). Premise confirmed on current main: with
+the 19 seeded FAQs, `Faq::query()->paginate(10)` threw `scopeForPage(): Argument #2 must be of type FaqPage,
+int given`.
+- **`scopeForPage` renamed to `scopeOnPage`.** It reads naturally (`Faq::active()->onPage($page)`) and
+  isn't a method on either builder. The one caller (`SiteContent::faqs`) is updated. Cache keys
+  (`faqs.{page}`) and busting are untouched.
+- `FaqAdminTest::test_admin_can_list_and_create_faqs` now lists **three FAQs** and asserts they're
+  visible. It was red on main with the production error; the empty table was the false green.
+- **Guard:** `tests/Unit/Architecture/NoModelScopeShadowsBuilderTest` reflects every model's `scope*`
+  methods against the public methods of both builders. Proven red by a planted
+  `PlantedScopeModel::scopeLatest()` ("shadows Builder::latest()"), then removed.
+- Public output is unchanged:
+  - `SiteContent::faqs()` for every `FaqPage`, with the cache flushed, is byte-identical to a pre-fix
+    snapshot of the local data (Tandem 8, AFF 8, Coached 3);
+  - a new per-page test asserts each page gets exactly its own active FAQs in order.
+- Verified by doing: `/admin/faqs` as the owner gives 200 and 10 rows on the first page.
+- Tests 432 → 434; `composer check` and MySQL green.

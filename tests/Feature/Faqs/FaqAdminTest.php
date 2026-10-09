@@ -27,6 +27,22 @@ class FaqAdminTest extends TestCase
         $this->assertFalse($tandem->contains('question', 'AFF one?'));               // other page excluded
     }
 
+    public function test_each_page_gets_exactly_its_own_active_faqs_in_order(): void
+    {
+        foreach (FaqPage::cases() as $i => $page) {
+            Faq::factory()->forPage($page)->create(['question' => "{$page->value} two?", 'sort_order' => 2]);
+            Faq::factory()->forPage($page)->create(['question' => "{$page->value} one?", 'sort_order' => 1]);
+            Faq::factory()->forPage($page)->inactive()->create(['question' => "{$page->value} hidden?"]);
+        }
+
+        foreach (FaqPage::cases() as $page) {
+            $expected = Faq::query()->where('page', $page->value)->where('is_active', true)->orderBy('sort_order')->pluck('question')->all();
+
+            $this->assertSame($expected, app(SiteContent::class)->faqs($page)->pluck('question')->all(), "FAQs for {$page->value} changed.");
+            $this->assertSame(["{$page->value} one?", "{$page->value} two?"], $expected);
+        }
+    }
+
     public function test_saving_a_faq_busts_the_cache(): void
     {
         Faq::factory()->forPage(FaqPage::Aff)->create(['question' => 'Original?']);
@@ -47,8 +63,13 @@ class FaqAdminTest extends TestCase
     public function test_admin_can_list_and_create_faqs(): void
     {
         $this->actingAs(User::factory()->create());
+        // List a table that has rows: the paginator only calls Builder::forPage() when there are
+        // records, so an empty table hid the scope collision that 500'd the real admin.
+        $faqs = Faq::factory()->count(3)->forPage(FaqPage::Tandem)->create();
 
-        Livewire::test(ListFaqs::class)->assertOk();
+        Livewire::test(ListFaqs::class)
+            ->assertOk()
+            ->assertCanSeeTableRecords($faqs);
 
         Livewire::test(CreateFaq::class)
             ->fillForm([
