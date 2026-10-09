@@ -56,6 +56,8 @@ class MailInventoryTest extends TestCase
         'resources/views/pages/payment-success.blade.php :: A confirmation email is on its way' => [TemplatedMail::class],
         // Also shown after a gift-voucher purchase, where the email is the voucher (see E-3 in the email audit).
         'resources/views/pages/payment-success.blade.php :: watch your inbox' => [TemplatedMail::class, VoucherGiftMail::class],
+        'resources/views/pages/payment-success.blade.php :: the voucher is on its way by email' => [VoucherGiftMail::class],
+        'resources/views/pages/payment-success.blade.php :: is being emailed to' => [VoucherGiftMail::class],
         'resources/views/livewire/buy-voucher.blade.php :: The voucher is emailed here' => [VoucherGiftMail::class],
         'app/Livewire/ContactForm.php :: Message sent!' => 'About the enquiry being stored, not an email.',
         'app/Livewire/TandemEnquiryForm.php :: Enquiry sent!' => 'About the enquiry being stored, not an email.',
