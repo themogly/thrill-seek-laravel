@@ -32,3 +32,31 @@ wasn't on 001's expected-files list).
   13 (reserved names) and 14 (Alpine scope) so those guards have a rule to sit beside.
 - `OWNER DECISION — PENDING` / `OVERNIGHT-DEFAULT — CONFIRM`: none added.
 - Visual: none (tests only).
+
+## 3 — email audit · `email/audit-pass` · merge `d3ae38d`
+- Tests 378 → 399. `composer check` green; `phpunit.mysql.xml` 399/399 green.
+- Report `audits/reports/email-audit.md`: inventory first, committed before fixes. Verified by doing:
+  the log mailer, the real Redis queue and worker, and real controls pressed in the browser.
+- **Fixed (each failing-first):**
+  1. Customer balance payments sent **no receipt and no owner notification**, though the success page
+     promised one.
+  2. Newsletter "Send test to me" **failed in the worker every time** after saying "Test sent".
+  3. Zero retries on all mail; added the `QueuedMailable` base (4 tries with backoff, after commit,
+     `failed()` log).
+  4. The two voucher-email paths now share one action.
+  5. The reschedule notice no longer claims an email that wasn't queued.
+  6. Dashboard mail-health widget plus a help-guide section.
+  7. `gforce:mail-test` command.
+  8. `MailInventoryTest` guard (4 rules, each proven red).
+- Gap report in DECISIONS ("Email audit"): no status page, so the health check is on the dashboard;
+  E-1/E-2 deferred; one false-green test re-pointed; audit test records left in the local dev DB.
+- `OWNER DECISION — PENDING`: should admin-created Confirmed bookings and admin voucher redemptions
+  email the customer? (Recommended: an "Email the customer" toggle, default on.)
+- `OVERNIGHT-DEFAULT — CONFIRM`: none.
+- Visual: the admin dashboard gained the mail-health widget — `audits/reports/email-audit-dashboard.png`.
+  No public page changed, and the homepage wasn't touched.
+- Proposed prompts:
+  - **E-1** List-Unsubscribe header.
+  - **E-2** CID-embedded mail logo.
+  - **E-3** the payment-success page after a gift-voucher purchase.
+  - **E-4** the owner decision.
