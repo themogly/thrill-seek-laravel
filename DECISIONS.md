@@ -2729,3 +2729,24 @@ marked answered in the email-audit entry.
 - Verified by doing: created a Confirmed booking in the admin, saw "The customer has been emailed.", and the
   worker delivered "Your jump is confirmed" to the customer.
 - Tests 446 → 452 (6 new; both "default on" cases red on main). `composer check` and MySQL green.
+
+## Voucher purchase success page (fix/voucher-payment-success)
+Prompt `prompts/010-voucher-payment-success-page.md` (unattended run 2, item 6; email audit follow-up E-3).
+**Reproduced by doing first:** a voucher-purchase payment was taken through the real `HandleStripeWebhook`
+(paid; voucher `GV-YWL5VYHL` issued), but `/payment/success?session_id=…` showed "waiting to confirm your
+card payment".
+- `PaymentSuccessPage::viewData()` also returns `voucher`: the voucher whose `payment_id` is this payment,
+  only for a **paid** `VoucherPurchase`. It's reached only through the payment the visitor's own Stripe
+  session id resolves (the same strategy as bookings), so another customer's voucher is unreachable
+  (tested with two vouchers plus an unknown session).
+- New view branch "Gift voucher bought":
+  - card: product, value, recipient, valid-until, paid;
+  - "What happens next": the voucher (code + PDF) is being emailed to the purchaser, how it's used, and
+    what to do if it doesn't arrive.
+  - Built from the booking confirmation's own markup.
+  - The voucher **code is deliberately not shown** on the page: a URL can be shared, and the email
+    carries the code.
+- An unpaid voucher payment keeps the existing "waiting" state. Booking pages, payment handling and the
+  webhook Actions are unchanged. New UI claims are paired in `MailInventoryTest` (`VoucherGiftMail`).
+- Screenshots: `audits/reports/run2/010-voucher-success-{paid,waiting}-{1440,390}.jpg`.
+- Tests 452 → 455; `composer check` green.
