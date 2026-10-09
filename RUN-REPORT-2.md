@@ -168,3 +168,23 @@ build on:
 - **Gap report:** the text now runs taller than the photo: 7–28% at 1280/1440, 33–77% at 1024, with **Coached at 1024** worst (611px text vs a 345px photo, centred). Not patched with magic numbers. Options for Ben (stack until `lg`, a wider image column, or accept) are in DECISIONS. There's no `srcset` on this image today.
 - **Markers:** none (the 1024 balance is Ben's call when he looks).
 - **Screenshots (for Ben):** `ui-review/feature-split-ratio/` — 3 pages × 1024/1280/1440/390 × before/after + homepage unchanged (26 JPEGs). Start with `coached-1024-after.jpg`.
+
+## 14 · 018 launch checklist tailored
+- **Branch:** `docs/launch-checklist` → merged `c23763a`
+- **Tests:** 476 → 476 (docs only); `composer check` green, unchanged.
+- **What it did:** `verification/CHECKLIST.md` now names G-Force's real paths, in the kit's structure.
+  - **§0 staging:** site-email test inbox, `MAIL_MAILER`, basic-auth, noindex, the Stripe TEST webhook with its 2 events and API version `2026-09-30.endive`, `gforce:mail-test`, "Failed emails (last 7 days)".
+  - **§1:** a money table with 10 paths and the expected pence → £.
+  - **§2:** an email table from the inventory, with Reply-To.
+  - **§6b:** phone-only device checks.
+  - **§7:** the 3 scheduled commands with proof each ran.
+  - **§8:** the live flip.
+  - Every name was grepped; two phantom drafts were caught and corrected (no Users screen; no reschedule capacity rule).
+- **Gap report:**
+  - Staging **noindex isn't in the app**: `robots.txt` allows all hosts, so it has to be an nginx `X-Robots-Tag` (a small code follow-up is possible).
+  - Basic-auth must exempt `/webhooks/*`.
+  - The admin has no Users screen (tinker one-liner instead).
+  - **Rescheduling doesn't check the target slot's capacity** (owner question).
+  - The app has no refund handling (refund in Stripe).
+- **Markers:** none.
+- **Screenshots:** n/a (docs).
