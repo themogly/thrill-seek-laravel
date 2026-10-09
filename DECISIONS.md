@@ -2489,3 +2489,93 @@ commit `e7b0921` (after the admin and accessibility audits merged). Premise conf
   verdicts are by role. Recorded in the file so nobody mistakes a `≠` for a finding.
 - Only `ui-review/CONSISTENCY.md`, `ui-review/consistency-audit/`, the known-gaps section of
   `ui-guidelines.md` and this entry changed.
+
+## Dependency refresh within constraints (chore/deps-refresh-2026-10)
+Prompt `prompts/004-dependency-refresh.md`. Branch off main `7e01bfe` (after unattended run 1 ended).
+Only the lock files moved; no constraint in `composer.json` or `package.json` changed. Ben asked for the
+branch to be merged once green.
+
+**Baseline (before):**
+- `composer check` 432/432; MySQL suite 432/432; `config:cache` OK.
+- `composer audit`: **37 advisories across 9 packages** (high: Filament < 5.7.0, Guzzle, league/commonmark,
+  tiptap-php; medium: a Livewire ≤ 4.3.3 DOM XSS, dompdf; low: Laravel < 13.30).
+- `npm audit`: **5 (3 high, 2 critical)** (shell-quote, nanoid, postcss, source-map-js).
+
+**After:**
+- `composer check` 432/432; MySQL suite 432/432; `config:cache` OK.
+- `composer audit` **none**; `npm audit` **0**.
+- The 002 structural guards are green. The Livewire reserved-name guard re-read **29 `$wire` aliases** from
+  the 4.4.7 dist (the same set as 4.3.1), so it didn't parse zero.
+- Money-path tests are unchanged and green.
+
+**Versions (before → after):**
+- laravel/framework 13.14.0 → 13.35.0
+- filament/filament 5.6.6 → 5.10.1 (`filament:upgrade` ran from `post-autoload-dump` and republished its
+  assets)
+- livewire/livewire 4.3.1 → 4.4.7
+- laravel/horizon 5.47.2 → 5.50.0
+- stripe/stripe-php 20.2.0 → 20.3.1
+- sentry/sentry-laravel 4.26.0 → 4.29.0
+- spatie/laravel-settings 3.9.0 (no change)
+- phpunit 12.5.29 → 12.5.38
+- larastan 3.10.0 → 3.13.0
+- **Transitive major:** guzzlehttp/guzzle 7.11.0 → 8.2.0 (Laravel 13.35 and resend-php 1.16 both allow
+  `^8`). The app's one HTTP-client call (`ResendInboundEmailFetcher`: a string bearer token, Laravel's
+  headers) is within Guzzle 8's stricter header rules. Resend's transport declares Guzzle 8 support. It
+  can't be exercised without a key locally, so the post-deploy `gforce:mail-test` covers it.
+- npm: tailwindcss / @tailwindcss/vite 4.3.0 → 4.3.3; vite 8.0.16 → 8.3.4; laravel-vite-plugin 3.1.0 →
+  3.2.0; motion 12.40 → 12.43; @alpinejs/intersect 3.15.12 → 3.17.4; playwright 1.60 → 1.64;
+  concurrently 9.2.1 → 9.2.5.
+- Published assets: Livewire and Horizon publish none here (Horizon 5.50 inlines its assets;
+  `horizon:publish` is now a no-op).
+
+**Upgrade notes that apply.** Every minor's release notes were read: Laravel, Filament, Livewire,
+Horizon, Sentry, plus Guzzle's UPGRADING. **None requires an app-code change, a migration or a publish
+step.** Checked by doing on the rebuilt app:
+- Laravel 13.24 rewrote signed-URL verification. A real signed newsletter-confirm link gives 200; tampered
+  gives 403. (Check once behind the production proxy.)
+- Livewire 4.4 `wire:loading.attr` now restores the attribute. A contact-form submit re-enabled its
+  button, and the toast showed.
+- Filament 5.10 reworked date-only/timezone handling. A course-date edit saved and reloaded with
+  identical dates (the app is UTC).
+- **Noted, no change:**
+  - Filament 5.10 names new uploads with `hashName()` (existing paths unaffected; Documents keep the
+    original name via `storeFileNamesIn`).
+  - Filament table search now treats `% _ ! [` literally.
+  - Horizon 5.48.3 actually honours `later()` delays on Redis, which makes the mail retry backoff real.
+  - Laravel 13.32–13.35 fixed several passwordless-guard paths (the customer guard).
+  - Sentry 4.27–4.29 adds optional config only (`data_collection` defaults to the `send_default_pii`
+    behaviour).
+
+**Found while verifying: production needs PHP 8.4.1+, not 8.3.** This was already true of June's lock:
+symfony/* 8.1 and spatie/laravel-activitylog 5 require PHP ≥ 8.4.1. `composer.json` still says
+`"php": "^8.3"`, and SETUP, PRE-STAGING-CHECKLIST and the FPM-reload line (written in 001) all said 8.3.
+An 8.3 server can't `composer install` this lock. Docs corrected in their own commit. **Follow-up:**
+raise the `php` constraint to `^8.4.1` and add `config.platform.php` set to the server's real version, so
+a dev machine on PHP 8.5 can't lock something production can't run. Not done here; this prompt forbids
+constraint changes.
+
+**Majors behind after the refresh (report only):**
+- **phpunit/phpunit 12.5.38 → 13.4.1.** Needs PHP 8.4 and removes PHPUnit 12's hard deprecations. Work:
+  small (dev only; no `any()` matcher usage found).
+- **stripe/stripe-php 20.3.1 → 22.0.0.** 21 made `ErrorObject` properties nullable. 22 pins API
+  `2026-09-30.endive`, drops PHP 7.2/7.3, and removes `payment_method_types` from Checkout/PaymentIntent
+  create (the app doesn't send it). Webhook signature verification is unchanged. Work: small in code, but
+  the API version moves on the money path. **OWNER DECISION — PENDING**
+  (pin `stripe_version` explicitly and verify in Stripe test mode on staging).
+- **motion 12.43 → 14.0.0.** Imported nowhere (`resources/js` uses CSS transitions + IntersectionObserver).
+  React/react-dom are optional peers. Recommendation: remove the dependency rather than upgrade it.
+- **concurrently 9.2.5 → 10.0.6.** Needs Node ≥ 22; only the local `composer dev` script uses it.
+  Work: trivial.
+
+**Homepage:** screenshotted before the npm update and after the rebuild, at 1440 and 390, signed out,
+reduced motion: **0 differing pixels** at both widths.
+
+**Gap report.**
+1. *Required, not done:* none.
+2. *Forbidden, done:* none (no constraint or app-code change).
+3. *Not mentioned, done:*
+   - Step 0 found `RUNNING-ORDER.md` modified and `prompts/004-dependency-refresh.md` untracked on
+     main: Ben's own registration of this prompt, committed first on the branch.
+   - The PHP 8.4.1 docs correction (SETUP, PRE-STAGING-CHECKLIST).
+   - The local dev DB gained one more "Audit Deps" enquiry from the button check.
