@@ -103,3 +103,12 @@ build on:
 - Screenshots: `audits/reports/run2/012-*.jpg`.
 - **Owner:** enter real dropzone addresses and coordinates in Locations. Ben: run `php artisan migrate`
   on the dev DB.
+
+## 9 · 013 homepage SEO settings
+- **Branch:** `fix/home-seo-settings` → merged `31e46bc`
+- **Tests:** 462 → 468; `composer check` and MySQL green.
+- **What it did:** Home gets its own `seo_title`/`seo_description` (option (b), see DECISIONS), seeded with today's exact literals and read through fallback accessors. It's edited in a new "Search engines & sharing (SEO)" section on Site content → Home page. The help guide has one line on where to edit it.
+- **Proof:** the new "changing the setting changes the `<title>`/description" test is red on `main`. The rendered `<head>` was byte-identical before/after; the homepage was pixel-identical at 1440 and 390 (2 before + 2 after captures, all 0 px).
+- **Gap report:** 012 had left an empty "“Meet the team” teaser" section on the Home settings screen (a header with no fields). It's removed here, plus a guard `NoEmptyAdminSectionsTest` (red on `main`). Also: adding a settings property 500s an unmigrated DB (`MissingSettings`), so the dev homepage broke until this one additive settings migration was applied locally with `--path` (2 settings rows, no records touched). 012's drops are still pending for Ben's `php artisan migrate`.
+- **Markers:** none.
+- **Screenshots:** `audits/reports/run2/013-admin-home-seo.jpg` (homepage unchanged, so no homepage crops).
