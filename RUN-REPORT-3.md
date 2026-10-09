@@ -250,3 +250,20 @@ above. Everything else outstanding is listed at the end with why it wasn't built
   Seeing Gmail's "Unsubscribe" button needs a real send on staging; it's in the post-deploy list.
 - **Markers:** **OWNER DECISION — PENDING**: the footer link unsubscribes on GET, which link-scanning mail
   security can trigger. Keep it, or add a confirm button that POSTs? Not built either way.
+
+## 13 · 027 owner password reset (admin audit A-3)
+- **Branch:** `feat/admin-password-reset` → merged `0c3e574`
+- **Tests:** 535 → 540. `composer check` green; **MySQL 540/540** (reset tokens table).
+- **What it did:** the admin login has **Forgot password?**: a queued, signed, 60-minute reset link in the brand mail
+  theme.
+  - **No account enumeration:** Filament's own page says "We can't find a user" for an unknown address. A
+    subclass shows the same "sent" notice for unknown and customer addresses. This is proven red with
+    Filament's page class.
+  - End to end in a test: request → token → new password → login.
+  - Added to `/dev/mail`, the email audit inventory, the launch checklist §2 and the Help guide.
+- **Gap report:**
+  - `NoSeededAdminOnServersTest` flagged the `/dev/mail` preview's `User::factory()`. It now uses an unsaved
+    `User::make()`; the guard is unchanged.
+  - The email keeps Laravel's staff-facing wording ("Hello!", "Regards, G-Force Skydiving"). It isn't a customer
+    email, so the `<x-mail.layout>` greeting rules don't apply.
+- **Markers:** none.
