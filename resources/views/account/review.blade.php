@@ -40,7 +40,7 @@
                 <div>
                     <label for="photo" class="block text-sm font-bold uppercase tracking-widest text-secondary">Photo (optional)</label>
                     <input id="photo" name="photo" type="file" accept="image/*"
-                           class="mt-2 w-full border-2 border-border bg-background px-4 py-3 text-ink file:mr-4 file:border-0 file:bg-primary file:px-4 file:py-2 file:font-bold file:uppercase file:tracking-widest file:text-primary-foreground" />
+                           class="mt-2 w-full border-2 border-border bg-background px-4 py-3 text-ink file:mr-4 file:border-0 file:bg-primary-strong file:px-4 file:py-2 file:font-bold file:uppercase file:tracking-widest file:text-primary-foreground" />
                     @error('photo')<p class="mt-1 text-sm text-destructive">{{ $message }}</p>@enderror
                 </div>
 

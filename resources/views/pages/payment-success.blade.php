@@ -49,7 +49,7 @@
                         @if ($booking->hasOutstandingBalance())
                             <div class="flex justify-between gap-4">
                                 <dt class="text-muted-foreground">Balance to pay later</dt>
-                                <dd class="font-semibold text-primary">{{ $booking->formatted_balance_due }}</dd>
+                                <dd class="font-semibold text-primary-strong">{{ $booking->formatted_balance_due }}</dd>
                             </div>
                         @endif
                     </dl>

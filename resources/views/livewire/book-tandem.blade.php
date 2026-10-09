@@ -40,7 +40,7 @@
                                 class="group border-2 border-border bg-card p-6 text-left transition-colors hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             >
                                 <p class="font-display text-2xl uppercase text-secondary">{{ $jumpSlot->starts_at->format('D j M') }}</p>
-                                <p class="mt-1 text-sm font-bold uppercase tracking-wide text-primary">{{ $jumpSlot->starts_at->format('H:i') }}</p>
+                                <p class="mt-1 text-sm font-bold uppercase tracking-wide text-primary-strong">{{ $jumpSlot->starts_at->format('H:i') }}</p>
                                 @if ($byLocation->count() === 1)
                                     <p class="mt-1 flex items-center gap-1 text-xs font-bold uppercase tracking-wide text-muted-foreground">
                                         <x-icon name="map-pin" class="h-3.5 w-3.5" /> {{ $locationName }}
@@ -110,7 +110,7 @@
                                     <input type="checkbox" value="{{ $addOn->id }}" wire:model.live="addOnIds" class="h-5 w-5 rounded border-input text-primary focus:ring-ring" />
                                     <span class="font-semibold text-secondary">{{ $addOn->name }}</span>
                                 </span>
-                                <span class="font-display text-lg text-primary">{{ $addOn->formatted_price }}</span>
+                                <span class="font-display text-lg text-primary-strong">{{ $addOn->formatted_price }}</span>
                             </label>
                         @endforeach
                     </div>
@@ -207,7 +207,7 @@
 
             <label class="mt-3 flex items-start gap-3 text-sm">
                 <input type="checkbox" wire:model="terms" class="mt-0.5 h-5 w-5 rounded border-input text-primary focus:ring-ring" />
-                <span>I accept the <a href="/terms" target="_blank" class="font-semibold text-primary underline">booking terms</a> and confirm the details above are accurate.</span>
+                <span>I accept the <a href="/terms" target="_blank" class="font-semibold text-primary-strong underline">booking terms</a> and confirm the details above are accurate.</span>
             </label>
             @error('terms')
                 <p class="mt-2 text-sm font-medium text-destructive" role="alert">{{ $message }}</p>

@@ -133,8 +133,8 @@
                         <div class="divide-y-2 divide-border border-2 border-border">
                             @foreach ($latestNews as $article)
                                 <a href="{{ route('news.show', $article->slug) }}" class="group block p-6 transition-colors hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring">
-                                    <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary">{{ $article->published_at->format('j M Y') }}</p>
-                                    <p class="mt-2 font-display text-h3 uppercase leading-tight text-secondary transition-colors group-hover:text-primary">{{ $article->title }}</p>
+                                    <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary-strong">{{ $article->published_at->format('j M Y') }}</p>
+                                    <p class="mt-2 font-display text-h3 uppercase leading-tight text-secondary transition-colors group-hover:text-primary-strong">{{ $article->title }}</p>
                                     @if (filled($article->lead))
                                         <p class="mt-2 text-muted-foreground">{{ $article->lead }}</p>
                                     @endif

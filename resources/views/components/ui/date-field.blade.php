@@ -109,7 +109,7 @@
                         x-text="d"
                         class="flex h-9 w-full items-center justify-center text-sm tabular-nums transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring disabled:cursor-not-allowed disabled:text-muted-foreground/30"
                         :class="{
-                            'bg-primary text-primary-foreground font-bold': isSelected(d),
+                            'bg-primary-strong text-primary-foreground font-bold': isSelected(d),
                             'hover:bg-accent': !isSelected(d) && !disabled(d),
                             'ring-1 ring-inset ring-primary': isToday(d) && !isSelected(d),
                         }"

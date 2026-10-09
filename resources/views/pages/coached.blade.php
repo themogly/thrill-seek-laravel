@@ -13,7 +13,7 @@
     <section class="overflow-hidden">
         <div class="py-section-sm lg:py-section">
             <x-site.feature-split :image="$page->imageUrl($page->image)" alt="Advanced freefly coaching" side="left">
-                <p class="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.25em] text-primary">
+                <p class="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.25em] text-primary-strong">
                     <span class="inline-block h-0.5 w-10 bg-primary"></span>{{ $prices->render($page->price_eyebrow) }}
                 </p>
                 <h2 class="heading-rule mt-4 font-display text-h2 uppercase tracking-wide text-secondary">{{ $page->heading }}</h2>

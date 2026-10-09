@@ -79,14 +79,21 @@ a raw hex/oklch.
 | Token | Value (oklch) | Role |
 | --- | --- | --- |
 | `background` / `foreground` | `1 0 0` / `0.15 0.04 250` | white page / near-black navy ink text |
-| `primary` / `primary-foreground` | `0.62 0.18 240` / `0.99 0 0` | brand action colour (bright mid-blue) + on-primary text |
+| `primary` | `0.62 0.18 240` (`#008fe6`) | the bright brand **accent**: rules, borders, focus ring, icons, checkbox accents, icon-only fills, large display text ≥24px — 3.46:1 on white, so **never small text or a fill under text** |
+| `primary-strong` / `primary-foreground` | `0.545 0.18 240` (`#0078cc`) / `1 0 0` | the same hue, darker, for anything **read**: small text, links, eyebrows, dates, nav active/hover, and every fill under text (primary buttons, current step, selected date) — 4.61:1 both ways |
 | `secondary` (deep navy) | `0.28 0.14 255` | dark surfaces, borders, headings on light |
 | `sky-deep` / `sky-bright` | `0.22 0.12 258` / `0.7 0.16 235` | gradient + accents (sky-bright = accent on dark bands) |
 | `ink` | `0.12 0.03 250` | the darkest band (`band-ink`) |
 | `muted` / `muted-foreground` | `0.96 0.01 250` / `0.45 0.03 250` | quiet surfaces / secondary text |
 | `accent` | `0.88 0.06 240` | subtle hover wash |
-| `destructive` | `0.6 0.24 27` | errors only |
+| `destructive` | `0.58 0.24 27` | errors only (4.8:1 as text, 4.7:1 as a fill) |
 | `border` / `input` / `ring` | `0.9 0.02 250` / … / `=primary` | hairlines / field borders / focus ring (= primary) |
+
+**`primary` vs `primary-strong` (brand contrast, option B):** if someone has to *read* it at normal
+size, or it sits *under* text, it's `primary-strong`; if it decorates (a rule, a border, an icon, a
+≥24px display figure), it's `primary`. On dark bands (navy / `band-ink`) keep `primary` or
+`sky-bright` — `primary-strong` is only 3.2:1 on navy. `PrimaryIsNotUsedForTextTest` enforces it (with a
+reasoned allowlist); the full inventory is `audits/reports/primary-usage.md`.
 
 **No new shades** — use these tokens only; never a raw hex/oklch or a new colour (not in views,
 CSS or PDFs). Fonts: `font-display` = Bebas Neue (headings, `uppercase`), `font-sans` = Barlow
@@ -103,7 +110,8 @@ content). Helpers: `band-ink` (darkest band), `bg-photo-scrim` (text-over-photo)
 ## Components — the catalogue
 
 ### `x-ui` (generic interactive primitives)
-- **`<x-ui.button>`** — the ONE button. Variants `primary` / `outline` / `link`; sizes
+- **`<x-ui.button>`** — the ONE button. Variants `primary` (a `primary-strong` fill under white text) /
+  `outline` / `link` (`primary-strong` text); sizes
   `default` / `sm` / `lg` / `icon`. States (hover/active/focus-visible/disabled) +
   reduced-motion baked in. Lead an icon for actions, trail for directional; `size="icon"`
   needs `aria-label`. Loading: `wire:loading.attr="disabled"` + `<x-ui.loading-label>` in the

@@ -31,7 +31,7 @@
                             @if (filled($article->lead))
                                 <p class="mt-2 text-muted-foreground">{{ $article->lead }}</p>
                             @endif
-                            <x-ui.arrow-link class="mt-4 text-primary">Read more</x-ui.arrow-link>
+                            <x-ui.arrow-link class="mt-4 text-primary-strong">Read more</x-ui.arrow-link>
                         </div>
                     </a>
                 @endforeach

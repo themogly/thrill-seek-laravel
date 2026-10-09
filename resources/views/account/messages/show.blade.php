@@ -20,7 +20,9 @@
                 @php $fromUs = $message->direction === MessageDirection::Outbound; @endphp
                 <div class="flex {{ $fromUs ? 'justify-start' : 'justify-end' }}">
                     <div class="max-w-[85%] border-2 p-4 {{ $fromUs ? 'border-border bg-background' : 'border-primary bg-sky-bright/10' }}">
-                        <p class="text-xs font-bold uppercase tracking-widest {{ $fromUs ? 'text-secondary' : 'text-primary' }}">
+                        {{-- OVERNIGHT-DEFAULT — CONFIRM (016): the "You" label was primary (3.15:1 on the sky
+                             tint); primary-strong is still 4.19:1 there, so both labels are navy. --}}
+                        <p class="text-xs font-bold uppercase tracking-widest text-secondary">
                             {{ $fromUs ? 'G-Force team' : 'You' }}
                         </p>
                         <p class="mt-2 whitespace-pre-wrap text-ink">{{ $message->body }}</p>

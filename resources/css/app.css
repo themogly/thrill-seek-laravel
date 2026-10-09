@@ -22,6 +22,7 @@
     --color-popover-foreground: var(--popover-foreground);
     --color-primary: var(--primary);
     --color-primary-foreground: var(--primary-foreground);
+    --color-primary-strong: var(--primary-strong);
     --color-secondary: var(--secondary);
     --color-secondary-foreground: var(--secondary-foreground);
     --color-muted: var(--muted);
@@ -78,9 +79,16 @@
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.15 0.04 250);
 
-    /* Primary = bright mid blue */
+    /* Primary = bright mid blue — the brand ACCENT: rules, borders, icons, focus
+       rings, large display text (>=24px, 3:1 applies). Not for small text or for
+       fills under text: it's 3.46:1 on white. */
     --primary: oklch(0.62 0.18 240);
-    --primary-foreground: oklch(0.99 0 0);
+    /* Primary-strong = the same hue, darker, for anything read: small text and
+       fills under text (4.6:1 on white). Option B of the contrast decision. */
+    --primary-strong: oklch(0.545 0.18 240);
+    /* Pure white (was 0.99): on a primary-strong fill, oklch(0.99) is 4.49:1 by axe — 0.01
+       short of AA; white is 4.61:1. OVERNIGHT-DEFAULT — CONFIRM (see DECISIONS). */
+    --primary-foreground: oklch(1 0 0);
 
     /* Secondary = deep navy */
     --secondary: oklch(0.28 0.14 255);
@@ -91,7 +99,8 @@
     --accent: oklch(0.88 0.06 240);
     --accent-foreground: oklch(0.2 0.05 250);
 
-    --destructive: oklch(0.6 0.24 27);
+    /* Darkened in place (was 0.6) to pass AA as text and as a fill (4.8 / 4.7:1). */
+    --destructive: oklch(0.58 0.24 27);
     --destructive-foreground: oklch(0.99 0 0);
     --border: oklch(0.9 0.02 250);
     --input: oklch(0.9 0.02 250);

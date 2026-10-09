@@ -2423,7 +2423,9 @@ Chromium on rebuilt assets: 21 public pages at 1440 and 390 px, plus 6 signed-in
 reduced motion emulated so reveals don't hide text. Then a keyboard pass, a forms pass, and computed
 contrast for toasts and inline errors (axe never sees a toast that isn't on screen).
 
-**OWNER DECISION — PENDING: brand colour contrast.** This was June's unrecorded item, now recorded.
+**OWNER DECISION — ANSWERED (Ben, 9 Oct 2026): option B — brand colour contrast.** Implemented on
+`ui/primary-strong-contrast` (prompt 016; Ben reviews the screenshots and merges). This was June's
+unrecorded item, now recorded.
 - **Primary** `oklch(0.62 0.18 240)` = `#008fe6` fails AA two ways: as text on white (3.45–3.5:1:
   active nav, eyebrows, dates, links, `£210 per jump`) and as a fill under near-white button text
   (3.36–3.41:1: every primary button). That's 178 axe nodes, and they're the only remaining axe
@@ -2953,3 +2955,71 @@ No shared component existed for the first three, so two small ones were made rat
   - catalogue: both components, plus two rows in the cross-page table;
   - known gaps: C-3, C-4, C-12 and C-13 removed, and C-7 too (fixed by 014, which missed this list);
   - C-5 notes that the new component is the likely fix.
+
+## Brand contrast: `primary-strong` for text and fills (ui/primary-strong-contrast) — NOT MERGED, Ben merges
+
+Prompt 016, Ben's answer to the contrast decision: **option B**. This is the authorised exception to the
+homepage freeze, for colour only.
+
+- **Tokens:**
+  - `--primary-strong: oklch(0.545 0.18 240)` (`#0078cc`) plus the Tailwind colour `primary-strong`.
+  - `--primary` is unchanged (`#008fe6`).
+  - `--destructive` is darkened **in place** to `oklch(0.58 0.24 27)` (4.80:1 as text, 4.68:1 as a fill).
+    Reading of "option B": the split exists to keep the bright *brand* accent, and the error red isn't one,
+    so a second red token would only add a token.
+- **The rule:** anything read at normal size, and any fill under text, moves to `primary-strong`. Decoration
+  stays on `primary`: rules, borders, focus rings, icons, checkbox accents, icon-only fills (non-text needs
+  3:1; primary is 3.37–3.46:1) and star glyphs.
+  - Done at the shared sources first: `<x-ui.button>` primary fill and link text, `<x-ui.arrow-link>`, the
+    `<x-site.section-heading>` eyebrow, `<x-ui.meta-label>`, header and account nav active/hover, FAQ and
+    news-body links, booking step, date-field selection.
+  - Then the remaining page-level text.
+  - Inventory: `audits/reports/primary-usage.md` (183 uses: 55 moved, 11 large-display stay, 2 dark-surface
+    hovers stay, the rest decoration).
+- **Large display text (≥24px) stays `primary`:** WCAG large text needs 3:1 and primary measures 3.46:1.
+  These are the Tandem price table, price-card figures, account balances, 404 and the quote glyph.
+  - **OVERNIGHT-DEFAULT — CONFIRM:** this keeps the bright accent on the big figures, per option B's intent.
+    The cost is that small prices (e.g. AFF "£210 per jump", 20px) are now the deeper blue while ≥24px
+    prices stay bright. The alternative is moving those 11 to `primary-strong` too (still compliant).
+- **Dark surfaces keep `primary`:** `primary-strong` is only 3.16:1 on navy, against 4.21:1 for primary.
+  Allowlisted with reasons: the contact panel's hover links, and the section-heading eyebrow when
+  `light=true`.
+- **Premise correction: the fill is 4.49:1, not 4.51.** The prompt's nearest passing shade "4.51 as a fill"
+  holds against pure white, but `--primary-foreground` was `oklch(0.99 0 0)` (`#fcfcfc`). axe measured every
+  primary button at **4.49:1** and flagged it.
+  - **OVERNIGHT-DEFAULT — CONFIRM:** `--primary-foreground` set to `oklch(1 0 0)` (white, already the
+    palette's `--background`/`--card`) gives 4.61:1. That's no new colour and visually indistinguishable.
+  - The alternative is a slightly darker `primary-strong` (e.g. `oklch(0.54 0.18 240)`), which would leave
+    the prompt's value.
+- **Message bubble:** the customer's "You" label was `text-primary` on the `sky-bright/10` tint (3.15:1, the
+  audit's "below 3:1" item). `primary-strong` is still only 4.19:1 there, so it is now `text-secondary`
+  (navy).
+  - **OVERNIGHT-DEFAULT — CONFIRM.** Both labels are now navy; the bubbles stay distinct by alignment,
+    border, tint and the label words.
+  - Measured by calculation: axe wasn't run on the thread page, because opening it could mark the dev
+    DB's Audit customer's messages read.
+- **Hover/active button states, not in axe's reach:**
+  - Hover `primary-strong/85` is 3.54:1 and active `/75` is 2.99:1, against 2.80 / 2.48 before. Better,
+    but under 4.5.
+  - **OWNER DECISION — PENDING:** (a) keep the lighter hover wash as designed; or (b) hovers darken instead
+    (e.g. to `secondary` navy), which is a visual change. Neither implemented.
+- **axe-core 4.10.2** (same version as the audit), WCAG 2.0/2.1 A+AA plus best practice, signed out, reduced
+  motion, fonts loaded, injected into the real pages:
+  - **Before:** 173 `color-contrast` nodes over 20 pages × 1440/390 (every one `#008fe6`: 99 as a fill,
+    74 as text). The audit's 178 was over 21 pages.
+  - **After:** **0 violations** of any rule.
+  - Signed-in account pages (5 × 2 widths): 0 contrast failures.
+  - One unrelated finding: `scrollable-region-focusable` on the 390 payments table, which needs
+    `tabindex`/a label. That's keyboard access, not colour; a follow-up, not fixed here.
+- **Guard:** `PrimaryIsNotUsedForTextTest` fails on `text-primary`, or on `bg-primary` under
+  `text-primary-foreground`/`text-white`, in any Blade view.
+  - Exempt: icons/svg, checkboxes, icon-only fills, large display, plus a two-entry reasoned allowlist.
+  - It's red on the pre-change views (84 violations); a planted-violation test and a decoration test
+    prove both directions.
+- **Emails:** they don't use `#008fe6`. Buttons, links and accents use their own `#2f8de4` (13 uses:
+  `vendor/mail/html/themes/gforce.css`, `mail/blocks/button|two_column|featured_course`, newsletter
+  shell/footer). That's 3.47:1 both as text and under white button text, below AA. **Listed, not changed
+  here** (mail has its own render check); a follow-up should take `#0078cc`.
+- **Not in scope:** the Filament admin (Blue since the admin audit).
+- **Screenshots:** `ui-review/primary-strong/` — homepage hero and news, Tandem pricing, AFF price card,
+  Coached intro, the contact form, and the account dashboard, each at 1440 and 390, before and after.
