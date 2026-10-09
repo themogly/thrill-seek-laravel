@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Mail\Concerns\EmbedsMailLogo;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueueAfterCommit;
 use Illuminate\Mail\Mailable;
@@ -22,7 +23,7 @@ use Throwable;
  */
 abstract class QueuedMailable extends Mailable implements ShouldQueueAfterCommit
 {
-    use Queueable, SerializesModels;
+    use EmbedsMailLogo, Queueable, SerializesModels;
 
     public int $tries = 4;
 
