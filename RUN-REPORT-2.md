@@ -125,3 +125,18 @@ build on:
 - **Markers:** **OWNER DECISION — PENDING** (weight surcharges typed twice: keep typed, or make them money + a `{weight:…}` token later).
 - **Owner content (existing DBs):** swap the typed figures for tokens in FAQs tandem #4, #5, #8 and aff #12; Tandem description/subtitle/charity note; AFF description; Coached description and price line; Terms.
 - **Screenshots:** `audits/reports/run2/014-admin-faq-preview.jpg`.
+
+## 11 · 015 consistency small fixes (C-3, C-4, C-12, C-13)
+- **Branch:** `ui/consistency-small-fixes` → merged `1ec6b75` (one commit per fix, plus docs)
+- **Tests:** 475 → 476; `composer check` green (views only, so no MySQL run needed).
+- **What it did:**
+  - New shared `<x-ui.meta-label>`: `/news` dates and the image label at `0.25em` (C-3), and testimonial-grid role labels at 700 / `0.25em` / sky-bright (C-4; instructor cards use it too, unchanged).
+  - New `<x-ui.loading-label>` defines "Sending…" once for the 4 enquiry forms (C-12).
+  - Tandem/AFF intros on `py-section-sm lg:py-section` (C-13).
+- **Proof:** full-page pixel diffs: homepage, `/tandem`, `/aff`, `/meet-the-team` and `/contact` all 0 px at 1440 and 390. Only `/news` and `/testimonials` changed, as intended.
+- **Gap report:**
+  - A 390 homepage diff of 2,592 px turned out to be lazy-loaded testimonial avatars missing from one capture. The instrument now force-loads images; re-proved 0 px with the code stashed and restored (recorded in DECISIONS).
+  - 014 had left C-7 in `ui-guidelines.md` known gaps; removed here.
+  - The homepage news dates keep their (identical) inline classes, because the prompt says to change `/news` only.
+- **Markers:** none.
+- **Screenshots:** `ui-review/consistency-small-fixes/` — news / testimonials / contact-form-loading, 1440 + 390, before + after.
