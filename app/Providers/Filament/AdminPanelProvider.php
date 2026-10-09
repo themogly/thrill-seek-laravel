@@ -31,7 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             // Chosen, not Filament's default amber: a blue ramp in the brand's family that
             // keeps white button text at AA (measured: blue-600 5.26:1; brand primary 3.45:1 and the old amber 3.19:1 both fail).
-            // See DECISIONS (OVERNIGHT-DEFAULT — CONFIRM).
+            // OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS).
             ->colors([
                 'primary' => Color::Blue,
             ])
