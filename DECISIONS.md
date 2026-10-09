@@ -2750,3 +2750,33 @@ card payment".
   webhook Actions are unchanged. New UI claims are paired in `MailInventoryTest` (`VoucherGiftMail`).
 - Screenshots: `audits/reports/run2/010-voucher-success-{paid,waiting}-{1440,390}.jpg`.
 - Tests 452 → 455; `composer check` green.
+
+## Mail logo embedded inline (CID) (fix/mail-logo-cid)
+Prompt `prompts/011-cid-embedded-mail-logo.md` (unattended run 2, item 7; email audit E-2). Premise
+confirmed: both `vendor/mail/html/header.blade.php` (transactional) and `mail/blocks/logo.blade.php`
+(newsletter block) hot-linked `url('/images/email/logo.png')`.
+- **One logo partial**, `mail/partials/logo-img.blade.php`, used by both. Same PNG, 180×68, same alt and
+  inline style. It always points at `cid:gforce-logo` (`App\Support\MailLogo`).
+- **`App\Mail\Concerns\EmbedsMailLogo`** (on `QueuedMailable` and `CourseMessageMail`, i.e. every
+  mailable):
+  - It overrides `buildAttachments()`. When the outgoing HTML references the logo, it adds the PNG as an
+    inline `DataPart` named `gforce-logo`, and Symfony rewrites `cid:gforce-logo` to the part's real
+    Content-ID.
+  - A newsletter without a logo block gets no stray attachment (tested).
+  - The PNG stays outside image optimisation.
+- **Previews:** the admin builder's Preview and `/dev/mail` have no message to embed into.
+  `EmbedsMailLogo::render()` swaps the `cid:` for the public URL, so previews (and `MailRenderTest`'s
+  absolute-URL checks) still show the logo. Sending never calls `render()`.
+- **Newsletters** freeze `rendered_html` at send; the frozen HTML holds `cid:gforce-logo`, and the
+  per-recipient send embeds it.
+- **Re-pointed test:** `BuilderTest::test_logo_block_renders_with_an_absolute_url_and_alt` →
+  `…_renders_the_embedded_logo_with_alt` (asserts `cid:`, no hot-link). This prompt reverses the
+  absolute-URL decision it encoded. Its other assertions are unchanged.
+- **Verified by doing:**
+  - All 7 email templates were sent through the log mailer, each with an inline `Content-ID` PNG part.
+  - `audits/reports/run2/011-booking-confirmed.eml` is the real booking confirmation: its `<img>` points at
+    the attached part's Content-ID, with no hot-linked URL.
+  - The `/dev/mail` preview shows the logo URL.
+- **Owner check after staging:** one real email in Gmail and one in Outlook shows the logo with remote
+  images blocked.
+- Tests 455 → 458; `composer check` green.

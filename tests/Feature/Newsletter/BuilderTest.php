@@ -14,6 +14,7 @@ use App\Models\NewsletterCampaign;
 use App\Models\NewsletterCampaignRecipient;
 use App\Models\NewsletterSubscriber;
 use App\Models\User;
+use App\Support\MailLogo;
 use App\Support\NewsletterRenderer;
 use App\Support\NewsletterStarterTemplates;
 use Illuminate\Support\Facades\Mail;
@@ -199,13 +200,15 @@ class BuilderTest extends TestCase
         }
     }
 
-    public function test_logo_block_renders_with_an_absolute_url_and_alt(): void
+    public function test_logo_block_renders_the_embedded_logo_with_alt(): void
     {
         $html = $this->renderBody([['type' => 'logo', 'data' => []]]);
 
-        // The new logo PNG, referenced by an ABSOLUTE URL (email clients can't resolve
-        // relative paths) — never an inline SVG (Outlook/Gmail won't render SVG).
-        $this->assertStringContainsString('src="'.url('/images/email/logo.png').'"', $html);
+        // The logo PNG travels inside the email as an inline CID part (011 — replaced the
+        // APP_URL hot-link, which 401s behind staging basic-auth and is blocked by many
+        // clients). Never a relative path, never an inline SVG (Outlook/Gmail won't render it).
+        $this->assertStringContainsString('src="cid:'.MailLogo::CID.'"', $html);
+        $this->assertStringNotContainsString('/images/email/logo.png', $html);
         $this->assertStringContainsString('alt="G-Force Skydiving"', $html);
         $this->assertStringNotContainsString('<svg', $html);
         // Explicit dimensions for email clients; no flexbox.
