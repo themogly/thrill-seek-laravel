@@ -48,7 +48,7 @@ class HelpGuideTest extends TestCase
 
         foreach (['Products', 'Tandem dates', 'AFF courses', 'Locations', 'Bookings', 'Enquiries',
             'Taking payment', 'vouchers', 'Newsletter', 'News articles', 'Course communications',
-            'Feature toggles', 'Email templates', 'launch checklist'] as $needle) {
+            'Feature toggles', 'Email templates', 'Is email working', 'launch checklist'] as $needle) {
             $this->assertStringContainsStringIgnoringCase($needle, $titles, "Help guide is missing a topic for: {$needle}");
         }
     }

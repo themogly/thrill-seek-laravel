@@ -21,6 +21,7 @@ use App\Filament\Resources\TandemDates\TandemDateResource;
 use App\Filament\Resources\Testimonials\TestimonialResource;
 use App\Filament\Resources\Vouchers\VoucherResource;
 use BackedEnum;
+use Filament\Pages\Dashboard;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use UnitEnum;
@@ -309,6 +310,18 @@ class HelpGuide extends Page
                     'An erased customer can no longer sign in (their email is gone), which is expected.',
                 ],
                 'cta' => ['label' => 'Open Customers', 'url' => CustomerResource::getUrl()],
+            ],
+            [
+                'id' => 'email-health',
+                'icon' => 'heroicon-o-signal',
+                'title' => 'Is email working?',
+                'intro' => 'Confirmations, receipts, sign-in links and reminders all go out by email in the background. The <strong>Dashboard</strong> tells you if any of them failed.',
+                'steps' => [
+                    '<strong>Failed emails (last 7 days)</strong> should read <code>0</code>. If it doesn’t, it names which kind of email failed (for example a payment receipt) — contact those customers another way and ask your developer to check the email settings.',
+                    '<strong>Email setup</strong> should read <strong>OK</strong>. Anything else means the website can’t send email at all — your developer needs to fix the server settings it names.',
+                    'An email is retried automatically a few times over about 12 minutes before it counts as failed, so a short hiccup at the email provider won’t show here.',
+                ],
+                'cta' => ['label' => 'Open the Dashboard', 'url' => Dashboard::getUrl()],
             ],
             [
                 'id' => 'launch',
