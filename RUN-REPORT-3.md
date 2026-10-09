@@ -45,3 +45,33 @@ not touched.
     anti-aliased edges between them. No geometry change.
 - **Gap report:** none against the brief.
 - **Markers:** none added.
+
+## 3 · 008 Phase 2: the database refuses money-linked deletes
+- **Branch:** `fix/fk-delete-rules` (Phase 1 `823d4a2` + merge of `main` + build, `5b0ac48`) → merged `b10a2c9`
+- **Tests:** 479 → 493. `composer check` green; **MySQL suite 493/493**.
+- **What it did:** exactly the approved table.
+  - Migration `2026_10_09_140000_restrict_money_linked_deletes`: 14 FKs → `RESTRICT` (#1, 2, 3, 7, 8, 9, 10, 11,
+    15, 16, 17, 19, 20, 26). Only the rule changes. `down()` restores each.
+  - **Orphan pre-check:** aborts with the list before changing anything. On a clone of the dev DB it found
+    **none**, so no stop condition. Planting one orphan in the clone made it abort and change nothing.
+  - **Seeded copies:** a MySQL clone of the dev DB migrated, rolled back and re-migrated with identical row
+    counts (2 → 16 RESTRICT rules and back). A seeded SQLite file with a booking, paid payment and voucher kept
+    its rows through the table rebuild, `foreign_key_check` clean.
+  - `RefusesGuardedDeletion` (a `deleting` listener) on all eight `GuardsDeletion` models, throwing
+    `DeletionBlockedException` with the record's own reason. `Document` joins `GuardsDeletion` ("Attached to N
+    sent message(s)…"); its Delete buttons use `guardedDelete()`; the Help guide says why.
+  - Red without the change, layer by layer: without the migration, 7 of the 12 new tests fail; without the
+    listener, the 4 model tests fail with a raw SQL error instead of the plain-English refusal. The structural
+    guard (every FK into a guarded table is RESTRICT or allowlisted with a reason; every guarded model has the
+    listener) is proven with planted violations.
+  - Erasure still works on a customer with a paid booking (test).
+- **Gap report:**
+  - **Did, not in the prompt:** `TandemDate::deletionBlocker()` now also counts cancelled bookings. The
+    approved #7 RESTRICT refuses on any booking, so the old text ("active bookings only") would have shown an
+    enabled Delete that failed with a database error. The interface and helpers are unchanged.
+  - **Driver detail:** `bookings.tandem_date_id`'s MySQL constraint was still named
+    `bookings_availability_slot_id_foreign` (old column name). The migration drops by the real name and
+    re-adds under the conventional one.
+  - The mail-claims guard flagged the new Help-guide line ("sent to students"); it's paired with
+    `CourseMessageMail` in `MailInventoryTest`, as that guard asks.
+- **Markers:** #26 "(Ben's call)" → approved, in the report and DECISIONS. None added.
