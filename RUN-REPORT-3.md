@@ -208,3 +208,33 @@ not touched.
   `migrate:status` shows nothing pending. No records were added or changed; the "Audit …" records are as
   they were. Browser checks used the local dev login read-only, and the evidence scripts ran inside
   rolled-back transactions.
+
+---
+
+## Outstanding fixes (Ben: "also fix anything outstanding")
+
+The brief's table was finished at item 10. Ben's message added "also fix anything outstanding". I read that
+as: the follow-ups earlier runs proposed but never prompted, where the fix is clear and needs no owner
+decision. Each was written as a numbered prompt file first, as the workflow requires, and run like the items
+above. Everything else outstanding is listed at the end with why it wasn't built.
+
+## 11 · 025 admin tidy-up (the admin audit's A-4 batch)
+- **Branch:** `chore/admin-tidy-up` → merged `dd9ad53`
+- **Tests:** 520 → 530. `composer check` green; **MySQL 530/530**.
+- **What it did:**
+  - **Past choices block Save — a real defect the audit had down as "raw IDs":** a booking whose slot has
+    passed, or a news article linked to a past course, couldn't be saved ("The selected jump slot is
+    invalid"). `AdminOptions::bookablePlusCurrent()` keeps the current value in the options; there's a
+    structural guard.
+  - **Uploads accepted SVG on the public disk — a security fix:** `ImageCrop` called Filament's `->image()`
+    (= `image/*`, SVG included). An SVG with `<script>` saved in a test. The new `AdminImages::upload()` factory
+    (JPEG/PNG/WebP, 12 MB) is on all 18 image fields, with a guard against any other `FileUpload::make(` or a
+    stray `->image()`.
+  - The enquiry inbox's unread-first ordering is now the *default* sort, so column sorts work.
+  - Four nav sort ties were renumbered; the rendered order is unchanged and pinned by a test.
+  - The public CSS no longer compiles the admin views (3 selectors gone, homepage 0 px at 1440/390).
+  - `motion` was uninstalled.
+  - The Help guide states the upload types and limit.
+- **Gap report:** the "unused slug fields" item is ruled out: Product's slug is the price-token key since 014;
+  Location's is a CMS-gate question.
+- **Markers:** **OVERNIGHT-DEFAULT — CONFIRM**: image types JPEG/PNG/WebP (no GIF/HEIC/SVG) and the 12 MB limit.
