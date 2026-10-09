@@ -43,7 +43,7 @@ class VoucherPdfTest extends TestCase
         $this->assertCount(1, $mail->attachments());
     }
 
-    public function test_the_gift_email_still_sends_without_a_pdf(): void
+    public function test_the_gift_email_still_renders_without_a_pdf(): void
     {
         Storage::fake('local');
 
