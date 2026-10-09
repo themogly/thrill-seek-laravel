@@ -101,11 +101,40 @@ class BuilderTest extends TestCase
         Livewire::test(EditNewsletterCampaign::class, ['record' => $campaign->id])
             ->callAction('sendTest', data: ['email' => 'admin@example.com']);
 
-        // Sent only to the test address; no recipient/history rows; still a draft.
-        Mail::assertQueued(NewsletterCampaignMail::class, 1);
-        Mail::assertQueued(NewsletterCampaignMail::class, fn (NewsletterCampaignMail $m): bool => $m->hasTo('admin@example.com'));
+        // Sent (synchronously) only to the test address; no recipient/history rows; still a draft.
+        Mail::assertSent(NewsletterCampaignMail::class, 1);
+        Mail::assertSent(NewsletterCampaignMail::class, fn (NewsletterCampaignMail $m): bool => $m->hasTo('admin@example.com'));
         $this->assertSame(0, NewsletterCampaignRecipient::count());
         $this->assertFalse($campaign->refresh()->isSent());
+    }
+
+    public function test_send_test_actually_delivers_through_the_mailer(): void
+    {
+        // No Mail::fake — the real (array) transport, through whatever path the
+        // action takes. A queued test-send carries an unsaved subscriber that the
+        // worker can never restore, so it must go synchronously.
+        $this->actingAs(User::factory()->create());
+        $campaign = NewsletterCampaign::factory()->create();
+
+        Livewire::test(EditNewsletterCampaign::class, ['record' => $campaign->id])
+            ->callAction('sendTest', data: ['email' => 'admin@example.com'])
+            ->assertNotified('Test sent');
+
+        $sent = app('mailer')->getSymfonyTransport()->messages();
+        $this->assertCount(1, $sent);
+        $this->assertSame('admin@example.com', $sent->first()->getEnvelope()->getRecipients()[0]->getAddress());
+    }
+
+    public function test_a_failed_test_send_says_so_instead_of_claiming_success(): void
+    {
+        $this->actingAs(User::factory()->create());
+        $campaign = NewsletterCampaign::factory()->create();
+        // An SMTP server that isn't there: the transport throws.
+        config(['mail.default' => 'smtp', 'mail.mailers.smtp.host' => '127.0.0.1', 'mail.mailers.smtp.port' => 9]);
+
+        Livewire::test(EditNewsletterCampaign::class, ['record' => $campaign->id])
+            ->callAction('sendTest', data: ['email' => 'admin@example.com'])
+            ->assertNotified('Test email failed');
     }
 
     public function test_builder_create_page_offers_the_block_types(): void

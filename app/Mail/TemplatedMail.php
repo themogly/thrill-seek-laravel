@@ -4,21 +4,15 @@ namespace App\Mail;
 
 use App\Models\EmailTemplate;
 use App\Support\TemplateRenderer;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 
 /**
  * A mailable whose subject and body come from an admin-editable
  * EmailTemplate, with {{ placeholder }} variables substituted.
  */
-class TemplatedMail extends Mailable implements ShouldQueue
+class TemplatedMail extends QueuedMailable
 {
-    use Queueable, SerializesModels;
-
     public string $renderedSubject;
 
     public string $renderedBody;

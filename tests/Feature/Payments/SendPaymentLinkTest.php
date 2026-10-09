@@ -73,6 +73,10 @@ class SendPaymentLinkTest extends TestCase
         $payment = Payment::sole();
         $this->assertSame(9000, $payment->amount_pence);
         $this->assertSame(PaymentPurpose::Custom, $payment->purpose);
+
+        // The test's name says the link is sent: the customer gets it, for £90.00.
+        Mail::assertQueued(TemplatedMail::class, fn (TemplatedMail $mail): bool => $mail->hasTo($enquiry->email)
+            && str_contains($mail->renderedBody, '£90'));
     }
 
     public function test_stripe_failures_surface_a_notification_instead_of_crashing(): void

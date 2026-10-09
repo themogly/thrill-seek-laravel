@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Vouchers;
 
+use App\Actions\EmailVoucher;
 use App\Actions\GenerateVoucherPdf;
 use App\Actions\RedeemVoucher;
 use App\Enums\VoucherStatus;
@@ -9,7 +10,6 @@ use App\Filament\Resources\Bookings\BookingResource;
 use App\Filament\Resources\Vouchers\Pages\CreateVoucher;
 use App\Filament\Resources\Vouchers\Pages\EditVoucher;
 use App\Filament\Resources\Vouchers\Pages\ListVouchers;
-use App\Mail\VoucherGiftMail;
 use App\Models\Booking;
 use App\Models\User;
 use App\Models\Voucher;
@@ -29,7 +29,6 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use UnitEnum;
@@ -156,8 +155,12 @@ class VoucherResource extends Resource
                     ->visible(fn (Voucher $record): bool => $record->isRedeemable())
                     ->requiresConfirmation()
                     ->modalDescription(fn (Voucher $record): string => "Send the voucher email to {$record->purchaser_email}?")
-                    ->action(function (Voucher $record): void {
-                        Mail::to($record->purchaser_email)->queue(new VoucherGiftMail($record));
+                    ->action(function (Voucher $record, EmailVoucher $emailVoucher): void {
+                        if (! $emailVoucher->handle($record)) {
+                            Notification::make()->danger()->title('Voucher email failed')->body('Nothing was sent — check the purchaser email and try again.')->send();
+
+                            return;
+                        }
 
                         Notification::make()->success()->title('Voucher emailed')->send();
                     }),
