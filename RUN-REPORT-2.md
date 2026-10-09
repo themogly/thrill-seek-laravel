@@ -198,3 +198,80 @@ build on:
   - SETUP.md doesn't yet mention staging noindex/basic-auth or the webhook API version (`verification/CHECKLIST.md` does).
   - 016 not being merged means axe still reports 173 contrast nodes on `main`. Not a staging blocker, but needed before launch.
 - **Markers:** none.
+
+## 16 · Housekeeping
+- **Global skills synced** from `~/Sites/starter-kit/skills/` to `~/.claude/skills/<name>/SKILL.md`, as
+  Ben approved on 9 Oct. None of the four existed at that path, so there were no overwrites; each copy is
+  byte-identical to the kit.
+  - `admin-design`: **new**. Principles for a CMS/admin a non-technical client can use without drifting
+    from the public site.
+  - `frontend-design`: **new at this path**, but note a **same-named built-in** in the app-managed
+    `~/.claude/skills/synced/` store. The kit version is that built-in plus 125 lines: images/performance,
+    accessibility, cross-page consistency. "Buttons" and the reduced-motion bullet were reworded.
+  - `laravel-craft`: **new**. Idiomatic, un-over-engineered Laravel backend philosophy.
+  - `web-app-security`: **new**. Build-time security and privacy principles (auth, accounts,
+    authorization, personal data).
+  - `~/.claude/skills/synced/` (app-managed) was not touched.
+- **Remote branches:** the 23 branches fully merged into `origin/main` were deleted
+  (`git branch -r --merged origin/main`). **Remaining on origin:** `main`, `fix/fk-delete-rules` (008),
+  `ui/primary-strong-contrast` (016), `ui/feature-split-ratio` (017). Local branches were left as they are.
+- **Dev database:** the "Audit …" records were left alone.
+  - Only change this run: 013's additive settings migration, applied with `--path` so the dev homepage
+    wouldn't 500.
+  - Still pending for Ben's `php artisan migrate`: 012's column drops and the `home.team_lead` removal.
+- Local-only: `.playwright-mcp/` was added to `.git/info/exclude`, never committed, so the screenshot
+  scratch can't be committed by accident.
+
+---
+
+## How the run ended
+- **All 17 items done (0–16), no stop condition hit.**
+  - 12 merged on green: 019, 005, 006, 007, 009–015, 018, plus the pre-staging report.
+  - 3 pushed unmerged as instructed: 008 Phase 1, 016, 017.
+- Tests went from **440 to 476** on `main` (479 on the 016 branch, 477 on 017). `composer check` was
+  green at every merge, plus the MySQL suite wherever queries, migrations or money were touched.
+- `main` is at **`09ab9c7`** before this closing docs commit; `main` is clean and green.
+
+## What Ben has to look at
+1. **008 proposal table.** `git show origin/fix/fk-delete-rules:audits/reports/fk-delete-rules.md`.
+   32 FKs; 13 proposed to move to RESTRICT; #26 (documents pivot) is your call. Phase 2 starts only on
+   your approval.
+2. **016 screenshots.** `ui-review/primary-strong/` on `ui/primary-strong-contrast` (`fc0884a`): 28 JPEGs,
+   before/after × 1440/390 (home hero + news, Tandem pricing, AFF price card, Coached intro, contact form,
+   account). axe went 173 → 0.
+3. **017 screenshots.** `ui-review/feature-split-ratio/` on `ui/feature-split-ratio` (`0a37a7b`). Start
+   with `coached-1024-after.jpg`: the text runs well past the now-16:10 photo at 1024.
+4. **Pre-staging: ✅ GO** (`PRE-STAGING-CHECKLIST.md` on `main`), on three server-side conditions:
+   - basic-auth exempting `/webhooks/*`;
+   - server-level noindex;
+   - the site email set to a test inbox.
+5. **Merging 016/017 yourself:** each conflicts with `main` **only in `DECISIONS.md`** (both append to the
+   end of the log). Keep both sections.
+
+## Owner questions (each answerable in one line)
+1. **008:** approve the FK table as proposed (13 → RESTRICT)? And #26, the documents pivot: CASCADE or
+   RESTRICT?
+2. **016:** merge it after the screenshots? (yes/no)
+3. **016:** `primary-foreground` → pure white OK (axe measured the prompt's shade at 4.49:1 under
+   `#fcfcfc`)? Or darken `primary-strong` slightly instead?
+4. **016:** keep ≥24px display prices in the bright `primary`, or make every price `primary-strong`?
+5. **016:** the customer's "You" label in message threads in navy (the blue fails on its tint): OK?
+6. **016:** button hover/active washes are 3.54 / 2.99:1. Keep the lighter wash, or darken on hover?
+7. **017:** merge 16:10? Is the 1024 balance acceptable, or stack the split until `lg`?
+8. **007:** is it OK that the rating needs at least 3 real reviews, and that owner-typed reviews show
+   without counting?
+9. **012:** confirm removing `home.team_lead` and `Location::image` (agreed generally, not by name).
+10. **014:** weight surcharges are typed in two places. Keep them typed, or later make them money with a
+    `{weight:…}` token?
+11. **018:** should rescheduling refuse a target tandem slot that's already full? (It doesn't today.)
+12. **Gate:** add app-level noindex for non-production hosts (a small follow-up), or rely on server config?
+13. **Email:** move mail buttons/links from `#2f8de4` (3.47:1) to `#0078cc` in a follow-up?
+14. **a11y:** queue the keyboard-focus fix for the scrollable account payments table (axe
+    `scrollable-region-focusable` at 390)?
+
+**Ops / owner tasks (not questions):**
+- delete `test@example.com` and unapprove the 8 sample testimonials on any already-seeded server;
+- after staging, check the logo with images blocked in Gmail and Outlook;
+- enter the dropzone addresses and coordinates;
+- swap the typed prices in existing CMS text for tokens (list in DECISIONS, 014);
+- locally, `php artisan migrate`.
