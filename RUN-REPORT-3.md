@@ -75,3 +75,25 @@ not touched.
   - The mail-claims guard flagged the new Help-guide line ("sent to students"); it's paired with
     `CourseMessageMail` in `MailInventoryTest`, as that guard asks.
 - **Markers:** #26 "(Ben's call)" → approved, in the report and DECISIONS. None added.
+
+## 4 · 020 button hover and press contrast
+- **Branch:** `ui/button-hover-contrast` → merged `6f0e021`
+- **Tests:** 493 → 496; `composer check` green. (No MySQL: CSS and views only.)
+- **What it did:** new tokens `--primary-strong-hover` `oklch(0.50 0.18 240)` (5.56:1 with white) and
+  `--primary-strong-active` `oklch(0.46 0.18 240)` (6.57:1). Primary hover/press fills and the link variant's
+  press colour use them. Outline's washes already pass (≥ 8.1:1 on light and dark) and are unchanged.
+  `ui-guidelines.md` palette and button entries updated.
+  - **Premise confirmed:** hover `/85` 3.64:1, press `/75` 3.09:1 (016 said 3.54 / 2.99, against the old
+    `#fcfcfc` text).
+  - **Rest pixel-identical:** full-page homepage before/after, **0 px** at 1440 and 390.
+  - `ButtonStateContrastTest` resolves each variant's hover/press colour from the real tokens and classes
+    (compositing washes as the browser does); red on `main` with exactly 3 failures, proven with a planted wash.
+- **Gap report:**
+  - **Did, not in the prompt:** the link variant's press (`/80`, 3.35:1) had the same fault and is fixed the
+    same way. `newsletter-status` passed its own colour classes (with a failing `/90` hover) to the button; it
+    now uses the variant (identical at rest).
+  - The first "before" screenshots were on a mixed tree (new Blade, old CSS build) and showed no hover. They
+    were discarded and re-taken on a clean `main` build.
+- **Screenshots:** `ui-review/button-hover-contrast/`: hero CTA, contact submit and a link button × rest/hover/press ×
+  before/after (18 cropped JPEGs).
+- **Markers:** 016's hover `OWNER DECISION` now reads "built in 020". None added.

@@ -4,7 +4,7 @@ Sequencing instruction, not a branch. It says which prompt to take next and why 
 Written 9 October 2026 to put G-Force through the September 2026 starter kit.
 
 **Merged:** everything through 24 June 2026, then (unattended run 1, `RUN-REPORT-1.md`) 001, 002, email audit, admin audit, accessibility audit, 003, completeness + CMS-field gates, then 004 (dependency refresh) and the four majors Ben asked for.
-**`main` at `b10a2c9`.** 001 branched from `be9e145`.
+**`main` at `6f0e021`.** 001 branched from `be9e145`.
 **Built, awaiting merge:** none. The run's eight branches are merged but still exist on GitHub, and
 can be deleted.
 **Prompt files:** `prompts/001…024-*.md`, `prompts/unattended-run-1.md`…`-3.md` (1 and 2 finished: `RUN-REPORT-1.md`, `RUN-REPORT-2.md`). The kit source is `~/Sites/starter-kit/`.
@@ -31,7 +31,7 @@ can be deleted.
 
 **Run 2 progress:** 019 PHP platform ✅ `a7c47ce` · 005 FAQ admin 500 ✅ `fc94134` · 006 no seeded admin on servers ✅ `fc9a0e4` · 007 sample testimonials ✅ `b5d6803` · 008 FK rules (Phase 1) ⏸ pushed unmerged `823d4a2` · 009 admin emails toggle ✅ `088f90e` · 010 voucher success page ✅ `ee6e64c` · 011 CID mail logo ✅ `eff136b` · 012 CMS orphans ✅ `6a7c6e8` · 013 homepage SEO ✅ `31e46bc` · 014 price tokens ✅ `30e8c89` · 015 consistency fixes ✅ `1ec6b75` · 016 primary-strong ⏸ pushed unmerged `fc0884a` · 017 feature-split ⏸ pushed unmerged `0a37a7b` · 018 launch checklist ✅ `c23763a` · pre-staging gate ✅ `450b421` · housekeeping ✅ · **run 2 complete** (see `RUN-REPORT-2.md`)
 
-**Run 3 progress:** 1 Ben's answers ✅ `90a9cbc` · 2 016 primary-strong ✅ `98584c7` · 3 008 FK delete rules ✅ `b10a2c9`
+**Run 3 progress:** 1 Ben's answers ✅ `90a9cbc` · 2 016 primary-strong ✅ `98584c7` · 3 008 FK delete rules ✅ `b10a2c9` · 4 020 button hover ✅ `6f0e021`
 
 ## Hard constraints
 
