@@ -4,7 +4,7 @@ Sequencing instruction, not a branch. It says which prompt to take next and why 
 Written 9 October 2026 to put G-Force through the September 2026 starter kit.
 
 **Merged:** everything through 24 June 2026, then (unattended run 1, `RUN-REPORT-1.md`) 001, 002, email audit, admin audit, accessibility audit, 003, completeness + CMS-field gates, then 004 (dependency refresh) and the four majors Ben asked for.
-**`main` at `fc9a0e4`.** 001 branched from `be9e145`.
+**`main` at `b5d6803`.** 001 branched from `be9e145`.
 **Built, awaiting merge:** none. The run's eight branches are merged but still exist on GitHub, and
 can be deleted.
 **Prompt files:** `prompts/001-kit-sync.md`, `prompts/002-structural-guards.md`,
@@ -30,7 +30,7 @@ can be deleted.
 | 11 | Staging: Ben on the server | `staging-setup-brief-gforce.md` + `PRE-STAGING-CHECKLIST.md` §5. |
 | 12 | `verification/CHECKLIST.md` + `verification/real-device-checks.md`, by hand on staging | What no automated check covers. Use `tester-feedback-triage.md` for the G-Force staff's feedback. |
 
-**Run 2 progress:** 019 PHP platform ✅ `a7c47ce` · 005 FAQ admin 500 ✅ `fc94134` · 006 no seeded admin on servers ✅ `fc9a0e4`
+**Run 2 progress:** 019 PHP platform ✅ `a7c47ce` · 005 FAQ admin 500 ✅ `fc94134` · 006 no seeded admin on servers ✅ `fc9a0e4` · 007 sample testimonials ✅ `b5d6803`
 
 ## Hard constraints
 

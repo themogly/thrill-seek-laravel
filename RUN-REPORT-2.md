@@ -40,3 +40,15 @@ build on:
 - **Ops:** if any server has ever been seeded, delete `test@example.com` there (command in SETUP "First
   run").
 - Gap report: none. Owner/overnight items: none.
+
+## 3 — 007 sample testimonials · `fix/sample-testimonials` · merge `b5d6803`
+- Tests 440 → 446. `composer check` and MySQL green.
+- Samples are seeded only locally. The review rating counts only real customers' approved reviews, at
+  least 3. `reviewCount` and the rendered reviews come from the same collection. Clean empty states on
+  the homepage (section dropped) and `/testimonials` (honest text + "Leave a review").
+- `OVERNIGHT-DEFAULT — CONFIRM`: minimum 3 reviews before a rating is published. Also confirm that
+  owner-typed reviews show on the page but don't count toward the rating.
+- Gap report: two existing tests re-pointed because this prompt reverses their premise (details in
+  DECISIONS). Homepage with testimonials: 0 pixel diff (one false alarm traced to a first-load capture).
+- Screenshots: `audits/reports/run2/007-*.jpg`.
+- **Owner:** on any already-seeded database, unapprove the 8 sample testimonials in the admin.
