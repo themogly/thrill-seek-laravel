@@ -52,3 +52,14 @@ build on:
   DECISIONS). Homepage with testimonials: 0 pixel diff (one false alarm traced to a first-load capture).
 - Screenshots: `audits/reports/run2/007-*.jpg`.
 - **Owner:** on any already-seeded database, unapprove the 8 sample testimonials in the admin.
+
+## 4 — 008 FK delete rules, Phase 1 · `fix/fk-delete-rules` · **pushed, unmerged** `823d4a2`
+- Proposal only (`audits/reports/fk-delete-rules.md`). All 32 FKs, read from the live schema, with the
+  current rule, what hangs off each parent, every delete path, and a proposed rule.
+  - **13 move to RESTRICT** (including `course_dates.product_id`, which cascades today, and
+    `payments.booking_id`).
+  - **#26 (documents pivot)** is Ben's call.
+  - The rest are kept, with reasons.
+  - Also proposed: a `deleting` listener on the `GuardsDeletion` models (button explains, model refuses,
+    DB refuses).
+- Tests unchanged (no code). Phase 2 waits for Ben's approval in DECISIONS.
