@@ -19,10 +19,10 @@ class HomePageSettingsTest extends TestCase
         // Removing the orphaned keys + properties must not break settings access
         // (Spatie throws MissingSettings if a declared property has no stored key).
         $home = app(HomePageSettings::class);
-        $this->assertIsString($home->team_lead);
         $this->assertIsString($home->instagram_caption);
 
-        foreach (['about_stats', 'team_eyebrow', 'team_title', 'instagram_note'] as $removed) {
+        // team_lead joined the removed list in 012 (orphaned since b494dd6).
+        foreach (['about_stats', 'team_eyebrow', 'team_title', 'instagram_note', 'team_lead'] as $removed) {
             $this->assertFalse(property_exists($home, $removed), "HomePageSettings::{$removed} should be gone");
         }
 

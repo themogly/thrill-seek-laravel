@@ -28,7 +28,6 @@ class LocationFactory extends Factory
             'lat' => fake()->latitude(50, 53),
             'lng' => fake()->longitude(-4, 0),
             'description' => fake()->sentence(10),
-            'image' => null,
             'active' => true,
         ];
     }

@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Models\CourseDate;
 use App\Models\Faq;
+use App\Models\Location;
 use App\Models\NewsArticle;
 use App\Models\Product;
 use App\Models\Testimonial;
@@ -152,11 +153,7 @@ class StructuredData
             'startDate' => $course->start_date->toDateString(),
             'endDate' => $course->end_date->toDateString(),
             'eventAttendanceMode' => 'https://schema.org/OfflineEventAttendanceMode',
-            'location' => [
-                '@type' => 'Place',
-                'name' => $course->location->name,
-                'address' => $course->location->name,
-            ],
+            'location' => self::place($course->location),
             'offers' => [
                 '@type' => 'Offer',
                 'price' => number_format((int) $course->effective_deposit_pence / 100, 2, '.', ''),
@@ -213,5 +210,32 @@ class StructuredData
                 ],
             ])->values()->all(),
         ];
+    }
+
+    /**
+     * A schema.org Place for a dropzone, from the Location's REAL address fields only:
+     * a PostalAddress built from whichever are filled (omitted entirely when none are —
+     * never the name repeated as an address), and geo only when both coordinates exist.
+     *
+     * @return array<string, mixed>
+     */
+    public static function place(Location $location): array
+    {
+        $address = array_filter([
+            'streetAddress' => $location->address_line,
+            'addressLocality' => $location->town,
+            'addressRegion' => $location->region,
+            'postalCode' => $location->postcode,
+            'addressCountry' => $location->country,
+        ], fn (?string $value): bool => filled($value));
+
+        return array_filter([
+            '@type' => 'Place',
+            'name' => $location->name,
+            'address' => $address === [] ? null : ['@type' => 'PostalAddress', ...$address],
+            'geo' => $location->lat !== null && $location->lng !== null
+                ? ['@type' => 'GeoCoordinates', 'latitude' => $location->lat, 'longitude' => $location->lng]
+                : null,
+        ], fn (mixed $value): bool => $value !== null);
     }
 }

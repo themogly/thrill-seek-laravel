@@ -2780,3 +2780,40 @@ confirmed: both `vendor/mail/html/header.blade.php` (transactional) and `mail/bl
 - **Owner check after staging:** one real email in Gmail and one in Outlook shows the logo with remote
   images blocked.
 - Tests 455 → 458; `composer check` green.
+
+## CMS orphan fields resolved (chore/cms-orphans)
+Prompt `prompts/012-cms-orphan-fields.md` (unattended run 2, item 8). Ben's decisions (9 Oct): re-surface the
+Location address, remove `Product::duration`. Each field was re-confirmed unused publicly before removal.
+`audits/reports/cms-field-usage.md` §2 fields are untouched.
+- **Location address → course Event JSON-LD.**
+  - New `StructuredData::place(Location)`: a `PostalAddress` from whichever of `address_line`, `town`,
+    `region`, `postcode`, `country` are filled, and `GeoCoordinates` only when both `lat` and `lng` exist.
+  - With nothing filled, `address` is omitted. It's never the location name again: `courseEvent()` used to
+    put the name in `address`, which was wrong data.
+  - Today only `region` and `country` are filled, so the events carry those.
+- **`Product::duration` removed** (form, `$fillable`, factory, seeder, and the column via
+  `2026_10_09_120000_drop_orphaned_cms_columns`).
+  - **Its only value, recorded so it isn't lost:** Tandem Skydive = *"Approx. half a day at the dropzone"*.
+- **`HomePageSettings::team_lead` removed** (admin field, property, and settings migration
+  `2026_10_09_120100_remove_home_team_lead`, the June pattern). Value was *"The people you'll fly with."*
+  **OVERNIGHT-DEFAULT — CONFIRM** (Ben agreed the gate's recommendations generally, not this field by
+  name).
+- **`Location::image` removed** (admin field, `image_url` accessor, `$fillable`, `ImageOptimization`
+  entries, and the column in the same migration). It was empty on all 4 locations; no files touched.
+  **OVERNIGHT-DEFAULT — CONFIRM.**
+- **Migrations on a seeded copy, both drivers:**
+  - MySQL: a `mysqldump` clone of the dev DB was migrated. Row counts were unchanged (4 products,
+    4 locations, 3 bookings, 5 payments), the columns and `home.team_lead` were gone, rolled back cleanly,
+    and the clone was dropped.
+  - SQLite: a file DB seeded at the pre-012 schema, then migrated the same way.
+- **Stale cache:** a cached `HomePageSettings` payload that still carries `team_lead` unserialises without
+  error (tested), and the deploy clears the settings cache anyway.
+- **Homepage:** pixel-identical before/after at 1440 and 390 (a repeat "before" capture was identical to
+  the first, so the instrument is stable). Crops: `audits/reports/run2/012-home-team-band-after-*.jpg`.
+- **Test re-pointed:** `HomePageSettingsTest` asserted `team_lead` exists. It now lists it among the removed
+  keys; its intent (removed settings stay removed) is unchanged.
+- **Local dev:** Ben's dev DB isn't migrated by this run (the brief says leave it). Run
+  `php artisan migrate`. The code works either way.
+- **Owner content:** enter real dropzone addresses and coordinates in Locations. Until then the events
+  carry region and country only.
+- Tests 458 → 462; `composer check` and MySQL green.

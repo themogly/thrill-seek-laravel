@@ -100,9 +100,6 @@ class ProductForm
                             ->label('Show as “from £X”')
                             ->helperText('Off for coaching = “Price on enquiry”.')
                             ->inline(false),
-                        TextInput::make('duration')
-                            ->label('Duration')
-                            ->maxLength(255),
                         Toggle::make('highlight')
                             ->label('Highlight price card')
                             ->helperText('Emphasised card on the AFF pricing grid.')
