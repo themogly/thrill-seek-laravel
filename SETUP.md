@@ -185,13 +185,29 @@ delete any `php artisan key:generate` line it added.
 
 ## First run
 
+**Local machine:**
+
 ```bash
 composer setup          # install, .env, key, migrate, npm install + build
-php artisan db:seed     # seed all current site content + an admin user
+php artisan db:seed     # seed all current site content + the local dev admin
 ```
 
-Seeding creates the admin login `test@example.com` (password: `password` from the
-factory default). Change it immediately for anything public-facing.
+Locally, seeding also creates the dev admin `test@example.com` / `password` (`DevAdminSeeder`,
+which runs only when `APP_ENV=local`).
+
+**Staging and production:** `php artisan db:seed --force` seeds content only and **never creates a
+user**. Create the real admin with your own email and a strong, unique password:
+
+```bash
+php artisan make:filament-user --panel=admin
+```
+
+It prompts for name, email and password (the password is stored hashed). Every `User` is staff
+(`User::canAccessPanel()` trusts every row; customers are the separate `Customer` model), so only
+create users this way.
+
+**If a server was ever seeded before October 2026:** it has the old `test@example.com` / `password`
+admin. Delete it there: `php artisan tinker --execute="App\Models\User::where('email','test@example.com')->delete();"`.
 
 ## Required environment variables
 

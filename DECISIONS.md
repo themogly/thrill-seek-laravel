@@ -2639,3 +2639,24 @@ int given`.
   - a new per-page test asserts each page gets exactly its own active FAQs in order.
 - Verified by doing: `/admin/faqs` as the owner gives 200 and 10 rows on the first page.
 - Tests 432 → 434; `composer check` and MySQL green.
+
+## No known-password admin on servers (fix/no-seeded-admin-on-servers)
+Prompt `prompts/006-no-known-admin-login-on-servers.md` (unattended run 2, item 2). Premise confirmed:
+`DatabaseSeeder` created `test@example.com` / `password` on every environment, and
+`User::canAccessPanel()` returns `true`.
+- **`DevAdminSeeder`** (idempotent `updateOrCreate`, same credentials) returns without doing anything
+  unless `APP_ENV=local`. `DatabaseSeeder` calls it only behind a `local` guard. `db:seed --force` on
+  staging or production seeds content and **zero users**. That's tested for production and staging, and
+  the seeder called directly in production also creates nothing.
+- **Server admin = Filament's `make:filament-user --panel=admin`**, not a custom command. It's maintained
+  by Filament, prompts for name, email and a password (minimum 8 characters, stored hashed), and is already
+  installed. A test runs it non-interactively and the new user reaches `/admin`.
+- **`canAccessPanel()` stays `return true`.** Every `User` is staff: customers are the separate `Customer`
+  model (magic links), and newsletter subscribers and inbound mail have their own tables. Guarded by
+  `test_nothing_in_the_app_creates_user_rows`: no `User::create|firstOrCreate|updateOrCreate|factory|…` or
+  `new User(` anywhere in `app/` or `routes/`. Proven red by a planted `App\Support\PlantedUserMaker`. A
+  future customer-facing `User` would fail that test before it could reach the panel. No schema change, so
+  no escalation.
+- SETUP "First run" is split into local and server. The "change it immediately" sentence is gone, and
+  there's an ops line to delete the old admin from any server seeded before this.
+- Tests 434 → 440; `composer check` and MySQL green.
