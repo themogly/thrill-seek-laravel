@@ -2137,3 +2137,85 @@ changes + one documented env var:
 - **`.env.example`** — documented `HORIZON_TOKEN=` (empty placeholder + comment; real token is
   server-only, never committed).
 `config:cache` succeeds then `config:clear`; `composer check` green. Pushed, not merged.
+
+## Kit sync to the September 2026 starter kit (chore/kit-sync-2026-09)
+Branch off main `be9e145` (prompt `prompts/001-kit-sync.md`, run as item 1 of
+`prompts/unattended-run-1.md`). Docs only: no app code, views, config or tests change.
+Kit source `~/Sites/starter-kit/`, README confirmed to open with "What changed in this
+revision (September 2026)".
+
+**Copied verbatim (new):** `prompts/README.md`, `prompts/writing-prompts.md`,
+`prompts/running-order.md`; `false-green.md` (root); `gates/README.md`,
+`gates/completeness-check.md`, `gates/cms-field-usage-check.md`, `gates/pre-staging-gate.md`;
+`audits/email-audit.md`; `verification/real-device-checks.md`,
+`verification/tester-feedback-triage.md`. `verification/CHECKLIST.md` is the kit's
+`pre-launch-checklist.md` with one line on top (`> NOT YET TAILORED to G-Force — see
+RUNNING-ORDER.md step 9.`). Every copy `cmp`-identical to the kit (the checklist after its
+first line). No other project's name appears in any copied file.
+
+**Refreshed (drifted copies):** `audits/README.md`, `accessibility-audit.md`,
+`admin-audit.md`, `code-style-audit.md`, `design-audit.md`, `security-audit.md`,
+`ui-passes/README.md`, `ui-passes/04-guidelines.md`. Diffed each first: every difference was
+a kit addition (1–5 lines: email-audit pointer, verify-by-attack, singleton editors, motion
+guard, spam-hardening, phantom-component check). No repo copy carried a G-Force-specific
+edit, so none was left. `seo-audit.md` and `ui-passes/01–03` were already identical.
+
+**Skills (report only — not changed).** The project has no `.claude/skills/`. User-global
+skills live in `~/.claude/skills/synced/…` (claude.ai-synced). Against the kit's `skills/`:
+- `frontend-design` — installed, **differs**: the kit copy has ~125 more lines (AI-default
+  font cluster, self-host brand fonts, and more); 3 lines differ the other way.
+- `admin-design`, `laravel-craft`, `web-app-security` — **not installed** globally.
+These affect Ben's other projects, so syncing them is his call, not this branch's.
+
+**CLAUDE.md — rules added** (grepped for each in other words first; none was covered — the
+nearest, "Business logic lives in `app/Actions`", doesn't say *one* writer):
+- Architecture 7–12: state re-rendered by the mechanism that changes it; nothing loads/inserts
+  DOM inside a Livewire-morphed view; session-reading middleware on `web` after
+  `StartSession`; `svh` shells (viewport units only as caps); one writer per fact / one
+  reader per figure; a gate never becomes a picture of a gate.
+- Quality bar: fix the instance then guard the class (prove the guard); the suite collects
+  every `tests/*` dir; a measurement is only as good as its tree/build; verify state against
+  code and git.
+- New `## Workflow` section: prompts are files (+ pointers to `prompts/`, `RUNNING-ORDER.md`,
+  `audits/`, `gates/`, `verification/`, `false-green.md`); verify the premise; gap report;
+  escalate owner decisions (`OWNER DECISION — PENDING`); mark `OVERNIGHT-DEFAULT — CONFIRM`.
+- Design rules: motion ambition (below).
+The four new code rules all hold on `be9e145` (0 `@vite`/`<script>`/`x-if` under
+`resources/views/livewire/`; only `min-h-screen` in `layouts/app.blade.php:66`; no middleware
+in `app/Http/Middleware/` reads the session). Nothing is enforced by a test yet — that's
+prompt 002. There is no suite-collection test yet either (also 002).
+
+**Motion ambition: subtle — `OVERNIGHT-DEFAULT — CONFIRM`.** G-Force never recorded a level.
+As built: CSS transitions plus the opt-in `data-reveal` IntersectionObserver reveals in
+`resources/js/app.js` (skipped under `prefers-reduced-motion`; content visible without JS).
+No Motion One calls — the `motion` package is in `package.json` but imported nowhere (a
+possible cleanup for its own prompt; not touched here). That matches the kit's
+*subtle-standard* minus Motion One, so "subtle". Cinematic would need the owner's ask.
+
+**SETUP.md deploy sequence** reconciled with `bootstrap.md` §5: added the PHP-FPM reload
+(`php8.3-fpm`, step 7, before the Horizon restart which is now step 8); the "never
+`key:generate` / `migrate:fresh` / `migrate:refresh`" list; and the owner task to delete
+any `key:generate` line from Ploi's generated deploy script after the first run.
+**No converge-matrix step:** G-Force has no code-declared matrix. No roles/permissions
+package; admin access is the single `is_admin` flag (`User::canAccessPanel()`); settings
+properties are spatie settings migrations in `database/settings/`, which `migrate --force`
+(step 4) already applies on every deploy. Adding a sync command would be ceremony.
+
+**Deliberately not done:**
+- `bootstrap.md` not re-run — it would rewrite CLAUDE.md, whose G-Force decisions win.
+- ui-passes not re-run — they ran 15–16 June; the kit says run once.
+- `add-motion-layer` not adopted — the homepage is signed off, no owner ask for cinematic.
+- No audit or gate run on this branch.
+
+**Gap report.**
+1. *Required, not done:* none.
+2. *Forbidden, done:* Step 0 says stop on any extra untracked file or stash. It found three
+   (the `.playwright-mcp/` June browser-tool logs, a 16 June untracked-only stash on
+   `ui/logo-svg` holding June kit copies + two `ui-review/merge-verify/*.png` screenshots,
+   and `prompts/unattended-run-1.md`). Stopped and asked each time; Ben said drop the stash,
+   delete `.playwright-mcp/`, and run `unattended-run-1`.
+3. *Not mentioned, done:* `prompts/unattended-run-1.md` committed with the other prompts.
+   001's premise cites `bootstrap/app.php:25` as "session middleware appended to `web`" —
+   what's appended there is `SecurityHeaders`, which doesn't read the session; the rule
+   holds anyway because no app middleware reads it. `RUNNING-ORDER.md`'s `main at` line
+   already said `be9e145`, the sha branched from, so it's unchanged.

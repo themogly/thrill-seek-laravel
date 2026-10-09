@@ -17,6 +17,7 @@ Write `audits/reports/admin-audit.md` using `- [item]: [what's wrong] → [what 
 - **Exposed dangerous/internal fields**: editable foreign keys, auto-generated slugs, logic-driven status flags, secrets/credentials as content fields, hard-delete of consequential records (bookings/customers/paid) with no guard.
 - **Admin theming leaking into public CSS** (or vice versa) — dead/off-brand styles on the public side from admin dark-mode, etc.
 - **Orphaned fields**: editable in admin but consumed nowhere (front end, email, meta, logic). (Cross-check with `gates/cms-field-usage-check.md`.)
+- **Singleton editors built as loose custom pages** (settings/homepage/about as a bare `Filament\Pages\Page`) that don't behave: the form doesn't load the saved record on mount, Save doesn't persist, or validation/success-notification is missing. Should be a Resource (singleton style — create disabled, list→edit) or a complete settings page, living in the proper resource structure. **[Filament]**
 
 ### PHASE 2 — Refinement (owner UX)
 - Field labels that are raw DB column names rather than plain English; missing help text on non-obvious fields (recommended image size, where it appears, what it does).
@@ -26,6 +27,7 @@ Write `audits/reports/admin-audit.md` using `- [item]: [what's wrong] → [what 
 
 ### PHASE 3 — Polish
 - Helpful placeholders, confirmation on destructive actions, sensible success/validation messaging, consistent field components across resources, permissions scoped if multiple admin users.
+- **Default framework furniture removed**: the stock Filament dashboard ships default widgets (a "Filament docs"/links card, version/account info) — unregister the ones the owner doesn't need so the dashboard isn't a framework default. Set the panel primary deliberately (see the admin-design skill) rather than leaving the default amber.
 
 ## Step 2 — Fix in phase order
 Phase 1 first, gate between phases. One commit per item. `composer check` (or the project's check gate) green before EVERY commit; never commit red. Reuse shared field components/configuration so a fix lands across all resources at once. Re-test in the admin after each fix (create/edit a record, upload a wrong-shaped image, attempt an invalid save) to confirm it genuinely improved. Don't churn a working admin for taste.

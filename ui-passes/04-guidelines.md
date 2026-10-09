@@ -41,7 +41,7 @@ Concise and practical (not a novel):
 - Type scale (token → use) + "use the scale, never ad-hoc sizes".
 - Spacing system + rhythm + reading measure + "use the spacing tokens, not hand-rolled padding".
 - Palette (real values) + "no new shades".
-- Component catalogue: each shared component, purpose, variants, when to use — + "one shared system, no one-offs".
+- Component catalogue: each shared component, purpose, variants, when to use — + "one shared system, no one-offs". Verify every component you name is a real file — grep for it. If a treatment is actually repeated inline (e.g. several copies of the same accent span) rather than abstracted into a component, document it AS inline and flag the consolidation as a follow-up; never name a component that doesn't exist in the code (an idealised catalogue describing phantom components is worse than none).
 - Conventions: eyebrows, focus rings, native-control handling (branded desktop / native mobile, DOB year-jump), CMS-driven content + intentional empty states, reduced-motion.
 - A short "adding a new page/section" checklist so future work matches the system.
 - A "known gaps / follow-ups" section — pull the "⚠️ odd ones out" list straight from the Step 1b consistency audit (`ui-review/CONSISTENCY.md`) so every enumerated inconsistency is captured as a follow-up, not just things that happened to be noticed.
