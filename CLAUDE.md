@@ -80,14 +80,16 @@ that manages all site content, enquiries, payments and bookings.
    No `@vite`/module `<script>` and no Alpine `x-if` under `resources/views/livewire/**`
    (a re-inserted script doesn't re-execute; an `x-if` clone survives the morph and
    is inserted twice). Scripts load from the layout; Alpine toggles with `x-show`.
+   Guard: `NoDomInsertionInLivewireViewsTest`.
 9. **Session-reading middleware registers on the `web` group, after `StartSession`**
    (`$middleware->web(append: …)` in `bootstrap/app.php`), never on the global stack:
    global middleware reads a null session in production while in-process tests,
    which pre-populate the store, stay green.
+   Guards: `SessionMiddlewareIsNotGlobalTest` + `SessionSurvivesARealRequestTest`.
 10. **Non-scrolling shells are sized in `svh`, never `100vh`/`h-screen`.** Mobile
     `100vh` is the toolbar-hidden height, so anything pinned to the bottom of a shell
     that never scrolls sits off-screen. Viewport units only as `min-`/`max-` caps
-    (`layouts/app.blade.php`'s `min-h-screen` is fine).
+    (`layouts/app.blade.php`'s `min-h-screen` is fine). Guard: `NoFullViewportHeightShellsTest`.
 11. **One writer per fact, one reader per figure.** Anything that changes a balance,
     a space count or a status goes through exactly one Action. A number shown on two
     screens comes from one resolver, and the test asserts the two agree with each
@@ -95,6 +97,12 @@ that manages all site content, enquiries, payments and bookings.
 12. **A gate must never become a picture of a gate.** Restyling, moving or replacing a
     screen that blocks an action keeps the server-side refusal, and ships a test that
     the write is still refused when the screen is bypassed.
+13. **No Livewire public method shadows a `$wire` alias** (`commit`, `get`, `set`, `call`,
+    `dispatch`, …) — the front end can never reach it. Guard: `NoLivewireReservedNamesTest`
+    (parses the alias map from the vendored Livewire dist; re-check after a Livewire bump).
+14. **Every Alpine directive sits inside an `x-data` root** (a Livewire view's root element
+    counts), and every page rendering `x-data` ships Alpine. Guards:
+    `AlpineDirectivesHaveAScopeTest` + `AlpineShipsWherePagesUseItTest`.
 
 ## Conventions (match these exactly — no second ways of doing things)
 - **SEO / meta**: `<head>` meta is centralised in `layouts/app.blade.php` — every page
@@ -253,7 +261,7 @@ that manages all site content, enquiries, payments and bookings.
   Livewire view, "exactly one implementation of X") — and **prove the guard guards** by
   making it fail on purpose before trusting it.
 - **The suite must collect every `tests/*` directory.** A directory in no phpunit
-  testsuite silently never runs; assert it with a test that reads the config(s).
+  testsuite silently never runs. Guard: `SuiteCollectsEveryTestDirectoryTest` (both configs).
 - **A measurement is only as good as the tree and build it was taken on.** Before
   reporting anything measured: dependencies match the lockfile, assets are rebuilt
   (`npm run build` — the gitignored build dir otherwise measures an old commit), and the

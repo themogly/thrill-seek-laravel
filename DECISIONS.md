@@ -2219,3 +2219,64 @@ properties are spatie settings migrations in `database/settings/`, which `migrat
    what's appended there is `SecurityHeaders`, which doesn't read the session; the rule
    holds anyway because no app middleware reads it. `RUNNING-ORDER.md`'s `main at` line
    already said `be9e145`, the sha branched from, so it's unchanged.
+
+## Structural guards for the kit's architecture rules (test/structural-guards)
+Branch off main `900fb4b` (prompt `prompts/002-structural-guards.md`, item 2 of unattended run 1).
+Tests only, plus the guard pointers in CLAUDE.md. Premise confirmed: every rule holds on main,
+so every guard is green on real code; each was proven by a planted violation instead.
+Structural guards live in `tests/Unit/Architecture/` (new; plain PHPUnit, no app boot, sharing
+`SourceFiles` helpers); the two request-level halves are feature tests.
+
+| # | guard | scope | planted violation → red (one line) |
+|---|---|---|---|
+| 1 | `SuiteCollectsEveryTestDirectoryTest` | every top-level `tests/*` dir holding a `*Test.php`, against `phpunit.xml` **and** `phpunit.mysql.xml` | `tests/Planted/PlantedTest.php` → "tests/Planted holds *Test.php files but no <testsuite> in phpunit.xml collects it" |
+| 2 | `NoLivewireReservedNamesTest` | public methods *declared by the app* (own or `App\` traits) on every `app/Livewire` class, vs the `var aliases = {…}` map parsed from `vendor/livewire/livewire/dist/livewire.js` (29 aliases on 4.3.1); fails loudly on < 10 aliases or no `commit` | `PlantedGuard::commit()` → "App\Livewire\PlantedGuard::commit() shadows $wire.commit" |
+| 3a | `AlpineDirectivesHaveAScopeTest` | all `resources/views/**` except `vendor/` | `<button @click :class>` outside x-data → "planted-alpine.blade.php:2 x-on:click has no x-data root" |
+| 3b | (same, component path) | a component with no root of its own is scope-dependent; every render site must be inside a root, transitively | `<x-planted.needs-scope />` outside x-data → "renders <x-planted.needs-scope> (its Alpine needs a root) outside any x-data" (the same tag inside x-data was not flagged) |
+| 3c | `AlpineShipsWherePagesUseItTest` | renders every parameterless public GET page (18 pages); any page with `x-data` must carry the Livewire script | `@livewireScripts` removed **and** `inject_assets => false` → "/ renders x-data but loads no Livewire/Alpine script" |
+| 4 | `NoDomInsertionInLivewireViewsTest` | `resources/views/livewire/**` **plus every app component those views render, transitively** | `<template x-if>` + `<script>` in a Livewire view → "livewire/planted.blade.php:2 uses x-if" |
+| 5a | `SessionMiddlewareIsNotGlobalTest` | `app/Http/Middleware/*` readers (`session(`, `->session()`, `Session::`) vs the registrations in `bootstrap/app.php` | unregistered reader → "PlantedSessionReader reads the session but is not registered on the web group"; `$middleware->append(...)` → "… is registered on the GLOBAL stack"; on `web(append:)` → green |
+| 5b | `SessionSurvivesARealRequestTest` | magic-link login (request 1) → `/account` behind `auth:customer` (request 2) carrying **only** the session cookie | second request without the cookie → "Expected response status code [200] but received 302" |
+| 6 | `NoFullViewportHeightShellsTest` | `resources/views/**` + `resources/css/**` | `lg:h-screen` and `height: 100vh` → red on both lines; `min-h-screen`, `max-h-[100vh]`, `min-height:100vh` on the same planted file not flagged |
+
+**Allowlists:** none. **Exclusions, with reasons:** 3a skips `resources/views/vendor/` (published
+mail header + theme CSS — third-party, no Alpine). 2 ignores methods Livewire's own base class
+declares (Livewire's API is Livewire's business). 5a accepts a reader registered as a route
+**alias** as well as on `web`: aliases only run on routes, and every app route is in
+`routes/web.php`, inside the web group.
+
+**Decisions taken while building (record why):**
+- **Guard 3 scope.** A Livewire view's root element counts as an Alpine root — Livewire calls
+  `addRootSelector(() => "[wire\\:id]")` (`livewire.js:13892`). On `<x-…>` component tags,
+  `:prop` is Blade's prop binding, so only `x-*` and `@event` count there. `@event`/`:attr` need a
+  value (`@endif` inside a tag is Blade). Blade comments, `@php`, `{{ }}`, `{!! !!}`,
+  `@directive(…)` arguments and script/style bodies are blanked before the walk (keeping
+  newlines). The walker counts 129 directives today and must see more than 20, so a broken
+  parser can't pass.
+- **What a plain Blade page loads.** There's one layout (`layouts/app`), and it loads Alpine
+  through `@livewireScripts`. There's also a second path: Livewire 4 auto-injects its assets when
+  a component renders, and the footer's `NewsletterSignup` island renders on every page. The
+  first plant (removing `@livewireScripts` alone) therefore stayed green — correctly, because
+  Alpine still shipped. The plant had to remove both paths.
+- **3c in-process trap.** Livewire records "scripts already rendered" in a singleton, so in one
+  test only the first page got the script. A real FPM request starts fresh, so the test fires
+  Livewire's own `flush-state` hook before each page.
+- **5b in-process trap.** The test client shares the session store and the auth guard across
+  requests. Proved it: the naive version (array driver, no reset, no cookie) **passes** even
+  though nothing went through a cookie (`false-green.md` #6 exactly). So the test uses the
+  `database` session driver, then forgets the session drivers, the `session.store` instance and
+  the guards between the two requests. The second request carries only the cookie.
+- **Guard 4 widened** beyond the prompt's "under `resources/views/livewire/`" to include the
+  components those views render, since their markup is morphed just the same. All are clean.
+
+**Gap report.**
+1. *Required, not done:* none.
+2. *Forbidden, done:* none. The planted violations touched `app/`, `resources/`, `config/` and
+   `bootstrap/` temporarily; each was reverted (`git status` clean outside `tests/` + CLAUDE.md).
+3. *Not mentioned, done:* guard 4's transitive component scope; the `SourceFiles` test helper;
+   two new CLAUDE.md architecture lines (13 reserved names, 14 Alpine scope), because those
+   guards had no rule to sit beside. 002's premise again cites `bootstrap/app.php:25` as
+   "middleware appended to web": true, but it's `SecurityHeaders`, which isn't a session reader.
+   No app middleware reads the session today, so 5a guards the next one.
+
+Tests 369 → 378; `composer check` green; `phpunit.mysql.xml` 378/378 green.
