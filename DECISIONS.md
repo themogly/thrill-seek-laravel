@@ -2280,3 +2280,79 @@ declares (Livewire's API is Livewire's business). 5a accepts a reader registered
    No app middleware reads the session today, so 5a guards the next one.
 
 Tests 369 → 378; `composer check` green; `phpunit.mysql.xml` 378/378 green.
+
+## Email audit (email/audit-pass)
+Branch off main `911ba91`. Kit file `audits/email-audit.md` run verbatim (item 3 of unattended run
+1). Report: `audits/reports/email-audit.md`, committed before any fix, with the inventory table
+first. Verified by doing: the log mailer, the real Redis queue and the real worker (`tries=1`, as
+Horizon), with the real controls pressed in the browser. Stripe paths went through the real webhook
+handler with a constructed event (no local Stripe keys).
+
+**Phase 1 found and fixed (each failing-first, one commit):**
+- **Customer balance payments sent nothing.** No receipt, no owner notification. The webhook only
+  acted on held bookings, while the success page promised a confirmation email.
+  `HandleCheckoutSessionCompleted` now sends the shared `SendPaymentReceipt` for a paid payment
+  against an existing booking. Decided: any paid payment against a booking gets the receipt,
+  including a late payment on a hold that already expired, because the money was taken and the
+  owner needs to know.
+- **Newsletter "Send test to me" never arrived.** The queued mailable carried an unsaved subscriber
+  (id 0); the worker threw `ModelNotFoundException` after the UI said "Test sent". It now goes out
+  with `sendNow`, and a transport error shows as "Test email failed". The existing
+  `test_send_test_does_not_touch_real_subscribers_or_history` asserted `assertQueued`, which encoded
+  the bug, so it was re-pointed to `assertSent` and its intent (test address only, no history) kept.
+- **No retries.** Horizon has `tries => 1` and no mailable set its own. Added the abstract
+  `App\Mail\QueuedMailable` (`tries 4`, `backoff [30,120,600]`, `ShouldQueueAfterCommit`, and
+  `failed()` logging the type, never the address). All 8 queued mailables extend it.
+  `CourseMessageMail` is exempt because it's sent synchronously inside `SendCourseMessageToRecipient`,
+  which got the same rules (tries 3 → 4, plus backoff, after-commit and `failed()`). The sign-in
+  link's 20-minute expiry outlives the ~12.5-minute retry window.
+- **Sibling voucher path.** `EmailVoucher` is now the single sender for the webhook and the admin
+  button.
+- **The reschedule claim** follows the result (`RescheduleBooking::handle()` now returns `bool`).
+- **Failure visibility:** the `MailHealthOverview` dashboard widget plus `App\Support\MailHealth`
+  (failed email jobs in the last 7 days by type; config warnings on non-local servers). Help-guide
+  section "Is email working?" added.
+
+**Phase 3:** `php artisan gforce:mail-test {email}` (synchronous, real transport error);
+`tests/Feature/Mail/MailInventoryTest.php` (4 rules, each proven by a planted violation: an unused
+mailable, a raw `ShouldQueue` mailable, `lang/en` + `lang/cy`, and a new "We have emailed…"
+sentence). Two mail-named tests fixed: one asserts the send, one renamed to "renders".
+
+**Decisions recorded:**
+- **Locale not pinned.** The app has a single locale (`en`, no `lang/`), so pinning 16 call sites
+  would be ceremony. The inventory guard fails the build the moment a second locale appears.
+- **Keep CLAUDE.md's "queued and wrapped".** Wrapping stays where the UI claim is about something
+  else (a stored enquiry). Where the claim *is* the email (reschedule, voucher, test-send), it
+  follows the outcome.
+- **Mail logo stays an absolute `APP_URL` image for now.** It'll show broken on staging behind
+  basic-auth. CID embedding is follow-up E-2.
+- **`List-Unsubscribe` header not added** (needs a POST endpoint): follow-up E-1. The footer
+  one-click link works.
+
+**OWNER DECISION — PENDING:** should admin-originated acts email the customer the way the online
+paths do? (a) Creating a booking already Confirmed sends no `booking_confirmed` (verified by doing).
+(b) Vouchers → Redeem sends no receipt. Options: A always send; **B (recommended)** an "Email the
+customer" toggle defaulting on, like Reschedule; C never. Not implemented.
+
+**Out of scope, proposed as prompts:**
+- **E-1** List-Unsubscribe.
+- **E-2** CID logo.
+- **E-3** after a paid gift-voucher purchase, the payment-success page shows "Almost there… waiting
+  to confirm" indefinitely (no booking).
+- **E-4** the owner decision above.
+
+**Gap report.**
+1. *Required, not done:* the active health check runs on the dashboard rather than a status page
+   (the app has none besides `/up`). E-1 and E-2 are deferred, as above.
+2. *Forbidden, done:* none. "Do not change wording except as the fix to a finding": the new strings
+   ("Test email failed", "Booking rescheduled — email not sent", "Voucher email failed") are all
+   fixes to findings.
+3. *Not mentioned, done:*
+   - the help-guide section (CLAUDE.md rule for new admin features), with its coverage needle;
+   - the course-message job's `tries` raised 3 → 4;
+   - an existing false-green test re-pointed (above).
+   - The local dev DB now holds audit test records: enquiry `GF-RKHF7B`, bookings `BK-PCIEBU` and
+     `BK-KLBJK2`, payments, the subscriber `audit-newsletter@example.test`, and one failed job. All
+     are named "Audit …". They were left in place.
+
+Tests 378 → 399; `composer check` green; `phpunit.mysql.xml` green (see run report).

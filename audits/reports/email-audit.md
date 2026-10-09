@@ -28,15 +28,15 @@ job sat in `queues:default`.
 | `AccountLoginLinkMail` | "Email me a sign-in link" | `RequestAccountLoginLink.php:31` | yes | en | "we've emailed you a secure sign-in link" (neutral by design) | `Account/AuthTest` | ✅ delivered, link absolute |
 | `NewsletterConfirmationMail` | newsletter signup (double opt-in) | `NativeNewsletterService.php:57` | yes | en | "check your inbox to confirm" | `NewsletterTest` | ✅ delivered |
 | `NewsletterCampaignMail` · broadcast | admin "Send to subscribers" | `SendNewsletterCampaign.php:41` | yes, one per subscriber | en | "Newsletter queued — Sending to N" | `NewsletterCampaignTest`, `Newsletter/BuilderTest` | code read |
-| `NewsletterCampaignMail` · test | admin "Send test to me" | `EditNewsletterCampaign.php:52` | **yes (`send()` on a ShouldQueue mailable queues it)** | en | **"Test sent — Check {email}."** | none | ❌ **job FAILED in the worker** — `ModelNotFoundException: NewsletterSubscriber` |
+| `NewsletterCampaignMail` · test | admin "Send test to me" | `EditNewsletterCampaign.php` | **now synchronous (`sendNow`)** — was queued and failed | en | "Test sent" only on success; "Test email failed" + transport error otherwise | `Newsletter/BuilderTest` (real array transport + failure path) | ❌ was failing in the worker → ✅ fixed, delivered (re-checked by doing) |
 | `EnquiryReplyMail` | admin enquiry Reply | `SendEnquiryReply.php:27` | yes | en | "Reply sent — Emailed to {email}" | `Enquiries/EnquiryInboxTest` | ✅ delivered, per-enquiry Reply-To |
 | `TemplatedMail` · `payment_link` | admin "Send payment link" | `SendPaymentLink.php:43` | yes | en | "Payment link sent — Emailed to …" | `Payments/SendPaymentLinkTest` (one test named "can send a payment link" asserts no mail) | code read (no Stripe key) |
 | `TemplatedMail` · `payment_received` + `PaymentReceivedAdminNotification` | payment succeeds: enquiry conversion, held-booking confirm, bank transfer | `SendPaymentReceipt.php:28,41` (from `ConvertEnquiryToBooking`, `ConfirmHeldBooking`) | yes | en | payment-success page "check your inbox for the confirmation" | `Payments/StripeWebhookTest`, `Booking/DirectBookingWebhookTest` | ✅ bank transfer → both delivered |
-| `TemplatedMail` · `payment_received` — **customer balance payment** | customer "Pay balance" in account → webhook | **none** | — | — | **payment-success page: "You're Booked! … check your inbox for the confirmation" / "A confirmation email … is on its way"** | `Account/BookingsTest` asserts only the balance | ❌ **webhook marked it paid, balance 0, nothing queued** |
+| `TemplatedMail` · `payment_received` + `PaymentReceivedAdminNotification` — **customer balance payment** | customer "Pay balance" in account → webhook | `HandleCheckoutSessionCompleted` → `SendPaymentReceipt` (**added**) | yes | en | payment-success page "check your inbox for the confirmation" | `Account/BookingsTest::test_paid_balance_webhook_emails_the_receipt_and_tells_the_owner` | ❌ nothing was queued → ✅ fixed, both delivered (re-checked by doing) |
 | `TemplatedMail` · `booking_confirmed` | booking status changes to Confirmed | `BookingObserver.php:36` (`updated` only) | yes | en | none | `Bookings/AutomatedEmailsTest` | ✅ admin edit → Confirmed → delivered; ❌ admin **Create** with status Confirmed → nothing queued (see Owner decisions) |
-| `TemplatedMail` · `booking_rescheduled` | admin Reschedule (toggle "Email the customer") | `RescheduleBooking.php:45` | yes, wrapped in try/catch | en | "The customer has been emailed." (shown even if queueing threw) | `Bookings/BookingManagementTest` | code read |
+| `TemplatedMail` · `booking_rescheduled` | admin Reschedule (toggle "Email the customer") | `RescheduleBooking.php` | yes, wrapped; **now returns whether it queued** | en | "The customer has been emailed." only when it was; else "Booking rescheduled — email not sent" | `Bookings/BookingManagementTest` (incl. failure path) | code read + test |
 | `TemplatedMail` · `jump_reminder`, `balance_reminder` | `bookings:send-reminders` (daily) | `SendBookingReminders.php:42,70` | yes; `reminder_sent_at` / `balance_reminder_sent_at` markers | en | n/a | `Bookings/AutomatedEmailsTest` | code read |
-| `VoucherGiftMail` | voucher purchase paid (webhook); admin "Email voucher" | `IssuePurchasedVoucher.php:55`; **`VoucherResource.php:160` calls `Mail::` directly** | yes | en | "Voucher emailed" | `Vouchers/PublicVoucherPurchaseTest`, `Vouchers/VoucherTest` | code read (no redeemable voucher locally) |
+| `VoucherGiftMail` | voucher purchase paid (webhook); admin "Email voucher" | both via the one `EmailVoucher` action (**was** two paths, one raw `Mail::`) | yes | en | "Voucher emailed" only when queued, else "Voucher email failed" | `Vouchers/PublicVoucherPurchaseTest`, `Vouchers/VoucherTest`, `Vouchers/VoucherEmailPathsTest` | code read (no redeemable voucher locally) |
 | `CourseMessageMail` | admin course message; `courses:send-reminders` | `SendCourseMessageToRecipient.php:32` (job, one per student, `$tries = 3`) via `SendCourseMessage` | the **job** is queued; the mail is sent synchronously inside it | en | "Message queued …" | `Courses/CourseCommunicationsTest` (job pushed) | code read |
 
 **Package-sent mail:** none. The Filament panel registers `->login()` only, with no password reset,
@@ -200,3 +200,29 @@ Review: guard proven, command run against the log mailer, full suite green.
 - **E-2** — CID-embedded PNG mail logo instead of the absolute `APP_URL` image.
 - **E-3** — the payment-success page for a paid voucher purchase.
 - **E-4** — the owner's answer to the admin-originated emails decision above.
+
+## Outcome (fixes on `email/audit-pass`)
+
+Every Phase 1 and Phase 3 item was fixed failing-first, one commit each. Phase 2 had no must-fix
+findings.
+
+| Item | Commit | Proof |
+|---|---|---|
+| Balance-payment receipt + owner notification | `fix(email): receipt + owner notification for customer balance payments` | new test red on main; by doing: both delivered |
+| Newsletter test-send synchronous, failure reported | `fix(email): newsletter test-send goes synchronously…` | two tests red on main with the worker's exact error; by doing: delivered, "Test sent" |
+| `QueuedMailable` base: tries 4, backoff 30 s/2 min/10 min, after commit, `failed()` log | `fix(email): queued mail retries…` | `QueuedMailRetriesTest` red on main |
+| One `EmailVoucher` action | `refactor(email): one EmailVoucher action…` | `VoucherEmailPathsTest` red on main |
+| Reschedule claim follows the result | `fix(email): reschedule only says…` | failure-path test red on main |
+| Dashboard mail health + help-guide section | `feat(email): mail health on the dashboard…` | `MailHealthTest` |
+| `gforce:mail-test` | `feat(email): gforce:mail-test command…` | `MailTestCommandTest`; run against the log mailer and landed in the log |
+| Inventory guard | `test(email): mail inventory guard…` | each of the 4 rules planted red, then green |
+| Mail-named tests | `test(email): mail-named tests assert the send…` | — |
+
+**Final check:**
+- Every mailable has a caller and a render test (`MailRenderTest`, all 9).
+- The inventory test passes and was proven red.
+- The mail-test command works against the log mailer.
+- The full suite is green (399 tests, SQLite and MySQL).
+
+**Still open:** the owner decision (admin-originated emails), and follow-ups E-1 to E-4. The OWNER/OPS
+list above is unchanged.

@@ -160,6 +160,19 @@ settings migrations that step 4 already applies (see DECISIONS, kit sync 2026-09
 **Owner task (once, after the first deploy):** open Ploi's generated deploy script and
 delete any `php artisan key:generate` line it added.
 
+**After a deploy that touches mail settings (and on the first deploy):**
+- `php artisan gforce:mail-test you@yourdomain` — sends one plain email **synchronously** through
+  the configured mailer and prints "Sent …" or the transport's actual error. Then check it arrived
+  in a real inbox.
+- The admin **Dashboard → Failed emails (last 7 days)** should read `0` after the first day, and
+  **Email setup** should read `OK` (it flags `log`/`array` mailers, an empty `RESEND_API_KEY` and a
+  placeholder `MAIL_FROM_ADDRESS` on any non-local server).
+- Mail env vars, exactly as config reads them: `MAIL_MAILER=resend`, `RESEND_API_KEY`,
+  `MAIL_FROM_ADDRESS`, `MAIL_FROM_NAME`, and `APP_URL` (every link in a queued email is built
+  from it inside the worker).
+- Queued emails retry 4 times (30 s → 2 min → 10 min) on their own, whatever Horizon's
+  supervisor `tries` says — see `App\Mail\QueuedMailable`.
+
 **Must-be-running services (configure once — see "Queues, Horizon & scheduler"):**
 - **Horizon** under Supervisor with `autorestart=true` — the queue worker; **without it
   nothing sends** (confirmations, reminders, magic-link logins).
