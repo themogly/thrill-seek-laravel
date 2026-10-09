@@ -96,3 +96,22 @@ wasn't on 001's expected-files list).
   - **A-2** testimonial crop.
   - **A-3** owner password reset.
   - **A-4** admin polish batch (incl. the product→course-date FK cascade).
+
+## 5 — accessibility audit · `a11y/audit-pass` · merge `d5863c1`
+- Tests 425 → 432. `composer check` green; `phpunit.mysql.xml` 432/432 green.
+- axe-core 4.10.2 on 21 public pages at 1440/390 plus 6 signed-in account pages, with keyboard,
+  forms and toast checks by hand.
+  - **Before:** brand-primary contrast, heading-order ×4, `/testimonials` with no `<h1>`.
+  - **After:** brand-primary contrast only (178 nodes, all `#008fe6`; 0 other pairs).
+- **Fixed:**
+  - Toasts were unreadable (white on green-600, 3.13:1), off-palette and never announced.
+  - Heading structure, now guarded across every page.
+  - Booking-field errors tied to their controls (`@aware`).
+  - Skip-to-content link.
+- **`OWNER DECISION — PENDING`:** brand primary `#008fe6` (3.4–3.5:1) and `destructive` (4.3–4.45:1)
+  fail AA. Nearest passing: primary `oklch(0.545 0.18 240)`/`#0078cc`, destructive
+  `oklch(0.58 0.24 27)`. Options: A darken the tokens, B split into a `primary-strong` token for
+  text/fills, C accept. Not applied.
+- Homepage: before/after at 1440 and 390, **0 differing pixels** (`audits/reports/a11y/`).
+- Note: the committed evidence screenshots total 8.9 MB (full-page PNGs). Future runs should crop
+  them or keep them out of git.
