@@ -138,3 +138,26 @@ not touched.
   - The first byte comparison was invalid (the kernel re-read `APP_ENV=local` from `.env`); it was re-run with
     the process env set.
 - **Markers:** none.
+
+## 7 · 023 email link colour
+- **Branch:** `fix/email-link-colour` → merged `617ef9b`
+- **Tests:** 511 → 516; `composer check` green.
+- **What it did:** `App\Support\BrandHex` defines the blues once for emails and PDFs (`STRONG #0078cc`,
+  `ACCENT #2f8de4`).
+  - **Moved to STRONG:** the button fill (pure `#ffffff` text, 4.61:1), the two-column link, the newsletter
+    shell's link colour, the theme's `.button-primary` (pinned by test, since that CSS can't call PHP), and the
+    receipt and voucher-code PDF labels.
+  - **Kept bright, each with a reason in the test's allowlist:** text on the navy band (footer social links,
+    featured-course eyebrow: 5.47:1 there, where STRONG fails at 4.12), the voucher's 34px £ amount (large
+    text), and borders.
+  - **Evidence** (`audits/reports/run3/`): all 14 `/dev/mail` previews sent through the **log** mailer on
+    rolled-back data (only the 2 allowlisted on-navy links keep the old blue);
+    `023-booking-confirmation.eml`; cropped receipt and voucher PDF renders.
+- **Gap report:**
+  - **Did, not in the prompt:** `BuilderTest` pinned the old button hex. It now asserts `BrandHex::STRONG`; the
+    assertion's purpose (an inline-styled button) is unchanged.
+  - The prompt implied every use moves. Three text uses sit on navy, where the darker blue would *fail*, so
+    they stay bright (same rule as the site's dark surfaces).
+  - "One definition per medium" became one PHP class for both, since neither medium can read CSS variables.
+  - The voucher's `#0ea5e9` (on navy only, 6.85:1) is untouched.
+- **Markers:** none.
