@@ -3368,3 +3368,31 @@ Prompt 026, written in run 3 under Ben's "also fix anything outstanding". This i
     a second click.
 
   The mail-client button (this prompt) is POST either way.
+
+## The owner can reset a forgotten admin password (feat/admin-password-reset)
+
+Prompt 027, written in run 3 under Ben's "also fix anything outstanding". This is the admin audit's follow-up
+**A-3**, now done.
+
+- **Premise confirmed:** the panel had `->login()` only. A forgotten password on the live server meant someone with
+  SSH running `make:filament-user` or tinker.
+- **`->passwordReset(requestAction: App\Filament\Auth\RequestPasswordReset::class)`.**
+  - Filament's request page is rate-limited (2 a minute), and its `ResetPassword` notification is `ShouldQueue`
+    (Horizon, like every mail; a failure lands in `failed_jobs`, which the dashboard counts).
+  - The link is signed and expires in 60 minutes (the default broker).
+- **No account enumeration:** Filament's page answers an unknown email with "We can't find a user with that email
+  address", which reveals the admin login. The subclass returns the same "sent" notice for an unknown address
+  (and for a customer's address: customers are a separate guard and model). The throttle message is unchanged.
+  It lives in `app/Filament/Auth/`, outside page discovery, so it isn't a navigation item.
+- **The email:** Filament's notification, rendered in the `gforce` mail theme (the brand button `#0078cc`). It's
+  staff-facing, so it keeps Laravel's own wording. It's now in `/dev/mail` (`admin-password-reset`), the email
+  audit's inventory, and the launch checklist's §2 email table.
+- **Help guide:** one line in "Getting started" (worded without a "sent" claim, so the mail-claims guard has
+  nothing to pair). The `/dev/mail` preview uses an unsaved `User::make()` (never persisted; the guard's pattern rightly allows it), since `NoSeededAdminOnServersTest` allows only
+  `make:filament-user` and the dev seeder to create staff users.
+- **Tests** (`AdminPasswordResetTest`):
+  - the login links to the request page;
+  - a staff email queues the notification to that user;
+  - an unknown or customer email sends nothing and gets the same notice (red with Filament's own page class);
+  - the emailed token resets the password, and the new one logs in;
+  - the email renders in the brand theme.

@@ -65,6 +65,7 @@ class HelpGuide extends Page
                 'steps' => [
                     'The left menu is grouped: <strong>Site content</strong> (page wording &amp; photos), <strong>Bookings &amp; sales</strong> (the day-to-day), <strong>News</strong>, and <strong>Help</strong>.',
                     'Your changes are saved per screen — fill in a form and press <strong>Save</strong>.',
+                    '<strong>Forgot your password?</strong> On the login screen choose <strong>Forgot password?</strong> and enter your email: a reset link arrives within a minute or two and works for 60 minutes.',
                     'New to it? Jump to the <a href="#launch">launch checklist</a> at the bottom.',
                 ],
                 'cta' => null,

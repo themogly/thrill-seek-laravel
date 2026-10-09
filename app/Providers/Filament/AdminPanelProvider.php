@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Auth\RequestPasswordReset;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -29,6 +30,9 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->login()
+            // The owner can reset a forgotten password by email (prompt 027); the request page
+            // never reveals whether an address has an account.
+            ->passwordReset(requestAction: RequestPasswordReset::class)
             // Chosen, not Filament's default amber: a blue ramp in the brand's family that
             // keeps white button text at AA (measured: blue-600 5.26:1; brand primary 3.45:1 and the old amber 3.19:1 both fail).
             // OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS).

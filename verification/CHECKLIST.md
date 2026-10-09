@@ -120,6 +120,7 @@ For each email, check in a real inbox:
 | `jump_reminder` / `balance_reminder` | `bookings:send-reminders` (daily 09:00; run it by hand for a booking dated tomorrow / one with a balance due) | From |
 | `VoucherGiftMail` (with PDF) | a voucher purchase (§1); or Admin → Vouchers → **Email voucher** | site email |
 | `CourseMessageMail` (with attachments) | Admin → Course dates → a course → **Message students**, with a Document attached; or `courses:send-reminders` (daily 09:10) | site email |
+| Admin password reset (staff) | `/admin/login` → **Forgot password?** with a staff email; follow the link, set a new password, log in with it. An unknown address shows the same notice and sends nothing | From |
 
 - [ ] Every row arrives and renders on-brand. No Laravel default header text. The tandem-only "before
       your jump" block appears in `booking_confirmed` / `jump_reminder` for **tandem** bookings only.

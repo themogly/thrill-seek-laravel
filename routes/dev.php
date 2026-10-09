@@ -20,9 +20,13 @@ use App\Models\NewsletterCampaign;
 use App\Models\NewsletterSubscriber;
 use App\Models\Payment;
 use App\Models\Product;
+use App\Models\User;
 use App\Models\Voucher;
 use App\Settings\JumpPrepSettings;
+use Filament\Auth\Notifications\ResetPassword as ResetPasswordNotification;
+use Filament\Facades\Filament;
 use Illuminate\Mail\Mailable;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -78,7 +82,7 @@ Route::prefix('dev/mail')->group(function (): void {
     })->name('dev.mail.show');
 });
 
-/** @return array<string, callable(): Mailable> */
+/** @return array<string, callable(): (Mailable|MailMessage)> */
 function devMailPreviews(): array
 {
     $booking = fn (): Booking => Booking::factory()->confirmed()->create([
@@ -151,6 +155,16 @@ function devMailPreviews(): array
             ]);
 
             return new NewsletterCampaignMail($campaign, $subscriber);
+        },
+        // Staff-facing: the admin "Forgot password?" email (prompt 027), Filament's notification
+        // rendered in the gforce mail theme. Not a Mailable, but renders the same way.
+        'admin-password-reset' => function () {
+            // Unsaved: only make:filament-user / DevAdminSeeder may create staff users.
+            $user = User::make(['name' => 'Ben Owner', 'email' => 'owner@example.com']);
+            $notification = new ResetPasswordNotification('preview-token');
+            $notification->url = Filament::getPanel('admin')->getResetPasswordUrl('preview-token', $user);
+
+            return $notification->toMail($user);
         },
         // Every editable template, rendered with representative variables.
         ...collect([
