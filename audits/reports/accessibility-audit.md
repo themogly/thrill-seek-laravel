@@ -31,7 +31,7 @@ off `main` = `69be8dd`. Report written before any fix.
   AA needs 4.5:1 for this text size. **Nearest passing shade for both uses: `oklch(0.545 0.18 240)` =
   `#0078cc`** (4.63:1 as text on white, 4.51:1 under white text). Changing it changes the signed-off
   homepage and every CTA, so it's the owner's call. Options and spec are in DECISIONS
-  (`OWNER DECISION — PENDING`). → **Why it matters:** low-vision users can't reliably read the site's
+  (`OWNER DECISION — ANSWERED 9 Oct (see DECISIONS)`: option B, merged in run 3). → **Why it matters:** low-vision users can't reliably read the site's
   most important calls to action.
 - **The brand `destructive` token is 4.32:1** under white text and about the same as error text on
   white, just short of 4.5 for the 14 px inline errors in the booking forms → same owner decision
@@ -77,15 +77,15 @@ Review: the shared-component fixes (toaster, booking field, layout) land everywh
 
 ## OWNER
 
-- **`OWNER DECISION — PENDING`:** brand primary `#008fe6` and `destructive` contrast. Options and the
+- **`OWNER DECISION — ANSWERED 9 Oct (see DECISIONS)`:** brand primary `#008fe6` and `destructive` contrast. Options and the
   nearest passing shades are in DECISIONS.
 
 ## Status after fixes (`a11y/audit-pass`)
 
 | Item | Status | Proof |
 |---|---|---|
-| Brand primary `#008fe6` contrast | **OWNER DECISION — PENDING**, not changed | DECISIONS (options + nearest shade `oklch(0.545 0.18 240)` / `#0078cc`) |
-| `destructive` token 4.32–4.45:1 | **OWNER DECISION — PENDING**, not changed | nearest passing `oklch(0.58 0.24 27)` |
+| Brand primary `#008fe6` contrast | **OWNER DECISION — ANSWERED 9 Oct (see DECISIONS)**: `primary-strong` (016) | DECISIONS (options + nearest shade `oklch(0.545 0.18 240)` / `#0078cc`) |
+| `destructive` token 4.32–4.45:1 | **OWNER DECISION — ANSWERED 9 Oct (see DECISIONS)**: changed in 016 | nearest passing `oklch(0.58 0.24 27)` |
 | Toasts: contrast + palette + live region | **Done** | `ToasterTest`. Re-checked by doing: navy `oklch(0.28 0.14 255)` under `oklch(0.99 0 0)`, primary/destructive rule, error toast `role=alert`. |
 | `/testimonials` `<h1>` + heading order | **Done** | `HeadingStructureTest` walks every public page (red on main with exactly axe's list). Computed styles checked unchanged. |
 | Booking-field error association | **Done** | `FieldErrorAssociationTest` (input, textarea, date field native + trigger) |

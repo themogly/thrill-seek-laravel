@@ -75,7 +75,7 @@ class StructuredData
     /**
      * Fewer real reviews than this and no rating is published, so one or two
      * reviews can't put a star figure in search results.
-     * See DECISIONS (OVERNIGHT-DEFAULT — CONFIRM).
+     * OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS).
      */
     public const MIN_REVIEWS_FOR_RATING = 3;
 

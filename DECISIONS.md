@@ -2185,7 +2185,7 @@ The four new code rules all hold on `be9e145` (0 `@vite`/`<script>`/`x-if` under
 in `app/Http/Middleware/` reads the session). Nothing is enforced by a test yet — that's
 prompt 002. There is no suite-collection test yet either (also 002).
 
-**Motion ambition: subtle — `OVERNIGHT-DEFAULT — CONFIRM`.** G-Force never recorded a level.
+**Motion ambition: subtle — `OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS)`.** G-Force never recorded a level.
 As built: CSS transitions plus the opt-in `data-reveal` IntersectionObserver reveals in
 `resources/js/app.js` (skipped under `prefers-reduced-motion`; content visible without JS).
 No Motion One calls — the `motion` package is in `package.json` but imported nowhere (a
@@ -2388,7 +2388,7 @@ Not a finding, so the base `SettingsPage` is left as it is.
   - capacity has a floor at the current bookings.
 - **Sent newsletter:** the form is disabled, Save is hidden, and `beforeSave()` halts. The disabled
   schema alone still saved, which the test caught.
-- **Panel:** `AccountWidget` unregistered. Primary `Color::Blue`, **OVERNIGHT-DEFAULT — CONFIRM**:
+- **Panel:** `AccountWidget` unregistered. Primary `Color::Blue`, **OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS)**:
   white-on-primary measured 5.26:1, against the brand sky's 3.45:1, so the brand colour isn't used as
   a button fill.
 
@@ -2670,7 +2670,7 @@ and `/testimonials` published `AggregateRating` 4.8 from 8.
   approved, so dev pages are populated. Seeding production creates 0 testimonials (red on main).
 - **The rating counts real customers only.** `StructuredData::aggregateRating()` keeps approved
   testimonials with a `customer_id` and a rating; the seeded samples have none, so the discriminator is
-  correct. **`MIN_REVIEWS_FOR_RATING = 3`, `OVERNIGHT-DEFAULT — CONFIRM`**, so one or two reviews never
+  correct. **`MIN_REVIEWS_FOR_RATING = 3`, `OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS)`**, so one or two reviews never
   publish a star figure.
   - *Consequence to confirm:* a genuine review the **owner types into the admin** (no customer) shows on
     the page but **doesn't count toward the rating**. That's conservative and deliberate, since a
@@ -2796,11 +2796,10 @@ Location address, remove `Product::duration`. Each field was re-confirmed unused
   - **Its only value, recorded so it isn't lost:** Tandem Skydive = *"Approx. half a day at the dropzone"*.
 - **`HomePageSettings::team_lead` removed** (admin field, property, and settings migration
   `2026_10_09_120100_remove_home_team_lead`, the June pattern). Value was *"The people you'll fly with."*
-  **OVERNIGHT-DEFAULT — CONFIRM** (Ben agreed the gate's recommendations generally, not this field by
-  name).
+  **OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS)** (Ben confirmed this field by name).
 - **`Location::image` removed** (admin field, `image_url` accessor, `$fillable`, `ImageOptimization`
   entries, and the column in the same migration). It was empty on all 4 locations; no files touched.
-  **OVERNIGHT-DEFAULT — CONFIRM.**
+  **OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS).**
 - **Migrations on a seeded copy, both drivers:**
   - MySQL: a `mysqldump` clone of the dev DB was migrated. Row counts were unchanged (4 products,
     4 locations, 3 bookings, 5 payments), the columns and `home.team_lead` were gone, rolled back cleanly,
@@ -2866,7 +2865,7 @@ into CMS text, so changing a product price left those sentences quoting the old 
 | AFF FAQ "How much does it cost" | £1,750 / £600 | ✅ Products `aff-course` / `consolidation-jumps` | `{price:aff-course}` / `{price:consolidation-jumps}` |
 | AFF settings `seo_description` | £1,750 | ✅ `aff-course` | `{price:aff-course}` |
 | Coached settings `price_eyebrow`, `seo_description` | £60 ×2 | ✅ Product `coached-skills` | `{price:coached-skills}` (price only; the eyebrow's wording is C-1, still open) |
-| Tandem FAQ "weight and age limits" | £20 / £40 / £60 | ⚠️ only as **text** in `Product::weight_charges` (`"charge": "£20"`), not money | typed — **OWNER DECISION — PENDING** below |
+| Tandem FAQ "weight and age limits" | £20 / £40 / £60 | ⚠️ only as **text** in `Product::weight_charges` (`"charge": "£20"`), not money | typed — **OWNER DECISION — ANSWERED 9 Oct (see DECISIONS)**: stays typed |
 | `Product::weight_charges` (Tandem weight table) | £20 / £40 / £60 | the same text | typed (it is the table itself) |
 | AFF FAQ "membership" | ~£125/year | ❌ British Skydiving's price, not ours | typed, owner content |
 | AFF FAQ "Is kit provided?" | ~£5 packing | ❌ none | typed, owner content |
@@ -2910,7 +2909,7 @@ into CMS text, so changing a product price left those sentences quoting the old 
   as the seeds): FAQs tandem #4, #5, #8 and aff #12; Tandem `seo_description`, `hero_subtitle` and
   `charity_note_body`; AFF `seo_description`; Coached `seo_description` and `price_eyebrow`; Terms. Swap each
   figure for the token in the table above, and the preview confirms it.
-- **OWNER DECISION — PENDING (weight surcharges):** the £20/£40/£60 bands are typed twice, in the Tandem
+- **OWNER DECISION — ANSWERED 9 Oct (see DECISIONS) (weight surcharges): (a), keep both typed for now.** the £20/£40/£60 bands are typed twice, in the Tandem
   weight table (text on the product) and the weight FAQ. Options:
   - (a) keep both typed, and the Help guide reminds the owner to change both;
   - (b) make the weight bands money (pence) on the product, with a `{weight:…}` token.
@@ -2996,3 +2995,34 @@ gone.
   - Rescheduling has no capacity check against the target slot. It isn't listed as a refusal to test,
     because the code doesn't refuse it. Worth an owner question if over-filling a slot by rescheduling
     matters.
+
+## Ben's answers to run 2's owner questions (9 Oct 2026) — docs/run3-owner-answers
+
+Ben read `RUN-REPORT-2.md`, the 008 proposal and the 016/017 screenshots, and answered every question
+(`prompts/unattended-run-3.md`). Each answered `OWNER DECISION — PENDING` / `OVERNIGHT-DEFAULT — CONFIRM`
+marker now reads `… — ANSWERED 9 Oct (see DECISIONS)`, pointing here.
+
+- **008 — FK delete rules:** the table is approved **as proposed**: the 13 FKs → `RESTRICT`, **plus #26
+  (the documents pivot) → `RESTRICT`**, with `Document` joining `GuardsDeletion` ("attached to N sent
+  messages"). The model-level `deleting` listener on every `GuardsDeletion` model is approved. Built in
+  run 3 (Phase 2).
+- **016 — brand contrast `primary-strong`:** merge it.
+  - Pure-white `primary-foreground`: **yes**.
+  - Display prices of 24px and up stay bright `primary`: **yes**.
+  - The customer's "You" label in navy: **yes**.
+  - Hover and active states: **darken on hover**, not the lighter wash (prompt 020).
+- **017 — feature-split 16:10: withdrawn, not merged.** The 1024 imbalance (the text running well past the
+  photo) is worse than the desktop side-trim. The admin crop stays 16:10; the layout stays as on `main`.
+- **007:** at least 3 real customer reviews before a rating is published, and owner-typed reviews show
+  but don't count: **confirmed**.
+- **012:** removing `home.team_lead` and `Location::image`: **confirmed**.
+- **014:** the weight surcharges stay typed for now (option (a)).
+- **Rescheduling into a full tandem slot must be refused** (prompt 021).
+- **App-level noindex for non-production hosts:** yes (prompt 022).
+- **Email buttons and links move to the accessible blue `#0078cc`:** yes (prompt 023).
+- **Keyboard focus on the scrollable payments table:** yes (prompt 024).
+
+Run 1's answers (RUNNING-ORDER row 8) had already closed two markers that were still worded as open: admin
+panel primary **Blue** and motion ambition **subtle**. Both are flipped here too, as are the
+accessibility audit's brand-contrast rows (answered by 016) and the email audit's heading (option B,
+built in 009). The 016 and 008 markers live on their branches and are flipped when each merges in run 3.
