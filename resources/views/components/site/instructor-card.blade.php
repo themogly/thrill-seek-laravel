@@ -25,7 +25,7 @@
         <div class="absolute inset-x-0 bottom-0 border-t-4 border-primary bg-secondary/95 px-6 py-4 text-white">
             <{{ $heading }} class="font-display text-3xl uppercase leading-none">{{ $instructor->name }}</{{ $heading }}>
             @if ($instructor->role)
-                <p class="mt-1 text-xs font-bold uppercase tracking-[0.25em] text-sky-bright">{{ $instructor->role }}</p>
+                <x-ui.meta-label tone="sky-bright" class="mt-1">{{ $instructor->role }}</x-ui.meta-label>
             @endif
         </div>
     </div>
