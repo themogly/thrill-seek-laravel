@@ -33,7 +33,7 @@
                 <div class="band-ink absolute inset-0 -z-10"></div>
             @endif
             <div class="mx-auto max-w-4xl px-4 py-section lg:px-8 lg:py-section-lg">
-                <p class="text-xs font-bold uppercase tracking-[0.25em] text-sky-bright">Testimonials</p>
+                <h1 class="font-sans text-xs font-bold uppercase tracking-[0.25em] text-sky-bright">Testimonials</h1>
                 <span aria-hidden="true" class="mt-4 block font-display text-7xl leading-none text-sky-bright">&ldquo;</span>
                 <blockquote class="-mt-6 font-display text-3xl uppercase leading-[1.05] tracking-wide md:text-5xl">
                     {{ $featured->home_quote }}

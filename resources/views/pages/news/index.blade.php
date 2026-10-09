@@ -27,7 +27,7 @@
                         </div>
                         <div class="flex flex-1 flex-col p-6">
                             <p class="text-xs font-bold uppercase tracking-[0.2em] text-primary">{{ $article->published_at->format('j M Y') }}</p>
-                            <h3 class="mt-2 font-display text-h3 uppercase leading-tight text-secondary">{{ $article->title }}</h3>
+                            <h2 class="mt-2 font-display text-h3 uppercase leading-tight text-secondary">{{ $article->title }}</h2>
                             @if (filled($article->lead))
                                 <p class="mt-2 text-muted-foreground">{{ $article->lead }}</p>
                             @endif

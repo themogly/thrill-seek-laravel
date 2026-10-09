@@ -2,7 +2,7 @@
     @if ($this->enquirySent)
         <div class="border-2 border-secondary bg-card p-8 text-center">
             <span class="mx-auto flex h-14 w-14 items-center justify-center bg-primary text-primary-foreground"><x-icon name="check" class="h-7 w-7" /></span>
-            <h3 class="mt-4 font-display text-2xl uppercase text-secondary">Booking request sent</h3>
+            <h2 class="mt-4 font-display text-2xl uppercase text-secondary">Booking request sent</h2>
             <p class="mt-2 text-muted-foreground">Thanks {{ $name }} — we've got your details and will be in touch shortly to confirm your jump and arrange payment.</p>
             <x-ui.button href="/" class="mt-6">Back to home</x-ui.button>
         </div>
@@ -20,7 +20,7 @@
         <div class="mt-8">
             @if ($availableSlots->isEmpty())
                 <div class="border-2 border-secondary bg-card p-8 text-center">
-                    <h3 class="font-display text-2xl uppercase text-secondary">No dates online right now</h3>
+                    <h2 class="font-display text-2xl uppercase text-secondary">No dates online right now</h2>
                     <p class="mt-2 text-muted-foreground">We add jump dates all the time. Send an enquiry and we'll find you a slot.</p>
                     <x-ui.button href="/contact" class="mt-6">Get in touch</x-ui.button>
                 </div>
@@ -28,9 +28,9 @@
                 @php $byLocation = $availableSlots->groupBy(fn ($s) => $s->location->name); @endphp
                 @foreach ($byLocation as $locationName => $locationSlots)
                     @if ($byLocation->count() > 1)
-                        <h3 class="mb-3 mt-8 flex items-center gap-1.5 font-display text-xl uppercase text-secondary first:mt-0">
+                        <h2 class="mb-3 mt-8 flex items-center gap-1.5 font-display text-xl uppercase text-secondary first:mt-0">
                             <x-icon name="map-pin" class="h-5 w-5 text-primary" /> {{ $locationName }}
-                        </h3>
+                        </h2>
                     @endif
                     <div class="grid gap-4 sm:grid-cols-2 @if(! $loop->last) mb-2 @endif">
                         @foreach ($locationSlots as $jumpSlot)
@@ -62,7 +62,7 @@
     @if ($step === 2)
         <form wire:submit="continueToReview" class="mt-8 border-2 border-secondary bg-card p-6 sm:p-8">
             <div class="flex items-center justify-between gap-4">
-                <h3 class="font-display text-2xl uppercase text-secondary">Your details</h3>
+                <h2 class="font-display text-2xl uppercase text-secondary">Your details</h2>
                 <x-ui.button variant="link" wire:click="backToStep(1)">Change date</x-ui.button>
             </div>
             @if ($selectedSlot)
@@ -102,7 +102,7 @@
 
             @if ($product && $product->addOns->where('purchasable', true)->isNotEmpty())
                 <div class="mt-8">
-                    <h4 class="font-display text-xl uppercase text-secondary">Make it unforgettable</h4>
+                    <h3 class="font-display text-xl uppercase text-secondary">Make it unforgettable</h3>
                     <div class="mt-3 grid gap-3 sm:grid-cols-2">
                         @foreach ($product->addOns->where('purchasable', true) as $addOn)
                             <label class="flex cursor-pointer items-center justify-between gap-3 border-2 border-border bg-background p-4 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
@@ -133,7 +133,7 @@
     @if ($step === 3 && $product)
         <div class="mt-8 border-2 border-secondary bg-card p-6 sm:p-8">
             <div class="flex items-center justify-between gap-4">
-                <h3 class="font-display text-2xl uppercase text-secondary">{{ $this->paymentsEnabled ? 'Review & pay' : 'Review & send' }}</h3>
+                <h2 class="font-display text-2xl uppercase text-secondary">{{ $this->paymentsEnabled ? 'Review & pay' : 'Review & send' }}</h2>
                 <x-ui.button variant="link" wire:click="backToStep(2)">Edit details</x-ui.button>
             </div>
 
