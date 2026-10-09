@@ -22,3 +22,11 @@ build on:
   8.4.x".
 - Gap report: none. `OVERNIGHT-DEFAULT`: none. The pin is `8.4.1`, the floor the lock needs (the prompt's
   default), because SETUP names no exact patch version.
+
+## 1 — 005 FAQ admin 500 · `fix/faq-scope-collision` · merge `fc94134`
+- Tests 432 → 434. `composer check` and MySQL green.
+- `Faq::scopeForPage` → `scopeOnPage`. The admin FAQ list works again: verified as the owner, 200 with
+  rows. The test now lists real rows (it was red on main). A new guard fails on any model scope that
+  shadows a builder method (proven by a planted violation).
+- Public FAQ output is byte-identical to a pre-fix snapshot.
+- Gap report: none. Owner/overnight items: none.
