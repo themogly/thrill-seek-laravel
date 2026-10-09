@@ -88,8 +88,10 @@ class ProductForm
                             ->helperText('In pounds, e.g. 260.00. Leave empty for enquiry-only pricing.'),
                         MoneyField::pounds('deposit_pence')
                             ->label('Deposit')
-                            ->helperText('For AFF: the amount paid up front, e.g. 300.00.')
-                            ->visible(fn (Get $get): bool => $get('type') === ProductType::Aff),
+                            ->helperText('For AFF: the amount paid up front, e.g. 300.00. Required — without it the courses can’t be booked online.')
+                            ->visible(fn (Get $get): bool => $get('type') === ProductType::Aff)
+                            ->required(fn (Get $get): bool => $get('type') === ProductType::Aff)
+                            ->minValue(1),
                         TextInput::make('price_note')
                             ->label('Price note')
                             ->helperText('Small print under the price row, e.g. “Paid direct to G-Force”.')
