@@ -3,22 +3,16 @@
 namespace App\Mail;
 
 use App\Models\NewsletterSubscriber;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\URL;
 
 /**
  * Double opt-in: asks the subscriber to confirm before we ever send them a
  * newsletter. The confirm link is a signed route — no login, tamper-proof.
  */
-class NewsletterConfirmationMail extends Mailable implements ShouldQueue
+class NewsletterConfirmationMail extends QueuedMailable
 {
-    use Queueable, SerializesModels;
-
     public function __construct(public NewsletterSubscriber $subscriber) {}
 
     public function envelope(): Envelope

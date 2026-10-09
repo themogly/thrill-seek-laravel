@@ -3,20 +3,14 @@
 namespace App\Mail;
 
 use App\Models\Customer;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 
 /**
  * The passwordless "log in to your account" link. Short-lived and single-use.
  */
-class AccountLoginLinkMail extends Mailable implements ShouldQueue
+class AccountLoginLinkMail extends QueuedMailable
 {
-    use Queueable, SerializesModels;
-
     public function __construct(
         public Customer $customer,
         public string $url,

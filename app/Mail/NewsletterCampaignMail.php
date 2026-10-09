@@ -6,13 +6,9 @@ use App\Models\NewsletterCampaign;
 use App\Models\NewsletterSubscriber;
 use App\Settings\GeneralSettings;
 use App\Support\NewsletterRenderer;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\URL;
 
 /**
@@ -20,10 +16,8 @@ use Illuminate\Support\Facades\URL;
  * blocks to email-safe HTML (or reuses the HTML frozen at send), wraps them in
  * the gforce shell, and carries a signed one-click unsubscribe footer.
  */
-class NewsletterCampaignMail extends Mailable implements ShouldQueue
+class NewsletterCampaignMail extends QueuedMailable
 {
-    use Queueable, SerializesModels;
-
     public function __construct(
         public NewsletterCampaign $campaign,
         public NewsletterSubscriber $subscriber,

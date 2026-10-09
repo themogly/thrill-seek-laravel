@@ -4,18 +4,12 @@ namespace App\Mail;
 
 use App\Models\EnquiryMessage;
 use App\Settings\GeneralSettings;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 
-class EnquiryReplyMail extends Mailable implements ShouldQueue
+class EnquiryReplyMail extends QueuedMailable
 {
-    use Queueable, SerializesModels;
-
     public function __construct(public EnquiryMessage $message) {}
 
     public function envelope(): Envelope
