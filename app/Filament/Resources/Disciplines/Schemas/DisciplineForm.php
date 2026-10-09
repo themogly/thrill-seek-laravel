@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Disciplines\Schemas;
 
+use App\Models\Discipline;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
@@ -27,7 +28,10 @@ class DisciplineForm
                     }),
                 TextInput::make('slug')
                     ->label('Slug')
-                    ->helperText('Used in links to filter instructors by discipline. Lowercase, no spaces.')
+                    ->helperText(fn (?Discipline $record): string => $record?->isPageDiscipline()
+                        ? 'Fixed — the '.$record->name.' page lists its instructors by this.'
+                        : 'A short internal name: lowercase, no spaces.')
+                    ->disabled(fn (?Discipline $record): bool => (bool) $record?->isPageDiscipline())
                     ->required()
                     ->maxLength(255)
                     ->unique(ignoreRecord: true)

@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\Disciplines\Tables;
 
+use App\Support\AdminActions;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -42,7 +42,7 @@ class DisciplinesTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    AdminActions::guardedBulkDelete(),
                 ]),
             ]);
     }
