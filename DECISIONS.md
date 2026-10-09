@@ -2469,3 +2469,23 @@ Not implemented either way.
    - local customer sign-in links were issued for the account scan (local DB only).
 
 Tests 425 → 432; `composer check` green.
+
+## Itemised consistency audit (docs/consistency-audit)
+Prompt `prompts/003-itemised-consistency-audit.md` (item 6 of unattended run 1). Report-only. Starting
+commit `e7b0921` (after the admin and accessibility audits merged). Premise confirmed:
+`ui-review/CONSISTENCY.md` didn't exist.
+- Method: source enumeration of every component tag and hand-rolled lookalike, then a rendered pass with
+  computed attributes for every instance on all 21 public pages at 1440 and 390, plus the 6 signed-in
+  account pages, and element crops in `ui-review/consistency-audit/`.
+- Result: **15 odd ones out (C-1…C-15; 14 actionable, C-14 record-only).**
+- Clean, stated in one line each:
+  - every button goes through `<x-ui.button>`;
+  - no section-divider lines;
+  - no icons on section headings;
+  - FAQs, "Meet your team" strips, instructor portraits (1:1), heroes and card corners are all
+    consistent.
+- The homepage was treated as the reference throughout; no homepage change is proposed.
+- The "majority" column in the evidence tables is a raw site-wide signature diff and mixes roles; the
+  verdicts are by role. Recorded in the file so nobody mistakes a `≠` for a finding.
+- Only `ui-review/CONSISTENCY.md`, `ui-review/consistency-audit/`, the known-gaps section of
+  `ui-guidelines.md` and this entry changed.
