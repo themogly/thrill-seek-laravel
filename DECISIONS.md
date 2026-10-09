@@ -2919,3 +2919,37 @@ into CMS text, so changing a product price left those sentences quoting the old 
 - **Help guide:** a new "Prices in your wording" section covers the tokens, where they work, typos, and the
   still-typed prices to update by hand.
 - Homepage pixel-identical (1440/390, 0 px, against the 013 baseline).
+
+## Consistency small fixes C-3, C-4, C-12, C-13 (ui/consistency-small-fixes)
+
+Prompt 015. Four odd ones out from the itemised consistency audit move onto shared styles, one commit each.
+No shared component existed for the first three, so two small ones were made rather than more inline copies.
+
+- **`<x-ui.meta-label>`** (new): the one small uppercase label. `text-xs` bold, `tracking-[0.25em]`, in a
+  palette tone: `primary` / `sky-bright` / `current`.
+  - **C-3, `/news`:** the article dates (`0.2em`) and the "G-Force News" image label (`0.3em`, the only one
+    on the site) now use it at `0.25em`. Only `/news` changes.
+  - The homepage news dates (the reference) already had exactly these classes and **were left inline**: the
+    homepage is signed off and the prompt says to change `/news` only. The component's docblock and
+    `ui-guidelines.md` say so.
+  - **C-4, testimonial grid:** role labels go from 400 / `0.2em` / `white/70` to the shared 700 / `0.25em` /
+    `sky-bright`. `<x-site.instructor-card>`'s role label (which already had those values) now renders
+    through the component too, pixel-identically.
+- **`<x-ui.loading-label>`** (new), **C-12:** the idle/loading swap inside a Livewire submit button.
+  "Sending…" is defined once there. Contact, Tandem, AFF and Coached enquiry forms all use it; "Sending..."
+  is gone. `SendingLabelTest` asserts every enquiry form renders it. The booking and voucher forms' "Sending
+  your request…" / "Taking you to secure payment…" are different actions and are out of scope.
+- **C-13:** the Tandem and AFF intro wrappers swap `py-16 lg:py-24` for `py-section-sm lg:py-section` (same
+  4rem / 6rem).
+- **Pixel checks (full page, 1440 + 390):** `/tandem`, `/aff`, `/meet-the-team` and `/contact` were 0 px.
+  The homepage was 0 px.
+  - **Instrument fix:** a first 390 homepage comparison showed 2,592 px. It was the below-the-fold
+    testimonial avatars (`loading="lazy"`) not yet loaded in one capture, not a markup change. Homepage
+    captures now force every image to load before the shot. With that, before (code stashed) and after were
+    0 px at both widths, twice each. Use the eager-image step for any future full-page comparison.
+- **Crops:** before/after JPEGs of `/news`, `/testimonials` and the contact form's loading state at 1440 and
+  390 are in `ui-review/consistency-small-fixes/`.
+- `ui-guidelines.md`:
+  - catalogue: both components, plus two rows in the cross-page table;
+  - known gaps: C-3, C-4, C-12 and C-13 removed, and C-7 too (fixed by 014, which missed this list);
+  - C-5 notes that the new component is the likely fix.
