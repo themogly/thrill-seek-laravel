@@ -18,7 +18,6 @@
     </div>
     <x-ui.button type="submit" wire:loading.attr="disabled" class="mt-6">
         <x-icon name="send" class="mr-2 h-4 w-4" />
-        <span wire:loading.remove wire:target="submit">Send Message</span>
-        <span wire:loading wire:target="submit">Sending...</span>
+        <x-ui.loading-label>Send Message</x-ui.loading-label>
     </x-ui.button>
 </form>
