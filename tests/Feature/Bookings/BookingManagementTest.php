@@ -7,6 +7,7 @@ use App\Filament\Resources\Bookings\Pages\CreateBooking;
 use App\Filament\Resources\Bookings\Pages\ListBookings;
 use App\Mail\TemplatedMail;
 use App\Models\Booking;
+use App\Models\EmailTemplate;
 use App\Models\TandemDate;
 use App\Models\User;
 use Database\Seeders\EmailTemplateSeeder;
@@ -96,6 +97,23 @@ class BookingManagementTest extends TestCase
                 'scheduled_at' => now()->addWeeks(3)->setTime(10, 0)->toDateTimeString(),
                 'notify' => false,
             ]);
+
+        $this->assertSame(BookingStatus::Rescheduled, $booking->refresh()->status);
+        Mail::assertNothingQueued();
+    }
+
+    public function test_a_reschedule_email_that_could_not_be_queued_is_not_reported_as_sent(): void
+    {
+        $booking = Booking::factory()->confirmed()->create();
+        // The template is gone, so the email can't be built — the reschedule still stands.
+        EmailTemplate::where('key', 'booking_rescheduled')->delete();
+
+        Livewire::test(ListBookings::class)
+            ->callTableAction('reschedule', $booking, [
+                'scheduled_at' => now()->addWeeks(3)->setTime(10, 0)->toDateTimeString(),
+                'notify' => true,
+            ])
+            ->assertNotified('Booking rescheduled — email not sent');
 
         $this->assertSame(BookingStatus::Rescheduled, $booking->refresh()->status);
         Mail::assertNothingQueued();

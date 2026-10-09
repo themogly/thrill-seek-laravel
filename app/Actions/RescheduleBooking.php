@@ -15,9 +15,11 @@ class RescheduleBooking
 {
     /**
      * Move a booking to a new slot or ad-hoc date/time and (optionally)
-     * email the customer — weather cancellations make this routine.
+     * email the customer — weather cancellations make this routine. Returns
+     * whether the customer email was queued, so the screen never claims a
+     * send that didn't happen.
      */
-    public function handle(Booking $booking, TandemDate|Carbon $newTime, bool $notifyCustomer = true): Booking
+    public function handle(Booking $booking, TandemDate|Carbon $newTime, bool $notifyCustomer = true): bool
     {
         $oldDate = $booking->scheduled_at;
 
@@ -32,14 +34,10 @@ class RescheduleBooking
         $booking->status = BookingStatus::Rescheduled;
         $booking->save();
 
-        if ($notifyCustomer) {
-            $this->emailCustomer($booking, $oldDate);
-        }
-
-        return $booking;
+        return $notifyCustomer && $this->emailCustomer($booking, $oldDate);
     }
 
-    private function emailCustomer(Booking $booking, ?Carbon $oldDate): void
+    private function emailCustomer(Booking $booking, ?Carbon $oldDate): bool
     {
         try {
             Mail::to($booking->email)->queue(new TemplatedMail(
@@ -57,6 +55,10 @@ class RescheduleBooking
                 'booking_id' => $booking->id,
                 'exception' => $e->getMessage(),
             ]);
+
+            return false;
         }
+
+        return true;
     }
 }

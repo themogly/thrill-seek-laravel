@@ -105,12 +105,22 @@ class BookingsTable
                             return;
                         }
 
-                        $reschedule->handle($record, $newTime, (bool) $data['notify']);
+                        $emailed = $reschedule->handle($record, $newTime, (bool) $data['notify']);
+
+                        if ($data['notify'] && ! $emailed) {
+                            Notification::make()
+                                ->warning()
+                                ->title('Booking rescheduled — email not sent')
+                                ->body('The new date is saved, but the customer email could not be sent. Let them know another way.')
+                                ->send();
+
+                            return;
+                        }
 
                         Notification::make()
                             ->success()
                             ->title('Booking rescheduled')
-                            ->body($data['notify'] ? 'The customer has been emailed.' : 'No email sent.')
+                            ->body($emailed ? 'The customer has been emailed.' : 'No email sent.')
                             ->send();
                     }),
                 EditAction::make(),
