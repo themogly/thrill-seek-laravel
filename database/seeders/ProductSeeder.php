@@ -20,7 +20,6 @@ class ProductSeeder extends Seeder
             'price_pence' => 26000,
             'price_note' => 'Paid direct to G-Force',
             'show_from_price' => true,
-            'duration' => 'Approx. half a day at the dropzone',
             'weight_charges' => [
                 ['band' => 'Up to 15st', 'charge' => 'Free'],
                 ['band' => '15.1 – 16st', 'charge' => '£20'],

@@ -30,7 +30,6 @@ class ProductFactory extends Factory
             'deposit_pence' => null,
             'price_note' => null,
             'show_from_price' => false,
-            'duration' => null,
             'features' => null,
             'weight_charges' => null,
             'repeat_pricing' => null,

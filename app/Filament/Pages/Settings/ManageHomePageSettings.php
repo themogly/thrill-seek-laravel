@@ -112,7 +112,6 @@ class ManageHomePageSettings extends SettingsPage
                 ]),
             Section::make('“Meet the team” teaser')
                 ->components([
-                    TextInput::make('team_lead')->label('Lead text (shown above the “Meet the Team” button on the home page)')->maxLength(500),
                 ]),
             Section::make('“Follow us” card')
                 ->description('The “Latest News” block next to it is managed under News.')

@@ -37,7 +37,6 @@ class Product extends Model implements GuardsDeletion
         'deposit_pence',
         'price_note',
         'show_from_price',
-        'duration',
         'features',
         'weight_charges',
         'repeat_pricing',

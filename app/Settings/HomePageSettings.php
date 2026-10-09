@@ -45,8 +45,6 @@ class HomePageSettings extends Settings
 
     public string $trust_title;
 
-    public string $team_lead;
-
     public string $instagram_caption;
 
     public string $testimonials_eyebrow;

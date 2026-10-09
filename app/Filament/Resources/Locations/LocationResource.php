@@ -9,7 +9,6 @@ use App\Models\Location;
 use App\Support\AdminActions;
 use BackedEnum;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -63,13 +62,6 @@ class LocationResource extends Resource
                         ->label('Description')
                         ->rows(2)
                         ->columnSpanFull(),
-                    FileUpload::make('image')
-                        ->label('Photo')
-                        ->helperText('Leave empty to keep the current image.')
-                        ->image()
-                        ->disk('public')
-                        ->directory('locations')
-                        ->dehydrated(fn (?string $state): bool => filled($state)),
                     Toggle::make('active')
                         ->label('Active')
                         ->helperText('Inactive locations are hidden from new dates and courses.')
