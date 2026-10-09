@@ -2953,3 +2953,46 @@ No shared component existed for the first three, so two small ones were made rat
   - catalogue: both components, plus two rows in the cross-page table;
   - known gaps: C-3, C-4, C-12 and C-13 removed, and C-7 too (fixed by 014, which missed this list);
   - C-5 notes that the new component is the likely fix.
+
+## Launch checklist tailored to G-Force (docs/launch-checklist)
+
+Prompt 018. `verification/CHECKLIST.md` was the kit's untailored template. It keeps the kit's structure
+and non-negotiables (money/email/silent-killer sections are the hard gate; `APP_KEY` off-server; no
+`key:generate` in deploy; restore tested; clean dataset; one real low-value transaction then refund), with
+every generic item replaced by G-Force's real one. Every name was grepped. The "NOT YET TAILORED" line is
+gone.
+
+- **New §0, staging specifics:**
+  - the site-email setting pointed at a test inbox;
+  - the `MAIL_MAILER` choice;
+  - basic-auth and noindex, both at the server;
+  - the TEST webhook with exactly the two handled events and the `2026-09-30.endive` API version (and
+    where the dashboard shows it);
+  - `gforce:mail-test`;
+  - the dashboard's "Failed emails (last 7 days)";
+  - `/dev/*` must 404.
+- **§1 money table:** every path enumerated from the code — tandem, tandem with a full or partial voucher,
+  AFF deposit, AFF balance from the account, voucher purchase, admin Redeem, payment link, bank transfer.
+  - Each row has the expected Stripe amount in pence → £ from the seeded prices (with "read the live
+    prices first") and the emails that must arrive.
+  - **Refunds: none in the app.** The checklist says so instead of inventing a path.
+- **§2 email table:** one row per email-audit inventory row, each with its real trigger on staging and its
+  Reply-To.
+  - Reply-To was read from each mailable: `TemplatedMail`, the login link, newsletter confirmation and the
+    owner payment notification set none, so replies go to `MAIL_FROM_ADDRESS`. The checklist says that
+    inbox must be read.
+- **§6b devices:** the phone subset of `real-device-checks.md`, with the dropped tablet/counter items named
+  and why.
+- **§7:**
+  - the three real scheduled commands, with what proves each ran;
+  - Horizon, `storage:link`, `config:cache` / `settings:clear-cache`;
+  - the production admin via `make:filament-user --panel=admin`, with no `test@example.com`.
+- **Gaps found while tailoring (recorded, not fixed; docs-only prompt):**
+  - **Staging noindex isn't in the app.** `/robots.txt` allows crawling on every host and no `noindex` is
+    sent by environment, so it must be an nginx `X-Robots-Tag` in Ploi. A code fix
+    (`Disallow: /` + a `noindex` meta when `APP_ENV` isn't production) would be a small follow-up prompt.
+  - **Basic-auth must exempt `/webhooks/stripe` and `/webhooks/resend`**, or staging webhooks 401.
+  - **There's no Users screen in the admin**, so "no `test@example.com`" is checked with a tinker one-liner.
+  - Rescheduling has no capacity check against the target slot. It isn't listed as a refusal to test,
+    because the code doesn't refuse it. Worth an owner question if over-filling a slot by rescheduling
+    matters.
