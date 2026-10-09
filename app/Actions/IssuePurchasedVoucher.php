@@ -2,15 +2,16 @@
 
 namespace App\Actions;
 
-use App\Mail\VoucherGiftMail;
 use App\Models\Payment;
 use App\Models\Voucher;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 
 class IssuePurchasedVoucher
 {
-    public function __construct(private readonly GenerateVoucherPdf $generatePdf) {}
+    public function __construct(
+        private readonly GenerateVoucherPdf $generatePdf,
+        private readonly EmailVoucher $emailVoucher,
+    ) {}
 
     /**
      * A voucher purchase has been paid: create the voucher from the
@@ -50,16 +51,7 @@ class IssuePurchasedVoucher
             ]);
         }
 
-        try {
-            if ($voucher->purchaser_email !== '') {
-                Mail::to($voucher->purchaser_email)->queue(new VoucherGiftMail($voucher));
-            }
-        } catch (\Throwable $e) {
-            Log::error('Failed to queue voucher gift email', [
-                'voucher_id' => $voucher->id,
-                'exception' => $e->getMessage(),
-            ]);
-        }
+        $this->emailVoucher->handle($voucher);
 
         return $voucher;
     }
