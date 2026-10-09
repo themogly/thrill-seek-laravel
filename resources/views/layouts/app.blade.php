@@ -63,9 +63,10 @@
     @stack('json-ld')
 </head>
 <body>
+    <a href="#main" class="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:top-4 focus-visible:left-4 focus-visible:z-[110] focus-visible:bg-secondary focus-visible:px-4 focus-visible:py-3 focus-visible:text-sm focus-visible:font-bold focus-visible:uppercase focus-visible:tracking-wide focus-visible:text-secondary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Skip to content</a>
     <div class="flex min-h-screen flex-col">
         <x-site.header />
-        <main class="flex-1">@yield('content')</main>
+        <main id="main" tabindex="-1" class="flex-1 focus:outline-none">@yield('content')</main>
         <x-site.footer />
     </div>
     <x-ui.toaster />

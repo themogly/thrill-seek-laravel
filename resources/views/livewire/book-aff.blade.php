@@ -2,7 +2,7 @@
     @if ($this->enquirySent)
         <div class="border-2 border-secondary bg-card p-8 text-center">
             <span class="mx-auto flex h-14 w-14 items-center justify-center bg-primary text-primary-foreground"><x-icon name="check" class="h-7 w-7" /></span>
-            <h3 class="mt-4 font-display text-2xl uppercase text-secondary">Course request sent</h3>
+            <h2 class="mt-4 font-display text-2xl uppercase text-secondary">Course request sent</h2>
             <p class="mt-2 text-muted-foreground">Thanks {{ $name }} — we've got your details and will be in touch shortly to confirm your place and arrange the deposit.</p>
             <x-ui.button href="/" class="mt-6">Back to home</x-ui.button>
         </div>
@@ -20,7 +20,7 @@
         <div class="mt-8">
             @if ($courses->isEmpty())
                 <div class="border-2 border-secondary bg-card p-8 text-center">
-                    <h3 class="font-display text-2xl uppercase text-secondary">New course dates coming soon</h3>
+                    <h2 class="font-display text-2xl uppercase text-secondary">New course dates coming soon</h2>
                     <p class="mt-2 text-muted-foreground">Send an enquiry and we'll let you know the moment the next course opens.</p>
                     <x-ui.button href="/aff#enquiry" class="mt-6">Ask about the next course</x-ui.button>
                 </div>
@@ -57,7 +57,7 @@
     @if ($step === 2)
         <form wire:submit="continueToReview" class="mt-8 border-2 border-secondary bg-card p-6 sm:p-8">
             <div class="flex items-center justify-between gap-4">
-                <h3 class="font-display text-2xl uppercase text-secondary">Your details</h3>
+                <h2 class="font-display text-2xl uppercase text-secondary">Your details</h2>
                 <x-ui.button variant="link" wire:click="backToStep(1)">Change course</x-ui.button>
             </div>
             @if ($course)
@@ -109,7 +109,7 @@
     @if ($step === 3 && $course)
         <div class="mt-8 border-2 border-secondary bg-card p-6 sm:p-8">
             <div class="flex items-center justify-between gap-4">
-                <h3 class="font-display text-2xl uppercase text-secondary">{{ $this->paymentsEnabled ? 'Review & pay deposit' : 'Review & send' }}</h3>
+                <h2 class="font-display text-2xl uppercase text-secondary">{{ $this->paymentsEnabled ? 'Review & pay deposit' : 'Review & send' }}</h2>
                 <x-ui.button variant="link" wire:click="backToStep(2)">Edit details</x-ui.button>
             </div>
 

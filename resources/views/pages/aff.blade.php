@@ -127,7 +127,7 @@
                 @foreach ($page->info_cards as $card)
                     <div class="md:px-8 md:first:pl-0 md:last:pr-0">
                         <div class="text-primary"><x-icon :name="$card['icon']" /></div>
-                        <h4 class="mt-3 font-display text-2xl uppercase text-secondary">{{ $card['title'] }}</h4>
+                        <h3 class="mt-3 font-display text-2xl uppercase text-secondary">{{ $card['title'] }}</h3>
                         <p class="mt-2 text-muted-foreground">{{ $card['body'] }}</p>
                     </div>
                 @endforeach
