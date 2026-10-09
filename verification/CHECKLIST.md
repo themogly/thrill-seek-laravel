@@ -161,6 +161,8 @@ For each email, check in a real inbox:
 - [ ] Tandem dates vs AFF course dates are exclusive per location: creating an overlapping one in
       Admin → Tandem dates / Course dates is refused with a clear message (create AND edit).
 - [ ] A course date shorter than 5 days is refused.
+- [ ] Rescheduling into a full tandem slot is refused: fill a slot, then Admin → Bookings → **Reschedule** another
+      booking. The full slot shows "— full" and can't be picked; nothing changes and no email is sent.
 - [ ] Tandem weight outside 30–120 kg is refused on `/book/tandem` with an inline error.
 
 ## 6. Public site sweep (design + content)
