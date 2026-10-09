@@ -3,6 +3,7 @@
 namespace App\Filament\Pages\Settings;
 
 use App\Settings\CoachedPageSettings;
+use App\Support\AdminPriceTokens;
 use App\Support\ImageCrop;
 use BackedEnum;
 use Filament\Forms\Components\FileUpload;
@@ -37,13 +38,13 @@ class ManageCoachedPageSettings extends SettingsPage
                 ->columns(2)
                 ->components([
                     TextInput::make('seo_title')->label('Page title')->required()->maxLength(255),
-                    Textarea::make('seo_description')->label('Page description')->rows(2)->required(),
+                    AdminPriceTokens::field(Textarea::make('seo_description')->label('Page description')->rows(2)->required()),
                 ]),
             Section::make('Hero (top of page)')
                 ->columns(2)
                 ->components([
                     TextInput::make('hero_title')->label('Heading')->required()->maxLength(255),
-                    TextInput::make('hero_subtitle')->label('Text under the heading')->maxLength(500),
+                    AdminPriceTokens::field(TextInput::make('hero_subtitle')->label('Text under the heading')->maxLength(500)),
                     ImageCrop::ratio(
                         FileUpload::make('hero_image')
                             ->label('Hero photo')
@@ -56,11 +57,10 @@ class ManageCoachedPageSettings extends SettingsPage
                 ]),
             Section::make('Main section')
                 ->components([
-                    TextInput::make('price_eyebrow')
+                    AdminPriceTokens::field(TextInput::make('price_eyebrow')
                         ->label('Small line (price)')
-                        ->helperText('e.g. “From £60 per session”.')
                         ->required()
-                        ->maxLength(255),
+                        ->maxLength(255)),
                     TextInput::make('heading')->label('Heading')->required()->maxLength(255),
                     Textarea::make('body')->label('Paragraph')->rows(4)->required(),
                     Repeater::make('skills')

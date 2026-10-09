@@ -42,6 +42,10 @@ class ServicePageSettingsTest extends TestCase
 
     public function test_coached_page_renders_the_seeded_settings_content(): void
     {
+        // The seeded price line is "From {price:coached-skills} per session" (014);
+        // a fresh install seeds the products too, so it renders the same as before.
+        $this->seed(ProductSeeder::class);
+
         $this->get('/coached')
             ->assertOk()
             ->assertSee('From £60 per session')

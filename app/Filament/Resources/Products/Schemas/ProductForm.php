@@ -37,7 +37,7 @@ class ProductForm
                             }),
                         TextInput::make('slug')
                             ->label('Reference (slug)')
-                            ->helperText('Used internally; lowercase letters and dashes.')
+                            ->helperText('Lowercase letters and dashes. Also used in price tokens like {price:tandem-skydive} — changing it breaks any wording that uses the old one.')
                             ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true)

@@ -1,14 +1,15 @@
 @extends('layouts.app')
 
 @inject('page', 'App\Settings\AffPageSettings')
+@inject('prices', 'App\Support\PriceTokens')
 
 @section('title', $page->seo_title)
-@section('description', $page->seo_description)
+@section('description', $prices->render($page->seo_description))
 
 @php $affProduct = $products->first(); @endphp
 @if ($affProduct)
     @push('json-ld')
-        <x-seo.json-ld :data="\App\Support\StructuredData::product($affProduct, url('/aff'), $page->seo_description)" />
+        <x-seo.json-ld :data="\App\Support\StructuredData::product($affProduct, url('/aff'), $prices->render($page->seo_description))" />
     @endpush
 @endif
 @foreach ($courseDates as $course)
@@ -18,7 +19,7 @@
 @endforeach
 
 @section('content')
-    <x-site.page-hero :title="$page->hero_title" :subtitle="$page->hero_subtitle" :image="$page->imageUrl($page->hero_image)" />
+    <x-site.page-hero :title="$page->hero_title" :subtitle="$prices->render($page->hero_subtitle)" :image="$page->imageUrl($page->hero_image)" />
 
     {{-- INTRO: image bleeds off the left edge --}}
     <section class="overflow-hidden">

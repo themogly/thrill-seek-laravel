@@ -1,19 +1,20 @@
 @extends('layouts.app')
 
 @inject('page', 'App\Settings\CoachedPageSettings')
+@inject('prices', 'App\Support\PriceTokens')
 
 @section('title', $page->seo_title)
-@section('description', $page->seo_description)
+@section('description', $prices->render($page->seo_description))
 
 @section('content')
-    <x-site.page-hero :title="$page->hero_title" :subtitle="$page->hero_subtitle" :image="$page->imageUrl($page->hero_image)" />
+    <x-site.page-hero :title="$page->hero_title" :subtitle="$prices->render($page->hero_subtitle)" :image="$page->imageUrl($page->hero_image)" />
 
     {{-- INTRO: image bleeds off the left edge --}}
     <section class="overflow-hidden">
         <div class="py-section-sm lg:py-section">
             <x-site.feature-split :image="$page->imageUrl($page->image)" alt="Advanced freefly coaching" side="left">
                 <p class="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.25em] text-primary">
-                    <span class="inline-block h-0.5 w-10 bg-primary"></span>{{ $page->price_eyebrow }}
+                    <span class="inline-block h-0.5 w-10 bg-primary"></span>{{ $prices->render($page->price_eyebrow) }}
                 </p>
                 <h2 class="heading-rule mt-4 font-display text-h2 uppercase tracking-wide text-secondary">{{ $page->heading }}</h2>
                 <p class="mt-6 max-w-measure text-lead text-muted-foreground">

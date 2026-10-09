@@ -121,6 +121,19 @@ class HelpGuide extends Page
                 'cta' => ['label' => 'Open Products', 'url' => ProductResource::getUrl()],
             ],
             [
+                'id' => 'price-tokens',
+                'icon' => 'heroicon-o-currency-pound',
+                'title' => 'Prices in your wording',
+                'intro' => 'Where a sentence quotes a price, type a <strong>price token</strong> instead of the figure. It shows the product’s current price, so changing a price on the product updates every sentence that mentions it.',
+                'steps' => [
+                    '<strong>The tokens:</strong> <code>{price:tandem-skydive}</code> shows the Tandem price, <code>{deposit:aff-course}</code> the AFF deposit and <code>{addon:outside-camera}</code> an add-on. After the colon goes the product’s “Reference (slug)”, or the add-on’s name in lowercase with dashes (P6 Third Party Insurance → <code>p6-third-party-insurance</code>).',
+                    '<strong>Where they work:</strong> FAQ answers, the Tandem/AFF/Coached page description and text under the heading, the Tandem charity note, the Coached price line and the Terms page. A preview under each of those boxes shows the real price.',
+                    '<strong>A typo</strong> is highlighted with ⚠ in the preview — fix it before saving. If a product is later renamed or hidden, the site shows “price on enquiry” in its place, never the raw token.',
+                    '<strong>Some prices are still typed</strong> because no product holds them, so update these by hand when they change: the weight surcharges (Tandem weight table and the weight FAQ), British Skydiving membership and packing/kit (AFF FAQs), and the AFF repeat-jump prices (AFF price card).',
+                ],
+                'cta' => ['label' => 'Open Products', 'url' => ProductResource::getUrl()],
+            ],
+            [
                 'id' => 'faqs',
                 'icon' => 'heroicon-o-question-mark-circle',
                 'title' => 'FAQs',
