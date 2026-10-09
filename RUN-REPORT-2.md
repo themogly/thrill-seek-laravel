@@ -30,3 +30,13 @@ build on:
   shadows a builder method (proven by a planted violation).
 - Public FAQ output is byte-identical to a pre-fix snapshot.
 - Gap report: none. Owner/overnight items: none.
+
+## 2 — 006 no known-password admin on servers · `fix/no-seeded-admin-on-servers` · merge `fc9a0e4`
+- Tests 434 → 440. `composer check` and MySQL green.
+- `DevAdminSeeder` (local only) holds the known login. `db:seed --force` on staging/production creates
+  **zero users** (red on main). Servers use `php artisan make:filament-user --panel=admin` (tested).
+  `canAccessPanel()` stays true, backed by a guard that nothing in the app creates `User` rows (proven red
+  by a planted violation).
+- **Ops:** if any server has ever been seeded, delete `test@example.com` there (command in SETUP "First
+  run").
+- Gap report: none. Owner/overnight items: none.
