@@ -1,11 +1,13 @@
 # Setup
 
-Laravel 12-skeleton app on Laravel 13 / PHP 8.3 with a Blade/Tailwind/Alpine frontend,
+Laravel 12-skeleton app on Laravel 13 / PHP 8.4 with a Blade/Tailwind/Alpine frontend,
 Livewire 4 forms and a Filament v5 admin panel at `/admin`.
 
 ## Requirements
 
-- PHP 8.3, Composer, Node 20+
+- **PHP 8.4.1+** (the locked Symfony 8.1 components and spatie/laravel-activitylog 5 require it,
+  even though `composer.json` still says `^8.3` — see DECISIONS, dependency refresh), Composer,
+  Node `^20.19` or `>=22.12` (Vite 8)
 - **MySQL 8+** — the application database (see "Production database" below). Locally via
   Laravel Herd, or `brew install mysql && brew services start mysql`; create a
   `thrill_seek` database. The `pdo_mysql` PHP extension is required.
@@ -141,7 +143,7 @@ stale code:
    typed-settings cache** that silently fails queued email and 500s pages reading the new
    key (the mail layer now falls back gracefully for the sign-off, but other reads don't —
    clearing on every deploy is the mitigation).
-7. **Reload PHP-FPM** — `sudo service php8.3-fpm reload` (the PHP version is part of the
+7. **Reload PHP-FPM** — `sudo service php8.4-fpm reload` (the PHP version is part of the
    service name; match the server's PHP). Without it opcache keeps serving the previous
    release after a deploy that reported success.
 8. **Restart the worker LAST** — `php artisan horizon:terminate` so Horizon restarts on the
