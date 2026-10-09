@@ -22,6 +22,7 @@ class HandleCheckoutSessionCompleted
         private readonly ConfirmHeldBooking $confirmHeldBooking,
         private readonly IssuePurchasedVoucher $issueVoucher,
         private readonly RedeemVoucher $redeemVoucher,
+        private readonly SendPaymentReceipt $receipt,
     ) {}
 
     public function handle(Event $event): void
@@ -58,6 +59,15 @@ class HandleCheckoutSessionCompleted
             $booking = $this->confirmHeldBooking->handle($payment);
 
             $this->redeemVoucherFromMetadata($payment, $booking);
+
+            return;
+        }
+
+        // A payment against a booking that already exists — the customer paying
+        // their balance from their account. Same receipt + owner notification as
+        // every other success path.
+        if ($payment->booking !== null) {
+            $this->receipt->handle($payment, $payment->booking);
         }
     }
 

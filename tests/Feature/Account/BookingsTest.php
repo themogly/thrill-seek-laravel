@@ -6,11 +6,15 @@ use App\Enums\BookingStatus;
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentPurpose;
 use App\Enums\PaymentStatus;
+use App\Mail\PaymentReceivedAdminNotification;
+use App\Mail\TemplatedMail;
 use App\Models\Booking;
 use App\Models\Customer;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Services\StripeCheckout;
+use Database\Seeders\EmailTemplateSeeder;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Testing\TestResponse;
 use Mockery;
 use Tests\TestCase;
@@ -92,6 +96,25 @@ class BookingsTest extends TestCase
         $booking->refresh();
         $this->assertFalse($booking->hasOutstandingBalance());
         $this->assertSame(0, $booking->balance_due_pence);
+    }
+
+    public function test_paid_balance_webhook_emails_the_receipt_and_tells_the_owner(): void
+    {
+        config(['services.stripe.webhook_secret' => 'whsec_test_secret']);
+        $this->seed(EmailTemplateSeeder::class);
+        Mail::fake();
+        $this->mockStripe('cs_bal_receipt', 'https://checkout.stripe.test/cs_bal_receipt');
+        $customer = Customer::factory()->create();
+        $booking = $this->affBooking($customer);
+
+        $this->actingAs($customer, 'customer')->post('/account/bookings/'.$booking->id.'/pay');
+        $this->postBalanceWebhook('cs_bal_receipt')->assertNoContent();
+
+        // The payment-success page promises a confirmation email; the owner needs to know money arrived.
+        Mail::assertQueued(TemplatedMail::class, fn (TemplatedMail $mail): bool => $mail->hasTo($booking->email)
+            && str_contains($mail->renderedSubject, 'Payment received')
+            && str_contains($mail->renderedBody, 'nothing left to pay'));
+        Mail::assertQueued(PaymentReceivedAdminNotification::class, 1);
     }
 
     public function test_fully_paid_booking_shows_no_pay_action(): void
