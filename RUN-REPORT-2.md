@@ -81,3 +81,11 @@ build on:
   visitor's own session. An unpaid payment still waits.
 - Screenshots: `audits/reports/run2/010-*.jpg`.
 - Gap report: none. Decision: the voucher code isn't shown on the page (the email carries it).
+
+## 7 — 011 CID mail logo · `fix/mail-logo-cid` · merge `eff136b`
+- Tests 455 → 458. `composer check` green.
+- One logo partial for transactional and newsletter mail, embedded inline (CID) on every mailable, only
+  when referenced. Previews swap in the public URL. Verified: all 7 templates were sent to the log
+  mailer; `.eml` evidence at `audits/reports/run2/011-booking-confirmed.eml`.
+- Gap report: one newsletter-builder test re-pointed (it encoded the absolute-URL decision this reverses).
+- **Owner check after staging:** a real email in Gmail and in Outlook shows the logo with images blocked.
