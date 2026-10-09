@@ -49,7 +49,17 @@ class EditNewsletterCampaign extends EditRecord
                     $subscriber = new NewsletterSubscriber(['email' => $data['email']]);
                     $subscriber->id = 0;
 
-                    Mail::to($data['email'])->send(new NewsletterCampaignMail($record, $subscriber));
+                    // Sent now, not queued: the throwaway subscriber can't be restored
+                    // by a worker, and the admin should see a failure, not "Test sent".
+                    try {
+                        Mail::to($data['email'])->sendNow(new NewsletterCampaignMail($record, $subscriber));
+                    } catch (\Throwable $e) {
+                        report($e);
+
+                        Notification::make()->danger()->title('Test email failed')->body($e->getMessage())->send();
+
+                        return;
+                    }
 
                     Notification::make()->success()->title('Test sent')->body('Check '.$data['email'].'.')->send();
                 }),
