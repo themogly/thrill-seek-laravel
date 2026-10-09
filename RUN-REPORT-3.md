@@ -238,3 +238,15 @@ above. Everything else outstanding is listed at the end with why it wasn't built
 - **Gap report:** the "unused slug fields" item is ruled out: Product's slug is the price-token key since 014;
   Location's is a CMS-gate question.
 - **Markers:** **OVERNIGHT-DEFAULT — CONFIRM**: image types JPEG/PNG/WebP (no GIF/HEIC/SVG) and the 12 MB limit.
+
+## 12 · 026 one-click List-Unsubscribe (email audit E-1)
+- **Branch:** `feat/list-unsubscribe` → merged `78ba261`
+- **Tests:** 530 → 535; `composer check` green. (No MySQL: no queries changed.)
+- **What it did:** newsletters carry `List-Unsubscribe: <signed URL>` and `List-Unsubscribe-Post:
+  List-Unsubscribe=One-Click`, the same signed URL as the footer. A signed, CSRF-exempt POST route unsubscribes
+  through the same service method; it's idempotent, and tampered requests get 403. Headers are asserted on the
+  real MIME message. Confirmation and transactional mail don't carry the header.
+- **Gap report:** none against the prompt. The Resend transport passes the headers through (code read).
+  Seeing Gmail's "Unsubscribe" button needs a real send on staging; it's in the post-deploy list.
+- **Markers:** **OWNER DECISION — PENDING**: the footer link unsubscribes on GET, which link-scanning mail
+  security can trigger. Keep it, or add a confirm button that POSTs? Not built either way.
