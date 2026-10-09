@@ -161,3 +161,20 @@ not touched.
   - "One definition per medium" became one PHP class for both, since neither medium can read CSS variables.
   - The voucher's `#0ea5e9` (on navy only, 6.85:1) is untouched.
 - **Markers:** none.
+
+## 8 · 024 scrollable table focus
+- **Branch:** `a11y/scrollable-table-focus` → merged `32253e1`
+- **Tests:** 516 → 520; `composer check` green.
+- **What it did:** new `<x-ui.table-scroll label>` (focusable, `role="region"`, `aria-label`, standard focus ring
+  on keyboard focus only), used for the account payments table, the only table in a scroll wrapper.
+  - **axe at 390:** 1 `scrollable-region-focusable` → **0**.
+  - Tab reaches it (`:focus-visible` ring paints), and the arrow keys scroll it its full 41px.
+  - **At rest:** full-page payments, before vs after, **0 px** at 390 and at 1440.
+  - Structural guard against bare scroll wrappers round a table, proven with a planted one.
+  - `ui-guidelines.md` lists the component.
+- **Gap report:** the grep found nothing else to route through the component. The admin calendar's scroller is a
+  grid in Filament, not a table. The first arrow-key reading was 0 because it was read before the smooth scroll
+  settled; re-measured after 800ms → 41px.
+- **Screenshots:** `ui-review/scrollable-table-focus/` (cropped JPEGs). Browsed signed in via the local dev
+  login, read-only.
+- **Markers:** none.
