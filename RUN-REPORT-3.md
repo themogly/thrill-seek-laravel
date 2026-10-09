@@ -267,3 +267,80 @@ above. Everything else outstanding is listed at the end with why it wasn't built
   - The email keeps Laravel's staff-facing wording ("Hello!", "Regards, G-Force Skydiving"). It isn't a customer
     email, so the `<x-mail.layout>` greeting rules don't apply.
 - **Markers:** none.
+
+## Gate re-run on the final `main`
+The item-9 gate ran at `3b824b4`, before 025–027. It was re-run on the final `main` (`4c0d6c7`) and the report
+updated (`PRE-STAGING-CHECKLIST.md`, merged `3a954c1`):
+- `composer check` 540/540; MySQL 540/540;
+- composer and npm audits 0 (after `motion` was removed);
+- build, `config:cache` / `route:cache` and `composer validate --strict` OK;
+- 0 dev routes outside `local`;
+- axe 0 nodes on 20 public pages × 1440/390;
+- no unmerged branches.
+
+**Still ✅ GO for staging**, same two conditions. The 4 merged branches from 025–027 and the re-run were then
+deleted from origin, which again holds only `main`.
+
+## Outstanding, deliberately not built (each needs Ben, a design call or its own prompt)
+- **A-1 share image as an upload:** changes the `og:image` consumer on every page; worth its own prompt and check.
+- **A-2 testimonial crop:** two display ratios (16:9 featured, 4:5 tile), so it's a design choice.
+- **Consistency items that change how things look:**
+  - C-1 (Coached intro: are the price eyebrow and its own CTA intended?);
+  - C-2 (AFF trust-band heading through the component);
+  - C-5 (meta labels at 0.2em vs 0.25em);
+  - C-6 (three check-list styles; should the AFF pay-card get Tandem's three bullets?);
+  - C-9 (account vs public panel headings);
+  - C-10 (newsletter panel framed two ways);
+  - C-11 (a back-arrow link).
+
+  The design rules need a brief or Ben's say for visual changes.
+- **C-15 shop prices as money:** the shop is switched off with no items, and it's a schema change.
+- **Editable email sign-off:** Ben said "later" (run 1).
+- **CSP enforcement:** by design it stays report-only until the console is checked on production.
+- **The Location slug field** (unused): a CMS-field-gate question.
+
+---
+
+## How the run ended
+- **Every item in the brief done (1–10), with no stop condition hit**, then 3 outstanding-fix prompts (025–027)
+  under Ben's "also fix anything outstanding", and the gate re-run on the final `main`.
+  - 14 merges on green: items 1–9 (8 code/docs + the gate report), 025, 026, 027 and the gate re-run.
+  - 017 withdrawn and deleted.
+- Tests went from **476 to 540** on `main`. `composer check` was green at every merge, plus the MySQL suite
+  wherever queries, migrations, FKs or auth changed (008, 021, 025, 027).
+- **`main` is at `3a954c1`** before this closing docs commit; it's clean and green. `origin` holds only `main`.
+- **Pre-staging verdict: ✅ GO for staging.**
+
+## What Ben has to look at
+1. **Staging, two conditions** (`SETUP.md` "Staging", new):
+   - basic-auth that exempts `/webhooks/stripe` and `/webhooks/resend`;
+   - **`APP_ENV=staging`**, because the app's noindex depends on it, and the site email set to a test inbox.
+2. **The site's blue is now the darker `primary-strong` on text and buttons** (016), and buttons **darken** on
+   hover (020). Screenshots: `ui-review/primary-strong/` and `ui-review/button-hover-contrast/`.
+3. **Two fixes the owner will notice:**
+   - old bookings and news posts with a past slot or course can be saved again (they couldn't);
+   - image uploads now refuse SVG and GIF (025).
+4. **Rescheduling into a full tandem date is refused**, and full dates show "— full" in the list (021).
+5. **The FK migration on any server** (008) aborts with a list if it finds orphaned rows. It found none on a
+   copy of the dev DB. If it ever stops a deploy, the data needs fixing first.
+6. **The admin login has "Forgot password?"** (027), and newsletters get Gmail's own "Unsubscribe" button (026).
+   Check both arrive on staging.
+
+## Owner questions (each answerable in one line)
+1. **025:** image uploads limited to JPEG/PNG/WebP up to 12 MB (no GIF/HEIC/SVG): OK?
+2. **026:** the newsletter footer link unsubscribes on a plain click (GET), which some corporate link-scanners can
+   trigger. Keep it, or add a "Confirm unsubscribe" button?
+3. **C-1:** is the Coached intro's price eyebrow ("From £60 per session") and its own "Book a session" button
+   intended? Or should Tandem/AFF match, or Coached lose them?
+4. **C-6:** should the AFF pay-card show the same three reassurance bullets as Tandem's?
+5. **C-9/C-10/C-5/C-11:** unify the small visual drifts (panel headings navy, one newsletter-panel frame, 0.25em
+   meta labels, a back-arrow link)? Yes/no for the batch.
+6. **A-2:** testimonial photos: one crop ratio for both places, or a second crop field?
+7. **A-1:** make the social sharing image an upload (its own prompt)?
+
+**Ops / owner tasks (carried over, not questions):**
+- on any already-seeded server, delete `test@example.com` and unapprove the 8 sample testimonials;
+- after staging, check the logo and the new button blue with images blocked in Gmail and Outlook;
+- enter the dropzone addresses and coordinates;
+- swap the typed prices in existing CMS text for tokens (DECISIONS, 014); the weight surcharges stay typed (both
+  places).
