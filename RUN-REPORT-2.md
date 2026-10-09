@@ -89,3 +89,17 @@ build on:
   mailer; `.eml` evidence at `audits/reports/run2/011-booking-confirmed.eml`.
 - Gap report: one newsletter-builder test re-pointed (it encoded the absolute-URL decision this reverses).
 - **Owner check after staging:** a real email in Gmail and in Outlook shows the logo with images blocked.
+
+## 8 — 012 CMS orphan fields · `chore/cms-orphans` · merge `6a7c6e8`
+- Tests 458 → 462. `composer check` and MySQL green.
+- The Location address and coordinates now feed the course Event JSON-LD (a real `PostalAddress` + geo;
+  the name is no longer passed off as an address).
+- Removed `Product::duration` (value recorded in DECISIONS), `home.team_lead` and `Location::image`. The
+  migrations were proven on seeded copies (MySQL clone and SQLite) with rollback. Homepage
+  pixel-identical.
+- `OVERNIGHT-DEFAULT — CONFIRM`: removing `team_lead` and `Location::image` (agreed generally, not by
+  name).
+- Gap report: one settings test re-pointed (it asserted `team_lead` existed).
+- Screenshots: `audits/reports/run2/012-*.jpg`.
+- **Owner:** enter real dropzone addresses and coordinates in Locations. Ben: run `php artisan migrate`
+  on the dev DB.
