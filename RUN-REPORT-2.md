@@ -188,3 +188,13 @@ build on:
   - The app has no refund handling (refund in Stripe).
 - **Markers:** none.
 - **Screenshots:** n/a (docs).
+
+## 15 · Pre-staging gate (report only)
+- **Branch:** `docs/pre-staging-gate-run2` → merged `450b421` (only `PRE-STAGING-CHECKLIST.md` changed)
+- **Tests:** 476 → 476; `composer check` + MySQL green at `5663177`; `config:cache` / `route:cache` / `composer validate --strict` OK; composer and npm audits 0.
+- **Verdict: ✅ GO for staging**, with three server-side conditions: basic-auth exempting `/webhooks/*`; noindex at the server (the app noindexes no host); the site email set to a test inbox.
+- **Gap report:**
+  - 016 and 017 test-merge into `main` with a conflict **only in `DECISIONS.md`**: both append to the end of the log. Resolve by keeping both sections.
+  - SETUP.md doesn't yet mention staging noindex/basic-auth or the webhook API version (`verification/CHECKLIST.md` does).
+  - 016 not being merged means axe still reports 173 contrast nodes on `main`. Not a staging blocker, but needed before launch.
+- **Markers:** none.
