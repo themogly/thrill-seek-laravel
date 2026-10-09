@@ -2414,3 +2414,58 @@ Not a finding, so the base `SettingsPage` is left as it is.
      were briefly saved with "AUDIT" by a crashed script and restored to the seeded values (verified).
 
 Tests 399 → 425; `composer check` green.
+
+## Accessibility audit (a11y/audit-pass)
+Branch off main `69be8dd`. Kit file `audits/accessibility-audit.md` run verbatim (item 5 of unattended
+run 1). Report: `audits/reports/accessibility-audit.md`, committed before fixes. Ran axe-core 4.10.2 in
+Chromium on rebuilt assets: 21 public pages at 1440 and 390 px, plus 6 signed-in account pages, with
+reduced motion emulated so reveals don't hide text. Then a keyboard pass, a forms pass, and computed
+contrast for toasts and inline errors (axe never sees a toast that isn't on screen).
+
+**OWNER DECISION — PENDING: brand colour contrast.** This was June's unrecorded item, now recorded.
+- **Primary** `oklch(0.62 0.18 240)` = `#008fe6` fails AA two ways: as text on white (3.45–3.5:1:
+  active nav, eyebrows, dates, links, `£210 per jump`) and as a fill under near-white button text
+  (3.36–3.41:1: every primary button). That's 178 axe nodes, and they're the only remaining axe
+  failures.
+- **Destructive** `oklch(0.6 0.24 27)` is 4.45:1 as error text on white and 4.32:1 under white text.
+
+Options:
+- **A** — darken the tokens site-wide: primary → `oklch(0.545 0.18 240)` / `#0078cc` (4.63 text,
+  4.51 fill); destructive → `oklch(0.58 0.24 27)` (4.78 / 4.65). One-line change each in `app.css`,
+  but every CTA and the signed-off homepage shift slightly darker.
+- **B** — split the token: keep `#008fe6` for rules, borders and decoration, and add a darker
+  `primary-strong` for text and button fills. Same compliance, keeps the bright accent, but the
+  palette gains a token and needs `ui-guidelines.md` updated.
+- **C** — accept the shortfall (non-compliant; record why).
+
+Not implemented either way.
+
+**Fixed (each failing-first, one commit):**
+- **Toasts:** white on green-600 was 3.13:1, and the colours were raw Tailwind. They now use navy
+  `secondary` (14.2:1) with a primary/destructive left rule (the type isn't conveyed by colour alone).
+  The stack is `role=status aria-live=polite`; errors are `role=alert`.
+- **One `<h1>`, no skipped levels:**
+  - `/testimonials`' featured-hero eyebrow is now the `<h1>`, kept `font-sans`, because base CSS gives
+    `h1` the display font.
+  - Booking-flow step headings h3 → h2 and h4 → h3.
+  - News cards h3 → h2; AFF info cards h4 → h3.
+  - Computed styles verified unchanged. `HeadingStructureTest` guards every public page.
+- **Booking-field errors:** the error gets an id, and `x-ui.input`/`textarea`/`date-field` pick up the
+  field's `error`/`for` via Blade `@aware` and set `aria-invalid` + `aria-describedby`. That's
+  server-rendered, so it complies with architecture rule 7; the date field wires both the native input
+  and the desktop trigger.
+- **Skip link** in the layout; `<main id="main" tabindex="-1">`.
+
+**Left as is, with reasons:**
+- Dropdown items show focus as a background tint plus colour change, which is visible.
+- Touch targets go to the real-device checks.
+
+**Gap report.**
+1. *Required, not done:* the brand-colour contrast (owner decision, per the run rules).
+2. *Forbidden, done:* none. No brand colour changed. The toasts moved to existing palette tokens.
+3. *Not mentioned, done:*
+   - two structural guards (`HeadingStructureTest`, the field-error association);
+   - the homepage pixel-diff;
+   - local customer sign-in links were issued for the account scan (local DB only).
+
+Tests 425 → 432; `composer check` green.

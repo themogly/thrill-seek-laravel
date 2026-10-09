@@ -35,7 +35,7 @@ off `main` = `69be8dd`. Report written before any fix.
   most important calls to action.
 - **The brand `destructive` token is 4.32:1** under white text and about the same as error text on
   white, just short of 4.5 for the 14 px inline errors in the booking forms → same owner decision
-  (nearest passing given there).
+  (nearest passing: `oklch(0.58 0.24 27)`, 4.78:1 as text on white and 4.65:1 under white text).
 - **Toasts fail contrast and use off-palette colours.** The success toast ("Message sent!", "Enquiry
   sent!", newsletter "check your inbox") is `bg-green-600` with white text, **3.13:1**. Error and info
   toasts are `bg-red-600`/`bg-blue-600`, raw Tailwind colours that break the palette-only rule. →
@@ -79,3 +79,24 @@ Review: the shared-component fixes (toaster, booking field, layout) land everywh
 
 - **`OWNER DECISION — PENDING`:** brand primary `#008fe6` and `destructive` contrast. Options and the
   nearest passing shades are in DECISIONS.
+
+## Status after fixes (`a11y/audit-pass`)
+
+| Item | Status | Proof |
+|---|---|---|
+| Brand primary `#008fe6` contrast | **OWNER DECISION — PENDING**, not changed | DECISIONS (options + nearest shade `oklch(0.545 0.18 240)` / `#0078cc`) |
+| `destructive` token 4.32–4.45:1 | **OWNER DECISION — PENDING**, not changed | nearest passing `oklch(0.58 0.24 27)` |
+| Toasts: contrast + palette + live region | **Done** | `ToasterTest`. Re-checked by doing: navy `oklch(0.28 0.14 255)` under `oklch(0.99 0 0)`, primary/destructive rule, error toast `role=alert`. |
+| `/testimonials` `<h1>` + heading order | **Done** | `HeadingStructureTest` walks every public page (red on main with exactly axe's list). Computed styles checked unchanged. |
+| Booking-field error association | **Done** | `FieldErrorAssociationTest` (input, textarea, date field native + trigger) |
+| Skip-to-content link | **Done** | `SkipLinkTest`. By doing: first Tab = "Skip to content", Enter → `main#main`, next Tab lands in content. |
+
+**axe before → after** (21 pages × 1440/390):
+- **Before:** `color-contrast` (brand primary only), `heading-order` ×4 pages, `page-has-heading-one`
+  (`/testimonials`).
+- **After:** `color-contrast` only. 178 nodes across 42 page/width runs, **every one involving
+  `#008fe6`** (0 other pairs). It clears if the owner takes the shade.
+
+**Homepage:** screenshots before and after at 1440 and 390 (reduced motion, signed out): **0
+differing pixels**. A first after-shot differed in 4,698 px; the cause was the test browser still
+being signed in as a customer ("My Account" vs "Sign in"), not the change. Re-shot signed out: 0.
