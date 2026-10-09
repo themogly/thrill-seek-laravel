@@ -1,24 +1,25 @@
 @extends('layouts.app')
 
 @inject('page', 'App\Settings\TandemPageSettings')
+@inject('prices', 'App\Support\PriceTokens')
 
 @section('title', $page->seo_title)
-@section('description', $page->seo_description)
+@section('description', $prices->render($page->seo_description))
 @section('og_title', $page->og_title)
 @section('og_description', $page->og_description)
 
 @if ($product)
     @push('json-ld')
-        <x-seo.json-ld :data="\App\Support\StructuredData::product($product, url('/tandem'), $page->seo_description)" />
+        <x-seo.json-ld :data="\App\Support\StructuredData::product($product, url('/tandem'), $prices->render($page->seo_description))" />
     @endpush
 @endif
 
 @section('content')
-    <x-site.page-hero :title="$page->hero_title" :subtitle="$page->hero_subtitle" :image="$page->imageUrl($page->hero_image)" />
+    <x-site.page-hero :title="$page->hero_title" :subtitle="$prices->render($page->hero_subtitle)" :image="$page->imageUrl($page->hero_image)" />
 
     {{-- INTRO: copy beside a bleed photo, with Locations grouped below --}}
     <section class="overflow-hidden">
-        <div class="py-16 lg:py-24">
+        <div class="py-section-sm lg:py-section">
             <x-site.feature-split :image="$page->imageUrl($page->intro_image)" alt="Tandem skydive" side="right">
                 <x-site.section-heading :eyebrow="$page->intro_eyebrow" :title="$page->intro_title" :lead="$page->intro_lead" class="mb-8" />
                 <x-ui.feature-list :items="$page->bullets" />
@@ -71,7 +72,7 @@
                         </tbody>
                     </table>
                     <p class="mt-6 border-l-4 border-primary bg-accent/40 p-4 text-sm">
-                        <strong>{{ $page->charity_note_title }}</strong> {{ $page->charity_note_body }}
+                        <strong>{{ $page->charity_note_title }}</strong> {{ $prices->render($page->charity_note_body) }}
                     </p>
                 </div>
             </div>

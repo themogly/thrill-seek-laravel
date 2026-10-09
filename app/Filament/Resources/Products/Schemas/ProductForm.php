@@ -37,7 +37,7 @@ class ProductForm
                             }),
                         TextInput::make('slug')
                             ->label('Reference (slug)')
-                            ->helperText('Used internally; lowercase letters and dashes.')
+                            ->helperText('Lowercase letters and dashes. Also used in price tokens like {price:tandem-skydive} — changing it breaks any wording that uses the old one.')
                             ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true)
@@ -100,9 +100,6 @@ class ProductForm
                             ->label('Show as “from £X”')
                             ->helperText('Off for coaching = “Price on enquiry”.')
                             ->inline(false),
-                        TextInput::make('duration')
-                            ->label('Duration')
-                            ->maxLength(255),
                         Toggle::make('highlight')
                             ->label('Highlight price card')
                             ->helperText('Emphasised card on the AFF pricing grid.')

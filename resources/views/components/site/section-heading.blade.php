@@ -1,7 +1,7 @@
 @props(['eyebrow' => null, 'title', 'lead' => null, 'light' => false])
 <div {{ $attributes->merge(['class' => 'mb-14 max-w-4xl']) }} data-reveal>
     @if ($eyebrow)
-        <p class="mb-3 flex items-center gap-3 text-sm font-bold uppercase tracking-[0.25em] text-primary">
+        <p class="mb-3 flex items-center gap-3 text-sm font-bold uppercase tracking-[0.25em] {{ $light ? 'text-primary' : 'text-primary-strong' }}">
             <span class="inline-block h-0.5 w-10 bg-primary"></span>{{ $eyebrow }}
         </p>
     @endif

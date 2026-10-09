@@ -3,6 +3,7 @@
 namespace App\Filament\Pages\Settings;
 
 use App\Settings\SimplePagesSettings;
+use App\Support\AdminPriceTokens;
 use BackedEnum;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
@@ -127,7 +128,7 @@ class ManageSimplePagesSettings extends SettingsPage
             Section::make('Terms & conditions')
                 ->components([
                     TextInput::make('terms_title')->label('Heading')->required()->maxLength(255),
-                    RichEditor::make('terms_body')->label('Content')->required(),
+                    AdminPriceTokens::field(RichEditor::make('terms_body')->label('Content')->required()),
                 ]),
         ]);
     }

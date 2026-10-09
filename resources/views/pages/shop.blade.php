@@ -19,7 +19,7 @@
                             <h3 class="font-display text-xl uppercase text-secondary">{{ $p->name }}</h3>
                             <p class="text-sm text-muted-foreground">{{ $p->description }}</p>
                         </div>
-                        <span class="text-sm font-bold text-primary">{{ $p->price_label }}</span>
+                        <span class="text-sm font-bold text-primary-strong">{{ $p->price_label }}</span>
                     </div>
                     <x-ui.button class="mt-4 w-full" onclick="window.toast?.info('Online ordering opens soon — contact us to order.')">
                         Enquire

@@ -2,13 +2,9 @@
 
 namespace App\Observers;
 
+use App\Actions\SendBookingConfirmation;
 use App\Enums\BookingStatus;
-use App\Mail\TemplatedMail;
 use App\Models\Booking;
-use App\Models\EmailTemplate;
-use App\Settings\JumpPrepSettings;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 
 class BookingObserver
 {
@@ -24,7 +20,8 @@ class BookingObserver
 
     /**
      * Email the customer whenever a booking becomes confirmed (including
-     * re-confirmation after a reschedule, which confirms the new date).
+     * re-confirmation after a reschedule, which confirms the new date). A booking
+     * CREATED already confirmed by the admin is CreateBooking's call (its toggle).
      */
     public function updated(Booking $booking): void
     {
@@ -32,24 +29,6 @@ class BookingObserver
             return;
         }
 
-        try {
-            Mail::to($booking->email)->queue(new TemplatedMail(
-                EmailTemplate::findByKey('booking_confirmed'),
-                [
-                    'name' => $booking->name,
-                    'reference' => $booking->reference,
-                    'product' => $booking->product->name ?? 'your jump',
-                    'date' => $booking->scheduledLabel() ?? 'to be confirmed',
-                    'location' => $booking->locationName() ?? 'to be confirmed',
-                    // Single-source pre-jump info, tandem bookings only.
-                    'jump_prep' => $booking->isTandem() ? app(JumpPrepSettings::class)->emailBlock() : '',
-                ],
-            ));
-        } catch (\Throwable $e) {
-            Log::error('Failed to queue booking confirmation email', [
-                'booking_id' => $booking->id,
-                'exception' => $e->getMessage(),
-            ]);
-        }
+        app(SendBookingConfirmation::class)->handle($booking);
     }
 }

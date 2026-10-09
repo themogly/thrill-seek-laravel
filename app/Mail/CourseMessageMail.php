@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Mail\Concerns\EmbedsMailLogo;
 use App\Models\CourseMessage;
 use App\Settings\GeneralSettings;
 use Illuminate\Bus\Queueable;
@@ -19,7 +20,7 @@ use Illuminate\Queue\SerializesModels;
  */
 class CourseMessageMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use EmbedsMailLogo, Queueable, SerializesModels;
 
     public function __construct(
         public CourseMessage $courseMessage,

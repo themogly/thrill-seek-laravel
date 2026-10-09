@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\FaqPage;
 use App\Observers\SiteContentObserver;
+use App\Support\PriceTokens;
 use Database\Factories\FaqFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
@@ -39,10 +40,16 @@ class Faq extends Model
         ];
     }
 
-    /** Plain-text answer for the FAQPage structured data (parity with the visible text). */
+    /** The answer as shown on the page: stored HTML with price tokens resolved (PriceTokens). */
+    public function answerHtml(): string
+    {
+        return app(PriceTokens::class)->render((string) $this->answer);
+    }
+
+    /** Plain-text answer for the FAQPage structured data (parity with the visible text, prices resolved). */
     public function plainAnswer(): string
     {
-        return trim((string) preg_replace('/\s+/', ' ', strip_tags(str_replace(['</p>', '</li>', '<br>', '<br/>', '<br />'], ' ', (string) $this->answer))));
+        return trim((string) preg_replace('/\s+/', ' ', strip_tags(str_replace(['</p>', '</li>', '<br>', '<br/>', '<br />'], ' ', $this->answerHtml()))));
     }
 
     /**

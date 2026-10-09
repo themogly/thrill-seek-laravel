@@ -1,14 +1,15 @@
 @extends('layouts.app')
 
 @inject('page', 'App\Settings\AffPageSettings')
+@inject('prices', 'App\Support\PriceTokens')
 
 @section('title', $page->seo_title)
-@section('description', $page->seo_description)
+@section('description', $prices->render($page->seo_description))
 
 @php $affProduct = $products->first(); @endphp
 @if ($affProduct)
     @push('json-ld')
-        <x-seo.json-ld :data="\App\Support\StructuredData::product($affProduct, url('/aff'), $page->seo_description)" />
+        <x-seo.json-ld :data="\App\Support\StructuredData::product($affProduct, url('/aff'), $prices->render($page->seo_description))" />
     @endpush
 @endif
 @foreach ($courseDates as $course)
@@ -18,11 +19,11 @@
 @endforeach
 
 @section('content')
-    <x-site.page-hero :title="$page->hero_title" :subtitle="$page->hero_subtitle" :image="$page->imageUrl($page->hero_image)" />
+    <x-site.page-hero :title="$page->hero_title" :subtitle="$prices->render($page->hero_subtitle)" :image="$page->imageUrl($page->hero_image)" />
 
     {{-- INTRO: image bleeds off the left edge --}}
     <section class="overflow-hidden">
-        <div class="py-16 lg:py-24">
+        <div class="py-section-sm lg:py-section">
             <x-site.feature-split :image="$page->imageUrl($page->intro_image)" alt="AFF training" side="left">
                 <x-site.section-heading :eyebrow="$page->intro_eyebrow" :title="$page->intro_title" :lead="$page->intro_lead" class="mb-8" />
                 <x-ui.feature-list :items="$page->bullets" />
@@ -62,7 +63,7 @@
                     <h3 class="font-display text-2xl uppercase text-secondary">{{ $page->repeat_pricing_heading }}</h3>
                     <div class="mt-4 grid gap-x-10 gap-y-2 sm:grid-cols-2">
                         @foreach ($p->repeat_pricing as $row)
-                            <div class="flex items-baseline justify-between gap-4 border-b border-border py-2"><span class="font-semibold">{{ $row['label'] }}</span> <span class="font-display text-xl text-primary">{{ $row['value'] }}</span></div>
+                            <div class="flex items-baseline justify-between gap-4 border-b border-border py-2"><span class="font-semibold">{{ $row['label'] }}</span> <span class="font-display text-xl text-primary-strong">{{ $row['value'] }}</span></div>
                         @endforeach
                     </div>
                 </div>
@@ -87,13 +88,13 @@
                                 <div>
                                     <h3 class="font-display text-4xl uppercase leading-none text-secondary">{{ $course->date_range_label }}</h3>
                                     <p class="mt-2 text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">{{ $course->duration_days }}-day course</p>
-                                    <p class="mt-1 flex items-center gap-1.5 text-sm font-bold uppercase tracking-wide text-primary">
+                                    <p class="mt-1 flex items-center gap-1.5 text-sm font-bold uppercase tracking-wide text-primary-strong">
                                         <x-icon name="map-pin" class="h-4 w-4" /> {{ $course->location->name }}
                                     </p>
                                 </div>
                                 <span @class([
                                     'whitespace-nowrap border-2 px-3 py-1 text-xs font-bold uppercase tracking-wide',
-                                    'border-primary text-primary' => $course->remaining_places > 2,
+                                    'border-primary text-primary-strong' => $course->remaining_places > 2,
                                     'border-destructive text-destructive' => $course->remaining_places <= 2,
                                 ])>
                                     {{ $course->remaining_places }} {{ Str::plural('place', $course->remaining_places) }} left

@@ -18,6 +18,7 @@ use Closure;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 /**
  * Cached reads for the public site's hot content.
@@ -38,8 +39,8 @@ final class SiteContent
         Faq::class => ['faqs.tandem', 'faqs.aff', 'faqs.coached'],
         Testimonial::class => ['testimonials.featured', 'testimonials.all'],
         GalleryImage::class => ['gallery'],
-        Product::class => ['products.home', 'products.tandem', 'products.aff'],
-        ProductAddOn::class => ['products.tandem'],
+        Product::class => ['products.home', 'products.tandem', 'products.aff', 'price_tokens'],
+        ProductAddOn::class => ['products.tandem', 'price_tokens'],
         ShopItem::class => ['shop'],
         HallOfFameEntry::class => ['hall_of_fame'],
         NewsArticle::class => ['news.published'],
@@ -163,6 +164,35 @@ final class SiteContent
             'products.aff',
             fn () => Product::active()->ofType(ProductType::Aff)->ordered()->get(),
         ));
+    }
+
+    /**
+     * Price-token lookup for CMS wording (see PriceTokens): `price:<slug>` and
+     * `deposit:<slug>` for active products, `addon:<slugified name>` for their
+     * add-ons, each => integer pence. Plain ints only, so it caches like every
+     * other gateway key. If two add-ons share a name the first (product order,
+     * then add-on order) wins.
+     *
+     * @return array<string, int>
+     */
+    public function priceTokens(): array
+    {
+        return Cache::rememberForever(self::PREFIX.'price_tokens', function (): array {
+            $tokens = [];
+            foreach (Product::active()->ordered()->with('addOns')->get() as $product) {
+                if ($product->price_pence !== null) {
+                    $tokens['price:'.strtolower($product->slug)] = $product->price_pence;
+                }
+                if ($product->deposit_pence !== null) {
+                    $tokens['deposit:'.strtolower($product->slug)] = $product->deposit_pence;
+                }
+                foreach ($product->addOns as $addOn) {
+                    $tokens += ['addon:'.Str::slug($addOn->name) => $addOn->price_pence];
+                }
+            }
+
+            return $tokens;
+        });
     }
 
     /** @return EloquentCollection<int, ShopItem> */

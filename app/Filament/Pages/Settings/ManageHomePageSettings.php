@@ -32,6 +32,13 @@ class ManageHomePageSettings extends SettingsPage
     public function form(Schema $schema): Schema
     {
         return $schema->components([
+            Section::make('Search engines & sharing (SEO)')
+                ->description('The homepage title and summary Google shows, and the text used when the homepage is shared. Not shown on the page itself.')
+                ->columns(2)
+                ->components([
+                    TextInput::make('seo_title')->label('Page title')->required()->maxLength(255),
+                    Textarea::make('seo_description')->label('Page description')->rows(2)->required(),
+                ]),
             Section::make('Hero (top of page)')
                 ->columns(2)
                 ->components([
@@ -109,10 +116,6 @@ class ManageHomePageSettings extends SettingsPage
                 ->components([
                     TextInput::make('trust_eyebrow')->label('Small line')->required()->maxLength(255),
                     TextInput::make('trust_title')->label('Heading')->required()->maxLength(255),
-                ]),
-            Section::make('“Meet the team” teaser')
-                ->components([
-                    TextInput::make('team_lead')->label('Lead text (shown above the “Meet the Team” button on the home page)')->maxLength(500),
                 ]),
             Section::make('“Follow us” card')
                 ->description('The “Latest News” block next to it is managed under News.')

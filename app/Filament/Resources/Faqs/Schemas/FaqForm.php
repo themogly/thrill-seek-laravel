@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Faqs\Schemas;
 
 use App\Enums\FaqPage;
+use App\Support\AdminPriceTokens;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -23,11 +24,11 @@ class FaqForm
                 ->required()
                 ->maxLength(255)
                 ->columnSpanFull(),
-            RichEditor::make('answer')
+            AdminPriceTokens::field(RichEditor::make('answer')
                 ->label('Answer')
                 ->toolbarButtons(['bold', 'italic', 'link', 'bulletList', 'orderedList'])
                 ->required()
-                ->columnSpanFull(),
+                ->columnSpanFull()),
             Toggle::make('is_active')
                 ->label('Published (shown on the site)')
                 ->default(true),

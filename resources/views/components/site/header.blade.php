@@ -49,7 +49,7 @@
             @foreach ($primaryNav as $item)
                 <a
                     href="{{ $item['to'] }}"
-                    class="border-b-2 px-3 py-2 text-sm font-bold uppercase tracking-wide transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring {{ $isActive($item['to']) ? 'border-primary text-primary' : 'border-transparent text-secondary' }}"
+                    class="border-b-2 px-3 py-2 text-sm font-bold uppercase tracking-wide transition-colors hover:text-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring {{ $isActive($item['to']) ? 'border-primary text-primary-strong' : 'border-transparent text-secondary' }}"
                 >
                     {{ $item['label'] }}
                 </a>
@@ -65,7 +65,7 @@
                     @keydown.escape="wo = false; $refs.whyUsButton.focus()"
                     :aria-expanded="wo.toString()"
                     aria-controls="why-us-menu"
-                    class="flex items-center gap-1 border-b-2 px-3 py-2 text-sm font-bold uppercase tracking-wide transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring {{ $whyUsActive ? 'border-primary text-primary' : 'border-transparent text-secondary' }}"
+                    class="flex items-center gap-1 border-b-2 px-3 py-2 text-sm font-bold uppercase tracking-wide transition-colors hover:text-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring {{ $whyUsActive ? 'border-primary text-primary-strong' : 'border-transparent text-secondary' }}"
                 >
                     Why Us
                     <svg class="h-3 w-3 transition-transform duration-200" :class="{ 'rotate-180': wo }" viewBox="0 0 12 12" fill="none" aria-hidden="true">
@@ -84,7 +84,7 @@
                     @foreach ($whyUs as $item)
                         <a
                             href="{{ $item['to'] }}"
-                            class="block px-4 py-3 text-sm font-bold uppercase tracking-wide transition-colors hover:bg-muted hover:text-primary focus-visible:bg-muted focus-visible:text-primary focus-visible:outline-none {{ $isActive($item['to']) ? 'text-primary' : 'text-secondary' }}"
+                            class="block px-4 py-3 text-sm font-bold uppercase tracking-wide transition-colors hover:bg-muted hover:text-primary-strong focus-visible:bg-muted focus-visible:text-primary-strong focus-visible:outline-none {{ $isActive($item['to']) ? 'text-primary-strong' : 'text-secondary' }}"
                         >
                             {{ $item['label'] }}
                         </a>
@@ -94,7 +94,7 @@
 
             <a
                 href="/contact"
-                class="border-b-2 px-3 py-2 text-sm font-bold uppercase tracking-wide transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring {{ $isActive('/contact') ? 'border-primary text-primary' : 'border-transparent text-secondary' }}"
+                class="border-b-2 px-3 py-2 text-sm font-bold uppercase tracking-wide transition-colors hover:text-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring {{ $isActive('/contact') ? 'border-primary text-primary-strong' : 'border-transparent text-secondary' }}"
             >
                 Contact
             </a>
@@ -102,7 +102,7 @@
 
         {{-- Action links: account + Book Now, grouped and distinct from the nav. --}}
         <div class="hidden items-center gap-5 lg:flex">
-            <a href="{{ $accountUrl }}" class="text-sm font-bold uppercase tracking-widest text-secondary transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <a href="{{ $accountUrl }}" class="text-sm font-bold uppercase tracking-widest text-secondary transition-colors hover:text-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                 {{ $accountLabel }}
             </a>
             <x-ui.button href="/book/tandem">
@@ -123,7 +123,7 @@
                 <a
                     href="{{ $item['to'] }}"
                     @click="open = false"
-                    class="px-4 py-3.5 text-sm font-bold uppercase tracking-wide {{ $isActive($item['to']) ? 'text-primary' : 'text-secondary' }}"
+                    class="px-4 py-3.5 text-sm font-bold uppercase tracking-wide {{ $isActive($item['to']) ? 'text-primary-strong' : 'text-secondary' }}"
                 >
                     {{ $item['label'] }}
                 </a>
@@ -136,7 +136,7 @@
                     @click="whyUsOpen = !whyUsOpen"
                     :aria-expanded="whyUsOpen.toString()"
                     aria-controls="why-us-mobile"
-                    class="flex w-full items-center justify-between px-4 py-3.5 text-sm font-bold uppercase tracking-wide {{ $whyUsActive ? 'text-primary' : 'text-secondary' }}"
+                    class="flex w-full items-center justify-between px-4 py-3.5 text-sm font-bold uppercase tracking-wide {{ $whyUsActive ? 'text-primary-strong' : 'text-secondary' }}"
                 >
                     Why Us
                     <svg class="h-3 w-3 transition-transform duration-200" :class="{ 'rotate-180': whyUsOpen }" viewBox="0 0 12 12" fill="none" aria-hidden="true">
@@ -148,7 +148,7 @@
                         <a
                             href="{{ $item['to'] }}"
                             @click="open = false"
-                            class="block px-8 py-3 text-sm font-bold uppercase tracking-wide {{ $isActive($item['to']) ? 'text-primary' : 'text-secondary' }}"
+                            class="block px-8 py-3 text-sm font-bold uppercase tracking-wide {{ $isActive($item['to']) ? 'text-primary-strong' : 'text-secondary' }}"
                         >
                             {{ $item['label'] }}
                         </a>
@@ -159,7 +159,7 @@
             <a
                 href="/contact"
                 @click="open = false"
-                class="px-4 py-3.5 text-sm font-bold uppercase tracking-wide {{ $isActive('/contact') ? 'text-primary' : 'text-secondary' }}"
+                class="px-4 py-3.5 text-sm font-bold uppercase tracking-wide {{ $isActive('/contact') ? 'text-primary-strong' : 'text-secondary' }}"
             >
                 Contact
             </a>

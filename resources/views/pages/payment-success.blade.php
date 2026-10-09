@@ -49,7 +49,7 @@
                         @if ($booking->hasOutstandingBalance())
                             <div class="flex justify-between gap-4">
                                 <dt class="text-muted-foreground">Balance to pay later</dt>
-                                <dd class="font-semibold text-primary">{{ $booking->formatted_balance_due }}</dd>
+                                <dd class="font-semibold text-primary-strong">{{ $booking->formatted_balance_due }}</dd>
                             </div>
                         @endif
                     </dl>
@@ -67,6 +67,55 @@
                 </div>
                 <div class="mt-8 text-center">
                     <x-ui.button href="/" size="lg" >Back to the site</x-ui.button>
+                </div>
+            </div>
+        </x-site.section>
+    @elseif ($voucher !== null)
+        {{-- A paid gift-voucher purchase: no booking, the voucher is the receipt. --}}
+        <x-site.page-hero title="Gift Voucher Bought" subtitle="Payment received — the voucher is on its way by email." />
+        <x-site.section>
+            <div class="mx-auto max-w-xl">
+                <div class="border-2 border-secondary bg-card p-6 sm:p-8">
+                    <div class="flex items-center gap-3">
+                        <span class="flex h-12 w-12 items-center justify-center bg-primary text-primary-foreground">
+                            <x-icon name="check" class="h-6 w-6" />
+                        </span>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-muted-foreground">Gift voucher</p>
+                            <p class="font-display text-2xl uppercase text-secondary">{{ $voucher->product?->name ?? 'G-Force Skydiving' }}</p>
+                        </div>
+                    </div>
+                    <dl class="mt-6 space-y-3 border-t pt-6 text-sm">
+                        <div class="flex justify-between gap-4">
+                            <dt class="text-muted-foreground">Value</dt>
+                            <dd class="font-semibold text-secondary">{{ $voucher->formatted_amount }}</dd>
+                        </div>
+                        @if ($voucher->recipient_name)
+                            <div class="flex justify-between gap-4">
+                                <dt class="text-muted-foreground">For</dt>
+                                <dd class="font-semibold text-secondary">{{ $voucher->recipient_name }}</dd>
+                            </div>
+                        @endif
+                        <div class="flex justify-between gap-4">
+                            <dt class="text-muted-foreground">Valid until</dt>
+                            <dd class="font-semibold text-secondary">{{ $voucher->expires_at?->format('j F Y') }}</dd>
+                        </div>
+                        <div class="flex justify-between gap-4">
+                            <dt class="text-muted-foreground">Paid</dt>
+                            <dd class="font-semibold text-secondary">{{ $payment->formatted_amount }}</dd>
+                        </div>
+                    </dl>
+                </div>
+                <div class="mt-8 border-t-4 border-primary bg-secondary p-6 text-secondary-foreground sm:p-8">
+                    <h2 class="font-display text-2xl uppercase">What happens next</h2>
+                    <ul class="mt-4 space-y-3 text-sm opacity-95">
+                        <li class="flex items-start gap-2"><x-icon name="check" class="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" /> The voucher, with its code and a printable PDF, is being emailed to {{ $voucher->purchaser_email }}.</li>
+                        <li class="flex items-start gap-2"><x-icon name="check" class="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" /> Whoever has it can book online and use the code at checkout.</li>
+                        <li class="flex items-start gap-2"><x-icon name="check" class="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" /> Nothing arrived within an hour? Check your spam, then get in touch.</li>
+                    </ul>
+                </div>
+                <div class="mt-8 text-center">
+                    <x-ui.button href="/" size="lg">Back to the site</x-ui.button>
                 </div>
             </div>
         </x-site.section>

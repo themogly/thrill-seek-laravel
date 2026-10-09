@@ -2185,7 +2185,7 @@ The four new code rules all hold on `be9e145` (0 `@vite`/`<script>`/`x-if` under
 in `app/Http/Middleware/` reads the session). Nothing is enforced by a test yet — that's
 prompt 002. There is no suite-collection test yet either (also 002).
 
-**Motion ambition: subtle — `OVERNIGHT-DEFAULT — CONFIRM`.** G-Force never recorded a level.
+**Motion ambition: subtle — `OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS)`.** G-Force never recorded a level.
 As built: CSS transitions plus the opt-in `data-reveal` IntersectionObserver reveals in
 `resources/js/app.js` (skipped under `prefers-reduced-motion`; content visible without JS).
 No Motion One calls — the `motion` package is in `package.json` but imported nowhere (a
@@ -2329,7 +2329,8 @@ sentence). Two mail-named tests fixed: one asserts the send, one renamed to "ren
 - **`List-Unsubscribe` header not added** (needs a POST endpoint): follow-up E-1. The footer
   one-click link works.
 
-**OWNER DECISION — PENDING:** should admin-originated acts email the customer the way the online
+~~OWNER DECISION — PENDING~~ **Answered by Ben 9 Oct 2026: option B (toggle, default on) — built in
+`feat/admin-email-customer-toggle`.** Should admin-originated acts email the customer the way the online
 paths do? (a) Creating a booking already Confirmed sends no `booking_confirmed` (verified by doing).
 (b) Vouchers → Redeem sends no receipt. Options: A always send; **B (recommended)** an "Email the
 customer" toggle defaulting on, like Reschedule; C never. Not implemented.
@@ -2387,7 +2388,7 @@ Not a finding, so the base `SettingsPage` is left as it is.
   - capacity has a floor at the current bookings.
 - **Sent newsletter:** the form is disabled, Save is hidden, and `beforeSave()` halts. The disabled
   schema alone still saved, which the test caught.
-- **Panel:** `AccountWidget` unregistered. Primary `Color::Blue`, **OVERNIGHT-DEFAULT — CONFIRM**:
+- **Panel:** `AccountWidget` unregistered. Primary `Color::Blue`, **OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS)**:
   white-on-primary measured 5.26:1, against the brand sky's 3.45:1, so the brand colour isn't used as
   a button fill.
 
@@ -2422,7 +2423,9 @@ Chromium on rebuilt assets: 21 public pages at 1440 and 390 px, plus 6 signed-in
 reduced motion emulated so reveals don't hide text. Then a keyboard pass, a forms pass, and computed
 contrast for toasts and inline errors (axe never sees a toast that isn't on screen).
 
-**OWNER DECISION — PENDING: brand colour contrast.** This was June's unrecorded item, now recorded.
+**OWNER DECISION — ANSWERED (Ben, 9 Oct 2026): option B — brand colour contrast.** Implemented on
+`ui/primary-strong-contrast` (prompt 016; Ben reviews the screenshots and merges). This was June's
+unrecorded item, now recorded.
 - **Primary** `oklch(0.62 0.18 240)` = `#008fe6` fails AA two ways: as text on white (3.45–3.5:1:
   active nav, eyebrows, dates, links, `£210 per jump`) and as a fill under near-white button text
   (3.36–3.41:1: every primary button). That's 178 axe nodes, and they're the only remaining axe
@@ -2669,7 +2672,7 @@ and `/testimonials` published `AggregateRating` 4.8 from 8.
   approved, so dev pages are populated. Seeding production creates 0 testimonials (red on main).
 - **The rating counts real customers only.** `StructuredData::aggregateRating()` keeps approved
   testimonials with a `customer_id` and a rating; the seeded samples have none, so the discriminator is
-  correct. **`MIN_REVIEWS_FOR_RATING = 3`, `OVERNIGHT-DEFAULT — CONFIRM`**, so one or two reviews never
+  correct. **`MIN_REVIEWS_FOR_RATING = 3`, `OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS)`**, so one or two reviews never
   publish a star figure.
   - *Consequence to confirm:* a genuine review the **owner types into the admin** (no customer) shows on
     the page but **doesn't count toward the rating**. That's conservative and deliberate, since a
@@ -2702,3 +2705,393 @@ and `/testimonials` published `AggregateRating` 4.8 from 8.
 - **Owner line:** on any database that's already seeded, unapprove the 8 sample testimonials in the
   admin (rows aren't deleted).
 - Tests 440 → 446; `composer check` and MySQL green.
+
+## Admin-originated emails: "Email the customer" toggle (feat/admin-email-customer-toggle)
+Prompt `prompts/009-admin-acts-email-the-customer.md` (unattended run 2, item 5). Answers the email audit's
+owner decision: Ben chose option B (toggle, default on, as Reschedule does). That owner decision is now
+marked answered in the email-audit entry.
+- **(a) Admin creates a booking already Confirmed** (by status, or by picking a slot, which confirms):
+  - The create form shows "Email the customer" (default on), on create only and only then.
+  - When on, `CreateBooking::afterCreate()` calls **`SendBookingConfirmation`**, a new single action.
+    `BookingObserver::updated` now delegates to it too, so the confirmation has one sender (no second
+    path).
+  - When off, nothing is sent. The created notice says "The customer has been emailed." only when it was
+    queued; a failure says so.
+  - The toggle isn't a column; it's stripped in `mutateFormDataBeforeCreate`.
+- **(b) Vouchers → Redeem:**
+  - Same toggle (reused label, "Email the customer", default on).
+  - When on, it calls **`SendPaymentReceipt`** (the online voucher-covered path's action) with the voucher
+    payment. That also sends the owner the `PaymentReceivedAdminNotification`, exactly as the bank-transfer
+    and online paths do.
+  - `SendPaymentReceipt::handle()` now returns whether it queued (callers that ignore it are unaffected).
+  - The notice matches Reschedule's wording.
+- **No back-filling:** editing an existing booking (including a confirmed one) never sends from this
+  path. The existing status-transition email on edit is unchanged.
+- New "emailed" UI strings are paired in `MailInventoryTest`.
+- Verified by doing: created a Confirmed booking in the admin, saw "The customer has been emailed.", and the
+  worker delivered "Your jump is confirmed" to the customer.
+- Tests 446 → 452 (6 new; both "default on" cases red on main). `composer check` and MySQL green.
+
+## Voucher purchase success page (fix/voucher-payment-success)
+Prompt `prompts/010-voucher-payment-success-page.md` (unattended run 2, item 6; email audit follow-up E-3).
+**Reproduced by doing first:** a voucher-purchase payment was taken through the real `HandleStripeWebhook`
+(paid; voucher `GV-YWL5VYHL` issued), but `/payment/success?session_id=…` showed "waiting to confirm your
+card payment".
+- `PaymentSuccessPage::viewData()` also returns `voucher`: the voucher whose `payment_id` is this payment,
+  only for a **paid** `VoucherPurchase`. It's reached only through the payment the visitor's own Stripe
+  session id resolves (the same strategy as bookings), so another customer's voucher is unreachable
+  (tested with two vouchers plus an unknown session).
+- New view branch "Gift voucher bought":
+  - card: product, value, recipient, valid-until, paid;
+  - "What happens next": the voucher (code + PDF) is being emailed to the purchaser, how it's used, and
+    what to do if it doesn't arrive.
+  - Built from the booking confirmation's own markup.
+  - The voucher **code is deliberately not shown** on the page: a URL can be shared, and the email
+    carries the code.
+- An unpaid voucher payment keeps the existing "waiting" state. Booking pages, payment handling and the
+  webhook Actions are unchanged. New UI claims are paired in `MailInventoryTest` (`VoucherGiftMail`).
+- Screenshots: `audits/reports/run2/010-voucher-success-{paid,waiting}-{1440,390}.jpg`.
+- Tests 452 → 455; `composer check` green.
+
+## Mail logo embedded inline (CID) (fix/mail-logo-cid)
+Prompt `prompts/011-cid-embedded-mail-logo.md` (unattended run 2, item 7; email audit E-2). Premise
+confirmed: both `vendor/mail/html/header.blade.php` (transactional) and `mail/blocks/logo.blade.php`
+(newsletter block) hot-linked `url('/images/email/logo.png')`.
+- **One logo partial**, `mail/partials/logo-img.blade.php`, used by both. Same PNG, 180×68, same alt and
+  inline style. It always points at `cid:gforce-logo` (`App\Support\MailLogo`).
+- **`App\Mail\Concerns\EmbedsMailLogo`** (on `QueuedMailable` and `CourseMessageMail`, i.e. every
+  mailable):
+  - It overrides `buildAttachments()`. When the outgoing HTML references the logo, it adds the PNG as an
+    inline `DataPart` named `gforce-logo`, and Symfony rewrites `cid:gforce-logo` to the part's real
+    Content-ID.
+  - A newsletter without a logo block gets no stray attachment (tested).
+  - The PNG stays outside image optimisation.
+- **Previews:** the admin builder's Preview and `/dev/mail` have no message to embed into.
+  `EmbedsMailLogo::render()` swaps the `cid:` for the public URL, so previews (and `MailRenderTest`'s
+  absolute-URL checks) still show the logo. Sending never calls `render()`.
+- **Newsletters** freeze `rendered_html` at send; the frozen HTML holds `cid:gforce-logo`, and the
+  per-recipient send embeds it.
+- **Re-pointed test:** `BuilderTest::test_logo_block_renders_with_an_absolute_url_and_alt` →
+  `…_renders_the_embedded_logo_with_alt` (asserts `cid:`, no hot-link). This prompt reverses the
+  absolute-URL decision it encoded. Its other assertions are unchanged.
+- **Verified by doing:**
+  - All 7 email templates were sent through the log mailer, each with an inline `Content-ID` PNG part.
+  - `audits/reports/run2/011-booking-confirmed.eml` is the real booking confirmation: its `<img>` points at
+    the attached part's Content-ID, with no hot-linked URL.
+  - The `/dev/mail` preview shows the logo URL.
+- **Owner check after staging:** one real email in Gmail and one in Outlook shows the logo with remote
+  images blocked.
+- Tests 455 → 458; `composer check` green.
+
+## CMS orphan fields resolved (chore/cms-orphans)
+Prompt `prompts/012-cms-orphan-fields.md` (unattended run 2, item 8). Ben's decisions (9 Oct): re-surface the
+Location address, remove `Product::duration`. Each field was re-confirmed unused publicly before removal.
+`audits/reports/cms-field-usage.md` §2 fields are untouched.
+- **Location address → course Event JSON-LD.**
+  - New `StructuredData::place(Location)`: a `PostalAddress` from whichever of `address_line`, `town`,
+    `region`, `postcode`, `country` are filled, and `GeoCoordinates` only when both `lat` and `lng` exist.
+  - With nothing filled, `address` is omitted. It's never the location name again: `courseEvent()` used to
+    put the name in `address`, which was wrong data.
+  - Today only `region` and `country` are filled, so the events carry those.
+- **`Product::duration` removed** (form, `$fillable`, factory, seeder, and the column via
+  `2026_10_09_120000_drop_orphaned_cms_columns`).
+  - **Its only value, recorded so it isn't lost:** Tandem Skydive = *"Approx. half a day at the dropzone"*.
+- **`HomePageSettings::team_lead` removed** (admin field, property, and settings migration
+  `2026_10_09_120100_remove_home_team_lead`, the June pattern). Value was *"The people you'll fly with."*
+  **OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS)** (Ben confirmed this field by name).
+- **`Location::image` removed** (admin field, `image_url` accessor, `$fillable`, `ImageOptimization`
+  entries, and the column in the same migration). It was empty on all 4 locations; no files touched.
+  **OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS).**
+- **Migrations on a seeded copy, both drivers:**
+  - MySQL: a `mysqldump` clone of the dev DB was migrated. Row counts were unchanged (4 products,
+    4 locations, 3 bookings, 5 payments), the columns and `home.team_lead` were gone, rolled back cleanly,
+    and the clone was dropped.
+  - SQLite: a file DB seeded at the pre-012 schema, then migrated the same way.
+- **Stale cache:** a cached `HomePageSettings` payload that still carries `team_lead` unserialises without
+  error (tested), and the deploy clears the settings cache anyway.
+- **Homepage:** pixel-identical before/after at 1440 and 390 (a repeat "before" capture was identical to
+  the first, so the instrument is stable). Crops: `audits/reports/run2/012-home-team-band-after-*.jpg`.
+- **Test re-pointed:** `HomePageSettingsTest` asserted `team_lead` exists. It now lists it among the removed
+  keys; its intent (removed settings stay removed) is unchanged.
+- **Local dev:** Ben's dev DB isn't migrated by this run (the brief says leave it). Run
+  `php artisan migrate`. The code works either way.
+- **Owner content:** enter real dropzone addresses and coordinates in Locations. Until then the events
+  carry region and country only.
+- Tests 458 → 462; `composer check` and MySQL green.
+
+## Homepage SEO title/description from the admin (fix/home-seo-settings)
+
+Prompt 013, the CMS-field gate's top reverse-drift item: `home.blade.php` hardcoded the `<title>` and meta
+description, so neither the owner nor General's "Default page title" could change the homepage's.
+
+- **Decision (b): Home gets its own fields** (`HomePageSettings::seo_title` / `seo_description`), edited in
+  a "Search engines & sharing (SEO)" section at the top of Site content → Home page. This matches
+  Tandem/AFF/Coached and the `SimplePagesSettings` pages.
+  - **Why not (a), the General default:** the homepage title is the brand line, while the site-wide default
+    is the fallback for pages that set none (e.g. `/news`). Tying them together would turn every edit to
+    the fallback into a homepage SEO change. A test pins it: editing General's default leaves the homepage
+    alone.
+- **No change on deploy:** settings migration `2026_10_09_130000_add_home_seo` seeds exactly the two former
+  literals. The rendered `<head>` (title, description, OG and Twitter) was byte-identical before/after
+  locally, and the homepage was pixel-identical at 1440 and 390 (two "before" and two "after" captures each,
+  all 0 px).
+- **Read through accessors with a fallback:** `seoTitle()` / `seoDescription()`, the `emailSignoff()`
+  pattern. An empty value or a stale cache that predates the properties renders the old literals (kept as
+  `DEFAULT_SEO_*` constants). The values go through `@section('title', …)`, which escapes them once, as the
+  layout's `{!! !!}` convention expects (tested with `&`).
+- **Gap fixed in passing (left by 012):** removing `team_lead` left an empty "“Meet the team” teaser"
+  section on the Home settings screen, a header with nothing in it. It's removed, and a structural guard
+  (`NoEmptyAdminSectionsTest`) now fails on any `Section::make()` whose children list is empty. Field-less
+  newsletter Builder *blocks* (divider, automatic news) are deliberate and not checked.
+- **Help guide:** one line in "Editing page content & images" saying where the homepage title is edited.
+- **Local dev:** adding a settings property without its stored row makes spatie throw `MissingSettings`
+  (the dev homepage 500'd). So this one additive migration was applied to the dev DB with `--path`, which
+  adds two settings rows and touches no records. 012's column drops are still pending there for Ben's
+  `php artisan migrate`. On servers the deploy runs `migrate` as usual, with the same brief window as any
+  settings addition.
+
+## Price tokens in CMS wording (feat/price-tokens-in-copy)
+
+Prompt 014, consistency audit C-7. Product prices go through `Money`, but the same figures were also typed
+into CMS text, so changing a product price left those sentences quoting the old one.
+
+### Inventory: every hand-typed price in CMS text, seeders and settings
+
+| Where | Value | Backing data? | Now |
+|---|---|---|---|
+| Tandem FAQ "Can I jump for charity?" | £260 | ✅ Product `tandem-skydive` price | `{price:tandem-skydive}` |
+| Tandem settings: `seo_description`, `hero_subtitle`, `charity_note_body` | £260 ×3 | ✅ same | `{price:tandem-skydive}` |
+| Tandem FAQ "photos or video" | £140 / £100 | ✅ add-ons Outside Camera / HandCam | `{addon:outside-camera}` / `{addon:handcam}` |
+| Tandem FAQ "weather is bad" | £50 | ✅ add-on Rebooking Fee | `{addon:rebooking-fee}` |
+| Terms (`simple_pages.terms_body`) | £24.73, £50 | ✅ add-ons P6 Third Party Insurance / Rebooking Fee | `{addon:p6-third-party-insurance}` / `{addon:rebooking-fee}` |
+| AFF FAQ "How much does it cost" | £1,750 / £600 | ✅ Products `aff-course` / `consolidation-jumps` | `{price:aff-course}` / `{price:consolidation-jumps}` |
+| AFF settings `seo_description` | £1,750 | ✅ `aff-course` | `{price:aff-course}` |
+| Coached settings `price_eyebrow`, `seo_description` | £60 ×2 | ✅ Product `coached-skills` | `{price:coached-skills}` (price only; the eyebrow's wording is C-1, still open) |
+| Tandem FAQ "weight and age limits" | £20 / £40 / £60 | ⚠️ only as **text** in `Product::weight_charges` (`"charge": "£20"`), not money | typed — **OWNER DECISION — ANSWERED 9 Oct (see DECISIONS)**: stays typed |
+| `Product::weight_charges` (Tandem weight table) | £20 / £40 / £60 | the same text | typed (it is the table itself) |
+| AFF FAQ "membership" | ~£125/year | ❌ British Skydiving's price, not ours | typed, owner content |
+| AFF FAQ "Is kit provided?" | ~£5 packing | ❌ none | typed, owner content |
+| `Product::repeat_pricing` (AFF price card) | £210 / £140 per jump | ⚠️ text on the product; quoted nowhere else | typed; one place, so it can't drift |
+| Shop `price_label`s, Hall of Fame "£3,200 raised", a testimonial "£1,000" | — | not our prices | out of scope (C-15 for shop) |
+
+### How it works
+
+- **Syntax:** `{price:<product slug>}`, `{deposit:<product slug>}`, `{addon:<add-on name, slugified>}`.
+  - Single braces, so it can't collide with email templates' `{{ name }}` placeholders or with Blade.
+  - Slugs, not product *type*: AFF has two products (course + consolidation), so `{price:aff}` would be
+    ambiguous.
+  - The add-on key is its slugified name because add-ons have no slug column and the rules forbid new
+    columns. Renaming an add-on breaks its token; the preview shows it. The product slug field's helper
+    text now warns about the same for products.
+- **Resolution:** `App\Support\PriceTokens::render()` at render time, from `SiteContent::priceTokens()`.
+  That's a cached map of plain integers (active products and their add-ons), busted with the product and
+  add-on keys. The cached arrays stay plain; no model is cached.
+- **Where it applies:**
+  - FAQ answers: `Faq::answerHtml()` in the accordion and `Faq::plainAnswer()` in the FAQPage JSON-LD, so
+    the schema carries the rendered price.
+  - Tandem / AFF / Coached: page description (meta, OG and the Product JSON-LD description) and hero
+    subtitle.
+  - The Tandem charity note, the Coached price line, and Terms.
+  - These are exactly the fields that quoted prices. Each uses `AdminPriceTokens::field()` in the admin, so
+    the admin only advertises tokens where the page resolves them.
+- **Public fallback for an unknown token:** "price on enquiry", the wording the site already uses for an
+  unpriced product, plus a log warning.
+  - Never the raw token, and never a guessed figure.
+  - Detection is loose (`{ Price : x }`, an unknown slug, a known product with no deposit), so near-misses
+    can't leak braces.
+- **Admin preview, not a save lock:** each token field shows a live "Preview:" line, with known tokens in
+  bold and unknown ones highlighted "⚠ Unknown price {…}". Verified in a real browser in the FAQ rich
+  editor.
+  - A save-blocking rule was built and then removed: hiding or renaming a product later would have stopped
+    the owner saving *anything else* on that settings page.
+- **Fresh installs:** `FaqSeeder` and the two original settings migrations now carry the tokens. They render
+  byte-identical to the old literals because a fresh install seeds the products. Two render tests now seed
+  products in their setup; their exact-text assertions are unchanged.
+- **Existing databases are owner content:** nothing there is rewritten. Ben's list (from the dev DB, same
+  as the seeds): FAQs tandem #4, #5, #8 and aff #12; Tandem `seo_description`, `hero_subtitle` and
+  `charity_note_body`; AFF `seo_description`; Coached `seo_description` and `price_eyebrow`; Terms. Swap each
+  figure for the token in the table above, and the preview confirms it.
+- **OWNER DECISION — ANSWERED 9 Oct (see DECISIONS) (weight surcharges): (a), keep both typed for now.** the £20/£40/£60 bands are typed twice, in the Tandem
+  weight table (text on the product) and the weight FAQ. Options:
+  - (a) keep both typed, and the Help guide reminds the owner to change both;
+  - (b) make the weight bands money (pence) on the product, with a `{weight:…}` token.
+
+  (b) needs a schema change the rules forbid here. Neither was implemented; (a) is what's live.
+- **Help guide:** a new "Prices in your wording" section covers the tokens, where they work, typos, and the
+  still-typed prices to update by hand.
+- Homepage pixel-identical (1440/390, 0 px, against the 013 baseline).
+
+## Consistency small fixes C-3, C-4, C-12, C-13 (ui/consistency-small-fixes)
+
+Prompt 015. Four odd ones out from the itemised consistency audit move onto shared styles, one commit each.
+No shared component existed for the first three, so two small ones were made rather than more inline copies.
+
+- **`<x-ui.meta-label>`** (new): the one small uppercase label. `text-xs` bold, `tracking-[0.25em]`, in a
+  palette tone: `primary` / `sky-bright` / `current`.
+  - **C-3, `/news`:** the article dates (`0.2em`) and the "G-Force News" image label (`0.3em`, the only one
+    on the site) now use it at `0.25em`. Only `/news` changes.
+  - The homepage news dates (the reference) already had exactly these classes and **were left inline**: the
+    homepage is signed off and the prompt says to change `/news` only. The component's docblock and
+    `ui-guidelines.md` say so.
+  - **C-4, testimonial grid:** role labels go from 400 / `0.2em` / `white/70` to the shared 700 / `0.25em` /
+    `sky-bright`. `<x-site.instructor-card>`'s role label (which already had those values) now renders
+    through the component too, pixel-identically.
+- **`<x-ui.loading-label>`** (new), **C-12:** the idle/loading swap inside a Livewire submit button.
+  "Sending…" is defined once there. Contact, Tandem, AFF and Coached enquiry forms all use it; "Sending..."
+  is gone. `SendingLabelTest` asserts every enquiry form renders it. The booking and voucher forms' "Sending
+  your request…" / "Taking you to secure payment…" are different actions and are out of scope.
+- **C-13:** the Tandem and AFF intro wrappers swap `py-16 lg:py-24` for `py-section-sm lg:py-section` (same
+  4rem / 6rem).
+- **Pixel checks (full page, 1440 + 390):** `/tandem`, `/aff`, `/meet-the-team` and `/contact` were 0 px.
+  The homepage was 0 px.
+  - **Instrument fix:** a first 390 homepage comparison showed 2,592 px. It was the below-the-fold
+    testimonial avatars (`loading="lazy"`) not yet loaded in one capture, not a markup change. Homepage
+    captures now force every image to load before the shot. With that, before (code stashed) and after were
+    0 px at both widths, twice each. Use the eager-image step for any future full-page comparison.
+- **Crops:** before/after JPEGs of `/news`, `/testimonials` and the contact form's loading state at 1440 and
+  390 are in `ui-review/consistency-small-fixes/`.
+- `ui-guidelines.md`:
+  - catalogue: both components, plus two rows in the cross-page table;
+  - known gaps: C-3, C-4, C-12 and C-13 removed, and C-7 too (fixed by 014, which missed this list);
+  - C-5 notes that the new component is the likely fix.
+
+## Brand contrast: `primary-strong` for text and fills (ui/primary-strong-contrast) — merged in run 3
+
+Prompt 016, Ben's answer to the contrast decision: **option B**. This is the authorised exception to the
+homepage freeze, for colour only.
+
+- **Tokens:**
+  - `--primary-strong: oklch(0.545 0.18 240)` (`#0078cc`) plus the Tailwind colour `primary-strong`.
+  - `--primary` is unchanged (`#008fe6`).
+  - `--destructive` is darkened **in place** to `oklch(0.58 0.24 27)` (4.80:1 as text, 4.68:1 as a fill).
+    Reading of "option B": the split exists to keep the bright *brand* accent, and the error red isn't one,
+    so a second red token would only add a token.
+- **The rule:** anything read at normal size, and any fill under text, moves to `primary-strong`. Decoration
+  stays on `primary`: rules, borders, focus rings, icons, checkbox accents, icon-only fills (non-text needs
+  3:1; primary is 3.37–3.46:1) and star glyphs.
+  - Done at the shared sources first: `<x-ui.button>` primary fill and link text, `<x-ui.arrow-link>`, the
+    `<x-site.section-heading>` eyebrow, `<x-ui.meta-label>`, header and account nav active/hover, FAQ and
+    news-body links, booking step, date-field selection.
+  - Then the remaining page-level text.
+  - Inventory: `audits/reports/primary-usage.md` (183 uses: 55 moved, 11 large-display stay, 2 dark-surface
+    hovers stay, the rest decoration).
+- **Large display text (≥24px) stays `primary`:** WCAG large text needs 3:1 and primary measures 3.46:1.
+  These are the Tandem price table, price-card figures, account balances, 404 and the quote glyph.
+  - **OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS): yes.** This keeps the bright accent on the big figures, per option B's intent.
+    The cost is that small prices (e.g. AFF "£210 per jump", 20px) are now the deeper blue while ≥24px
+    prices stay bright. The alternative is moving those 11 to `primary-strong` too (still compliant).
+- **Dark surfaces keep `primary`:** `primary-strong` is only 3.16:1 on navy, against 4.21:1 for primary.
+  Allowlisted with reasons: the contact panel's hover links, and the section-heading eyebrow when
+  `light=true`.
+- **Premise correction: the fill is 4.49:1, not 4.51.** The prompt's nearest passing shade "4.51 as a fill"
+  holds against pure white, but `--primary-foreground` was `oklch(0.99 0 0)` (`#fcfcfc`). axe measured every
+  primary button at **4.49:1** and flagged it.
+  - **OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS): yes.** `--primary-foreground` set to `oklch(1 0 0)` (white, already the
+    palette's `--background`/`--card`) gives 4.61:1. That's no new colour and visually indistinguishable.
+  - The alternative is a slightly darker `primary-strong` (e.g. `oklch(0.54 0.18 240)`), which would leave
+    the prompt's value.
+- **Message bubble:** the customer's "You" label was `text-primary` on the `sky-bright/10` tint (3.15:1, the
+  audit's "below 3:1" item). `primary-strong` is still only 4.19:1 there, so it is now `text-secondary`
+  (navy).
+  - **OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS): yes.** Both labels are now navy; the bubbles stay distinct by alignment,
+    border, tint and the label words.
+  - Measured by calculation: axe wasn't run on the thread page, because opening it could mark the dev
+    DB's Audit customer's messages read.
+- **Hover/active button states, not in axe's reach:**
+  - Hover `primary-strong/85` is 3.54:1 and active `/75` is 2.99:1, against 2.80 / 2.48 before. Better,
+    but under 4.5.
+  - **OWNER DECISION — ANSWERED 9 Oct (see DECISIONS): (b), darken on hover — prompt 020.** (a) keep the lighter hover wash as designed; or (b) hovers darken instead
+    (e.g. to `secondary` navy), which is a visual change. Neither implemented.
+- **axe-core 4.10.2** (same version as the audit), WCAG 2.0/2.1 A+AA plus best practice, signed out, reduced
+  motion, fonts loaded, injected into the real pages:
+  - **Before:** 173 `color-contrast` nodes over 20 pages × 1440/390 (every one `#008fe6`: 99 as a fill,
+    74 as text). The audit's 178 was over 21 pages.
+  - **After:** **0 violations** of any rule.
+  - Signed-in account pages (5 × 2 widths): 0 contrast failures.
+  - One unrelated finding: `scrollable-region-focusable` on the 390 payments table, which needs
+    `tabindex`/a label. That's keyboard access, not colour; a follow-up, not fixed here.
+- **Guard:** `PrimaryIsNotUsedForTextTest` fails on `text-primary`, or on `bg-primary` under
+  `text-primary-foreground`/`text-white`, in any Blade view.
+  - Exempt: icons/svg, checkboxes, icon-only fills, large display, plus a two-entry reasoned allowlist.
+  - It's red on the pre-change views (84 violations); a planted-violation test and a decoration test
+    prove both directions.
+- **Emails:** they don't use `#008fe6`. Buttons, links and accents use their own `#2f8de4` (13 uses:
+  `vendor/mail/html/themes/gforce.css`, `mail/blocks/button|two_column|featured_course`, newsletter
+  shell/footer). That's 3.47:1 both as text and under white button text, below AA. **Listed, not changed
+  here** (mail has its own render check); a follow-up should take `#0078cc`.
+- **Not in scope:** the Filament admin (Blue since the admin audit).
+- **Screenshots:** `ui-review/primary-strong/` — homepage hero and news, Tandem pricing, AFF price card,
+  Coached intro, the contact form, and the account dashboard, each at 1440 and 390, before and after.
+## Launch checklist tailored to G-Force (docs/launch-checklist)
+
+Prompt 018. `verification/CHECKLIST.md` was the kit's untailored template. It keeps the kit's structure
+and non-negotiables (money/email/silent-killer sections are the hard gate; `APP_KEY` off-server; no
+`key:generate` in deploy; restore tested; clean dataset; one real low-value transaction then refund), with
+every generic item replaced by G-Force's real one. Every name was grepped. The "NOT YET TAILORED" line is
+gone.
+
+- **New §0, staging specifics:**
+  - the site-email setting pointed at a test inbox;
+  - the `MAIL_MAILER` choice;
+  - basic-auth and noindex, both at the server;
+  - the TEST webhook with exactly the two handled events and the `2026-09-30.endive` API version (and
+    where the dashboard shows it);
+  - `gforce:mail-test`;
+  - the dashboard's "Failed emails (last 7 days)";
+  - `/dev/*` must 404.
+- **§1 money table:** every path enumerated from the code — tandem, tandem with a full or partial voucher,
+  AFF deposit, AFF balance from the account, voucher purchase, admin Redeem, payment link, bank transfer.
+  - Each row has the expected Stripe amount in pence → £ from the seeded prices (with "read the live
+    prices first") and the emails that must arrive.
+  - **Refunds: none in the app.** The checklist says so instead of inventing a path.
+- **§2 email table:** one row per email-audit inventory row, each with its real trigger on staging and its
+  Reply-To.
+  - Reply-To was read from each mailable: `TemplatedMail`, the login link, newsletter confirmation and the
+    owner payment notification set none, so replies go to `MAIL_FROM_ADDRESS`. The checklist says that
+    inbox must be read.
+- **§6b devices:** the phone subset of `real-device-checks.md`, with the dropped tablet/counter items named
+  and why.
+- **§7:**
+  - the three real scheduled commands, with what proves each ran;
+  - Horizon, `storage:link`, `config:cache` / `settings:clear-cache`;
+  - the production admin via `make:filament-user --panel=admin`, with no `test@example.com`.
+- **Gaps found while tailoring (recorded, not fixed; docs-only prompt):**
+  - **Staging noindex isn't in the app.** `/robots.txt` allows crawling on every host and no `noindex` is
+    sent by environment, so it must be an nginx `X-Robots-Tag` in Ploi. A code fix
+    (`Disallow: /` + a `noindex` meta when `APP_ENV` isn't production) would be a small follow-up prompt.
+  - **Basic-auth must exempt `/webhooks/stripe` and `/webhooks/resend`**, or staging webhooks 401.
+  - **There's no Users screen in the admin**, so "no `test@example.com`" is checked with a tinker one-liner.
+  - Rescheduling has no capacity check against the target slot. It isn't listed as a refusal to test,
+    because the code doesn't refuse it. Worth an owner question if over-filling a slot by rescheduling
+    matters.
+
+## Ben's answers to run 2's owner questions (9 Oct 2026) — docs/run3-owner-answers
+
+Ben read `RUN-REPORT-2.md`, the 008 proposal and the 016/017 screenshots, and answered every question
+(`prompts/unattended-run-3.md`). Each answered `OWNER DECISION — PENDING` / `OVERNIGHT-DEFAULT — CONFIRM`
+marker now reads `… — ANSWERED 9 Oct (see DECISIONS)`, pointing here.
+
+- **008 — FK delete rules:** the table is approved **as proposed**: the 13 FKs → `RESTRICT`, **plus #26
+  (the documents pivot) → `RESTRICT`**, with `Document` joining `GuardsDeletion` ("attached to N sent
+  messages"). The model-level `deleting` listener on every `GuardsDeletion` model is approved. Built in
+  run 3 (Phase 2).
+- **016 — brand contrast `primary-strong`:** merge it.
+  - Pure-white `primary-foreground`: **yes**.
+  - Display prices of 24px and up stay bright `primary`: **yes**.
+  - The customer's "You" label in navy: **yes**.
+  - Hover and active states: **darken on hover**, not the lighter wash (prompt 020).
+- **017 — feature-split 16:10: withdrawn, not merged.** The 1024 imbalance (the text running well past the
+  photo) is worse than the desktop side-trim. The admin crop stays 16:10; the layout stays as on `main`.
+- **007:** at least 3 real customer reviews before a rating is published, and owner-typed reviews show
+  but don't count: **confirmed**.
+- **012:** removing `home.team_lead` and `Location::image`: **confirmed**.
+- **014:** the weight surcharges stay typed for now (option (a)).
+- **Rescheduling into a full tandem slot must be refused** (prompt 021).
+- **App-level noindex for non-production hosts:** yes (prompt 022).
+- **Email buttons and links move to the accessible blue `#0078cc`:** yes (prompt 023).
+- **Keyboard focus on the scrollable payments table:** yes (prompt 024).
+
+Run 1's answers (RUNNING-ORDER row 8) had already closed two markers that were still worded as open: admin
+panel primary **Blue** and motion ambition **subtle**. Both are flipped here too, as are the
+accessibility audit's brand-contrast rows (answered by 016) and the email audit's heading (option B,
+built in 009). The 016 and 008 markers live on their branches and are flipped when each merges in run 3.

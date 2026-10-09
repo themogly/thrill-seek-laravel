@@ -11,7 +11,9 @@ use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 
 class BookingForm
@@ -59,6 +61,7 @@ class BookingForm
                                 ? 'Held while the customer pays online — this updates by itself when the payment completes or expires.'
                                 : null)
                             ->default(BookingStatus::PendingDate->value)
+                            ->live()
                             ->required(),
                         Select::make('tandem_date_id')
                             ->label('Jump slot')
@@ -72,7 +75,17 @@ class BookingForm
                                     $slot->id => $slot->location->name.' · '.$slot->starts_at->format('D j M Y, H:i')." ({$slot->remaining_capacity} of {$slot->capacity} places left)",
                                 ])
                                 ->all())
-                            ->placeholder('No slot — set a date manually or leave pending'),
+                            ->placeholder('No slot — set a date manually or leave pending')
+                            ->live(),
+                        // Create only: a booking the admin creates already confirmed (or confirmed by
+                        // picking a slot) emails the customer the same confirmation the online path
+                        // does — unless switched off, e.g. when entering an old booking by hand.
+                        Toggle::make('notify_customer')
+                            ->label('Email the customer')
+                            ->helperText('Sends the booking confirmation, as an online booking does. Switch off when entering a past booking.')
+                            ->default(true)
+                            ->visible(fn (Get $get, string $operation): bool => $operation === 'create'
+                                && (self::isConfirmed($get('status')) || filled($get('tandem_date_id')))),
                         AdminDates::dateTime('scheduled_at')
                             ->label('Date & time'),
                         MoneyField::pounds('price_pence')
@@ -92,5 +105,10 @@ class BookingForm
                             ->rows(3),
                     ]),
             ]);
+    }
+
+    private static function isConfirmed(mixed $status): bool
+    {
+        return ($status instanceof BookingStatus ? $status : BookingStatus::tryFrom((string) $status)) === BookingStatus::Confirmed;
     }
 }

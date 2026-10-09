@@ -32,6 +32,7 @@ class SiteContentCacheTest extends TestCase
         $content->shopItems();
         $content->hallOfFame();
         $content->publishedNews();
+        $content->priceTokens();
         foreach (FaqPage::cases() as $page) {
             $content->faqs($page);
         }

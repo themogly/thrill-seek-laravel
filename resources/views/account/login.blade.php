@@ -40,7 +40,7 @@
 
             <p class="mt-6 text-xs text-muted-foreground">
                 Only people who have booked with us have an account. Haven't booked yet?
-                <a href="{{ route('tandem') }}" class="font-bold text-primary hover:underline">See our jumps</a>.
+                <a href="{{ route('tandem') }}" class="font-bold text-primary-strong hover:underline">See our jumps</a>.
             </p>
 
             @if (app()->environment('local') && Route::has('dev.account-login'))

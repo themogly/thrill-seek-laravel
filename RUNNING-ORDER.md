@@ -4,12 +4,10 @@ Sequencing instruction, not a branch. It says which prompt to take next and why 
 Written 9 October 2026 to put G-Force through the September 2026 starter kit.
 
 **Merged:** everything through 24 June 2026, then (unattended run 1, `RUN-REPORT-1.md`) 001, 002, email audit, admin audit, accessibility audit, 003, completeness + CMS-field gates, then 004 (dependency refresh) and the four majors Ben asked for.
-**`main` at `b5d6803`.** 001 branched from `be9e145`.
+**`main` at `98584c7`.** 001 branched from `be9e145`.
 **Built, awaiting merge:** none. The run's eight branches are merged but still exist on GitHub, and
 can be deleted.
-**Prompt files:** `prompts/001-kit-sync.md`, `prompts/002-structural-guards.md`,
-`prompts/003-itemised-consistency-audit.md`, `prompts/unattended-run-1.md` (finished — see
-`RUN-REPORT-1.md`), `prompts/004-dependency-refresh.md`, `prompts/005…019-*.md`, `prompts/unattended-run-2.md`. The kit source is `~/Sites/starter-kit/`.
+**Prompt files:** `prompts/001…024-*.md`, `prompts/unattended-run-1.md`…`-3.md` (1 and 2 finished: `RUN-REPORT-1.md`, `RUN-REPORT-2.md`). The kit source is `~/Sites/starter-kit/`.
 **Withdrawn:** the two June prompts that never ran — see *Withdrawn* at the end.
 
 ## The order
@@ -27,10 +25,13 @@ can be deleted.
 | 8 | **019, then 005–017**: fixes from run 1's reports, run as **unattended run 2** (`prompts/unattended-run-2.md`). Order inside: **019** PHP `^8.4.1` + platform pin (the lock already needs it) → **005** FAQ admin 500 (urgent: owner blocked) → **006** no known-password admin on servers (urgent: before staging) → **007** sample testimonials off servers + honest rating → **008** DB delete rules (**checkpoint**: Phase 1 proposal, unmerged) → **009** admin emails toggle → **010** voucher success page → **011** CID mail logo → **012** CMS orphans → **013** homepage SEO from settings → **014** price tokens in CMS copy → **015** consistency small fixes → **016** brand contrast `primary-strong` (**Ben looks, unmerged**) → **017** feature-split ratio (**Ben looks, unmerged**) | Answers to run 1's owner questions (Ben, 9 Oct 2026): 1 toggle default on, 2 option B, 3 admin Blue OK, 4 motion subtle OK, 5 sign-off later, 8 samples off, 9 addresses → JSON-LD and remove duration, 10 sync global skills. 006 was found by chat-Claude, not by a gate: the June security audit and pre-staging gate both missed it. |
 | 9 | **018** — tailor `verification/CHECKLIST.md` (in run 2, after the code prompts) | It has to describe the build that will ship. |
 | 10 | `gates/pre-staging-gate.md` (kit file), last item of run 2 | Re-run required: the 24 June GO is stale. Its NO-GO list will include 008 Phase 2 and the merging of 016/017 until Ben clears them. |
+| 10b | **Unattended run 3** (`prompts/unattended-run-3.md`): record Ben's 9 Oct answers → merge **016** → **008 Phase 2** (table approved as proposed, #26 → RESTRICT) → **020** button hover contrast → **021** reschedule respects capacity → **022** noindex non-production + SETUP staging notes → **023** email link colour → **024** scrollable table focus → pre-staging gate re-run. **017 withdrawn** (Ben, 9 Oct: the 1024 imbalance is worse than the side-trim). | Ben read run 2 and answered every question. None of these blocks *staging* (the run 2 gate is GO), so staging runs in parallel. 016 and 008 Phase 2 are wanted before *launch*. |
 | 11 | Staging: Ben on the server | `staging-setup-brief-gforce.md` + `PRE-STAGING-CHECKLIST.md` §5. |
 | 12 | `verification/CHECKLIST.md` + `verification/real-device-checks.md`, by hand on staging | What no automated check covers. Use `tester-feedback-triage.md` for the G-Force staff's feedback. |
 
-**Run 2 progress:** 019 PHP platform ✅ `a7c47ce` · 005 FAQ admin 500 ✅ `fc94134` · 006 no seeded admin on servers ✅ `fc9a0e4` · 007 sample testimonials ✅ `b5d6803`
+**Run 2 progress:** 019 PHP platform ✅ `a7c47ce` · 005 FAQ admin 500 ✅ `fc94134` · 006 no seeded admin on servers ✅ `fc9a0e4` · 007 sample testimonials ✅ `b5d6803` · 008 FK rules (Phase 1) ⏸ pushed unmerged `823d4a2` · 009 admin emails toggle ✅ `088f90e` · 010 voucher success page ✅ `ee6e64c` · 011 CID mail logo ✅ `eff136b` · 012 CMS orphans ✅ `6a7c6e8` · 013 homepage SEO ✅ `31e46bc` · 014 price tokens ✅ `30e8c89` · 015 consistency fixes ✅ `1ec6b75` · 016 primary-strong ⏸ pushed unmerged `fc0884a` · 017 feature-split ⏸ pushed unmerged `0a37a7b` · 018 launch checklist ✅ `c23763a` · pre-staging gate ✅ `450b421` · housekeeping ✅ · **run 2 complete** (see `RUN-REPORT-2.md`)
+
+**Run 3 progress:** 1 Ben's answers ✅ `90a9cbc` · 2 016 primary-strong ✅ `98584c7`
 
 ## Hard constraints
 

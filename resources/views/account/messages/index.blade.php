@@ -12,7 +12,7 @@
         @if ($enquiries->isEmpty())
             <p class="mt-8 text-muted-foreground">
                 You don't have any message threads yet.
-                <a href="{{ route('contact') }}" class="font-bold text-primary hover:underline">Get in touch</a> and it'll appear here.
+                <a href="{{ route('contact') }}" class="font-bold text-primary-strong hover:underline">Get in touch</a> and it'll appear here.
             </p>
         @else
             <ul class="mt-8 divide-y-2 divide-border border-y-2 border-border">
