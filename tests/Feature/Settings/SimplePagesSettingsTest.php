@@ -5,6 +5,7 @@ namespace Tests\Feature\Settings;
 use App\Filament\Pages\Settings\ManageSimplePagesSettings;
 use App\Models\User;
 use App\Settings\SimplePagesSettings;
+use Database\Seeders\ProductSeeder;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -12,6 +13,8 @@ class SimplePagesSettingsTest extends TestCase
 {
     public function test_simple_pages_render_the_seeded_settings_content(): void
     {
+        // Terms quote add-on prices via tokens (014); a fresh install seeds the products too.
+        $this->seed(ProductSeeder::class);
         $this->setFeature('shop_enabled', true);
         $this->get('/shop')->assertOk()->assertSee('Repping G-Force on the dropzone.');
         $this->get('/testimonials')->assertOk()->assertSee('Real stories from the people who&#039;ve jumped with us.', false);

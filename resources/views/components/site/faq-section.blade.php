@@ -40,7 +40,7 @@
                                 aria-labelledby="{{ $faq->panelId() }}-btn"
                                 class="pb-6 leading-relaxed text-muted-foreground [&_a]:font-bold [&_a]:text-primary [&_a]:underline [&_li]:mt-1 [&_ol]:mt-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mt-0 [&_ul]:mt-2 [&_ul]:list-disc [&_ul]:pl-5"
                             >
-                                {!! $faq->answer !!}
+                                {!! $faq->answerHtml() !!}
                             </div>
                         </div>
                     </div>

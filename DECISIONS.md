@@ -2848,3 +2848,74 @@ description, so neither the owner nor General's "Default page title" could chang
   adds two settings rows and touches no records. 012's column drops are still pending there for Ben's
   `php artisan migrate`. On servers the deploy runs `migrate` as usual, with the same brief window as any
   settings addition.
+
+## Price tokens in CMS wording (feat/price-tokens-in-copy)
+
+Prompt 014, consistency audit C-7. Product prices go through `Money`, but the same figures were also typed
+into CMS text, so changing a product price left those sentences quoting the old one.
+
+### Inventory: every hand-typed price in CMS text, seeders and settings
+
+| Where | Value | Backing data? | Now |
+|---|---|---|---|
+| Tandem FAQ "Can I jump for charity?" | £260 | ✅ Product `tandem-skydive` price | `{price:tandem-skydive}` |
+| Tandem settings: `seo_description`, `hero_subtitle`, `charity_note_body` | £260 ×3 | ✅ same | `{price:tandem-skydive}` |
+| Tandem FAQ "photos or video" | £140 / £100 | ✅ add-ons Outside Camera / HandCam | `{addon:outside-camera}` / `{addon:handcam}` |
+| Tandem FAQ "weather is bad" | £50 | ✅ add-on Rebooking Fee | `{addon:rebooking-fee}` |
+| Terms (`simple_pages.terms_body`) | £24.73, £50 | ✅ add-ons P6 Third Party Insurance / Rebooking Fee | `{addon:p6-third-party-insurance}` / `{addon:rebooking-fee}` |
+| AFF FAQ "How much does it cost" | £1,750 / £600 | ✅ Products `aff-course` / `consolidation-jumps` | `{price:aff-course}` / `{price:consolidation-jumps}` |
+| AFF settings `seo_description` | £1,750 | ✅ `aff-course` | `{price:aff-course}` |
+| Coached settings `price_eyebrow`, `seo_description` | £60 ×2 | ✅ Product `coached-skills` | `{price:coached-skills}` (price only; the eyebrow's wording is C-1, still open) |
+| Tandem FAQ "weight and age limits" | £20 / £40 / £60 | ⚠️ only as **text** in `Product::weight_charges` (`"charge": "£20"`), not money | typed — **OWNER DECISION — PENDING** below |
+| `Product::weight_charges` (Tandem weight table) | £20 / £40 / £60 | the same text | typed (it is the table itself) |
+| AFF FAQ "membership" | ~£125/year | ❌ British Skydiving's price, not ours | typed, owner content |
+| AFF FAQ "Is kit provided?" | ~£5 packing | ❌ none | typed, owner content |
+| `Product::repeat_pricing` (AFF price card) | £210 / £140 per jump | ⚠️ text on the product; quoted nowhere else | typed; one place, so it can't drift |
+| Shop `price_label`s, Hall of Fame "£3,200 raised", a testimonial "£1,000" | — | not our prices | out of scope (C-15 for shop) |
+
+### How it works
+
+- **Syntax:** `{price:<product slug>}`, `{deposit:<product slug>}`, `{addon:<add-on name, slugified>}`.
+  - Single braces, so it can't collide with email templates' `{{ name }}` placeholders or with Blade.
+  - Slugs, not product *type*: AFF has two products (course + consolidation), so `{price:aff}` would be
+    ambiguous.
+  - The add-on key is its slugified name because add-ons have no slug column and the rules forbid new
+    columns. Renaming an add-on breaks its token; the preview shows it. The product slug field's helper
+    text now warns about the same for products.
+- **Resolution:** `App\Support\PriceTokens::render()` at render time, from `SiteContent::priceTokens()`.
+  That's a cached map of plain integers (active products and their add-ons), busted with the product and
+  add-on keys. The cached arrays stay plain; no model is cached.
+- **Where it applies:**
+  - FAQ answers: `Faq::answerHtml()` in the accordion and `Faq::plainAnswer()` in the FAQPage JSON-LD, so
+    the schema carries the rendered price.
+  - Tandem / AFF / Coached: page description (meta, OG and the Product JSON-LD description) and hero
+    subtitle.
+  - The Tandem charity note, the Coached price line, and Terms.
+  - These are exactly the fields that quoted prices. Each uses `AdminPriceTokens::field()` in the admin, so
+    the admin only advertises tokens where the page resolves them.
+- **Public fallback for an unknown token:** "price on enquiry", the wording the site already uses for an
+  unpriced product, plus a log warning.
+  - Never the raw token, and never a guessed figure.
+  - Detection is loose (`{ Price : x }`, an unknown slug, a known product with no deposit), so near-misses
+    can't leak braces.
+- **Admin preview, not a save lock:** each token field shows a live "Preview:" line, with known tokens in
+  bold and unknown ones highlighted "⚠ Unknown price {…}". Verified in a real browser in the FAQ rich
+  editor.
+  - A save-blocking rule was built and then removed: hiding or renaming a product later would have stopped
+    the owner saving *anything else* on that settings page.
+- **Fresh installs:** `FaqSeeder` and the two original settings migrations now carry the tokens. They render
+  byte-identical to the old literals because a fresh install seeds the products. Two render tests now seed
+  products in their setup; their exact-text assertions are unchanged.
+- **Existing databases are owner content:** nothing there is rewritten. Ben's list (from the dev DB, same
+  as the seeds): FAQs tandem #4, #5, #8 and aff #12; Tandem `seo_description`, `hero_subtitle` and
+  `charity_note_body`; AFF `seo_description`; Coached `seo_description` and `price_eyebrow`; Terms. Swap each
+  figure for the token in the table above, and the preview confirms it.
+- **OWNER DECISION — PENDING (weight surcharges):** the £20/£40/£60 bands are typed twice, in the Tandem
+  weight table (text on the product) and the weight FAQ. Options:
+  - (a) keep both typed, and the Help guide reminds the owner to change both;
+  - (b) make the weight bands money (pence) on the product, with a `{weight:…}` token.
+
+  (b) needs a schema change the rules forbid here. Neither was implemented; (a) is what's live.
+- **Help guide:** a new "Prices in your wording" section covers the tokens, where they work, typos, and the
+  still-typed prices to update by hand.
+- Homepage pixel-identical (1440/390, 0 px, against the 013 baseline).

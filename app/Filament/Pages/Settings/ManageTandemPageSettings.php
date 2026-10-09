@@ -3,6 +3,7 @@
 namespace App\Filament\Pages\Settings;
 
 use App\Settings\TandemPageSettings;
+use App\Support\AdminPriceTokens;
 use App\Support\ImageCrop;
 use BackedEnum;
 use Filament\Forms\Components\FileUpload;
@@ -37,7 +38,7 @@ class ManageTandemPageSettings extends SettingsPage
                 ->columns(2)
                 ->components([
                     TextInput::make('seo_title')->label('Page title')->required()->maxLength(255),
-                    Textarea::make('seo_description')->label('Page description')->rows(2)->required(),
+                    AdminPriceTokens::field(Textarea::make('seo_description')->label('Page description')->rows(2)->required()),
                     TextInput::make('og_title')->label('Social sharing title')->required()->maxLength(255),
                     TextInput::make('og_description')->label('Social sharing description')->required()->maxLength(500),
                 ]),
@@ -45,7 +46,7 @@ class ManageTandemPageSettings extends SettingsPage
                 ->columns(2)
                 ->components([
                     TextInput::make('hero_title')->label('Heading')->required()->maxLength(255),
-                    TextInput::make('hero_subtitle')->label('Text under the heading')->maxLength(500),
+                    AdminPriceTokens::field(TextInput::make('hero_subtitle')->label('Text under the heading')->maxLength(500)),
                     ImageCrop::ratio(
                         FileUpload::make('hero_image')
                             ->label('Hero photo')
@@ -92,7 +93,7 @@ class ManageTandemPageSettings extends SettingsPage
                 ->columns(2)
                 ->components([
                     TextInput::make('charity_note_title')->label('Bold lead-in')->required()->maxLength(255),
-                    TextInput::make('charity_note_body')->label('Text')->required()->maxLength(500),
+                    AdminPriceTokens::field(TextInput::make('charity_note_body')->label('Text')->required()->maxLength(500)),
                 ]),
             Section::make('Gift voucher box')
                 ->components([
