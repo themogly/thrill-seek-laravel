@@ -12,7 +12,7 @@
         @if ($payments->isEmpty())
             <p class="mt-8 text-muted-foreground">No payments yet.</p>
         @else
-            <div class="mt-8 overflow-x-auto border-2 border-border">
+            <x-ui.table-scroll label="Payments" class="mt-8 border-2 border-border">
                 <table class="w-full text-left text-sm">
                     <thead>
                         <tr class="border-b-2 border-border text-xs uppercase tracking-widest text-muted-foreground">
@@ -40,7 +40,7 @@
                         @endforeach
                     </tbody>
                 </table>
-            </div>
+            </x-ui.table-scroll>
         @endif
     </x-site.section>
 @endsection

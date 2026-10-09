@@ -118,6 +118,10 @@ content). Helpers: `band-ink` (darkest band), `bg-photo-scrim` (text-over-photo)
   `current/10`–`/20` wash stays (≥ 8:1 on light and dark). Lead an icon for actions, trail for directional; `size="icon"`
   needs `aria-label`. Loading: `wire:loading.attr="disabled"` + `<x-ui.loading-label>` in the
   slot. **Never** a hand-styled button.
+- **`<x-ui.table-scroll label>`** — the ONE horizontal scroll region for a table wider than the screen
+  (prompt 024): focusable (`tabindex="0"`), a named `role="region"` (`label`, e.g. "Payments"), and the standard
+  focus ring on keyboard focus only. Never wrap a table in a bare `overflow-x-auto` (guard:
+  `TablesScrollThroughTheSharedRegionTest`).
 - **`<x-ui.loading-label target>`** — the ONE idle/loading label swap inside a Livewire submit
   button: the slot at rest, "Sending…" (real ellipsis, defined once) while `target` (default
   `submit`) runs. Pass `loading="…"` only for a genuinely different action.

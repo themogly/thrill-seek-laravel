@@ -3275,3 +3275,25 @@ Prompt 023. Ben, 9 Oct 2026: move the emails to the accessible blue.
   vendor-mail and PDF views with the CSS property it sits in. Borders pass; `color` and `background` need an
   allowlist entry with a reason. It's red on `main` (6 uses), proven with a planted use, and pins the theme
   button and both contrast facts. `MailRenderTest` and `/dev/mail` still render every mailable.
+
+## The payments table's scroll region is reachable by keyboard (a11y/scrollable-table-focus)
+
+Prompt 024. Ben, 9 Oct 2026: yes, fix it.
+
+- **Premise confirmed in the browser** (axe-core 4.10.2, signed in via the local dev login, read-only):
+  `/account/payments` at 390 had **1 `scrollable-region-focusable`** node. The wrapper scrolls (scrollWidth 395
+  vs clientWidth 354) and couldn't be focused. 1440 doesn't scroll and was clean.
+- **One shared component:** `<x-ui.table-scroll label="…">`, an `overflow-x-auto` box with `tabindex="0"`,
+  `role="region"`, `aria-label`, and the site's standard focus ring (`focus-visible:ring-2 ring-ring` +
+  offset, like the buttons). Layout and border classes pass through.
+  - **Grep:** the payments table was the only table in a scroll wrapper in the public and account views. The
+    booking page's payments table and the Tandem tables aren't in one. The admin calendar's `overflow-x-auto`
+    wraps a grid inside Filament, not a table, so it's out of scope.
+- **After:** axe **0 violations** at 390 and 1440. Tab reaches the region (`:focus-visible`, the ring paints: white
+  2px offset + brand-blue 4px), and the arrow keys scroll it to its full 41px.
+  - **No change at rest:** the full-page payments screenshot before vs after is **0 px** at 390 and at 1440.
+- **Tests:** `PaymentsTableKeyboardTest` (the rendered page has the focusable, named region round the table) and
+  `TablesScrollThroughTheSharedRegionTest` (no table in a bare scroll wrapper in any non-mail view, proven by a
+  planted wrapper). Both are red on `main`.
+- `ui-guidelines.md` lists the component. Screenshots: `ui-review/scrollable-table-focus/` (390 and 1440 at
+  rest, before and after, plus keyboard focus).
