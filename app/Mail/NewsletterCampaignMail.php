@@ -9,12 +9,15 @@ use App\Support\NewsletterRenderer;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Headers;
 use Illuminate\Support\Facades\URL;
 
 /**
  * One block-based newsletter to one confirmed subscriber. Renders the campaign
  * blocks to email-safe HTML (or reuses the HTML frozen at send), wraps them in
- * the gforce shell, and carries a signed one-click unsubscribe footer.
+ * the gforce shell, and carries a signed one-click unsubscribe: the footer link,
+ * and the RFC 8058 List-Unsubscribe headers that give mail clients their own
+ * "Unsubscribe" button (they POST to the same signed URL; prompt 026).
  */
 class NewsletterCampaignMail extends QueuedMailable
 {
@@ -31,6 +34,14 @@ class NewsletterCampaignMail extends QueuedMailable
         );
     }
 
+    public function headers(): Headers
+    {
+        return new Headers(text: [
+            'List-Unsubscribe' => '<'.$this->unsubscribeUrl().'>',
+            'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click',
+        ]);
+    }
+
     public function content(): Content
     {
         $renderer = app(NewsletterRenderer::class);
@@ -41,7 +52,7 @@ class NewsletterCampaignMail extends QueuedMailable
                 ? $renderer->renderBody($this->campaign)
                 : nl2br(e((string) $this->campaign->body)));
 
-        $unsubscribeUrl = URL::signedRoute('newsletter.unsubscribe', ['subscriber' => $this->subscriber->getKey()]);
+        $unsubscribeUrl = $this->unsubscribeUrl();
 
         // Render the body inside a plain-Blade (non-Markdown) shell so the
         // pre-built, inline-styled block HTML is emitted verbatim, then strip any
@@ -63,5 +74,11 @@ class NewsletterCampaignMail extends QueuedMailable
                 'unsubscribeUrl' => $unsubscribeUrl,
             ],
         );
+    }
+
+    /** One signed URL per subscriber: the footer link (GET) and the mail client's one-click POST. */
+    private function unsubscribeUrl(): string
+    {
+        return URL::signedRoute('newsletter.unsubscribe', ['subscriber' => $this->subscriber->getKey()]);
     }
 }

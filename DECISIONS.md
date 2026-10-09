@@ -3340,3 +3340,31 @@ deferred **A-4** batch, which had never been written as a prompt, re-verified fi
 - **Tests:** `AdminTidyUpTest` (past slot and course save; SVG and GIF refused, JPEG/PNG/WebP taken; >12 MB
   refused; a column sort overrides unread-first; nav sorts unique, in today's order) plus the two structural
   guards. 6 are red on `main`.
+
+## One-click List-Unsubscribe on newsletters (feat/list-unsubscribe)
+
+Prompt 026, written in run 3 under Ben's "also fix anything outstanding". This is the email audit's follow-up
+**E-1**, now done.
+
+- **Premise confirmed** by code read: `NewsletterCampaignMail` set no headers; the unsubscribe route was GET-only;
+  the Resend transport passes custom headers through (`ResendTransportFactory`).
+- **Headers** (`NewsletterCampaignMail::headers()`): `List-Unsubscribe: <signed https URL>` and
+  `List-Unsubscribe-Post: List-Unsubscribe=One-Click` (RFC 8058). It's the same signed URL as the footer link,
+  built in one private method.
+- **POST** `/newsletter/unsubscribe/{subscriber}`, behind `signed`, CSRF-exempt (`bootstrap/app.php`, beside the
+  webhooks: providers POST with no session). It unsubscribes through the same `NewsletterService::unsubscribe()`
+  as the footer link and returns a bare 200 `Unsubscribed.`. It's idempotent. A tampered or unsigned POST is 403
+  and changes nothing.
+- **Only newsletters carry it.** The double-opt-in confirmation and transactional mail have nothing to
+  unsubscribe from, and a test asserts they don't.
+- **Tests** (`ListUnsubscribeTest`): headers asserted on the real MIME message (array mailer); POST unsubscribes
+  with no CSRF token, twice; tampered is refused; the footer GET is unchanged. The behaviour tests are red on
+  `main`.
+- **OWNER DECISION — PENDING (noted, not built): the footer link unsubscribes on GET.** It's one click by design
+  ("one click, no login" in the footer). But some corporate mail scanners (e.g. Outlook Safe Links) fetch every
+  link in a message, which can unsubscribe a reader who never clicked. Options:
+  - (a) keep it as is, since it's simplest for readers;
+  - (b) the GET shows a "Confirm unsubscribe" button that POSTs, so scanners can't trigger it but readers need
+    a second click.
+
+  The mail-client button (this prompt) is POST either way.

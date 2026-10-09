@@ -40,6 +40,9 @@ Route::get('/newsletter/confirm/{subscriber}', [NewsletterController::class, 'co
     ->middleware('signed')->name('newsletter.confirm');
 Route::get('/newsletter/unsubscribe/{subscriber}', [NewsletterController::class, 'unsubscribe'])
     ->middleware('signed')->name('newsletter.unsubscribe');
+// RFC 8058 one-click: the mail client POSTs to the List-Unsubscribe URL (same signed URL).
+Route::post('/newsletter/unsubscribe/{subscriber}', [NewsletterController::class, 'unsubscribeOneClick'])
+    ->middleware('signed')->name('newsletter.unsubscribe.one-click');
 
 Route::get('/payment/success', [PageController::class, 'paymentSuccess'])->name('payment.success');
 Route::view('/payment/cancelled', 'pages.payment-cancelled')->name('payment.cancelled');
