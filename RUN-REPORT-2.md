@@ -140,3 +140,23 @@ build on:
   - The homepage news dates keep their (identical) inline classes, because the prompt says to change `/news` only.
 - **Markers:** none.
 - **Screenshots:** `ui-review/consistency-small-fixes/` — news / testimonials / contact-form-loading, 1440 + 390, before + after.
+
+## 12 · 016 brand contrast, `primary-strong` (option B) — ⏸ NOT MERGED, Ben looks
+- **Branch:** `ui/primary-strong-contrast`, pushed unmerged at `fc0884a`
+- **Tests:** 476 → 479; `composer check` green.
+- **What it did:**
+  - New `--primary-strong` `#0078cc` for anything read and every fill under text, at the shared components first (button primary fill + link, arrow-link, section-heading eyebrow, meta-label, nav active/hover, FAQ/news links, booking step, date selection).
+  - `primary` `#008fe6` stays the accent: rules, borders, icons, focus rings, ≥24px display figures.
+  - Destructive darkened in place.
+  - Inventory `audits/reports/primary-usage.md` (183 uses); guard `PrimaryIsNotUsedForTextTest` (planted violation caught; red on the old views with 84).
+- **axe-core 4.10.2:** 173 `color-contrast` nodes (20 pages × 1440/390, signed out) → **0 violations**. Account pages: 0 contrast failures.
+- **Gap report:**
+  - **Premise off by 0.01:** the prompt's shade is 4.51 as a fill only against pure white. Against the real `#fcfcfc` button text axe measured 4.49 and flagged every button, so `--primary-foreground` is now white (4.61).
+  - The "You" label in message threads stays failing on its sky tint even with `primary-strong` (4.19), so it's navy.
+  - `primary-strong` is only 3.16:1 on navy, so dark-surface uses keep `primary` (allowlisted).
+  - Unrelated axe item: `scrollable-region-focusable` on the 390 account payments table (follow-up).
+  - Emails use their own `#2f8de4` (3.47:1): listed in DECISIONS, not changed.
+- **Markers:**
+  - **OVERNIGHT-DEFAULT — CONFIRM** ×3: white `primary-foreground`; large-display figures stay bright; message "You" label navy.
+  - **OWNER DECISION — PENDING** ×1: hover/active button washes are 3.54 / 2.99:1 (keep the lighter wash, or darken on hover).
+- **Screenshots (for Ben):** `ui-review/primary-strong/` — home hero + news, Tandem pricing, AFF price card, Coached intro, contact form, account dashboard × 1440/390 × before/after (28 JPEGs).
