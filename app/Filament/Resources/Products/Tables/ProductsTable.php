@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\Products\Tables;
 
 use App\Enums\ProductType;
+use App\Support\AdminActions;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -52,7 +52,7 @@ class ProductsTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    AdminActions::guardedBulkDelete(),
                 ]),
             ]);
     }

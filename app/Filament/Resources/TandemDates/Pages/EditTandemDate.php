@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\TandemDates\Pages;
 
 use App\Filament\Resources\TandemDates\TandemDateResource;
-use Filament\Actions\DeleteAction;
+use App\Support\AdminActions;
 use Filament\Resources\Pages\EditRecord;
 
 class EditTandemDate extends EditRecord
@@ -13,7 +13,7 @@ class EditTandemDate extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            AdminActions::guardedDelete(),
         ];
     }
 }

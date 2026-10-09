@@ -90,6 +90,28 @@ class EditNewsletterCampaign extends EditRecord
         ];
     }
 
+    /** The server-side refusal behind the read-only form: a sent newsletter never saves. */
+    protected function beforeSave(): void
+    {
+        /** @var NewsletterCampaign $record */
+        $record = $this->getRecord();
+
+        if ($record->isSent()) {
+            Notification::make()->warning()->title('This newsletter has been sent and can’t be changed')->send();
+
+            $this->halt();
+        }
+    }
+
+    /** No Save button on a sent newsletter — it's read-only history. */
+    protected function getFormActions(): array
+    {
+        /** @var NewsletterCampaign $record */
+        $record = $this->getRecord();
+
+        return $record->isSent() ? [$this->getCancelFormAction()] : parent::getFormActions();
+    }
+
     private function renderFor(NewsletterCampaign $record): string
     {
         $subscriber = new NewsletterSubscriber(['email' => 'preview@example.com']);

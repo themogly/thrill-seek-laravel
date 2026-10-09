@@ -51,23 +51,24 @@ class VoucherResource extends Resource
             Section::make('Voucher')
                 ->columns(2)
                 ->components([
+                    // A bought or used voucher is a money record: its value and product
+                    // are locked, and its status belongs to the Redeem / Revoke actions.
                     Select::make('product_id')
                         ->label('Product')
                         ->relationship('product', 'name')
-                        ->preload(),
+                        ->preload()
+                        ->disabled(fn (?Voucher $record): bool => $record !== null && ! $record->isUnusedHandIssued()),
                     MoneyField::pounds('amount_pence')
                         ->label('Value')
-                        ->helperText('In pounds, e.g. 260.00.')
+                        ->helperText(fn (?Voucher $record): string => $record !== null && ! $record->isUnusedHandIssued()
+                            ? 'Locked — this voucher was bought or has been used.'
+                            : 'In pounds, e.g. 260.00.')
                         ->required()
-                        ->minValue(1),
+                        ->minValue(1)
+                        ->disabled(fn (?Voucher $record): bool => $record !== null && ! $record->isUnusedHandIssued()),
                     AdminDates::date('expires_at')
                         ->label('Expires')
                         ->default(now()->addYear())
-                        ->required(),
-                    Select::make('status')
-                        ->label('Status')
-                        ->options(VoucherStatus::class)
-                        ->default(VoucherStatus::Active->value)
                         ->required(),
                 ]),
             Section::make('People')

@@ -12,6 +12,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
@@ -72,6 +73,7 @@ class NewsForm
                     AdminDates::dateTime('published_at')
                         ->label('Publish date')
                         ->default(now())
+                        ->required(fn (Get $get): bool => (bool) $get('published'))
                         ->helperText('The article appears publicly from this date/time.'),
                     TextInput::make('byline')
                         ->label('Byline (optional)')

@@ -115,7 +115,8 @@ class CourseDateForm
                         TextInput::make('capacity')
                             ->label('Places')
                             ->numeric()
-                            ->minValue(1)
+                            // Never below the students already booked on.
+                            ->minValue(fn (?CourseDate $record): int => max(1, $record?->enrolledCount() ?? 0))
                             ->required(),
                         Select::make('status')
                             ->label('Status')

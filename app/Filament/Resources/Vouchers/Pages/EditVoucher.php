@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Vouchers\Pages;
 
 use App\Filament\Resources\Vouchers\VoucherResource;
-use Filament\Actions\DeleteAction;
+use App\Support\AdminActions;
 use Filament\Resources\Pages\EditRecord;
 
 class EditVoucher extends EditRecord
@@ -13,7 +13,7 @@ class EditVoucher extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            AdminActions::guardedDelete(),
         ];
     }
 }

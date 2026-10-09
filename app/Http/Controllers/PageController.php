@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\FaqPage;
 use App\Models\CourseDate;
+use App\Models\Discipline;
 use App\Settings\GeneralSettings;
 use App\Support\SiteContent;
 use App\ViewModels\PaymentSuccessPage;
@@ -38,7 +39,7 @@ class PageController extends Controller
         return view('pages.tandem', [
             'product' => $this->content->tandemProduct(),
             'faqs' => $this->content->faqs(FaqPage::Tandem),
-            'instructors' => $this->content->instructorsForDiscipline('tandem'),
+            'instructors' => $this->content->instructorsForDiscipline(Discipline::TANDEM),
         ]);
     }
 
@@ -49,7 +50,7 @@ class PageController extends Controller
             // Live query (not cached): remaining places must always be current.
             'courseDates' => CourseDate::upcomingOpen()->with(['product', 'location'])->get(),
             'faqs' => $this->content->faqs(FaqPage::Aff),
-            'instructors' => $this->content->instructorsForDiscipline('aff'),
+            'instructors' => $this->content->instructorsForDiscipline(Discipline::AFF),
         ]);
     }
 
@@ -57,7 +58,7 @@ class PageController extends Controller
     {
         return view('pages.coached', [
             'faqs' => $this->content->faqs(FaqPage::Coached),
-            'instructors' => $this->content->instructorsForDiscipline('coaching'),
+            'instructors' => $this->content->instructorsForDiscipline(Discipline::COACHING),
         ]);
     }
 

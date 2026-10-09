@@ -76,6 +76,7 @@ class MailInventoryTest extends TestCase
         'app/Filament/Resources/Vouchers/VoucherResource.php :: Voucher emailed' => [VoucherGiftMail::class],
         'app/Filament/Resources/Vouchers/VoucherResource.php :: Nothing was sent' => 'Reports a failed send.',
         'app/Filament/Resources/NewsletterCampaigns/Pages/EditNewsletterCampaign.php :: Test sent' => [NewsletterCampaignMail::class],
+        'app/Filament/Resources/NewsletterCampaigns/Pages/EditNewsletterCampaign.php :: has been sent and can’t be changed' => [NewsletterCampaignMail::class],
         'app/Filament/Resources/CourseDates/RelationManagers/RemindersRelationManager.php :: Sent to everyone on the course' => [CourseMessageMail::class],
         'app/Filament/Resources/CourseDates/RelationManagers/MessagesRelationManager.php :: Sent by' => 'A column label on the sent-message history.',
         // Help guide

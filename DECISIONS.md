@@ -2356,3 +2356,61 @@ customer" toggle defaulting on, like Reschedule; C never. Not implemented.
      are named "Audit …". They were left in place.
 
 Tests 378 → 399; `composer check` green; `phpunit.mysql.xml` green (see run report).
+
+## Admin audit (admin/audit-pass)
+Branch off main `39fd24a`. Kit file `audits/admin-audit.md` run verbatim (item 4 of unattended run
+1). Report: `audits/reports/admin-audit.md`, committed before fixes. Audited by using the admin: every
+settings page was loaded, edited, saved, reloaded and reverted; deletes ran against local data in
+rolled-back transactions; a redeemed voucher's status was saved back to Active. A subagent did a
+field-by-field code read of every resource, and each P1 it raised was re-checked by doing.
+
+**Settings pages (the kit's singleton check):** all seven work (load on mount, save, notify, persist).
+Not a finding, so the base `SettingsPage` is left as it is.
+
+**Fixed (each failing-first, one commit):**
+- **Deletion guards.** New `App\Contracts\GuardsDeletion` (a model returns a plain-English
+  `deletionBlocker()` or null) and `App\Support\AdminActions::guardedDelete()` / `guardedBulkDelete()`.
+  The Delete button is disabled with the reason as its tooltip; Filament refuses a disabled action even
+  when called directly (tested); bulk delete deletes only the free records and says how many it kept.
+  Applied to Product, Booking, CourseDate, TandemDate, Location, Voucher and Discipline.
+  Decided: **no FK change.** `course_dates.product_id` stays `cascadeOnDelete`, because the guard
+  stops the UI path. Making it `restrict` is schema, and belongs in its own prompt (A-4 notes it).
+- **Voucher:** the Status field is removed (Redeem/Revoke own it); value and product are locked unless
+  `isUnusedHandIssued()`.
+- **Booking status:** "Awaiting payment" is offered only when the booking is already in it, and the
+  field is locked while it is.
+- **Disciplines:** `Discipline::TANDEM/AFF/COACHING` constants (now used by `PageController`). The slug
+  is locked and Delete is blocked for those three.
+- **Validation:**
+  - a published news article needs a date;
+  - the AFF deposit is required (min 1);
+  - capacity has a floor at the current bookings.
+- **Sent newsletter:** the form is disabled, Save is hidden, and `beforeSave()` halts. The disabled
+  schema alone still saved, which the test caught.
+- **Panel:** `AccountWidget` unregistered. Primary `Color::Blue`, **OVERNIGHT-DEFAULT — CONFIRM**:
+  white-on-primary measured 5.26:1, against the brand sky's 3.45:1, so the brand colour isn't used as
+  a button fill.
+
+**Deferred, with reasons:**
+- **A-1** share-image upload: changes a settings consumer across every page.
+- **A-2** testimonial crop: two display ratios, so it's a design/owner choice.
+- **A-3** owner password reset: a new email path, which should go through the email inventory.
+- **A-4** polish batch: upload limits, enquiry sort, unused slugs, raw-ID selects, nav-sort clash,
+  public CSS sources, and the cascade FK.
+
+**OWNER questions:**
+- Should the email sign-off be editable? (`GeneralSettings::email_signoff` has no field.)
+- Is the admin blue OK?
+- Testimonial crop (A-2).
+
+**Gap report.**
+1. *Required, not done:* the three deferrals above. Every report item has a status (done or
+   deferred).
+2. *Forbidden, done:* none.
+3. *Not mentioned, done:*
+   - the guard pattern also covers Tandem dates, Locations and Disciplines;
+   - one new string ("has been sent and can't be changed") is paired in `MailInventoryTest`;
+   - local dev data: an "Audit Voucher" (redeemed) was created for verification. General settings
+     were briefly saved with "AUDIT" by a crashed script and restored to the seeded values (verified).
+
+Tests 399 → 425; `composer check` green.

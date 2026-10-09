@@ -6,8 +6,8 @@ use App\Filament\Resources\Locations\Pages\CreateLocation;
 use App\Filament\Resources\Locations\Pages\EditLocation;
 use App\Filament\Resources\Locations\Pages\ListLocations;
 use App\Models\Location;
+use App\Support\AdminActions;
 use BackedEnum;
-use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
@@ -120,7 +120,7 @@ class LocationResource extends Resource
             ])
             ->recordActions([
                 EditAction::make(),
-                DeleteAction::make(),
+                AdminActions::guardedDelete(),
             ])
             ->toolbarActions([]);
     }

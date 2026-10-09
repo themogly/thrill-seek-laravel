@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\GuardsDeletion;
 use App\Enums\BookingPaymentState;
 use App\Enums\BookingStatus;
 use App\Enums\PaymentStatus;
@@ -27,7 +28,7 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property Carbon|null $scheduled_at
  */
 #[ObservedBy(BookingObserver::class)]
-class Booking extends Model
+class Booking extends Model implements GuardsDeletion
 {
     /** @use HasFactory<BookingFactory> */
     use HasFactory, LogsActivity;
@@ -277,5 +278,14 @@ class Booking extends Model
     public function scopeWithOutstandingBalance(Builder $query): Builder
     {
         return $query->whereRaw(self::outstandingBalanceSql());
+    }
+
+    public function deletionBlocker(): ?string
+    {
+        if ($this->payments()->exists() || Voucher::where('booking_id', $this->id)->exists()) {
+            return 'This booking has payments or a voucher against it. Set its status to Cancelled instead.';
+        }
+
+        return null;
     }
 }

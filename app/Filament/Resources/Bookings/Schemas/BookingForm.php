@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Bookings\Schemas;
 
 use App\Enums\BookingStatus;
+use App\Models\Booking;
 use App\Models\TandemDate;
 use App\Support\AdminDates;
 use App\Support\MoneyField;
@@ -43,9 +44,20 @@ class BookingForm
                             ->relationship('product', 'name')
                             ->preload()
                             ->searchable(),
+                        // "Awaiting payment" is the Stripe webhook's: it confirms or releases a
+                        // held place only while the booking is still in it. Never offered by
+                        // hand, and a held booking's status is locked until the webhook acts.
                         Select::make('status')
                             ->label('Status')
-                            ->options(BookingStatus::class)
+                            ->options(fn (?Booking $record): array => collect(BookingStatus::cases())
+                                ->reject(fn (BookingStatus $status): bool => $status === BookingStatus::PendingPayment
+                                    && $record?->status !== BookingStatus::PendingPayment)
+                                ->mapWithKeys(fn (BookingStatus $status): array => [$status->value => $status->getLabel()])
+                                ->all())
+                            ->disabled(fn (?Booking $record): bool => $record?->status === BookingStatus::PendingPayment)
+                            ->helperText(fn (?Booking $record): ?string => $record?->status === BookingStatus::PendingPayment
+                                ? 'Held while the customer pays online — this updates by itself when the payment completes or expires.'
+                                : null)
                             ->default(BookingStatus::PendingDate->value)
                             ->required(),
                         Select::make('tandem_date_id')

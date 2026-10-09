@@ -6,11 +6,11 @@ use App\Filament\Resources\TandemDates\Pages\CreateTandemDate;
 use App\Filament\Resources\TandemDates\Pages\EditTandemDate;
 use App\Filament\Resources\TandemDates\Pages\ListTandemDates;
 use App\Models\TandemDate;
+use App\Support\AdminActions;
 use App\Support\AdminDates;
 use App\Support\DateClash;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -68,9 +68,9 @@ class TandemDateResource extends Resource
                 }),
             TextInput::make('capacity')
                 ->label('Capacity')
-                ->helperText('How many jumpers this slot can take.')
+                ->helperText('How many jumpers this slot can take — never fewer than are already booked.')
                 ->numeric()
-                ->minValue(1)
+                ->minValue(fn (?TandemDate $record): int => max(1, $record?->activeBookingsCount() ?? 0))
                 ->required(),
             TextInput::make('notes')
                 ->label('Notes')
@@ -118,7 +118,7 @@ class TandemDateResource extends Resource
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    AdminActions::guardedBulkDelete(),
                 ]),
             ]);
     }
