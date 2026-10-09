@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -15,10 +14,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // A known-credential admin only ever exists on a developer's machine.
+        // Servers get theirs from `php artisan make:filament-user`.
+        if (app()->environment('local')) {
+            $this->call(DevAdminSeeder::class);
+        }
 
         $this->call([
             InstructorSeeder::class,
