@@ -15,6 +15,7 @@ One giant "level up the whole UI" pass is the riskier choice with an autonomous 
 - Bold at the CRAFT level, but stay inside the project's brand — refinement, not a rebrand. No new brand colours / dark mode unless the project already has them.
 - Audit/report first; use tokens not ad-hoc values; reuse shared components so fixes propagate; one shared system per thing (no one-off buttons).
 - Verify by LOOKING across a RANGE of sizes (1440/1280/1024/390 + a short laptop height), never just two. Check gate green before every commit; never commit red. Branch per pass, unmerged until reviewed.
+- **Motion guard:** if the project has a documented motion layer (`ui-guidelines.md`/`DECISIONS.md` — e.g. from `add-motion-layer`), it's DELIBERATE/canonical. Verify its non-negotiables (LCP/above-fold text visible without JS, per-effect `prefers-reduced-motion`, no layout-shift) but do NOT flag the reveals/scroll behaviour as inconsistency or normalize them away. Pass 04: document the motion layer AS-BUILT; if the doc still describes an old/replaced system, reconcile the doc — don't touch the code.
 
 ## When to run
 After features are built and stable — polish the real thing once, not a moving target. If the project started from a mock, treat the mock as a visual spec and run these after re-architecting (see `../bootstrap.md`). Each pass references the project's `CLAUDE.md` and the `frontend-design` skill.

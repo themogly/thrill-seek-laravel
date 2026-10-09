@@ -72,6 +72,29 @@ that manages all site content, enquiries, payments and bookings.
    Business logic stays in `App\Actions` classes with `handle()`.
 6. **No `declare(strict_types=1)`** (pinned by `pint.json`); full parameter and
    return type-hints required everywhere.
+7. **State is re-rendered by the mechanism that changes it.** If a component's
+   markup depends on server state, the component renders it. A Blade layout outside
+   the Livewire root, an `x-data` object evaluated once, or a `wire:confirm` built
+   from a deferred model is a snapshot that the update never revisits.
+8. **Nothing loads or inserts DOM inside a Livewire-morphed view except Livewire.**
+   No `@vite`/module `<script>` and no Alpine `x-if` under `resources/views/livewire/**`
+   (a re-inserted script doesn't re-execute; an `x-if` clone survives the morph and
+   is inserted twice). Scripts load from the layout; Alpine toggles with `x-show`.
+9. **Session-reading middleware registers on the `web` group, after `StartSession`**
+   (`$middleware->web(append: …)` in `bootstrap/app.php`), never on the global stack:
+   global middleware reads a null session in production while in-process tests,
+   which pre-populate the store, stay green.
+10. **Non-scrolling shells are sized in `svh`, never `100vh`/`h-screen`.** Mobile
+    `100vh` is the toolbar-hidden height, so anything pinned to the bottom of a shell
+    that never scrolls sits off-screen. Viewport units only as `min-`/`max-` caps
+    (`layouts/app.blade.php`'s `min-h-screen` is fine).
+11. **One writer per fact, one reader per figure.** Anything that changes a balance,
+    a space count or a status goes through exactly one Action. A number shown on two
+    screens comes from one resolver, and the test asserts the two agree with each
+    other rather than each against a hard-coded value.
+12. **A gate must never become a picture of a gate.** Restyling, moving or replacing a
+    screen that blocks an action keeps the server-side refusal, and ships a test that
+    the write is still refused when the screen is bypassed.
 
 ## Conventions (match these exactly — no second ways of doing things)
 - **SEO / meta**: `<head>` meta is centralised in `layouts/app.blade.php` — every page
@@ -201,6 +224,10 @@ that manages all site content, enquiries, payments and bookings.
   the two photo-led pages are built from it so they read as siblings; build any
   new photo-grid from it. Star ratings render via `<x-site.stars>` in palette
   colours only (sky-bright on dark scrims, primary on light) — no gold.
+- **Motion ambition: subtle** (as built — CSS transitions plus the opt-in `data-reveal`
+  entrance reveals in `app.js`, skipped under `prefers-reduced-motion`; no Motion One
+  calls). Content is visible without JS. Recorded in DECISIONS as
+  `OVERNIGHT-DEFAULT — CONFIRM`; a cinematic layer needs the owner's ask.
 
 ## Quality bar (enforced before every commit)
 - **Database is MySQL 8+** in production and local dev. SQLite (`:memory:`) is kept ONLY
@@ -221,3 +248,35 @@ that manages all site content, enquiries, payments and bookings.
 - After touching anything content-related, verify the public pages still render
   identically (tests assert seeded content; smoke-test key routes return 200 twice —
   first-request-only bugs exist).
+- **Fix the instance, then guard the class.** When a bug is one example of a category,
+  ship a test that walks the whole category (every model with an object cast, every
+  Livewire view, "exactly one implementation of X") — and **prove the guard guards** by
+  making it fail on purpose before trusting it.
+- **The suite must collect every `tests/*` directory.** A directory in no phpunit
+  testsuite silently never runs; assert it with a test that reads the config(s).
+- **A measurement is only as good as the tree and build it was taken on.** Before
+  reporting anything measured: dependencies match the lockfile, assets are rebuilt
+  (`npm run build` — the gitignored build dir otherwise measures an old commit), and the
+  real page is measured, not a harness approximation. State the caveat in the report.
+- **Verify state against the code and git, not claims.** "The audit ran" is not "the
+  fixes ran". Check `git log --all`, the files and the routes before treating work as
+  landed.
+
+## Workflow
+- **Prompts are files.** Task prompts live in `prompts/NNN-*.md` (how to write one:
+  `prompts/writing-prompts.md`); `RUNNING-ORDER.md` at the root says which runs next. A
+  number is never reused. No prompt text in front of you → ask for it, never reconstruct
+  one. Kit audits (`audits/`), gates (`gates/`) and the human launch checks
+  (`verification/`) run verbatim. `false-green.md` catalogues checks that pass while the
+  thing is broken — add to it whenever a green turns out false.
+- **Verify a prompt's premise before building.** Read the files it names. Already fixed
+  → say so and stop. Partly fixed → build only the remainder and record which half
+  existed. Reasoning wrong → say so with evidence and don't build it. Silent compliance
+  and silent deviation are both worse than saying it.
+- **Gap report when a branch deviates** from its prompt, before merge: what it required
+  that you didn't do; what you did that it forbids; what you did that it never mentions.
+- **Escalate the owner's decisions** (policy, retention, consumer-rights wording, brand
+  colours): write the options and the spec for each into DECISIONS.md as
+  `OWNER DECISION — PENDING`, and implement neither side.
+- **Mark agent-chosen defaults** `OVERNIGHT-DEFAULT — CONFIRM` beside the code and in
+  DECISIONS.md, so every place an agent guessed is greppable.

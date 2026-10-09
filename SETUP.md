@@ -141,8 +141,24 @@ stale code:
    typed-settings cache** that silently fails queued email and 500s pages reading the new
    key (the mail layer now falls back gracefully for the sign-off, but other reads don't —
    clearing on every deploy is the mitigation).
-7. **Restart the worker LAST** — `php artisan horizon:terminate` so Horizon restarts on the
-   new code. Doing this before steps 4–6 would leave the worker running stale code.
+7. **Reload PHP-FPM** — `sudo service php8.3-fpm reload` (the PHP version is part of the
+   service name; match the server's PHP). Without it opcache keeps serving the previous
+   release after a deploy that reported success.
+8. **Restart the worker LAST** — `php artisan horizon:terminate` so Horizon restarts on the
+   new code. Doing this before steps 4–7 would leave the worker running stale code.
+
+There is no "converge permissions/roles" step: G-Force has no code-declared matrix to
+re-sync. Admin access is a single `is_admin` flag, and settings properties are spatie
+settings migrations that step 4 already applies (see DECISIONS, kit sync 2026-09).
+
+**The deploy script must NEVER contain:**
+- `php artisan key:generate` — a re-keyed app can't decrypt anything it encrypted
+  (every session and cookie dies, signed URLs stop validating). Hosting templates
+  sometimes include it.
+- `migrate:fresh` or `migrate:refresh` (or `db:wipe`) — they drop every table.
+
+**Owner task (once, after the first deploy):** open Ploi's generated deploy script and
+delete any `php artisan key:generate` line it added.
 
 **Must-be-running services (configure once — see "Queues, Horizon & scheduler"):**
 - **Horizon** under Supervisor with `autorestart=true` — the queue worker; **without it
