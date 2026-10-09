@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Contracts\GuardsDeletion;
 use App\Enums\ProductType;
+use App\Models\Concerns\RefusesGuardedDeletion;
 use App\Observers\ImageOptimizationObserver;
 use App\Observers\SiteContentObserver;
 use App\Support\Money;
@@ -23,7 +24,7 @@ use Illuminate\Support\Facades\Storage;
 class Product extends Model implements GuardsDeletion
 {
     /** @use HasFactory<ProductFactory> */
-    use HasFactory;
+    use HasFactory, RefusesGuardedDeletion;
 
     protected $fillable = [
         'name',
@@ -176,7 +177,7 @@ class Product extends Model implements GuardsDeletion
             return null;
         }
 
-        // Deleting would cascade-delete its course dates and unlink the rest.
+        // The database refuses it too: all four point here with RESTRICT (prompt 008).
         return "In use ({$courses} course date(s), {$bookings} booking(s), {$enquiries} enquiry(ies), {$vouchers} voucher(s)). Switch off \"Active\" to retire it instead.";
     }
 }

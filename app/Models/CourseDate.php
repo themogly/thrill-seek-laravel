@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Contracts\GuardsDeletion;
 use App\Enums\BookingStatus;
 use App\Enums\CourseDateStatus;
+use App\Models\Concerns\RefusesGuardedDeletion;
 use App\Observers\CourseDateObserver;
 use App\Support\Money;
 use Database\Factories\CourseDateFactory;
@@ -31,7 +32,7 @@ use Illuminate\Support\Carbon;
 class CourseDate extends Model implements GuardsDeletion
 {
     /** @use HasFactory<CourseDateFactory> */
-    use HasFactory;
+    use HasFactory, RefusesGuardedDeletion;
 
     /** AFF courses run for at least this many days (inclusive). */
     public const MIN_DURATION_DAYS = 5;

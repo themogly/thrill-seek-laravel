@@ -7,6 +7,7 @@ use App\Enums\BookingPaymentState;
 use App\Enums\BookingStatus;
 use App\Enums\PaymentStatus;
 use App\Enums\ProductType;
+use App\Models\Concerns\RefusesGuardedDeletion;
 use App\Observers\BookingObserver;
 use App\Support\Money;
 use Database\Factories\BookingFactory;
@@ -31,7 +32,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class Booking extends Model implements GuardsDeletion
 {
     /** @use HasFactory<BookingFactory> */
-    use HasFactory, LogsActivity;
+    use HasFactory, LogsActivity, RefusesGuardedDeletion;
 
     private const PRESENCE_CACHE_KEY = 'bookings.any';
 

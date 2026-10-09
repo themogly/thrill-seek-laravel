@@ -3095,3 +3095,49 @@ Run 1's answers (RUNNING-ORDER row 8) had already closed two markers that were s
 panel primary **Blue** and motion ambition **subtle**. Both are flipped here too, as are the
 accessibility audit's brand-contrast rows (answered by 016) and the email audit's heading (option B,
 built in 009). The 016 and 008 markers live on their branches and are flipped when each merges in run 3.
+
+## The database refuses money-linked deletes — 008 Phase 2 (fix/fk-delete-rules)
+
+Prompt 008 Phase 2, built on Ben's approval (9 Oct 2026, entry above): the table in
+`audits/reports/fk-delete-rules.md` exactly as proposed, plus #26.
+
+- **Migration `2026_10_09_140000_restrict_money_linked_deletes`:** 14 foreign keys → `RESTRICT`: #1, 2, 3, 7, 8,
+  9, 10, 11, 15, 16, 17, 19, 20 and #26. The other 18 are unchanged. Only the delete rule changes; no column, row
+  or index is touched. `down()` restores each previous rule.
+  - **Pre-check:** before changing anything, it counts orphaned values in every affected column and aborts with
+    the list (`table.column → parent: N row(s)`). Proven by planting one orphaned payment in a MySQL clone: it
+    aborted and changed nothing.
+  - **Driver detail:** MySQL drops each FK by its real name, read from `Schema::getForeignKeys()`, because
+    `bookings.tandem_date_id`'s constraint is still called `bookings_availability_slot_id_foreign` from its old
+    column name; the conventional name would have failed. It's re-added under the conventional name. SQLite
+    drops by column (Laravel rebuilds the table).
+  - **Seeded copies:** a `mysqldump` clone of the dev DB (4 products, 2 course dates, 3 bookings, 5 payments,
+    2 vouchers, 2 enquiries, 2 customers) migrated, rolled back and re-migrated with identical row counts, 2 → 16
+    RESTRICT rules and back. A seeded SQLite file with a booking, paid payment and voucher added: same rows
+    after the rebuild, `pragma foreign_key_check` clean, rolled back cleanly.
+- **Model layer:** the `RefusesGuardedDeletion` trait on all eight `GuardsDeletion` models (Product, Booking,
+  CourseDate, TandemDate, Location, Voucher, Discipline, Document) throws `DeletionBlockedException` with the
+  record's own `deletionBlocker()` text. The button explains, the model refuses, the database refuses.
+  `GuardsDeletion` and `guardedDelete()` / `guardedBulkDelete()` are unchanged.
+- **`Document` joins `GuardsDeletion`:** "Attached to N sent message(s)…". Its table and edit-page Delete now use
+  `AdminActions::guardedDelete()`, and the Help guide's course-communications section says why.
+- **Gap report — one blocker changed to tell the truth:** `TandemDate::deletionBlocker()` counted only
+  non-cancelled bookings, but the approved #7 RESTRICT refuses on any booking. A slot with only cancelled
+  bookings would have shown an enabled Delete that then failed with a database error. It now says "N cancelled
+  booking(s) still record this date, so it stays as history." That's the reason text only; the prompt's "leave
+  `GuardsDeletion` as it is" refers to the interface and the helpers, which are untouched. The other blockers
+  already matched their FKs (Product counts all four children; Booking counts payments and vouchers; CourseDate
+  counts all bookings; Location both date types).
+- **Not given a listener:** Customer, Enquiry and Payment are RESTRICT parents with no delete path; the DB rule is
+  their backstop, as the proposal said.
+- **Tests:**
+  - `MoneyLinkedDeletesTest`: product with course dates, booking with payment, sent document, slot with only
+    cancelled bookings, each refused at the model and, with the model bypassed (`deleteQuietly()` / raw query),
+    at the database; records nothing hangs off still delete; erasure on a customer with a paid booking.
+  - `GuardedParentsRestrictDeletesTest` walks every FK into a guarded table: each is RESTRICT or allowlisted with
+    a reason (#4, 5, 6, 12, 27), and every guarded model uses the listener. Both checks are proven with planted
+    violations.
+  - Red without the change: without the migration, 7 of 12 fail (the database allowed each delete, and the guard
+    listed 9 non-restrict FKs); without the listener, the 4 model tests fail with a raw SQL error instead of the
+    plain-English refusal.
+  - `DeletionGuardsTest` adds the sent document and the cancelled-only slot.

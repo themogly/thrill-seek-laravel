@@ -2,9 +2,11 @@
 
 namespace Tests\Feature\Admin;
 
+use App\Enums\BookingStatus;
 use App\Enums\VoucherStatus;
 use App\Filament\Resources\Bookings\Pages\EditBooking;
 use App\Filament\Resources\CourseDates\Pages\EditCourseDate;
+use App\Filament\Resources\Documents\Pages\EditDocument;
 use App\Filament\Resources\Locations\Pages\EditLocation;
 use App\Filament\Resources\Products\Pages\EditProduct;
 use App\Filament\Resources\Products\Pages\ListProducts;
@@ -12,6 +14,8 @@ use App\Filament\Resources\TandemDates\Pages\EditTandemDate;
 use App\Filament\Resources\Vouchers\Pages\EditVoucher;
 use App\Models\Booking;
 use App\Models\CourseDate;
+use App\Models\CourseMessage;
+use App\Models\Document;
 use App\Models\Location;
 use App\Models\Payment;
 use App\Models\Product;
@@ -86,6 +90,22 @@ class DeletionGuardsTest extends TestCase
         $this->assertRefused(EditVoucher::class, $used);
     }
 
+    public function test_a_document_sent_to_students_cannot_be_deleted(): void
+    {
+        $document = Document::factory()->create();
+        CourseMessage::factory()->create()->documents()->attach($document);
+
+        $this->assertRefused(EditDocument::class, $document);
+    }
+
+    public function test_a_tandem_date_with_only_cancelled_bookings_cannot_be_deleted(): void
+    {
+        $slot = TandemDate::factory()->create();
+        Booking::factory()->create(['tandem_date_id' => $slot->id, 'status' => BookingStatus::Cancelled]);
+
+        $this->assertRefused(EditTandemDate::class, $slot);
+    }
+
     public function test_records_nothing_depends_on_can_still_be_deleted(): void
     {
         foreach ([
@@ -95,6 +115,7 @@ class DeletionGuardsTest extends TestCase
             EditTandemDate::class => TandemDate::factory()->create(),
             EditLocation::class => Location::factory()->create(),
             EditVoucher::class => Voucher::factory()->create(['source' => 'admin']),
+            EditDocument::class => Document::factory()->create(),
         ] as $page => $record) {
             Livewire::test($page, ['record' => $record->getRouteKey()])
                 ->assertActionEnabled(DeleteAction::class)

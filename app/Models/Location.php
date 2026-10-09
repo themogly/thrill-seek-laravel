@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Contracts\GuardsDeletion;
+use App\Models\Concerns\RefusesGuardedDeletion;
 use App\Observers\ImageOptimizationObserver;
 use Database\Factories\LocationFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -19,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Location extends Model implements GuardsDeletion
 {
     /** @use HasFactory<LocationFactory> */
-    use HasFactory;
+    use HasFactory, RefusesGuardedDeletion;
 
     protected $fillable = [
         'name',

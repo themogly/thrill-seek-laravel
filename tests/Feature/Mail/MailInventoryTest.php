@@ -93,6 +93,7 @@ class MailInventoryTest extends TestCase
         'app/Filament/Pages/HelpGuide.php :: your reply is emailed to the customer' => [EnquiryReplyMail::class],
         'app/Filament/Pages/HelpGuide.php :: emailed a code + printable PDF' => [VoucherGiftMail::class],
         'app/Filament/Pages/HelpGuide.php :: Sent newsletters are kept as history' => [NewsletterCampaignMail::class],
+        'app/Filament/Pages/HelpGuide.php :: A document that has been sent to students' => [CourseMessageMail::class],
         'app/Filament/Pages/HelpGuide.php :: Reminders are sent automatically' => [TemplatedMail::class, CourseMessageMail::class],
         'app/Filament/Pages/HelpGuide.php :: and you’re emailed' => [EnquiryAdminNotification::class],
         'app/Filament/Pages/HelpGuide.php :: Confirmations, receipts, sign-in links and reminders all go out by email' => [TemplatedMail::class, PaymentReceivedAdminNotification::class, AccountLoginLinkMail::class],

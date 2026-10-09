@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Contracts\GuardsDeletion;
+use App\Models\Concerns\RefusesGuardedDeletion;
 use Database\Factories\DocumentFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,10 +15,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * kit list…) that can be attached to any course message. Stored on the
  * local (non-public) disk under documents/.
  */
-class Document extends Model
+class Document extends Model implements GuardsDeletion
 {
     /** @use HasFactory<DocumentFactory> */
-    use HasFactory;
+    use HasFactory, RefusesGuardedDeletion;
 
     /** Per-file upload cap. Resend rejects messages over ~40MB encoded. */
     public const MAX_FILE_BYTES = 10 * 1024 * 1024;
@@ -65,5 +67,18 @@ class Document extends Model
                 ? number_format($mb, 1).' MB'
                 : number_format($this->size_bytes / 1024).' KB';
         });
+    }
+
+    /**
+     * A document attached to a sent course message is part of the record of
+     * what students were sent, so it stays (the database refuses it too).
+     */
+    public function deletionBlocker(): ?string
+    {
+        $messages = $this->courseMessages()->count();
+
+        return $messages === 0
+            ? null
+            : "Attached to {$messages} sent message(s), so it's part of what students were sent. Upload a new version under a new name instead.";
     }
 }
