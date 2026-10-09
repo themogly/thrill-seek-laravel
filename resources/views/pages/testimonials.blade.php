@@ -56,7 +56,10 @@
     <x-site.section>
         @if ($rest->isEmpty())
             @unless ($featured)
-                <p class="text-center text-lg text-muted-foreground">No reviews yet.</p>
+                <div class="mx-auto max-w-measure text-center">
+                    <p class="text-lead text-muted-foreground">No reviews yet. Jumped with us? Sign in to your account after your jump and tell future jumpers how it went.</p>
+                    <x-ui.button :href="route('account.login')" variant="outline" class="mt-8">Leave a review</x-ui.button>
+                </div>
             @endunless
         @else
             {{-- Uniform equal-aspect grid: every tile is the same 4:5 height, so

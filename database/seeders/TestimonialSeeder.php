@@ -9,6 +9,12 @@ class TestimonialSeeder extends Seeder
 {
     public function run(): void
     {
+        // Made-up sample reviews: local development only. They must never reach a
+        // server, where they'd be published (and once fed a fake review rating).
+        if (! app()->environment('local')) {
+            return;
+        }
+
         $testimonials = [
             [
                 'name' => 'Sarah M.',

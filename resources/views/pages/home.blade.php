@@ -185,7 +185,9 @@
         </div>
     </section>
 
-    {{-- TESTIMONIALS: editorial pull-quotes --}}
+    {{-- TESTIMONIALS: editorial pull-quotes. No approved reviews → no section at all
+         (an intentional absence, never a heading over an empty grid). --}}
+    @if ($testimonials->isNotEmpty())
     <x-site.section>
         <x-site.section-heading :eyebrow="$home->testimonials_eyebrow" :title="$home->testimonials_title" />
         <div class="grid gap-10 md:grid-cols-3 md:gap-0 md:divide-x-2 md:divide-border" data-reveal>
@@ -204,6 +206,7 @@
             @endforeach
         </div>
     </x-site.section>
+    @endif
 
     {{-- NEWSLETTER --}}
     <section class="band-ink border-y-4 border-primary py-section lg:py-section-lg">
