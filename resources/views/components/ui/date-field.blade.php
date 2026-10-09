@@ -10,6 +10,8 @@
 ])
 @php($name = $name ?? $model)
 @php($id = $id ?? $name)
+@aware(['error' => null, 'for' => null])
+@php($invalid = filled($error) && $for === $id)
 {{-- Branded date input. The native <input type="date"> is the single source of
      truth (the submitted YYYY-MM-DD value + the accessible mobile control). On a
      fine-pointer desktop, an Alpine calendar overlays it (clicking anywhere on the
@@ -28,6 +30,7 @@
         @if ($max) max="{{ $max }}" @endif
         @if ($required) required @endif
         @if ($autocomplete) autocomplete="{{ $autocomplete }}" @endif
+        @if ($invalid) aria-invalid="true" aria-describedby="{{ $for }}-error" @endif
         x-show="!enhanced"
         :tabindex="enhanced ? -1 : null"
         :aria-hidden="enhanced ? 'true' : null"
@@ -45,6 +48,7 @@
         aria-haspopup="dialog"
         :aria-controls="$id('dp')"
         aria-label="{{ $label }}"
+        @if ($invalid) aria-invalid="true" aria-describedby="{{ $for }}-error" @endif
         class="flex h-11 w-full items-center justify-between gap-2 border-2 border-input bg-transparent px-3 text-left text-sm transition-colors hover:border-primary focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
         <span x-text="display || 'Select a date'" :class="display || 'text-muted-foreground'"></span>
