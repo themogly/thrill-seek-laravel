@@ -73,3 +73,11 @@ build on:
 - The email audit's `OWNER DECISION — PENDING` is marked answered (option B).
 - Gap report: `SendPaymentReceipt` now returns bool, and `BookingObserver` delegates to the new action.
   Both were needed to keep one sender and truthful notices.
+
+## 6 — 010 voucher payment-success page · `fix/voucher-payment-success` · merge `ee6e64c`
+- Tests 452 → 455. `composer check` green.
+- Reproduced by doing (a paid voucher showed "waiting"). The page now shows a voucher confirmation:
+  product, value, recipient, expiry, and that the email is on its way. It's resolved only through the
+  visitor's own session. An unpaid payment still waits.
+- Screenshots: `audits/reports/run2/010-*.jpg`.
+- Gap report: none. Decision: the voucher code isn't shown on the page (the email carries it).
