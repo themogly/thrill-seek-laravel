@@ -7,7 +7,8 @@ Livewire 4 forms and a Filament v5 admin panel at `/admin`.
 
 - **PHP 8.4.1+** (the locked Symfony 8.1 components and spatie/laravel-activitylog 5 require it,
   even though `composer.json` still says `^8.3` — see DECISIONS, dependency refresh), Composer,
-  Node `^20.19` or `>=22.12` (Vite 8)
+  Node `^20.19` or `>=22.12` for the build (Vite 8); Node 22+ for the local `composer dev`
+  script (concurrently 10)
 - **MySQL 8+** — the application database (see "Production database" below). Locally via
   Laravel Herd, or `brew install mysql && brew services start mysql`; create a
   `thrill_seek` database. The `pdo_mysql` PHP extension is required.
