@@ -24,3 +24,24 @@ not touched.
   branch, and 008's #26 is on the 008 branch. Flipping them on `main` now would only create merge
   conflicts, so each is flipped when its branch merges (items 2 and 3).
 - **Markers:** none added.
+
+## 2 · 016 brand contrast `primary-strong` merged
+- **Branch:** `ui/primary-strong-contrast` (`fc0884a` + merge of `main`, `76ecc3d`) → merged `98584c7`
+- **Tests:** 476 → 479 on `main`; `composer check` green at the branch tip after merging `main` (479/479).
+  No MySQL run needed (CSS and views only, no queries/casts/migrations/money).
+- **Merge of `main` into the branch:** one conflict, in `DECISIONS.md` only, as predicted: two appends at the
+  end. Kept both, in date order (016's entry, then 018's, then item 1's answers).
+- **Markers flipped on the branch** (they couldn't be on `main` before it merged): the three
+  `OVERNIGHT-DEFAULT`s (white `primary-foreground` in `app.css` and DECISIONS; ≥24px figures stay
+  `primary`; the "You" label navy in `account/messages/show.blade.php` and DECISIONS), and the hover
+  `OWNER DECISION` → answered (b), darken, by 020. The DECISIONS heading no longer says "NOT MERGED".
+- **axe-core 4.10.2**, re-run on rebuilt assets, 20 public pages × 1440/390, signed out, reduced motion:
+  **0 nodes of any rule** (0 `color-contrast`), against 173 on `main` before.
+- **Homepage, full page, images force-loaded, warm-up load after each resize:**
+  - merged branch vs the 016 tip `fc0884a`: **0 px** at 1440 and at 390, so the merge brings exactly what
+    016's screenshots showed;
+  - merged branch vs `main`: 49,956 px (1440) and 70,664 px (390), same page height. Every changed pixel
+    is a colour pair: `#008fe6→#0078cc` (42,623 / 63,169), `#fcfcfc→#ffffff` (button text), and the
+    anti-aliased edges between them. No geometry change.
+- **Gap report:** none against the brief.
+- **Markers:** none added.
