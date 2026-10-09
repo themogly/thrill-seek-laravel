@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Contracts\GuardsDeletion;
+use App\Models\Concerns\RefusesGuardedDeletion;
 use App\Observers\SiteContentObserver;
 use Database\Factories\DisciplineFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -19,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Discipline extends Model implements GuardsDeletion
 {
     /** @use HasFactory<DisciplineFactory> */
-    use HasFactory;
+    use HasFactory, RefusesGuardedDeletion;
 
     /** The disciplines the Tandem / AFF / Coaching pages list instructors by. */
     public const TANDEM = 'tandem';

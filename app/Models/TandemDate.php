@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Contracts\GuardsDeletion;
 use App\Enums\BookingStatus;
+use App\Models\Concerns\RefusesGuardedDeletion;
 use Database\Factories\TandemDateFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -21,7 +22,7 @@ use Illuminate\Support\Carbon;
 class TandemDate extends Model implements GuardsDeletion
 {
     /** @use HasFactory<TandemDateFactory> */
-    use HasFactory;
+    use HasFactory, RefusesGuardedDeletion;
 
     protected $fillable = [
         'location_id',
@@ -84,8 +85,16 @@ class TandemDate extends Model implements GuardsDeletion
     {
         $booked = $this->activeBookingsCount();
 
-        return $booked === 0
+        if ($booked > 0) {
+            return "{$booked} customer(s) are booked on this date. Reschedule them first.";
+        }
+
+        // Cancelled bookings still record which date they were for, and the
+        // database refuses to unlink them (prompt 008), so the button says so too.
+        $cancelled = $this->bookings()->count();
+
+        return $cancelled === 0
             ? null
-            : "{$booked} customer(s) are booked on this date. Reschedule them first.";
+            : "{$cancelled} cancelled booking(s) still record this date, so it stays as history.";
     }
 }

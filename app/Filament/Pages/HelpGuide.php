@@ -272,6 +272,7 @@ class HelpGuide extends Page
                 'steps' => [
                     'Open a course and use <strong>Message students</strong> to email everyone booked (cancelled/unpaid are skipped).',
                     'Attach documents from the <strong>document library</strong> (kit lists, joining instructions).',
+                    'A document that has been sent to students can’t be deleted: it’s part of the record of what they were sent. To change it, upload the new version under a new name.',
                     'Reminders are sent automatically before courses/jumps; the message history shows what went out.',
                 ],
                 'cta' => ['label' => 'Open Documents', 'url' => DocumentResource::getUrl()],

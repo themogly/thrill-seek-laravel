@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Contracts\GuardsDeletion;
 use App\Enums\VoucherStatus;
+use App\Models\Concerns\RefusesGuardedDeletion;
 use App\Support\Money;
 use Database\Factories\VoucherFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -24,7 +25,7 @@ use Illuminate\Support\Str;
 class Voucher extends Model implements GuardsDeletion
 {
     /** @use HasFactory<VoucherFactory> */
-    use HasFactory;
+    use HasFactory, RefusesGuardedDeletion;
 
     protected $fillable = [
         'code',

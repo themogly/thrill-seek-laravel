@@ -1,5 +1,10 @@
 # Foreign-key delete rules — Phase 1 proposal (for Ben's approval)
 
+> **Phase 2 built (unattended run 3).** Ben approved the table **as proposed** on 9 Oct 2026, with **#26 → RESTRICT**
+> and `Document` joining `GuardsDeletion`, plus the model-level listener (OWNER DECISION — ANSWERED 9 Oct, see
+> DECISIONS). Migration `2026_10_09_140000_restrict_money_linked_deletes`; listener trait
+> `App\Models\Concerns\RefusesGuardedDeletion`; guards `tests/Feature/Database/*`.
+
 Prompt `prompts/008-database-refuses-money-linked-deletes.md`, Phase 1 (unattended run 2, item 4). Branch
 `fix/fk-delete-rules` off `main` = `5d5847a`. **Proposal only. Nothing is built.** Phase 2 runs only after
 Ben approves or edits this table, with the approval recorded in DECISIONS.
@@ -50,7 +55,7 @@ Legend for "money/history": **$** money or a payment; **B** a booking; **H** the
 | 23 | `newsletter_campaign_recipients.newsletter_subscriber_id` → newsletter_subscribers | CASCADE | — | Subscriber Delete; **erasure** | keep **CASCADE** | Erasure must be able to delete the subscriber. A send record for an erased person shouldn't survive. |
 | 24 | `newsletter_campaign_recipients.newsletter_campaign_id` → newsletter_campaigns | CASCADE | — | none | keep **CASCADE** | Campaigns can't be deleted. |
 | 25 | `course_message_document.course_message_id` → course_messages | CASCADE | — | (via #4) | keep **CASCADE** | Pivot. |
-| 26 | `course_message_document.document_id` → documents | CASCADE | H | Document Delete (**unguarded**) | **RESTRICT** *(Ben's call)* | Deleting a document silently removes it from the record of what was sent to students. Phase 2 would add `Document` to `GuardsDeletion` ("attached to N sent messages") so the button explains. **Alternative:** keep CASCADE if you don't need that record. |
+| 26 | `course_message_document.document_id` → documents | CASCADE | H | Document Delete (**unguarded**) | **RESTRICT** *(approved by Ben 9 Oct)* | Deleting a document silently removes it from the record of what was sent to students. Phase 2 would add `Document` to `GuardsDeletion` ("attached to N sent messages") so the button explains. **Alternative:** keep CASCADE if you don't need that record. |
 | 27 | `discipline_instructor.discipline_id` → disciplines | CASCADE | — | Discipline Delete (guarded: page disciplines only) | keep **CASCADE** | Pivot. |
 | 28 | `discipline_instructor.instructor_id` → instructors | CASCADE | — | Instructor Delete | keep **CASCADE** | Pivot. |
 | 29 | `payments.created_by` → users | SET NULL | $ | none | keep **SET NULL** | If a staff account is ever removed, the payment survives with "unknown author". |
