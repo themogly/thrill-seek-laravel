@@ -14,7 +14,7 @@
         .rows td { padding: 8px 0; border-bottom: 1px solid #e4e4e7; }
         .total td { padding: 10px 0; border-top: 2px solid #0a0f23; font-weight: bold; }
         .right { text-align: right; }
-        .label { text-transform: uppercase; letter-spacing: 1px; font-size: 10px; color: #2f8de4; font-weight: bold; }
+        .label { text-transform: uppercase; letter-spacing: 1px; font-size: 10px; color: {{ \App\Support\BrandHex::STRONG }}; font-weight: bold; }
     </style>
 </head>
 <body>

@@ -1,0 +1,15 @@
+enquiry-admin-notification       sent  old-blue-as-text/fill=0  strong=5
+enquiry-reply                    sent  old-blue-as-text/fill=0  strong=0
+payment-received-admin           sent  old-blue-as-text/fill=0  strong=5
+course-message                   sent  old-blue-as-text/fill=0  strong=0
+voucher-gift                     sent  old-blue-as-text/fill=0  strong=5
+newsletter-confirmation          sent  old-blue-as-text/fill=0  strong=5
+newsletter-campaign              sent  old-blue-as-text/fill=2  strong=3
+template-enquiry-acknowledgement sent  old-blue-as-text/fill=0  strong=0
+template-payment-link            sent  old-blue-as-text/fill=0  strong=0
+template-payment-received        sent  old-blue-as-text/fill=0  strong=0
+template-booking-confirmed       sent  old-blue-as-text/fill=0  strong=0
+template-booking-rescheduled     sent  old-blue-as-text/fill=0  strong=0
+template-jump-reminder           sent  old-blue-as-text/fill=0  strong=0
+template-balance-reminder        sent  old-blue-as-text/fill=0  strong=0
+pdfs                             rendered

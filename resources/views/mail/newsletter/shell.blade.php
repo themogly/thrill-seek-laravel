@@ -13,7 +13,7 @@
     <style>
         body { margin: 0; padding: 0; width: 100% !important; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #f2f5fa; }
         img { -ms-interpolation-mode: bicubic; }
-        a { color: #2f8de4; }
+        a { color: {{ \App\Support\BrandHex::STRONG }}; }
         @media only screen and (max-width: 600px) {
             .gf-container { width: 100% !important; max-width: 100% !important; }
             .gf-pad { padding-left: 24px !important; padding-right: 24px !important; }

@@ -241,11 +241,13 @@ img {
 
 .button-blue,
 .button-primary {
-    background-color: #2f8de4;
-    border-bottom: 8px solid #2f8de4;
-    border-left: 18px solid #2f8de4;
-    border-right: 18px solid #2f8de4;
-    border-top: 8px solid #2f8de4;
+    /* = App\Support\BrandHex::STRONG: white text on it is 4.61:1 (the old accent was 3.47:1). The borders
+       are the button's padding, so they match the fill. Pinned by EmailColourTest. */
+    background-color: #0078cc;
+    border-bottom: 8px solid #0078cc;
+    border-left: 18px solid #0078cc;
+    border-right: 18px solid #0078cc;
+    border-top: 8px solid #0078cc;
 }
 
 .button-green,
@@ -274,7 +276,7 @@ img {
 }
 
 .panel-content {
-    border-left: 4px solid #2f8de4;
+    border-left: 4px solid #2f8de4; /* decoration: BrandHex::ACCENT */
     background-color: #f2f5fa;
     color: #52525b;
     padding: 16px;

@@ -14,6 +14,7 @@ use App\Models\NewsletterCampaign;
 use App\Models\NewsletterCampaignRecipient;
 use App\Models\NewsletterSubscriber;
 use App\Models\User;
+use App\Support\BrandHex;
 use App\Support\MailLogo;
 use App\Support\NewsletterRenderer;
 use App\Support\NewsletterStarterTemplates;
@@ -44,7 +45,8 @@ class BuilderTest extends TestCase
         $this->assertStringContainsString('Hello Jumpers', $html);
         $this->assertStringContainsString('Come fly.', $html);
         // Email-safe: inline-styled button, table layout, absolute image URL, no flexbox.
-        $this->assertStringContainsString('background-color:#2f8de4', $html);
+        // (023: the accessible blue, white text 4.61:1.)
+        $this->assertStringContainsString('background-color:'.BrandHex::STRONG, $html);
         $this->assertStringContainsString('<table', $html);
         $this->assertStringContainsString(url('/images/hero-skydive.jpg'), $html);
         $this->assertStringNotContainsString('display:flex', $html);

@@ -9,7 +9,7 @@
        the closest bundled face; the display look comes from weight/tracking. */
     @page { margin: 0; }
     body { margin: 0; font-family: Helvetica, sans-serif; color: #0c1330; }
-    .band { background: #0a0f23; color: #ffffff; padding: 22px 40px 16px 40px; border-bottom: 5px solid #2f8de4; }
+    .band { background: #0a0f23; color: #ffffff; padding: 22px 40px 16px 40px; border-bottom: 5px solid {{ \App\Support\BrandHex::ACCENT }}; }
     .eyebrow { font-size: 11px; letter-spacing: 5px; text-transform: uppercase; color: #0ea5e9; font-weight: bold; margin: 0 0 10px 0; }
     h1 { font-size: 34px; line-height: 0.95; text-transform: uppercase; letter-spacing: 1px; margin: 0; font-weight: bold; }
     h1 .accent { color: #0ea5e9; }
@@ -18,11 +18,11 @@
     td { vertical-align: top; }
     .label { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: #5a6275; font-weight: bold; padding-bottom: 4px; }
     .value { font-size: 14px; font-weight: bold; color: #0c1330; padding-bottom: 10px; }
-    .code-box { border: 3px solid #2f8de4; padding: 10px 16px; text-align: center; }
-    .code-box .label { color: #2f8de4; }
+    .code-box { border: 3px solid {{ \App\Support\BrandHex::ACCENT }}; padding: 10px 16px; text-align: center; }
+    .code-box .label { color: {{ \App\Support\BrandHex::STRONG }}; }
     .code { font-size: 24px; font-weight: bold; letter-spacing: 4px; color: #0c1330; }
-    .amount { font-size: 34px; font-weight: bold; color: #2f8de4; line-height: 1; }
-    .message { border-left: 4px solid #2f8de4; padding: 8px 12px; font-size: 11px; color: #333a4f; font-style: italic; }
+    .amount { font-size: 34px; font-weight: bold; color: {{ \App\Support\BrandHex::ACCENT }}; line-height: 1; }
+    .message { border-left: 4px solid {{ \App\Support\BrandHex::ACCENT }}; padding: 8px 12px; font-size: 11px; color: #333a4f; font-style: italic; }
     .foot { border-top: 2px solid #e2e6ef; margin-top: 8px; padding: 10px 40px; font-size: 8px; color: #5a6275; letter-spacing: 0.5px; }
     .foot strong { color: #0c1330; text-transform: uppercase; letter-spacing: 2px; }
 </style>
