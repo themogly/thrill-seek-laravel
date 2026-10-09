@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\GuardsDeletion;
 use App\Enums\ProductType;
 use App\Observers\ImageOptimizationObserver;
 use App\Observers\SiteContentObserver;
@@ -19,7 +20,7 @@ use Illuminate\Support\Facades\Storage;
  * @property ProductType $type
  */
 #[ObservedBy([SiteContentObserver::class, ImageOptimizationObserver::class])]
-class Product extends Model
+class Product extends Model implements GuardsDeletion
 {
     /** @use HasFactory<ProductFactory> */
     use HasFactory;
@@ -163,5 +164,20 @@ class Product extends Model
     public function scopeOrdered(Builder $query): Builder
     {
         return $query->orderBy('sort_order')->orderBy('id');
+    }
+
+    public function deletionBlocker(): ?string
+    {
+        $courses = $this->courseDates()->count();
+        $bookings = Booking::where('product_id', $this->id)->count();
+        $enquiries = Enquiry::where('product_id', $this->id)->count();
+        $vouchers = Voucher::where('product_id', $this->id)->count();
+
+        if ($courses + $bookings + $enquiries + $vouchers === 0) {
+            return null;
+        }
+
+        // Deleting would cascade-delete its course dates and unlink the rest.
+        return "In use ({$courses} course date(s), {$bookings} booking(s), {$enquiries} enquiry(ies), {$vouchers} voucher(s)). Switch off \"Active\" to retire it instead.";
     }
 }

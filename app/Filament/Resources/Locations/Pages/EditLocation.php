@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Locations\Pages;
 
 use App\Filament\Resources\Locations\LocationResource;
-use Filament\Actions\DeleteAction;
+use App\Support\AdminActions;
 use Filament\Resources\Pages\EditRecord;
 
 class EditLocation extends EditRecord
@@ -13,7 +13,7 @@ class EditLocation extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            AdminActions::guardedDelete(),
         ];
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Bookings\Pages;
 
 use App\Filament\Resources\Bookings\BookingResource;
-use Filament\Actions\DeleteAction;
+use App\Support\AdminActions;
 use Filament\Resources\Pages\EditRecord;
 
 class EditBooking extends EditRecord
@@ -13,7 +13,7 @@ class EditBooking extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            AdminActions::guardedDelete(),
         ];
     }
 }

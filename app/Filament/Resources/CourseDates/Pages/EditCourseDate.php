@@ -7,8 +7,8 @@ use App\Filament\Resources\CourseDates\CourseDateResource;
 use App\Models\CourseDate;
 use App\Models\Document;
 use App\Models\User;
+use App\Support\AdminActions;
 use Filament\Actions\Action;
-use Filament\Actions\DeleteAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -87,7 +87,7 @@ class EditCourseDate extends EditRecord
                         ->body("Sending to {$message->recipientCount()} student(s).")
                         ->send();
                 }),
-            DeleteAction::make(),
+            AdminActions::guardedDelete(),
         ];
     }
 }

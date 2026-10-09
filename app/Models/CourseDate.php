@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\GuardsDeletion;
 use App\Enums\BookingStatus;
 use App\Enums\CourseDateStatus;
 use App\Observers\CourseDateObserver;
@@ -27,7 +28,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon $end_date
  */
 #[ObservedBy(CourseDateObserver::class)]
-class CourseDate extends Model
+class CourseDate extends Model implements GuardsDeletion
 {
     /** @use HasFactory<CourseDateFactory> */
     use HasFactory;
@@ -213,5 +214,14 @@ class CourseDate extends Model
             ->where('status', CourseDateStatus::Open)
             ->whereDate('start_date', '>=', now()->toDateString())
             ->orderBy('start_date');
+    }
+
+    public function deletionBlocker(): ?string
+    {
+        $bookings = $this->bookings()->count();
+
+        return $bookings === 0
+            ? null
+            : "{$bookings} booking(s) are on this course. Set it to Cancelled instead.";
     }
 }

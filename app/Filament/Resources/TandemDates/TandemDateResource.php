@@ -6,11 +6,11 @@ use App\Filament\Resources\TandemDates\Pages\CreateTandemDate;
 use App\Filament\Resources\TandemDates\Pages\EditTandemDate;
 use App\Filament\Resources\TandemDates\Pages\ListTandemDates;
 use App\Models\TandemDate;
+use App\Support\AdminActions;
 use App\Support\AdminDates;
 use App\Support\DateClash;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -118,7 +118,7 @@ class TandemDateResource extends Resource
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    AdminActions::guardedBulkDelete(),
                 ]),
             ]);
     }

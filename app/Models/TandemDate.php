@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\GuardsDeletion;
 use App\Enums\BookingStatus;
 use Database\Factories\TandemDateFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -17,7 +18,7 @@ use Illuminate\Support\Carbon;
  *
  * @property Carbon $starts_at
  */
-class TandemDate extends Model
+class TandemDate extends Model implements GuardsDeletion
 {
     /** @use HasFactory<TandemDateFactory> */
     use HasFactory;
@@ -77,5 +78,14 @@ class TandemDate extends Model
     public function scopeUpcoming(Builder $query): Builder
     {
         return $query->where('starts_at', '>=', now())->orderBy('starts_at');
+    }
+
+    public function deletionBlocker(): ?string
+    {
+        $booked = $this->activeBookingsCount();
+
+        return $booked === 0
+            ? null
+            : "{$booked} customer(s) are booked on this date. Reschedule them first.";
     }
 }

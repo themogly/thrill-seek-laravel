@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\GuardsDeletion;
 use App\Observers\ImageOptimizationObserver;
 use Database\Factories\LocationFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\Storage;
  * happen at exactly one location.
  */
 #[ObservedBy(ImageOptimizationObserver::class)]
-class Location extends Model
+class Location extends Model implements GuardsDeletion
 {
     /** @use HasFactory<LocationFactory> */
     use HasFactory;
@@ -83,5 +84,14 @@ class Location extends Model
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('active', true);
+    }
+
+    public function deletionBlocker(): ?string
+    {
+        $dates = $this->tandemDates()->count() + $this->courseDates()->count();
+
+        return $dates === 0
+            ? null
+            : "{$dates} tandem date(s) or course(s) use this location. Move or remove them first.";
     }
 }

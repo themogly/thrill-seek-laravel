@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\GuardsDeletion;
 use App\Enums\VoucherStatus;
 use App\Support\Money;
 use Database\Factories\VoucherFactory;
@@ -20,7 +21,7 @@ use Illuminate\Support\Str;
  * @property VoucherStatus $status
  * @property Carbon $expires_at
  */
-class Voucher extends Model
+class Voucher extends Model implements GuardsDeletion
 {
     /** @use HasFactory<VoucherFactory> */
     use HasFactory;
@@ -103,5 +104,20 @@ class Voucher extends Model
     protected function formattedAmount(): Attribute
     {
         return Attribute::make(get: fn (): string => Money::formatPence($this->amount_pence));
+    }
+
+    /**
+     * Only an unused voucher issued by hand can be deleted; a bought or used one
+     * is a money record — revoke it instead.
+     */
+    public function deletionBlocker(): ?string
+    {
+        $untouched = $this->source === 'admin'
+            && $this->status === VoucherStatus::Active
+            && $this->redeemed_at === null
+            && $this->booking_id === null
+            && $this->payment_id === null;
+
+        return $untouched ? null : 'This voucher was bought or has been used. Revoke it instead.';
     }
 }
