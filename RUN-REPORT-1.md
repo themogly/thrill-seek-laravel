@@ -19,3 +19,16 @@ wasn't on 001's expected-files list).
 - Owner/Ben notes: the global `frontend-design` skill lags the kit; `admin-design`, `laravel-craft`,
   `web-app-security` aren't installed globally. The `motion` npm package is unused.
 - Visual: none (docs only).
+
+## 2 — 002 structural guards · `test/structural-guards` · merge `092536d`
+- Tests 369 → 378. `composer check` green; `phpunit.mysql.xml` 378/378 green.
+- Six guards (9 tests), each green on real code and **proven red by a planted violation** (one-line
+  reds in DECISIONS, "Structural guards…"). No allowlists. No guard went red on real code.
+- Findings while building: Alpine reaches every page **two ways** (layout `@livewireScripts` +
+  Livewire 4 auto-injection via the footer island). Two in-process traps in the test client
+  (Livewire's rendered-scripts flag; the shared session store/guard) were neutralised and recorded.
+  The naive session test is a demonstrated false green.
+- Gap report: guard 4 widened to the components Livewire views render; CLAUDE.md gained rules
+  13 (reserved names) and 14 (Alpine scope) so those guards have a rule to sit beside.
+- `OWNER DECISION — PENDING` / `OVERNIGHT-DEFAULT — CONFIRM`: none added.
+- Visual: none (tests only).
