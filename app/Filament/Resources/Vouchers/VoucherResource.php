@@ -5,6 +5,8 @@ namespace App\Filament\Resources\Vouchers;
 use App\Actions\EmailVoucher;
 use App\Actions\GenerateVoucherPdf;
 use App\Actions\RedeemVoucher;
+use App\Actions\SendPaymentReceipt;
+use App\Enums\PaymentMethod;
 use App\Enums\VoucherStatus;
 use App\Filament\Resources\Bookings\BookingResource;
 use App\Filament\Resources\Vouchers\Pages\CreateVoucher;
@@ -21,6 +23,7 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
@@ -184,18 +187,45 @@ class VoucherResource extends Resource
                                 ->all())
                             ->searchable()
                             ->required(),
+                        Toggle::make('notify')
+                            ->label('Email the customer')
+                            ->helperText('Sends the payment receipt, as an online voucher payment does.')
+                            ->default(true),
                     ])
-                    ->action(function (Voucher $record, array $data, RedeemVoucher $redeem): void {
+                    ->action(function (Voucher $record, array $data, RedeemVoucher $redeem, SendPaymentReceipt $receipt): void {
                         /** @var User $user */
                         $user = auth()->user();
                         $booking = Booking::findOrFail($data['booking_id']);
 
                         $redeem->handle($record, $booking, $user);
 
+                        // Same action, same mail as an online voucher-covered booking.
+                        $emailed = null;
+                        if ($data['notify'] ?? true) {
+                            $payment = $booking->payments()
+                                ->where('method', PaymentMethod::Voucher)
+                                ->where('reference', $record->code)
+                                ->latest('id')
+                                ->firstOrFail();
+                            $emailed = $receipt->handle($payment, $booking);
+                        }
+
+                        $applied = "{$record->formatted_amount} applied to {$booking->reference}.";
+
+                        if ($emailed === false) {
+                            Notification::make()
+                                ->warning()
+                                ->title('Voucher redeemed — email not sent')
+                                ->body($applied.' The receipt could not be sent. Let the customer know another way.')
+                                ->send();
+
+                            return;
+                        }
+
                         Notification::make()
                             ->success()
                             ->title('Voucher redeemed')
-                            ->body("{$record->formatted_amount} applied to {$booking->reference}.")
+                            ->body($applied.($emailed ? ' The customer has been emailed.' : ' No email sent.'))
                             ->send();
                     }),
                 Action::make('revoke')

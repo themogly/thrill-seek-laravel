@@ -2329,7 +2329,8 @@ sentence). Two mail-named tests fixed: one asserts the send, one renamed to "ren
 - **`List-Unsubscribe` header not added** (needs a POST endpoint): follow-up E-1. The footer
   one-click link works.
 
-**OWNER DECISION — PENDING:** should admin-originated acts email the customer the way the online
+~~OWNER DECISION — PENDING~~ **Answered by Ben 9 Oct 2026: option B (toggle, default on) — built in
+`feat/admin-email-customer-toggle`.** Should admin-originated acts email the customer the way the online
 paths do? (a) Creating a booking already Confirmed sends no `booking_confirmed` (verified by doing).
 (b) Vouchers → Redeem sends no receipt. Options: A always send; **B (recommended)** an "Email the
 customer" toggle defaulting on, like Reschedule; C never. Not implemented.
@@ -2702,3 +2703,29 @@ and `/testimonials` published `AggregateRating` 4.8 from 8.
 - **Owner line:** on any database that's already seeded, unapprove the 8 sample testimonials in the
   admin (rows aren't deleted).
 - Tests 440 → 446; `composer check` and MySQL green.
+
+## Admin-originated emails: "Email the customer" toggle (feat/admin-email-customer-toggle)
+Prompt `prompts/009-admin-acts-email-the-customer.md` (unattended run 2, item 5). Answers the email audit's
+owner decision: Ben chose option B (toggle, default on, as Reschedule does). That owner decision is now
+marked answered in the email-audit entry.
+- **(a) Admin creates a booking already Confirmed** (by status, or by picking a slot, which confirms):
+  - The create form shows "Email the customer" (default on), on create only and only then.
+  - When on, `CreateBooking::afterCreate()` calls **`SendBookingConfirmation`**, a new single action.
+    `BookingObserver::updated` now delegates to it too, so the confirmation has one sender (no second
+    path).
+  - When off, nothing is sent. The created notice says "The customer has been emailed." only when it was
+    queued; a failure says so.
+  - The toggle isn't a column; it's stripped in `mutateFormDataBeforeCreate`.
+- **(b) Vouchers → Redeem:**
+  - Same toggle (reused label, "Email the customer", default on).
+  - When on, it calls **`SendPaymentReceipt`** (the online voucher-covered path's action) with the voucher
+    payment. That also sends the owner the `PaymentReceivedAdminNotification`, exactly as the bank-transfer
+    and online paths do.
+  - `SendPaymentReceipt::handle()` now returns whether it queued (callers that ignore it are unaffected).
+  - The notice matches Reschedule's wording.
+- **No back-filling:** editing an existing booking (including a confirmed one) never sends from this
+  path. The existing status-transition email on edit is unchanged.
+- New "emailed" UI strings are paired in `MailInventoryTest`.
+- Verified by doing: created a Confirmed booking in the admin, saw "The customer has been emailed.", and the
+  worker delivered "Your jump is confirmed" to the customer.
+- Tests 446 → 452 (6 new; both "default on" cases red on main). `composer check` and MySQL green.

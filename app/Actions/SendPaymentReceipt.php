@@ -14,13 +14,13 @@ use Illuminate\Support\Facades\Mail;
 
 /**
  * Queue the customer receipt + the admin payment notification after a payment
- * succeeds. Shared by both success paths (enquiry → booking conversion and direct
+ * succeeds. Returns whether both were queued. Shared by both success paths (enquiry → booking conversion and direct
  * held-booking confirmation) so the wording and recipients live in one place. Mail is
  * queued and wrapped: a mail failure logs instead of breaking the webhook.
  */
 class SendPaymentReceipt
 {
-    public function handle(Payment $payment, Booking $booking): void
+    public function handle(Payment $payment, Booking $booking): bool
     {
         try {
             $booking->refresh();
@@ -45,6 +45,10 @@ class SendPaymentReceipt
                 'payment_id' => $payment->id,
                 'exception' => $e->getMessage(),
             ]);
+
+            return false;
         }
+
+        return true;
     }
 }
