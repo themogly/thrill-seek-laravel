@@ -73,6 +73,19 @@ class TandemDate extends Model implements GuardsDeletion
     }
 
     /**
+     * Whether a booking can move onto this date: it already holds a place here,
+     * or one is free. The same count the online checkout uses (isFull: every
+     * booking that isn't cancelled, unpaid checkout holds included). A booking
+     * is one jumper, so it needs one place.
+     */
+    public function hasPlaceFor(Booking $booking): bool
+    {
+        $alreadyHere = $booking->tandem_date_id === $this->id && $booking->status !== BookingStatus::Cancelled;
+
+        return $alreadyHere || ! $this->isFull();
+    }
+
+    /**
      * @param  Builder<self>  $query
      * @return Builder<self>
      */

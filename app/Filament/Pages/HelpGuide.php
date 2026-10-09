@@ -184,7 +184,7 @@ class HelpGuide extends Page
                 'title' => 'Bookings & the calendar',
                 'intro' => 'Paid jumps appear under Bookings and on the Calendar.',
                 'steps' => [
-                    'Each booking has a <strong>status</strong> (pending, confirmed, etc.). Reschedule a booking and the customer is emailed the new date.',
+                    'Each booking has a <strong>status</strong> (pending, confirmed, etc.). Reschedule a booking and the customer is emailed the new date. A tandem date that’s full is marked “full” and can’t be picked — raise its capacity first if you really want to add someone.',
                     'The <strong>Calendar</strong> lays out tandem dates and AFF courses by month, with a location filter.',
                     'The Calendar only appears once you have your first booking — it stays hidden while empty.',
                 ],

@@ -3171,3 +3171,37 @@ Prompt 020, Ben's answer to 016's hover question (9 Oct 2026): **darken on hover
 - **Measurement note:** the first "before" capture was taken on a mixed tree (the branch's Blade classes, `main`'s
   CSS build), so no hover rule matched and before looked like rest. It was discarded and re-taken with the
   branch stashed and `main` rebuilt.
+
+## Rescheduling respects tandem slot capacity (fix/reschedule-capacity)
+
+Prompt 021. Ben, 9 Oct 2026: rescheduling into a full tandem slot **must be refused**.
+
+- **Premise confirmed** by code read and by a failing test on `main` (the dev DB wasn't used, so no records were
+  added there): `RescheduleBooking::handle()` set `tandem_date_id` and saved with no capacity check.
+- **One writer, one reader.** The gate is in `RescheduleBooking`, inside a transaction that `lockForUpdate()`s the
+  target slot, exactly like `StartTandemCheckout`. The count is the online path's own: new
+  `TandemDate::hasPlaceFor(Booking)` = "already holds a place here, or `! isFull()`", and `isFull()` is what the
+  online checkout and the public slot list already use.
+- **Holds match the online path exactly:** it counts every booking that isn't Cancelled, so an unpaid
+  `PendingPayment` checkout hold takes a place until Stripe's `checkout.session.expired` cancels it (≤ 30 min,
+  `StartTandemCheckout::HOLD_MINUTES`). Reschedule counts it the same way.
+- **Party size:** bookings carry none. One booking is one jumper, so it needs one place. The refusal says so:
+  "That date is full (N of N places taken) and this booking needs 1. Pick another date, or raise the date's
+  capacity first."
+- **Moving within its own slot** isn't counted against itself (a non-cancelled booking already there passes).
+  A cancelled booking moving back onto a slot needs a free place.
+- **The button explains:** in the action's slot select, a full slot reads "… — full" and is **disabled**
+  (clearer than a label alone, since it can't be picked by mistake). Filament refuses a disabled option at
+  validation. If the slot fills between validation and the save, the action refuses and the screen shows a
+  "Not rescheduled" notice with the reason. No email goes out unless the reschedule succeeded.
+- **The ad-hoc date/time path is deliberately unconstrained:** it has no slot, so no capacity to check. Unchanged.
+- **Tests** (`RescheduleCapacityTest`):
+  - full slot refused through the screen and through the action directly (bypassing the select), booking
+    unchanged, no mail;
+  - exactly one place left succeeds; within-slot moves succeed; a hold takes a place; a cancelled booking frees
+    one; the ad-hoc path is unconstrained; the select marks and disables full slots;
+  - the online checkout and the reschedule agree on the same slot, before and after it fills.
+
+  6 are red on `main`.
+- Launch checklist §5 gains the refusal check, and the Help guide's bookings section says full dates can't be
+  picked.

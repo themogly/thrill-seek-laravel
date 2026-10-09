@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Bookings\Tables;
 
 use App\Actions\RescheduleBooking;
 use App\Enums\BookingStatus;
+use App\Exceptions\BookingUnavailableException;
 use App\Models\Booking;
 use App\Models\Location;
 use App\Models\TandemDate;
@@ -76,12 +77,16 @@ class BookingsTable
                     ->form([
                         Select::make('tandem_date_id')
                             ->label('New slot')
-                            ->options(fn (): array => TandemDate::upcoming()
+                            ->options(fn (Booking $record): array => TandemDate::upcoming()
                                 ->get()
                                 ->mapWithKeys(fn (TandemDate $slot): array => [
-                                    $slot->id => $slot->starts_at->format('D j M Y, H:i')." ({$slot->remaining_capacity} of {$slot->capacity} places left)",
+                                    $slot->id => $slot->starts_at->format('D j M Y, H:i').($slot->hasPlaceFor($record)
+                                        ? " ({$slot->remaining_capacity} of {$slot->capacity} places left)"
+                                        : ' — full'),
                                 ])
                                 ->all())
+                            // The button explains; RescheduleBooking is the gate.
+                            ->disableOptionWhen(fn (string $value, Booking $record): bool => ! (TandemDate::find($value)?->hasPlaceFor($record) ?? false))
                             ->placeholder('Pick a slot, or set a custom date below'),
                         AdminDates::dateTime('scheduled_at')
                             ->label('Or a custom date & time'),
@@ -105,7 +110,17 @@ class BookingsTable
                             return;
                         }
 
-                        $emailed = $reschedule->handle($record, $newTime, (bool) $data['notify']);
+                        try {
+                            $emailed = $reschedule->handle($record, $newTime, (bool) $data['notify']);
+                        } catch (BookingUnavailableException $e) {
+                            Notification::make()
+                                ->danger()
+                                ->title('Not rescheduled')
+                                ->body($e->getMessage())
+                                ->send();
+
+                            return;
+                        }
 
                         if ($data['notify'] && ! $emailed) {
                             Notification::make()
