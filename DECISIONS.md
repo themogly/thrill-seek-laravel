@@ -2185,7 +2185,7 @@ The four new code rules all hold on `be9e145` (0 `@vite`/`<script>`/`x-if` under
 in `app/Http/Middleware/` reads the session). Nothing is enforced by a test yet — that's
 prompt 002. There is no suite-collection test yet either (also 002).
 
-**Motion ambition: subtle — `OVERNIGHT-DEFAULT — CONFIRM`.** G-Force never recorded a level.
+**Motion ambition: subtle — `OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS)`.** G-Force never recorded a level.
 As built: CSS transitions plus the opt-in `data-reveal` IntersectionObserver reveals in
 `resources/js/app.js` (skipped under `prefers-reduced-motion`; content visible without JS).
 No Motion One calls — the `motion` package is in `package.json` but imported nowhere (a
@@ -2388,7 +2388,7 @@ Not a finding, so the base `SettingsPage` is left as it is.
   - capacity has a floor at the current bookings.
 - **Sent newsletter:** the form is disabled, Save is hidden, and `beforeSave()` halts. The disabled
   schema alone still saved, which the test caught.
-- **Panel:** `AccountWidget` unregistered. Primary `Color::Blue`, **OVERNIGHT-DEFAULT — CONFIRM**:
+- **Panel:** `AccountWidget` unregistered. Primary `Color::Blue`, **OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS)**:
   white-on-primary measured 5.26:1, against the brand sky's 3.45:1, so the brand colour isn't used as
   a button fill.
 
@@ -2672,7 +2672,7 @@ and `/testimonials` published `AggregateRating` 4.8 from 8.
   approved, so dev pages are populated. Seeding production creates 0 testimonials (red on main).
 - **The rating counts real customers only.** `StructuredData::aggregateRating()` keeps approved
   testimonials with a `customer_id` and a rating; the seeded samples have none, so the discriminator is
-  correct. **`MIN_REVIEWS_FOR_RATING = 3`, `OVERNIGHT-DEFAULT — CONFIRM`**, so one or two reviews never
+  correct. **`MIN_REVIEWS_FOR_RATING = 3`, `OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS)`**, so one or two reviews never
   publish a star figure.
   - *Consequence to confirm:* a genuine review the **owner types into the admin** (no customer) shows on
     the page but **doesn't count toward the rating**. That's conservative and deliberate, since a
@@ -2798,11 +2798,10 @@ Location address, remove `Product::duration`. Each field was re-confirmed unused
   - **Its only value, recorded so it isn't lost:** Tandem Skydive = *"Approx. half a day at the dropzone"*.
 - **`HomePageSettings::team_lead` removed** (admin field, property, and settings migration
   `2026_10_09_120100_remove_home_team_lead`, the June pattern). Value was *"The people you'll fly with."*
-  **OVERNIGHT-DEFAULT — CONFIRM** (Ben agreed the gate's recommendations generally, not this field by
-  name).
+  **OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS)** (Ben confirmed this field by name).
 - **`Location::image` removed** (admin field, `image_url` accessor, `$fillable`, `ImageOptimization`
   entries, and the column in the same migration). It was empty on all 4 locations; no files touched.
-  **OVERNIGHT-DEFAULT — CONFIRM.**
+  **OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS).**
 - **Migrations on a seeded copy, both drivers:**
   - MySQL: a `mysqldump` clone of the dev DB was migrated. Row counts were unchanged (4 products,
     4 locations, 3 bookings, 5 payments), the columns and `home.team_lead` were gone, rolled back cleanly,
@@ -2868,7 +2867,7 @@ into CMS text, so changing a product price left those sentences quoting the old 
 | AFF FAQ "How much does it cost" | £1,750 / £600 | ✅ Products `aff-course` / `consolidation-jumps` | `{price:aff-course}` / `{price:consolidation-jumps}` |
 | AFF settings `seo_description` | £1,750 | ✅ `aff-course` | `{price:aff-course}` |
 | Coached settings `price_eyebrow`, `seo_description` | £60 ×2 | ✅ Product `coached-skills` | `{price:coached-skills}` (price only; the eyebrow's wording is C-1, still open) |
-| Tandem FAQ "weight and age limits" | £20 / £40 / £60 | ⚠️ only as **text** in `Product::weight_charges` (`"charge": "£20"`), not money | typed — **OWNER DECISION — PENDING** below |
+| Tandem FAQ "weight and age limits" | £20 / £40 / £60 | ⚠️ only as **text** in `Product::weight_charges` (`"charge": "£20"`), not money | typed — **OWNER DECISION — ANSWERED 9 Oct (see DECISIONS)**: stays typed |
 | `Product::weight_charges` (Tandem weight table) | £20 / £40 / £60 | the same text | typed (it is the table itself) |
 | AFF FAQ "membership" | ~£125/year | ❌ British Skydiving's price, not ours | typed, owner content |
 | AFF FAQ "Is kit provided?" | ~£5 packing | ❌ none | typed, owner content |
@@ -2912,7 +2911,7 @@ into CMS text, so changing a product price left those sentences quoting the old 
   as the seeds): FAQs tandem #4, #5, #8 and aff #12; Tandem `seo_description`, `hero_subtitle` and
   `charity_note_body`; AFF `seo_description`; Coached `seo_description` and `price_eyebrow`; Terms. Swap each
   figure for the token in the table above, and the preview confirms it.
-- **OWNER DECISION — PENDING (weight surcharges):** the £20/£40/£60 bands are typed twice, in the Tandem
+- **OWNER DECISION — ANSWERED 9 Oct (see DECISIONS) (weight surcharges): (a), keep both typed for now.** the £20/£40/£60 bands are typed twice, in the Tandem
   weight table (text on the product) and the weight FAQ. Options:
   - (a) keep both typed, and the Help guide reminds the owner to change both;
   - (b) make the weight bands money (pence) on the product, with a `{weight:…}` token.
@@ -2956,7 +2955,7 @@ No shared component existed for the first three, so two small ones were made rat
   - known gaps: C-3, C-4, C-12 and C-13 removed, and C-7 too (fixed by 014, which missed this list);
   - C-5 notes that the new component is the likely fix.
 
-## Brand contrast: `primary-strong` for text and fills (ui/primary-strong-contrast) — NOT MERGED, Ben merges
+## Brand contrast: `primary-strong` for text and fills (ui/primary-strong-contrast) — merged in run 3
 
 Prompt 016, Ben's answer to the contrast decision: **option B**. This is the authorised exception to the
 homepage freeze, for colour only.
@@ -2978,7 +2977,7 @@ homepage freeze, for colour only.
     hovers stay, the rest decoration).
 - **Large display text (≥24px) stays `primary`:** WCAG large text needs 3:1 and primary measures 3.46:1.
   These are the Tandem price table, price-card figures, account balances, 404 and the quote glyph.
-  - **OVERNIGHT-DEFAULT — CONFIRM:** this keeps the bright accent on the big figures, per option B's intent.
+  - **OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS): yes.** This keeps the bright accent on the big figures, per option B's intent.
     The cost is that small prices (e.g. AFF "£210 per jump", 20px) are now the deeper blue while ≥24px
     prices stay bright. The alternative is moving those 11 to `primary-strong` too (still compliant).
 - **Dark surfaces keep `primary`:** `primary-strong` is only 3.16:1 on navy, against 4.21:1 for primary.
@@ -2987,21 +2986,21 @@ homepage freeze, for colour only.
 - **Premise correction: the fill is 4.49:1, not 4.51.** The prompt's nearest passing shade "4.51 as a fill"
   holds against pure white, but `--primary-foreground` was `oklch(0.99 0 0)` (`#fcfcfc`). axe measured every
   primary button at **4.49:1** and flagged it.
-  - **OVERNIGHT-DEFAULT — CONFIRM:** `--primary-foreground` set to `oklch(1 0 0)` (white, already the
+  - **OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS): yes.** `--primary-foreground` set to `oklch(1 0 0)` (white, already the
     palette's `--background`/`--card`) gives 4.61:1. That's no new colour and visually indistinguishable.
   - The alternative is a slightly darker `primary-strong` (e.g. `oklch(0.54 0.18 240)`), which would leave
     the prompt's value.
 - **Message bubble:** the customer's "You" label was `text-primary` on the `sky-bright/10` tint (3.15:1, the
   audit's "below 3:1" item). `primary-strong` is still only 4.19:1 there, so it is now `text-secondary`
   (navy).
-  - **OVERNIGHT-DEFAULT — CONFIRM.** Both labels are now navy; the bubbles stay distinct by alignment,
+  - **OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS): yes.** Both labels are now navy; the bubbles stay distinct by alignment,
     border, tint and the label words.
   - Measured by calculation: axe wasn't run on the thread page, because opening it could mark the dev
     DB's Audit customer's messages read.
 - **Hover/active button states, not in axe's reach:**
   - Hover `primary-strong/85` is 3.54:1 and active `/75` is 2.99:1, against 2.80 / 2.48 before. Better,
     but under 4.5.
-  - **OWNER DECISION — PENDING:** (a) keep the lighter hover wash as designed; or (b) hovers darken instead
+  - **OWNER DECISION — ANSWERED 9 Oct (see DECISIONS): (b), darken on hover — prompt 020.** (a) keep the lighter hover wash as designed; or (b) hovers darken instead
     (e.g. to `secondary` navy), which is a visual change. Neither implemented.
 - **axe-core 4.10.2** (same version as the audit), WCAG 2.0/2.1 A+AA plus best practice, signed out, reduced
   motion, fonts loaded, injected into the real pages:
@@ -3023,3 +3022,76 @@ homepage freeze, for colour only.
 - **Not in scope:** the Filament admin (Blue since the admin audit).
 - **Screenshots:** `ui-review/primary-strong/` — homepage hero and news, Tandem pricing, AFF price card,
   Coached intro, the contact form, and the account dashboard, each at 1440 and 390, before and after.
+## Launch checklist tailored to G-Force (docs/launch-checklist)
+
+Prompt 018. `verification/CHECKLIST.md` was the kit's untailored template. It keeps the kit's structure
+and non-negotiables (money/email/silent-killer sections are the hard gate; `APP_KEY` off-server; no
+`key:generate` in deploy; restore tested; clean dataset; one real low-value transaction then refund), with
+every generic item replaced by G-Force's real one. Every name was grepped. The "NOT YET TAILORED" line is
+gone.
+
+- **New §0, staging specifics:**
+  - the site-email setting pointed at a test inbox;
+  - the `MAIL_MAILER` choice;
+  - basic-auth and noindex, both at the server;
+  - the TEST webhook with exactly the two handled events and the `2026-09-30.endive` API version (and
+    where the dashboard shows it);
+  - `gforce:mail-test`;
+  - the dashboard's "Failed emails (last 7 days)";
+  - `/dev/*` must 404.
+- **§1 money table:** every path enumerated from the code — tandem, tandem with a full or partial voucher,
+  AFF deposit, AFF balance from the account, voucher purchase, admin Redeem, payment link, bank transfer.
+  - Each row has the expected Stripe amount in pence → £ from the seeded prices (with "read the live
+    prices first") and the emails that must arrive.
+  - **Refunds: none in the app.** The checklist says so instead of inventing a path.
+- **§2 email table:** one row per email-audit inventory row, each with its real trigger on staging and its
+  Reply-To.
+  - Reply-To was read from each mailable: `TemplatedMail`, the login link, newsletter confirmation and the
+    owner payment notification set none, so replies go to `MAIL_FROM_ADDRESS`. The checklist says that
+    inbox must be read.
+- **§6b devices:** the phone subset of `real-device-checks.md`, with the dropped tablet/counter items named
+  and why.
+- **§7:**
+  - the three real scheduled commands, with what proves each ran;
+  - Horizon, `storage:link`, `config:cache` / `settings:clear-cache`;
+  - the production admin via `make:filament-user --panel=admin`, with no `test@example.com`.
+- **Gaps found while tailoring (recorded, not fixed; docs-only prompt):**
+  - **Staging noindex isn't in the app.** `/robots.txt` allows crawling on every host and no `noindex` is
+    sent by environment, so it must be an nginx `X-Robots-Tag` in Ploi. A code fix
+    (`Disallow: /` + a `noindex` meta when `APP_ENV` isn't production) would be a small follow-up prompt.
+  - **Basic-auth must exempt `/webhooks/stripe` and `/webhooks/resend`**, or staging webhooks 401.
+  - **There's no Users screen in the admin**, so "no `test@example.com`" is checked with a tinker one-liner.
+  - Rescheduling has no capacity check against the target slot. It isn't listed as a refusal to test,
+    because the code doesn't refuse it. Worth an owner question if over-filling a slot by rescheduling
+    matters.
+
+## Ben's answers to run 2's owner questions (9 Oct 2026) — docs/run3-owner-answers
+
+Ben read `RUN-REPORT-2.md`, the 008 proposal and the 016/017 screenshots, and answered every question
+(`prompts/unattended-run-3.md`). Each answered `OWNER DECISION — PENDING` / `OVERNIGHT-DEFAULT — CONFIRM`
+marker now reads `… — ANSWERED 9 Oct (see DECISIONS)`, pointing here.
+
+- **008 — FK delete rules:** the table is approved **as proposed**: the 13 FKs → `RESTRICT`, **plus #26
+  (the documents pivot) → `RESTRICT`**, with `Document` joining `GuardsDeletion` ("attached to N sent
+  messages"). The model-level `deleting` listener on every `GuardsDeletion` model is approved. Built in
+  run 3 (Phase 2).
+- **016 — brand contrast `primary-strong`:** merge it.
+  - Pure-white `primary-foreground`: **yes**.
+  - Display prices of 24px and up stay bright `primary`: **yes**.
+  - The customer's "You" label in navy: **yes**.
+  - Hover and active states: **darken on hover**, not the lighter wash (prompt 020).
+- **017 — feature-split 16:10: withdrawn, not merged.** The 1024 imbalance (the text running well past the
+  photo) is worse than the desktop side-trim. The admin crop stays 16:10; the layout stays as on `main`.
+- **007:** at least 3 real customer reviews before a rating is published, and owner-typed reviews show
+  but don't count: **confirmed**.
+- **012:** removing `home.team_lead` and `Location::image`: **confirmed**.
+- **014:** the weight surcharges stay typed for now (option (a)).
+- **Rescheduling into a full tandem slot must be refused** (prompt 021).
+- **App-level noindex for non-production hosts:** yes (prompt 022).
+- **Email buttons and links move to the accessible blue `#0078cc`:** yes (prompt 023).
+- **Keyboard focus on the scrollable payments table:** yes (prompt 024).
+
+Run 1's answers (RUNNING-ORDER row 8) had already closed two markers that were still worded as open: admin
+panel primary **Blue** and motion ambition **subtle**. Both are flipped here too, as are the
+accessibility audit's brand-contrast rows (answered by 016) and the email audit's heading (option B,
+built in 009). The 016 and 008 markers live on their branches and are flipped when each merges in run 3.

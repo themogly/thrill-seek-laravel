@@ -166,7 +166,7 @@ Review: guard proven, command run against the log mailer, full suite green.
 - **After deploy:** `php artisan gforce:mail-test you@yourdomain` should print "sent", and a real email
   should arrive in a real inbox. After the first day, the dashboard's failed-emails figure should read 0.
 
-## OWNER DECISION — PENDING
+## OWNER DECISION — ANSWERED 9 Oct (see DECISIONS): option B, built in 009
 
 - **Should admin-originated acts email the customer the way the online paths do?**
   - (a) Creating a booking in the admin with status Confirmed sends **no** `booking_confirmed`. Confirming

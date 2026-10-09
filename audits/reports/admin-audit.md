@@ -99,7 +99,7 @@ decision (consumer change, design choice, new email path).
   already lives in the user menu. → Unregister it.
 - **Panel primary is `Color::Amber`,** Filament's default, which nobody chose. → Set it deliberately
   to a blue ramp (the brand is blue), checked for white-on-primary button contrast.
-  `OVERNIGHT-DEFAULT — CONFIRM`.
+  `OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS)`.
 - Noted, not changed:
   - **Upload limits:** no image field sets `maxSize` or `acceptedFileTypes` (only Livewire's 12 MB
     default); the WebP optimise job already shrinks what's stored.
@@ -143,5 +143,5 @@ Review: kept to what the kit names; the rest is batched, not churned.
 | P2 Social sharing image upload | Deferred → **A-1** | |
 | P2 Testimonial crop | Deferred → **A-2** (owner) | |
 | P2 Owner password reset | Deferred → **A-3** | |
-| P3 AccountWidget removed, primary Blue | **Done** | `PanelFurnitureTest`. Measured white-on-primary: blue-600 **5.26:1** (old amber 3.19:1, brand sky 3.45:1). `OVERNIGHT-DEFAULT — CONFIRM`. Screenshots: `admin-audit-dashboard-after.png`, `admin-audit-product-edit-after.png`. |
+| P3 AccountWidget removed, primary Blue | **Done** | `PanelFurnitureTest`. Measured white-on-primary: blue-600 **5.26:1** (old amber 3.19:1, brand sky 3.45:1). `OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS)`. Screenshots: `admin-audit-dashboard-after.png`, `admin-audit-product-edit-after.png`. |
 | P3 polish batch | Deferred → **A-4** | |

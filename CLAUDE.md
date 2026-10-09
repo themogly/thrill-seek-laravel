@@ -235,7 +235,7 @@ that manages all site content, enquiries, payments and bookings.
 - **Motion ambition: subtle** (as built — CSS transitions plus the opt-in `data-reveal`
   entrance reveals in `app.js`, skipped under `prefers-reduced-motion`; no Motion One
   calls). Content is visible without JS. Recorded in DECISIONS as
-  `OVERNIGHT-DEFAULT — CONFIRM`; a cinematic layer needs the owner's ask.
+  `OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS)`; a cinematic layer needs the owner's ask.
 
 ## Quality bar (enforced before every commit)
 - **Database is MySQL 8+** in production and local dev. SQLite (`:memory:`) is kept ONLY

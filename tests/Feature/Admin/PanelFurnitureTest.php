@@ -10,8 +10,8 @@ use Tests\TestCase;
 
 /**
  * The back office looks built for the owner, not like a framework default: no
- * stock dashboard widgets, and a primary colour that was chosen (see DECISIONS,
- * OVERNIGHT-DEFAULT — CONFIRM) rather than Filament's default amber.
+ * stock dashboard widgets, and a primary colour that was chosen (OVERNIGHT-DEFAULT —
+ * ANSWERED 9 Oct (see DECISIONS)) rather than Filament's default amber.
  */
 class PanelFurnitureTest extends TestCase
 {

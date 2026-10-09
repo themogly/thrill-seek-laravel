@@ -87,7 +87,7 @@
        fills under text (4.6:1 on white). Option B of the contrast decision. */
     --primary-strong: oklch(0.545 0.18 240);
     /* Pure white (was 0.99): on a primary-strong fill, oklch(0.99) is 4.49:1 by axe — 0.01
-       short of AA; white is 4.61:1. OVERNIGHT-DEFAULT — CONFIRM (see DECISIONS). */
+       short of AA; white is 4.61:1. OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS). */
     --primary-foreground: oklch(1 0 0);
 
     /* Secondary = deep navy */

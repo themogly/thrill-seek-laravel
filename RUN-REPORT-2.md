@@ -140,3 +140,138 @@ build on:
   - The homepage news dates keep their (identical) inline classes, because the prompt says to change `/news` only.
 - **Markers:** none.
 - **Screenshots:** `ui-review/consistency-small-fixes/` — news / testimonials / contact-form-loading, 1440 + 390, before + after.
+
+## 12 · 016 brand contrast, `primary-strong` (option B) — ⏸ NOT MERGED, Ben looks
+- **Branch:** `ui/primary-strong-contrast`, pushed unmerged at `fc0884a`
+- **Tests:** 476 → 479; `composer check` green.
+- **What it did:**
+  - New `--primary-strong` `#0078cc` for anything read and every fill under text, at the shared components first (button primary fill + link, arrow-link, section-heading eyebrow, meta-label, nav active/hover, FAQ/news links, booking step, date selection).
+  - `primary` `#008fe6` stays the accent: rules, borders, icons, focus rings, ≥24px display figures.
+  - Destructive darkened in place.
+  - Inventory `audits/reports/primary-usage.md` (183 uses); guard `PrimaryIsNotUsedForTextTest` (planted violation caught; red on the old views with 84).
+- **axe-core 4.10.2:** 173 `color-contrast` nodes (20 pages × 1440/390, signed out) → **0 violations**. Account pages: 0 contrast failures.
+- **Gap report:**
+  - **Premise off by 0.01:** the prompt's shade is 4.51 as a fill only against pure white. Against the real `#fcfcfc` button text axe measured 4.49 and flagged every button, so `--primary-foreground` is now white (4.61).
+  - The "You" label in message threads stays failing on its sky tint even with `primary-strong` (4.19), so it's navy.
+  - `primary-strong` is only 3.16:1 on navy, so dark-surface uses keep `primary` (allowlisted).
+  - Unrelated axe item: `scrollable-region-focusable` on the 390 account payments table (follow-up).
+  - Emails use their own `#2f8de4` (3.47:1): listed in DECISIONS, not changed.
+- **Markers:**
+  - **OVERNIGHT-DEFAULT — CONFIRM** ×3: white `primary-foreground`; large-display figures stay bright; message "You" label navy.
+  - **OWNER DECISION — PENDING** ×1: hover/active button washes are 3.54 / 2.99:1 (keep the lighter wash, or darken on hover).
+- **Screenshots (for Ben):** `ui-review/primary-strong/` — home hero + news, Tandem pricing, AFF price card, Coached intro, contact form, account dashboard × 1440/390 × before/after (28 JPEGs).
+
+## 13 · 017 feature-split 16:10 (C-8) — ⏸ NOT MERGED, Ben looks
+- **Branch:** `ui/feature-split-ratio`, pushed unmerged at `0a37a7b`
+- **Tests:** 476 → 477 (off main, so 016's guard isn't included); `composer check` green.
+- **What it did:** option (a). The Tandem/AFF/Coached intro photo is 16:10 at every width, matching the admin crop. Before it was 1.15:1 at 1024 and 1.42:1 at 1280/1440. The intrinsic size is fixed (1280×896 → 1280×800). `FeatureSplitRatioTest` is red on `main`. The homepage doesn't use the component (grep) and is 0 px vs baseline.
+- **Gap report:** the text now runs taller than the photo: 7–28% at 1280/1440, 33–77% at 1024, with **Coached at 1024** worst (611px text vs a 345px photo, centred). Not patched with magic numbers. Options for Ben (stack until `lg`, a wider image column, or accept) are in DECISIONS. There's no `srcset` on this image today.
+- **Markers:** none (the 1024 balance is Ben's call when he looks).
+- **Screenshots (for Ben):** `ui-review/feature-split-ratio/` — 3 pages × 1024/1280/1440/390 × before/after + homepage unchanged (26 JPEGs). Start with `coached-1024-after.jpg`.
+
+## 14 · 018 launch checklist tailored
+- **Branch:** `docs/launch-checklist` → merged `c23763a`
+- **Tests:** 476 → 476 (docs only); `composer check` green, unchanged.
+- **What it did:** `verification/CHECKLIST.md` now names G-Force's real paths, in the kit's structure.
+  - **§0 staging:** site-email test inbox, `MAIL_MAILER`, basic-auth, noindex, the Stripe TEST webhook with its 2 events and API version `2026-09-30.endive`, `gforce:mail-test`, "Failed emails (last 7 days)".
+  - **§1:** a money table with 10 paths and the expected pence → £.
+  - **§2:** an email table from the inventory, with Reply-To.
+  - **§6b:** phone-only device checks.
+  - **§7:** the 3 scheduled commands with proof each ran.
+  - **§8:** the live flip.
+  - Every name was grepped; two phantom drafts were caught and corrected (no Users screen; no reschedule capacity rule).
+- **Gap report:**
+  - Staging **noindex isn't in the app**: `robots.txt` allows all hosts, so it has to be an nginx `X-Robots-Tag` (a small code follow-up is possible).
+  - Basic-auth must exempt `/webhooks/*`.
+  - The admin has no Users screen (tinker one-liner instead).
+  - **Rescheduling doesn't check the target slot's capacity** (owner question).
+  - The app has no refund handling (refund in Stripe).
+- **Markers:** none.
+- **Screenshots:** n/a (docs).
+
+## 15 · Pre-staging gate (report only)
+- **Branch:** `docs/pre-staging-gate-run2` → merged `450b421` (only `PRE-STAGING-CHECKLIST.md` changed)
+- **Tests:** 476 → 476; `composer check` + MySQL green at `5663177`; `config:cache` / `route:cache` / `composer validate --strict` OK; composer and npm audits 0.
+- **Verdict: ✅ GO for staging**, with three server-side conditions: basic-auth exempting `/webhooks/*`; noindex at the server (the app noindexes no host); the site email set to a test inbox.
+- **Gap report:**
+  - 016 and 017 test-merge into `main` with a conflict **only in `DECISIONS.md`**: both append to the end of the log. Resolve by keeping both sections.
+  - SETUP.md doesn't yet mention staging noindex/basic-auth or the webhook API version (`verification/CHECKLIST.md` does).
+  - 016 not being merged means axe still reports 173 contrast nodes on `main`. Not a staging blocker, but needed before launch.
+- **Markers:** none.
+
+## 16 · Housekeeping
+- **Global skills synced** from `~/Sites/starter-kit/skills/` to `~/.claude/skills/<name>/SKILL.md`, as
+  Ben approved on 9 Oct. None of the four existed at that path, so there were no overwrites; each copy is
+  byte-identical to the kit.
+  - `admin-design`: **new**. Principles for a CMS/admin a non-technical client can use without drifting
+    from the public site.
+  - `frontend-design`: **new at this path**, but note a **same-named built-in** in the app-managed
+    `~/.claude/skills/synced/` store. The kit version is that built-in plus 125 lines: images/performance,
+    accessibility, cross-page consistency. "Buttons" and the reduced-motion bullet were reworded.
+  - `laravel-craft`: **new**. Idiomatic, un-over-engineered Laravel backend philosophy.
+  - `web-app-security`: **new**. Build-time security and privacy principles (auth, accounts,
+    authorization, personal data).
+  - `~/.claude/skills/synced/` (app-managed) was not touched.
+- **Remote branches:** the 23 branches fully merged into `origin/main` were deleted
+  (`git branch -r --merged origin/main`). **Remaining on origin:** `main`, `fix/fk-delete-rules` (008),
+  `ui/primary-strong-contrast` (016), `ui/feature-split-ratio` (017). Local branches were left as they are.
+- **Dev database:** the "Audit …" records were left alone.
+  - Only change this run: 013's additive settings migration, applied with `--path` so the dev homepage
+    wouldn't 500.
+  - Still pending for Ben's `php artisan migrate`: 012's column drops and the `home.team_lead` removal.
+- Local-only: `.playwright-mcp/` was added to `.git/info/exclude`, never committed, so the screenshot
+  scratch can't be committed by accident.
+
+---
+
+## How the run ended
+- **All 17 items done (0–16), no stop condition hit.**
+  - 12 merged on green: 019, 005, 006, 007, 009–015, 018, plus the pre-staging report.
+  - 3 pushed unmerged as instructed: 008 Phase 1, 016, 017.
+- Tests went from **440 to 476** on `main` (479 on the 016 branch, 477 on 017). `composer check` was
+  green at every merge, plus the MySQL suite wherever queries, migrations or money were touched.
+- `main` is at **`09ab9c7`** before this closing docs commit; `main` is clean and green.
+
+## What Ben has to look at
+1. **008 proposal table.** `git show origin/fix/fk-delete-rules:audits/reports/fk-delete-rules.md`.
+   32 FKs; 13 proposed to move to RESTRICT; #26 (documents pivot) is your call. Phase 2 starts only on
+   your approval.
+2. **016 screenshots.** `ui-review/primary-strong/` on `ui/primary-strong-contrast` (`fc0884a`): 28 JPEGs,
+   before/after × 1440/390 (home hero + news, Tandem pricing, AFF price card, Coached intro, contact form,
+   account). axe went 173 → 0.
+3. **017 screenshots.** `ui-review/feature-split-ratio/` on `ui/feature-split-ratio` (`0a37a7b`). Start
+   with `coached-1024-after.jpg`: the text runs well past the now-16:10 photo at 1024.
+4. **Pre-staging: ✅ GO** (`PRE-STAGING-CHECKLIST.md` on `main`), on three server-side conditions:
+   - basic-auth exempting `/webhooks/*`;
+   - server-level noindex;
+   - the site email set to a test inbox.
+5. **Merging 016/017 yourself:** each conflicts with `main` **only in `DECISIONS.md`** (both append to the
+   end of the log). Keep both sections.
+
+## Owner questions (each answerable in one line)
+1. **008:** approve the FK table as proposed (13 → RESTRICT)? And #26, the documents pivot: CASCADE or
+   RESTRICT?
+2. **016:** merge it after the screenshots? (yes/no)
+3. **016:** `primary-foreground` → pure white OK (axe measured the prompt's shade at 4.49:1 under
+   `#fcfcfc`)? Or darken `primary-strong` slightly instead?
+4. **016:** keep ≥24px display prices in the bright `primary`, or make every price `primary-strong`?
+5. **016:** the customer's "You" label in message threads in navy (the blue fails on its tint): OK?
+6. **016:** button hover/active washes are 3.54 / 2.99:1. Keep the lighter wash, or darken on hover?
+7. **017:** merge 16:10? Is the 1024 balance acceptable, or stack the split until `lg`?
+8. **007:** is it OK that the rating needs at least 3 real reviews, and that owner-typed reviews show
+   without counting?
+9. **012:** confirm removing `home.team_lead` and `Location::image` (agreed generally, not by name).
+10. **014:** weight surcharges are typed in two places. Keep them typed, or later make them money with a
+    `{weight:…}` token?
+11. **018:** should rescheduling refuse a target tandem slot that's already full? (It doesn't today.)
+12. **Gate:** add app-level noindex for non-production hosts (a small follow-up), or rely on server config?
+13. **Email:** move mail buttons/links from `#2f8de4` (3.47:1) to `#0078cc` in a follow-up?
+14. **a11y:** queue the keyboard-focus fix for the scrollable account payments table (axe
+    `scrollable-region-focusable` at 390)?
+
+**Ops / owner tasks (not questions):**
+- delete `test@example.com` and unapprove the 8 sample testimonials on any already-seeded server;
+- after staging, check the logo with images blocked in Gmail and Outlook;
+- enter the dropzone addresses and coordinates;
+- swap the typed prices in existing CMS text for tokens (list in DECISIONS, 014);
+- locally, `php artisan migrate`.
