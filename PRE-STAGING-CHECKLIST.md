@@ -1,20 +1,21 @@
 # Pre-staging readiness gate — go/no-go
 
-Kit gate `gates/pre-staging-gate.md`, run verbatim and report-only as item 9 of unattended run 3. Read-only:
-nothing was changed except this file. Every claim is checked against the code, git or a command result, not
+Kit gate `gates/pre-staging-gate.md`, run verbatim and report-only as item 9 of unattended run 3, then **re-run
+on the final `main`** after the three outstanding-fix prompts (025–027) merged, so the verdict describes what
+will ship. Read-only: nothing was changed except this file. Every claim is checked against the code, git or a command result, not
 against what a report says.
 
-- **Commit:** `main` @ `3b824b4` (`docs: run 3 — 8 024 table focus recorded`), in sync with `origin/main`.
-  Report written on `docs/pre-staging-gate-run3`.
+- **Commit:** `main` @ `4c0d6c7` (`docs: run 3 — 13 027 admin password reset recorded`), in sync with
+  `origin/main`. First written at `3b824b4` (item 9); this re-run is on `docs/pre-staging-gate-run3-final`.
 - **History:**
   - The previous gate (`5663177`, run 2) returned ✅ GO with three server-side conditions.
-  - Since then, run 3 merged 8 branches on green: Ben's answers, 016, 008 Phase 2, and 020–024. `git log
-    4ee5960..HEAD --merges` lists all eight.
+  - Since then, run 3 merged 11 branches on green: Ben's answers, 016, 008 Phase 2, 020–024, and the
+    outstanding fixes 025–027 (plus the item-9 report). `git log 4ee5960..HEAD --merges` lists them.
 
 ## Verdict: ✅ GO for staging
 
 The codebase is clean, complete and safely configured to leave local:
-- the full gate is green on both drivers (**520 tests**);
+- the full gate is green on both drivers (**540 tests**);
 - 0 known vulnerabilities;
 - `config:cache` and `route:cache` succeed;
 - the local-only routes are provably absent outside `local`;
@@ -37,22 +38,16 @@ database refuses money-linked deletes (008), and **the app now noindexes every n
 - **No debug leftovers:** no `dd(`/`dump(`/`ray(` in `app`/`routes`/`config`/`database`, and no `console.log`
   in `resources/js`.
 - **No skipped or incomplete tests.**
-- **Unmerged branches: 1**, deliberate:
+- **Unmerged branches: none.** `git branch -r --no-merged origin/main` is empty. 017 (`ui/feature-split-ratio`,
+  `0a37a7b`) was withdrawn by Ben and deleted in the housekeeping; its sha is in `RUNNING-ORDER.md`.
+- Every remaining remote branch is fully merged and is deleted in the closing housekeeping.
 
-  | Branch | Head | What it is | Status |
-  |---|---|---|---|
-  | `ui/feature-split-ratio` | `0a37a7b` | 017 feature-split 16:10 | **Withdrawn by Ben (9 Oct):** the 1024 imbalance is worse than the side-trim. Not to be merged; deleted in this run's housekeeping. |
-
-- Every other remote branch (`fix/fk-delete-rules`, `ui/primary-strong-contrast` and this run's six) is fully
-  merged into `origin/main` (`git branch -r --no-merged origin/main` lists only 017). They're deleted in this
-  run's housekeeping.
-
-## 2. Build & test health (actual results at `3b824b4`)
-- **`composer check`: PASS.** Pint clean, phpstan 0 errors, **520 tests / 2299 assertions** (SQLite).
-- **MySQL parity, `php artisan test -c phpunit.mysql.xml`: PASS, 520/520** on MySQL 8. Required: this run
-  changed foreign keys (008) and added a locking query (021).
+## 2. Build & test health (actual results at `4c0d6c7`)
+- **`composer check`: PASS.** Pint clean, phpstan 0 errors, **540 tests / 2379 assertions** (SQLite).
+- **MySQL parity, `php artisan test -c phpunit.mysql.xml`: PASS, 540/540** on MySQL 8. Required: this run
+  changed foreign keys (008), added a locking query (021) and the reset-token flow (027).
 - **`composer audit`:** no advisories.
-- **`npm audit`:** 0 vulnerabilities (both `--omit=dev` and all).
+- **`npm audit`:** 0 vulnerabilities (both `--omit=dev` and all), after `motion` was removed (025).
 - **`npm run build`:** passes.
 - **`composer validate --strict`:** passes.
 - **axe-core 4.10.2** on the rebuilt `main`, 20 public pages × 1440/390: **0 violations of any rule** (was 173
@@ -80,7 +75,13 @@ database refuses money-linked deletes (008), and **the app now noindexes every n
 - 021 reschedule capacity (`eeba9cf`);
 - 022 noindex non-production + SETUP staging (`b22d879`);
 - 023 email/PDF blue (`617ef9b`);
-- 024 scrollable table focus (`32253e1`).
+- 024 scrollable table focus (`32253e1`);
+- **outstanding fixes** (Ben: "also fix anything outstanding"):
+  - 025 admin tidy-up (`dd9ad53`): a booking or article whose slot or course has passed **couldn't be saved**
+    (fixed); image uploads **accepted SVG** on the public disk (now JPEG/PNG/WebP, 12 MB); sortable inbox;
+    navigation sorts; public CSS sources;
+  - 026 one-click `List-Unsubscribe` on newsletters (`78ba261`);
+  - 027 owner password reset, with no account enumeration (`0c3e574`).
 
 **PENDING (not blockers for staging):**
 - **017:** withdrawn; nothing to do.
@@ -88,7 +89,9 @@ database refuses money-linked deletes (008), and **the app now noindexes every n
   - real photos, Hall of Fame, privacy `[Owner: …]` lines, dropzone addresses;
   - replacing typed prices in existing CMS text with tokens (DECISIONS, 014);
   - the weight surcharges stay typed (Ben, 9 Oct), so change both places by hand.
-- **Open owner decisions:** none left from run 2; any new ones are in `RUN-REPORT-3.md`.
+- **Open owner decisions:** none left from run 2. Run 3 adds one `OWNER DECISION — PENDING` (the newsletter footer
+  link unsubscribes on GET) and one `OVERNIGHT-DEFAULT — CONFIRM` (image types and the 12 MB limit), both in
+  `RUN-REPORT-3.md`. Neither blocks staging.
 
 ## 4. Production config readiness
 - **`.env.example` covers every app-specific variable** (Stripe ×3, Resend ×2, `MAIL_*`, `MAIL_INBOUND_DOMAIN`,
@@ -150,6 +153,8 @@ Specifically pending until a server exists:
 - DKIM/SPF deliverability;
 - SSL;
 - a real scrubbed Sentry event;
+- Gmail showing its own "Unsubscribe" button on a newsletter (026's headers), and the admin password-reset email
+  arriving (027);
 - the inbound-email round-trip;
 - the Gmail/Outlook check of the CID logo and the new button colour;
 - a manual money-path test with a test card.
