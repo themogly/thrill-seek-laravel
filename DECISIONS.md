@@ -3238,3 +3238,40 @@ Prompt 022. Ben, 9 Oct 2026: do it **in the app**, not only in server config.
   `/sitemap.xml`; local/testing/preview are noindexed too; production robots is exactly today's file with
   no header, and production pages carry no `noindex`. 3 are red on `main`. `RobotsTest`'s sitemap test now
   states production explicitly (it described the production file).
+
+## Email and PDF blue moves to the accessible `#0078cc` (fix/email-link-colour)
+
+Prompt 023. Ben, 9 Oct 2026: move the emails to the accessible blue.
+
+- **Premise confirmed:** `#2f8de4` (3.47:1 on white, and under white text) in the mail blocks (button,
+  featured course, two-column), the newsletter shell and footer, the Markdown-mail theme `gforce.css`, and both
+  PDFs. Also found, not in the prompt: the voucher PDF's `#0ea5e9` eyebrow and accent are only on the navy band
+  (6.85:1 there), so they were left alone.
+- **Defined once:** `App\Support\BrandHex` (`STRONG = #0078cc`, the site's `primary-strong`; `ACCENT = #2f8de4`;
+  `NAVY`). Blade mail partials and both PDF `<style>` blocks echo the constants. Neither medium can read
+  `app.css` variables (mail clients, dompdf), so one PHP source serves both. The static `gforce.css` can't call
+  PHP, so `EmailColourTest` pins its `.button-primary` to `BrandHex::STRONG`.
+- **Moved to STRONG** (text or a fill under text, on a light surface):
+  - the newsletter button fill (white `#ffffff` text: 4.61:1);
+  - the two-column "button" link;
+  - the newsletter shell's default link colour;
+  - the theme's `.button-primary` fill and its border-padding (white `#fff` text);
+  - the receipt PDF's labels;
+  - the voucher PDF's "Voucher code" label.
+- **Kept bright, with reasons (the allowlist):**
+  - **Text on the navy band** (`#0a0f23`): the footer's Instagram/Facebook links and the featured-course
+    eyebrow. ACCENT is 5.47:1 there; STRONG would fail at 4.12:1, the same rule as the site's dark surfaces.
+  - **The voucher's £ amount** (34px bold): large text needs 3:1, and ACCENT is 3.47:1. This matches the site's
+    ≥24px rule Ben confirmed.
+  - **Decoration:** the voucher band rule, code-box border, message rule and the theme's panel rule.
+- **Unchanged:** every email's copy, layout and recipients, and the CID logo (011).
+- **Evidence** (`audits/reports/run3/`):
+  - every `/dev/mail` preview (14) sent through the **log** mailer into its own file, on rolled-back sample data
+    (`023-log-mailer-run.txt`; the script is `023-mail-evidence.php`). Each reports 0 old-blue text or fill uses,
+    except the newsletter campaign's 2, which are the allowlisted on-navy footer links;
+  - `023-booking-confirmation.eml`;
+  - cropped renders of the receipt and voucher PDFs (`023-receipt-pdf.jpg`, `023-voucher-pdf.jpg`).
+- **Test:** `EmailColourTest` reads every `#2f8de4` or `BrandHex::ACCENT` use in the mail, mail-component,
+  vendor-mail and PDF views with the CSS property it sits in. Borders pass; `color` and `background` need an
+  allowlist entry with a reason. It's red on `main` (6 uses), proven with a planted use, and pins the theme
+  button and both contrast facts. `MailRenderTest` and `/dev/mail` still render every mailable.

@@ -19,7 +19,7 @@
         @endif
         <p style="margin:0 0 12px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.5;color:#52525b;">{{ $data['text'] ?? '' }}</p>
         @if (! empty($data['button_label']) && $bUrl)
-            <a href="{{ $bUrl }}" style="font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;color:#2f8de4;text-decoration:none;">{{ $data['button_label'] }} &rarr;</a>
+            <a href="{{ $bUrl }}" style="font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;color:{{ \App\Support\BrandHex::STRONG }};text-decoration:none;">{{ $data['button_label'] }} &rarr;</a>
         @endif
     </div>
     @if ($side !== 'left' && $img)
