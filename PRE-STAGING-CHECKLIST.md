@@ -56,7 +56,7 @@ post-deploy verification, not code.
 
 ## 5. Server-side deployment checklist (Ploi / Hetzner / staging)
 Specifics in SETUP.md "Deploying" + "Required environment variables".
-1. **PHP 8.3** + `pdo_mysql`; **MySQL 8+** (DB + dedicated user); **Redis** (cache/queue/sessions).
+1. **PHP 8.4.1+** (the lock requires it — not 8.3) + `pdo_mysql`; **MySQL 8+** (DB + dedicated user); **Redis** (cache/queue/sessions).
 2. **Env vars** — `APP_KEY` (`key:generate`), `APP_ENV=staging`, `APP_DEBUG=false`, `APP_URL=https://…`,
    Stripe (incl. webhook secret), Resend (`MAIL_MAILER=resend`, from-address, inbound domain +
    `RESEND_WEBHOOK_SECRET`), `SETTINGS_CACHE_ENABLED=true`, `SESSION_SECURE_COOKIE=true`,
