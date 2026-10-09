@@ -2561,8 +2561,8 @@ constraint changes.
 - **stripe/stripe-php 20.3.1 → 22.0.0.** 21 made `ErrorObject` properties nullable. 22 pins API
   `2026-09-30.endive`, drops PHP 7.2/7.3, and removes `payment_method_types` from Checkout/PaymentIntent
   create (the app doesn't send it). Webhook signature verification is unchanged. Work: small in code, but
-  the API version moves on the money path. **OWNER DECISION — PENDING**
-  (pin `stripe_version` explicitly and verify in Stripe test mode on staging).
+  the API version moves on the money path. ~~OWNER DECISION — PENDING~~ → **decided by Ben 9 Oct:
+  upgrade** (done in `chore/deps-majors-2026-10`, below).
 - **motion 12.43 → 14.0.0.** Imported nowhere (`resources/js` uses CSS transitions + IntersectionObserver).
   React/react-dom are optional peers. Recommendation: remove the dependency rather than upgrade it.
 - **concurrently 9.2.5 → 10.0.6.** Needs Node ≥ 22; only the local `composer dev` script uses it.
@@ -2579,3 +2579,30 @@ reduced motion: **0 differing pixels** at both widths.
      main: Ben's own registration of this prompt, committed first on the branch.
    - The PHP 8.4.1 docs correction (SETUP, PRE-STAGING-CHECKLIST).
    - The local dev DB gained one more "Audit Deps" enquiry from the button check.
+
+## Major upgrades at Ben's request (chore/deps-majors-2026-10)
+After 004 merged (`86c35dc`), Ben asked to take the four remaining majors too. They're on their own branch
+with one commit each, so each can be reverted alone. Constraints in `composer.json`/`package.json` change
+here by design.
+
+- **phpunit/phpunit** `^12.5.12` → `^13.4` (13.4.1). Dev-only; needs PHP 8.4 (production already needs
+  8.4.1+). PHPUnit's own run reports no deprecations or notices. 432/432.
+- **stripe/stripe-php** `^20.2` → `^22.0` (22.0.0). Owner decision taken by Ben. The library now sends API
+  version `2026-09-30.endive`. The app's Stripe surface (`StripeCheckout::createSession`: Checkout
+  Session create with `mode`, `line_items`, `customer_email`, `metadata`, `success_url`/`cancel_url`,
+  `expires_at`; `Webhook::constructEvent`; reading `id`, `url`, `payment_intent`, `metadata`) isn't
+  touched by 21/22's removals. A null-key `StripeClient` still constructs and throws
+  `AuthenticationException` at call time, which the booking flows rely on. All 117 payment, booking,
+  voucher and checkout tests are unchanged and green, but they mock Stripe.
+  **Still required before go-live:** one real test-mode checkout plus webhook on staging
+  (`verification/CHECKLIST.md` money section). Also set the Stripe webhook endpoint's API version to
+  match, or leave it at the account default and confirm the `checkout.session.*` payload fields read are
+  present.
+- **concurrently** `^9.0.1` → `^10.0.6`. Only the local `composer dev` script uses it; needs Node 22+
+  (SETUP updated). Smoke-run OK.
+- **motion** `^12.40.0` → `^14.0.0`. Imported nowhere, so there's no bundle or runtime change; React peers
+  are optional and weren't installed. If it stays unused, removing it is cleaner. Not removed, because
+  Ben asked for the upgrade.
+
+Gates after all four: `composer check` 432/432; MySQL suite 432/432; `config:cache` OK; `composer audit` and
+`npm audit` clean; homepage **0 differing pixels** against the pre-004 screenshots at 1440 and 390.
