@@ -6,7 +6,7 @@
         <li class="flex items-center gap-2">
             <span @class([
                 'flex h-9 w-9 items-center justify-center font-display text-lg transition-colors',
-                'bg-primary text-primary-foreground' => $number === $current,
+                'bg-primary-strong text-primary-foreground' => $number === $current,
                 'bg-secondary text-secondary-foreground' => $number < $current,
                 'border-2 border-input bg-card text-muted-foreground' => $number > $current,
             ])>

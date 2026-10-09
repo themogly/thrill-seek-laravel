@@ -35,7 +35,7 @@
                             <span>
                                 <span class="block font-display text-2xl uppercase text-secondary">{{ $course->date_range_label }}</span>
                                 <span class="block text-xs font-bold uppercase tracking-wide text-muted-foreground">{{ $course->duration_days }}-day course</span>
-                                <span class="mt-1 flex items-center gap-1.5 text-sm font-bold uppercase tracking-wide text-primary">
+                                <span class="mt-1 flex items-center gap-1.5 text-sm font-bold uppercase tracking-wide text-primary-strong">
                                     <x-icon name="map-pin" class="h-4 w-4" /> {{ $course->location->name }}
                                 </span>
                                 <span class="mt-2 block text-sm text-muted-foreground">
@@ -44,7 +44,7 @@
                             </span>
                             <span class="text-left sm:text-right">
                                 <span class="block font-display text-2xl text-secondary">{{ $course->formatted_price }}</span>
-                                <span class="block text-sm font-bold text-primary">{{ $course->formatted_deposit }} deposit</span>
+                                <span class="block text-sm font-bold text-primary-strong">{{ $course->formatted_deposit }} deposit</span>
                             </span>
                         </button>
                     @endforeach
@@ -161,7 +161,7 @@
 
             <label class="mt-3 flex items-start gap-3 text-sm">
                 <input type="checkbox" wire:model="terms" class="mt-0.5 h-5 w-5 rounded border-input text-primary focus:ring-ring" />
-                <span>I accept the <a href="/terms" target="_blank" class="font-semibold text-primary underline">booking terms</a> and confirm the details above are accurate.</span>
+                <span>I accept the <a href="/terms" target="_blank" class="font-semibold text-primary-strong underline">booking terms</a> and confirm the details above are accurate.</span>
             </label>
             @error('terms')
                 <p class="mt-2 text-sm font-medium text-destructive" role="alert">{{ $message }}</p>

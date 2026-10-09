@@ -54,7 +54,7 @@
 
             <label class="mt-3 flex items-start gap-3 text-sm">
                 <input type="checkbox" wire:model="terms" class="mt-0.5 h-5 w-5 rounded border-input text-primary focus:ring-ring" />
-                <span>I accept the <a href="/terms" target="_blank" class="font-semibold text-primary underline">voucher terms</a> — valid 12 months, transferable, non-refundable.</span>
+                <span>I accept the <a href="/terms" target="_blank" class="font-semibold text-primary-strong underline">voucher terms</a> — valid 12 months, transferable, non-refundable.</span>
             </label>
             @error('terms')
                 <p class="mt-2 text-sm font-medium text-destructive" role="alert">{{ $message }}</p>

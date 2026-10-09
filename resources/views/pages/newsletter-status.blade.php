@@ -9,7 +9,7 @@
         <div class="mx-auto max-w-xl text-center">
             <p class="text-lg text-muted-foreground">{{ $message }}</p>
             <div class="mt-8 flex justify-center">
-                <x-ui.button href="/" size="lg" class="bg-primary text-primary-foreground hover:bg-primary/90">
+                <x-ui.button href="/" size="lg" class="bg-primary-strong text-primary-foreground hover:bg-primary-strong/90">
                     Back to home
                 </x-ui.button>
             </div>
