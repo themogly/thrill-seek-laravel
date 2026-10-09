@@ -2606,3 +2606,17 @@ here by design.
 
 Gates after all four: `composer check` 432/432; MySQL suite 432/432; `config:cache` OK; `composer audit` and
 `npm audit` clean; homepage **0 differing pixels** against the pre-004 screenshots at 1440 and 390.
+
+## PHP constraint and platform pin (chore/php-platform)
+Prompt `prompts/019-pin-php-platform.md` (unattended run 2, item 0). Closes the two PHP follow-ups from the
+dependency-refresh entry.
+- `composer.json` `"php": "^8.3"` → **`"^8.4.1"`**: what the lock has needed since June (symfony/* 8.1,
+  spatie/laravel-activitylog 5).
+- **`config.platform.php` = `8.4.1`.** Ploi's PHP 8.4 is the target, and SETUP names no more exact patch
+  version, so this uses the floor the lock needs. Pinning to the floor means Composer only ever picks
+  packages that run on any 8.4.x, so a laptop on PHP 8.5 can't lock packages the server can't run.
+- `composer update --lock` rewrote only the content hash and the platform block. **All 177 package
+  versions are identical** (diffed name@version arrays: 0 changes). `composer validate --strict` passes.
+- SETUP now says the server must run PHP 8.4.x and explains the pin. The `php8.4-fpm` reload line was
+  already corrected in 004; confirmed, not duplicated.
+- Tests 432 → 432; `composer check` and the MySQL suite are green.

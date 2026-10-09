@@ -5,8 +5,9 @@ Livewire 4 forms and a Filament v5 admin panel at `/admin`.
 
 ## Requirements
 
-- **PHP 8.4.1+** (the locked Symfony 8.1 components and spatie/laravel-activitylog 5 require it,
-  even though `composer.json` still says `^8.3` — see DECISIONS, dependency refresh), Composer,
+- **PHP 8.4.x on the server** (8.4.1 or later; the lock needs it). `composer.json` requires `^8.4.1`
+  and pins `config.platform.php` to `8.4.1`, so a laptop on a newer PHP can't lock packages the server
+  can't run. Moving the server to 8.5 means raising the pin first. Composer,
   Node `^20.19` or `>=22.12` for the build (Vite 8); Node 22+ for the local `composer dev`
   script (concurrently 10)
 - **MySQL 8+** — the application database (see "Production database" below). Locally via
