@@ -18,6 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'webhooks/stripe',
             'webhooks/resend',
+            // Mail providers POST the one-click unsubscribe with no session; the URL is signed.
+            'newsletter/unsubscribe/*',
         ]);
 
         // Defence-in-depth response headers (incl. a report-only CSP) on every
