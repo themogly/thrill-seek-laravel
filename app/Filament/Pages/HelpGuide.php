@@ -77,7 +77,7 @@ class HelpGuide extends Page
                 'steps' => [
                     '<strong>To change a heading or paragraph:</strong> open the matching Site content screen, edit the box, press Save.',
                     'The <strong>“lead”</strong> line under a title is optional — clear it and the line (and its spacing) disappears cleanly.',
-                    '<strong>To change a photo:</strong> drag a file onto the upload box. Images are resized for the web automatically.',
+                    '<strong>To change a photo:</strong> drag a file onto the upload box. Images are resized for the web automatically. Photos must be <strong>JPEG, PNG or WebP</strong> and under <strong>12 MB</strong> (a phone photo is fine; logos as SVG and animated GIFs aren’t accepted).',
                     '<strong>To change the homepage title Google shows:</strong> Site content → Home page → “Search engines & sharing (SEO)”.',
                 ],
                 'cta' => ['label' => 'Open General settings', 'url' => ManageGeneralSettings::getUrl()],

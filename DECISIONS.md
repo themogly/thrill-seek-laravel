@@ -3297,3 +3297,46 @@ Prompt 024. Ben, 9 Oct 2026: yes, fix it.
   planted wrapper). Both are red on `main`.
 - `ui-guidelines.md` lists the component. Screenshots: `ui-review/scrollable-table-focus/` (390 and 1440 at
   rest, before and after, plus keyboard focus).
+
+## Admin tidy-up: past choices save, safe upload types, a sortable inbox (chore/admin-tidy-up)
+
+Prompt 025, written in run 3 under Ben's "also fix anything outstanding" (9 Oct 2026). It's the admin audit's
+deferred **A-4** batch, which had never been written as a prompt, re-verified first.
+
+- **A past choice blocked Save, a real defect** (the audit only saw "raw IDs"). Verified by a Livewire test:
+  - editing a booking whose jump slot has passed showed "1" and failed with **"The selected jump slot is
+    invalid."**;
+  - a news article linked to a past course failed the same way.
+
+  Filament refuses any value not among a select's options, and those options were upcoming-only.
+  `App\Support\AdminOptions::bookablePlusCurrent()` lists what's bookable **plus the field's current value**,
+  labelled "… — no longer bookable". It's used by the booking slot, news course and newsletter featured-course
+  selects. The Reschedule action's select picks a *new* slot (no stored value) and is exempt, with that reason,
+  in `SelectsKeepTheirCurrentValueTest`.
+- **Image uploads accepted SVG onto the public disk — a security fix, deeper than the audit saw.**
+  - The audit noted "no `acceptedFileTypes`". In fact `ImageCrop::ratio()` called Filament's `->image()`, which
+    sets the accepted types to `image/*` (SVG included), and the free-form fields had no type rule at all. A
+    Livewire test uploaded an SVG with a `<script>` and **saved it**.
+  - New `App\Support\AdminImages::upload()` is the one image-upload factory (like `AdminDates`): JPEG, PNG or
+    WebP, up to 12 MB (Livewire's own cap, now with Filament's plain message). All 18 image fields use it.
+  - `ImageCrop` no longer calls `->image()`, and two newsletter-block fields lost a stray `->image()` that would
+    have reset the types again.
+  - **OVERNIGHT-DEFAULT — CONFIRM:** the type list (no GIF/HEIC/SVG; iPhones convert HEIC to JPEG on upload)
+    and 12 MB.
+  - The guard `ImageUploadsUseTheFactoryTest` fails on any other `FileUpload::make(` (Documents allowlisted:
+    their own PDF/Word types) and on any `->image()` outside the factory. It's proven with planted violations.
+- **Enquiry inbox:** unread-first was forced in `modifyQueryUsing`, ahead of any chosen sort. It's now the
+  table's **default** sort (a closure), so sorting by "Last activity" works. The default view is unchanged.
+- **Navigation:** four sort ties (Bookings/Unmatched 2, Documents/Newsletters 11, Disciplines/Testimonials 12,
+  FAQs/Hall of Fame 13) renumbered to unique values **preserving today's rendered order exactly** (read from
+  `Filament::getNavigation()` before and after). A test pins both groups' order.
+- **Public CSS:** `@source not '../views/filament'` and the `dark` custom variant removed from `app.css`. The
+  admin's views compile into its own theme. Only 3 selectors left the public bundle (`gap-x-4`, `gap-y-1`,
+  `dark`), none used outside the admin views. Homepage full-page before/after: **0 px** at 1440 and 390.
+- **`motion` uninstalled** (imported nowhere) and the stale "Motion One" mention in `SecurityHeaders` removed.
+- **Ruled out:** the "unused slug fields". Product's slug is now the price-token key (014); Location's is a
+  CMS-field-gate question, not a tidy-up.
+- **Help guide:** the photo-upload step states the types and the 12 MB limit.
+- **Tests:** `AdminTidyUpTest` (past slot and course save; SVG and GIF refused, JPEG/PNG/WebP taken; >12 MB
+  refused; a column sort overrides unread-first; nav sorts unique, in today's order) plus the two structural
+  guards. 6 are red on `main`.

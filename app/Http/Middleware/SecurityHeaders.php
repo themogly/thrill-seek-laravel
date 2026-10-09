@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * The Content-Security-Policy is shipped in **Report-Only** mode: browsers
  * report violations to the console but enforce nothing, so it cannot break
- * Livewire, Alpine, Motion One or the Stripe Checkout redirect. Once the console
+ * Livewire, Alpine or the Stripe Checkout redirect. Once the console
  * is confirmed clean in production the header name can be switched to the
  * enforcing `Content-Security-Policy` — see DECISIONS.md (SEC-P3.1).
  *

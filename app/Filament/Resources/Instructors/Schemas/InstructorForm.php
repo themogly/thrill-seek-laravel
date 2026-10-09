@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\Instructors\Schemas;
 
+use App\Support\AdminImages;
 use App\Support\ImageCrop;
 use Filament\Forms\Components\CheckboxList;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
@@ -37,7 +37,7 @@ class InstructorForm
                     ->columns(3)
                     ->columnSpanFull(),
                 ImageCrop::ratio(
-                    FileUpload::make('photo')
+                    AdminImages::upload('photo')
                         ->label('Photo')
                         ->helperText('Optional, shown as a square portrait — crop to 1:1. Leave blank to show the initial-letter badge instead.')
                         ->disk('public')

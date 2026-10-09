@@ -4,8 +4,9 @@ namespace App\Filament\Resources\News\Schemas;
 
 use App\Models\CourseDate;
 use App\Support\AdminDates;
+use App\Support\AdminImages;
+use App\Support\AdminOptions;
 use App\Support\ImageCrop;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -55,7 +56,7 @@ class NewsForm
                         ->required()
                         ->columnSpanFull(),
                     ImageCrop::ratio(
-                        FileUpload::make('featured_image')
+                        AdminImages::upload('featured_image')
                             ->label('Featured image (optional)')
                             ->helperText('Shown on the news cards — crop to 16:10.')
                             ->disk('public')
@@ -83,13 +84,11 @@ class NewsForm
                         ->label('Link an AFF course (optional)')
                         ->helperText('Surfaces the course’s live dates and places-left with a book button.')
                         ->searchable()
-                        ->options(fn (): array => CourseDate::upcomingOpen()
-                            ->with('location')
-                            ->get()
-                            ->mapWithKeys(fn (CourseDate $course): array => [
-                                $course->id => $course->location->name.' · '.$course->date_range_label,
-                            ])
-                            ->all()),
+                        ->options(fn (mixed $state): array => AdminOptions::bookablePlusCurrent(
+                            CourseDate::upcomingOpen()->with('location'),
+                            $state,
+                            fn (CourseDate $course): string => $course->location->name.' · '.$course->date_range_label,
+                        )),
                 ]),
             Section::make('Search engines & sharing (optional)')
                 ->components([
