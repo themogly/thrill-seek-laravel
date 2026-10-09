@@ -115,3 +115,22 @@ wasn't on 001's expected-files list).
 - Homepage: before/after at 1440 and 390, **0 differing pixels** (`audits/reports/a11y/`).
 - Note: the committed evidence screenshots total 8.9 MB (full-page PNGs). Future runs should crop
   them or keep them out of git.
+
+## 6 — 003 itemised consistency audit · `docs/consistency-audit` · merge `5ebe29f`
+- Report-only. Tests 432 → 432; `composer check` green.
+- `ui-review/CONSISTENCY.md`: source enumeration, then every rendered instance of 13 element types on
+  21 pages at 1440 and 390, plus the account pages, with element crops (`ui-review/consistency-audit/`,
+  ~0.5 MB JPEGs).
+- **15 odd ones out.** My view on what's worth fixing **before launch**:
+  - **C-7** prices typed into CMS copy will contradict the product price the first time the owner
+    changes one;
+  - **C-8** feature-split images ignore the admin crop on desktop;
+  - **C-4** testimonial role labels;
+  - **C-3** /news date and label tracking;
+  - **C-12** "Sending…".
+
+  These are small and visible. The rest can wait (C-1/C-2 consolidation, C-6 check-lists, C-9/C-10
+  panels, C-11 back link, C-13 tokens, C-15 shop prices, C-5 meta tracking).
+- Owner question from C-1: is Coached's price-as-eyebrow plus its own intro CTA intended?
+- Gap report: none. No view, component, CSS, test or config touched.
+- Visual: none changed. The homepage is the reference and isn't touched.
