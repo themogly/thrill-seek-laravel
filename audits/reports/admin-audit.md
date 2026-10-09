@@ -44,9 +44,9 @@ the server too (code read). The base is a complete settings page, not a loose ha
   redeemed voucher; use status Cancelled instead. → Verified by doing: rolled-back delete of booking 1
   orphaned its paid £100 payment.
 - **AFF courses → Delete:** no guard while students are enrolled. Bookings lose their course, and the
-  course's message history and reminders are deleted. → Disable while it has any booking. → The
-  button is present on a course with bookings (seen); the cascade comes from the migrations
-  (*code read*).
+  course's message history and reminders are deleted. → Disable while it has any booking. → *Code read*:
+  the cascade comes from the migrations. (Correction: the first draft said the button was seen on a
+  course with bookings. Neither local course has bookings; the guard is proven by its test.)
 - **Vouchers → Delete:** no guard, including on bought and redeemed vouchers. → Allow only an unused,
   admin-issued voucher; otherwise use Revoke. → *Code read*, button seen.
 - **Vouchers → Status (and value) freely editable.** A **redeemed** voucher can be set back to Active
@@ -127,3 +127,21 @@ Review: kept to what the kit names; the rest is batched, not churned.
 - **A-3** — owner password reset, through the email inventory.
 - **A-4** — polish batch: upload limits, enquiry sort, unused slugs, raw-ID selects, nav sort, public
   CSS sources.
+
+## Status after fixes (`admin/audit-pass`)
+
+| Item | Status | Commit / proof |
+|---|---|---|
+| P1 Product / Booking / Course / Voucher delete guards (+ Tandem date, Location from P2) | **Done** | `fix(admin): guard Delete…`. `DeletionGuardsTest` (8 tests, red on main). Shared: `GuardsDeletion` + `AdminActions::guardedDelete()` / `guardedBulkDelete()`. Re-checked in the admin: Delete disabled with the reason on hover. |
+| P1 Voucher status / value lock | **Done** | `fix(admin): a redeemed voucher…`. `VoucherEditLockTest` red on main. Re-checked: no Status field, Value locked on a used voucher. |
+| P2 Booking "Awaiting payment" | **Done** | `BookingStatusFieldTest` |
+| P2 Page-discipline slugs + delete | **Done** | `CoreDisciplinesTest`. Slugs are now `Discipline` constants used by `PageController`. |
+| P2 News publish date | **Done** | `PublishDateRequiredTest` |
+| P2 Sent newsletter read-only | **Done** | `SentCampaignReadOnlyTest`. A disabled schema alone still saved (a picture of a gate), so `beforeSave()` halts. |
+| P2 AFF deposit required | **Done** | `AffDepositRequiredTest` |
+| P2 Capacity floor | **Done** | `CapacityFloorTest` |
+| P2 Social sharing image upload | Deferred → **A-1** | |
+| P2 Testimonial crop | Deferred → **A-2** (owner) | |
+| P2 Owner password reset | Deferred → **A-3** | |
+| P3 AccountWidget removed, primary Blue | **Done** | `PanelFurnitureTest`. Measured white-on-primary: blue-600 **5.26:1** (old amber 3.19:1, brand sky 3.45:1). `OVERNIGHT-DEFAULT — CONFIRM`. Screenshots: `admin-audit-dashboard-after.png`, `admin-audit-product-edit-after.png`. |
+| P3 polish batch | Deferred → **A-4** | |
