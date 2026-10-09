@@ -106,8 +106,11 @@ content). Helpers: `band-ink` (darkest band), `bg-photo-scrim` (text-over-photo)
 - **`<x-ui.button>`** — the ONE button. Variants `primary` / `outline` / `link`; sizes
   `default` / `sm` / `lg` / `icon`. States (hover/active/focus-visible/disabled) +
   reduced-motion baked in. Lead an icon for actions, trail for directional; `size="icon"`
-  needs `aria-label`. Loading: `wire:loading.attr="disabled"` + a slot swap. **Never** a
-  hand-styled button.
+  needs `aria-label`. Loading: `wire:loading.attr="disabled"` + `<x-ui.loading-label>` in the
+  slot. **Never** a hand-styled button.
+- **`<x-ui.loading-label target>`** — the ONE idle/loading label swap inside a Livewire submit
+  button: the slot at rest, "Sending…" (real ellipsis, defined once) while `target` (default
+  `submit`) runs. Pass `loading="…"` only for a genuinely different action.
 - **`<x-ui.input>` / `<x-ui.textarea>` / `<x-ui.select>`** — form controls; one focus
   treatment (`focus-visible:ring-2 ring-ring` + brand-blue border), `h-11`, `border-2`,
   sharp. `select` is an accessible WAI-ARIA combobox.
@@ -116,6 +119,10 @@ content). Helpers: `band-ink` (darkest band), `bg-photo-scrim` (text-over-photo)
   submitted `YYYY-MM-DD`); overlays a branded Alpine calendar (month + year jump) on
   fine-pointer desktops, native OS picker on mobile. **Never** a bare `<input type="date">`.
 - **`<x-ui.label for>`** — field labels (placeholders are not labels).
+- **`<x-ui.meta-label tone>`** — the ONE small uppercase label: article dates, role labels, image
+  labels. `text-xs` bold uppercase at `tracking-[0.25em]`; `tone` = `primary` (light surfaces,
+  default), `sky-bright` (navy/scrim), `current` (inherit, e.g. white on the sky gradient); `as`
+  picks the tag. The homepage's news dates (the signed-off reference) carry the same classes inline.
 - **`<x-ui.arrow-link>`** — the navigational "All news → / Read more →" link. With `href`
   → an `<a>` (own focus ring + hover); without → an in-card `<span>` cue (arrow slides on
   the parent card's `group` hover).
@@ -206,6 +213,8 @@ every repeated element comes from ONE shared component and **must look identical
 | Arrow links (EXPLORE / MEET THE TEAM / All news) | `<x-ui.arrow-link>` | one animated arrow everywhere |
 | Feature / "what's included" lists | `<x-ui.feature-list>` | blue checkmark + text, **no** left line; same icon every page |
 | Section headings + eyebrows | `<x-site.section-heading>` | eyebrow `tracking-[0.25em]` + `text-h2` + `heading-rule` |
+| Dates / role labels / image labels | `<x-ui.meta-label>` | bold, `0.25em`, palette tone only (primary / sky-bright) |
+| Submit loading text | `<x-ui.loading-label>` | "Sending…" everywhere |
 | Section transitions | — (spacing only) | **no** full-width divider line between sections |
 | Instructor cards | `<x-site.instructor-card>` | square photo + navy band; Team = full, discipline = no chips/bio |
 | Discipline chips | `<x-site.discipline-tags>` | bordered chip, no "Teaches" label |
@@ -261,26 +270,21 @@ pages (not just within one) and confirm they come from a single shared component
 ### From the itemised consistency audit (`ui-review/CONSISTENCY.md`, 9 Oct 2026, on `e7b0921`)
 
 Enumerated and compared, not noticed in passing. Details, evidence and file:line refs are in
-`ui-review/CONSISTENCY.md`. Each item is its own small follow-up.
+`ui-review/CONSISTENCY.md`. Each item is its own small follow-up. Resolved and removed from this list:
+C-7 (price tokens, `feat/price-tokens-in-copy`) and C-3, C-4, C-12, C-13
+(`ui/consistency-small-fixes`).
 
 - **C-1** Coached intro heading is a hand copy of `<x-site.section-heading>`. Its eyebrow is a price, and
   it's the only product intro with its own CTA (owner question).
 - **C-2** AFF trust band heading is built inline. It matches the homepage band (reference); add a `rule`
   option to the component and use it.
-- **C-3** `/news` dates use `tracking-[0.2em]` (homepage cards: `0.25em`), and the "G-Force News" label
-  is `0.3em`.
-- **C-4** Testimonial-grid role labels (400, `0.2em`, white/70) differ from every other role label (700,
-  `0.25em`, sky-bright).
 - **C-5** Meta labels at `0.2em` (news byline, AFF course duration): pick one meta-label tracking.
+  `<x-ui.meta-label>` (`0.25em`) now exists; adopting it is the likely fix.
 - **C-6** Three check-list treatments (feature-list, inline pay-card list, price-card list); the AFF
   pay-card has no list.
-- **C-7** Prices typed into CMS copy (FAQ answers, Tandem hero subtitle, Coached eyebrow, AFF per-jump,
-  terms) drift from the product price.
 - **C-8** Feature-split images are 16:10 on mobile but ~1.42:1 on desktop, while the admin crops 16:10.
 - **C-9** Panel and account headings vary (ink 24/20/30px vs public navy 24px).
 - **C-10** The newsletter signup panel is framed two ways (`/contact` light border, `/newsletter` navy).
 - **C-11** Back links type `←` into a link button; there's no back direction on `<x-ui.arrow-link>`.
-- **C-12** "Sending..." vs "Sending…" across the enquiry forms.
-- **C-13** Tandem/AFF intro wrappers hand-roll `py-16 lg:py-24` (same values as the section tokens).
 - **C-14** (record only) Homepage "Follow us" arrow links are hand-rolled; the homepage is the reference.
 - **C-15** Shop `price_label` is free text, not the Money presenter.

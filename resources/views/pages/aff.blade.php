@@ -23,7 +23,7 @@
 
     {{-- INTRO: image bleeds off the left edge --}}
     <section class="overflow-hidden">
-        <div class="py-16 lg:py-24">
+        <div class="py-section-sm lg:py-section">
             <x-site.feature-split :image="$page->imageUrl($page->intro_image)" alt="AFF training" side="left">
                 <x-site.section-heading :eyebrow="$page->intro_eyebrow" :title="$page->intro_title" :lead="$page->intro_lead" class="mb-8" />
                 <x-ui.feature-list :items="$page->bullets" />

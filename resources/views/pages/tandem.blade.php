@@ -19,7 +19,7 @@
 
     {{-- INTRO: copy beside a bleed photo, with Locations grouped below --}}
     <section class="overflow-hidden">
-        <div class="py-16 lg:py-24">
+        <div class="py-section-sm lg:py-section">
             <x-site.feature-split :image="$page->imageUrl($page->intro_image)" alt="Tandem skydive" side="right">
                 <x-site.section-heading :eyebrow="$page->intro_eyebrow" :title="$page->intro_title" :lead="$page->intro_lead" class="mb-8" />
                 <x-ui.feature-list :items="$page->bullets" />

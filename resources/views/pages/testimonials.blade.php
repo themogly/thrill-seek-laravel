@@ -83,7 +83,7 @@
                         </blockquote>
                         <div class="mt-3 border-t-2 border-primary pt-3">
                             <cite class="block text-sm font-bold uppercase tracking-widest not-italic">{{ $t->name }}</cite>
-                            <span class="block text-xs uppercase tracking-[0.2em] text-white/70">{{ $t->role }}</span>
+                            <x-ui.meta-label as="span" tone="sky-bright" class="block">{{ $t->role }}</x-ui.meta-label>
                             <x-site.stars :rating="$t->rating" tone="dark" class="mt-1.5" />
                         </div>
                     </x-site.photo-tile>
