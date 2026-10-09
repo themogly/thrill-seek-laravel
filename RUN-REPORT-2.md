@@ -63,3 +63,13 @@ build on:
   - Also proposed: a `deleting` listener on the `GuardsDeletion` models (button explains, model refuses,
     DB refuses).
 - Tests unchanged (no code). Phase 2 waits for Ben's approval in DECISIONS.
+
+## 5 — 009 admin acts email the customer · `feat/admin-email-customer-toggle` · merge `088f90e`
+- Tests 446 → 452. `composer check` and MySQL green.
+- "Email the customer" toggle (default on) on admin-created Confirmed bookings and on Voucher → Redeem.
+  It sends the same mail through the same action as the online path: a new single
+  `SendBookingConfirmation`, plus `SendPaymentReceipt`. Off sends nothing. Editing never sends. Verified
+  by doing (delivered).
+- The email audit's `OWNER DECISION — PENDING` is marked answered (option B).
+- Gap report: `SendPaymentReceipt` now returns bool, and `BookingObserver` delegates to the new action.
+  Both were needed to keep one sender and truthful notices.
