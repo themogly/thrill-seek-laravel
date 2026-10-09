@@ -3000,7 +3000,7 @@ homepage freeze, for colour only.
 - **Hover/active button states, not in axe's reach:**
   - Hover `primary-strong/85` is 3.54:1 and active `/75` is 2.99:1, against 2.80 / 2.48 before. Better,
     but under 4.5.
-  - **OWNER DECISION — ANSWERED 9 Oct (see DECISIONS): (b), darken on hover — prompt 020.** (a) keep the lighter hover wash as designed; or (b) hovers darken instead
+  - **OWNER DECISION — ANSWERED 9 Oct (see DECISIONS): (b), darken on hover — built in 020.** (a) keep the lighter hover wash as designed; or (b) hovers darken instead
     (e.g. to `secondary` navy), which is a visual change. Neither implemented.
 - **axe-core 4.10.2** (same version as the audit), WCAG 2.0/2.1 A+AA plus best practice, signed out, reduced
   motion, fonts loaded, injected into the real pages:
@@ -3141,3 +3141,33 @@ Prompt 008 Phase 2, built on Ben's approval (9 Oct 2026, entry above): the table
     listed 9 non-restrict FKs); without the listener, the 4 model tests fail with a raw SQL error instead of the
     plain-English refusal.
   - `DeletionGuardsTest` adds the sent document and the cancelled-only slot.
+
+## Button hover and press darken (ui/button-hover-contrast)
+
+Prompt 020, Ben's answer to 016's hover question (9 Oct 2026): **darken on hover**.
+
+- **Premise confirmed on `main`:** the primary variant was `hover:bg-primary-strong/85 active:bg-primary-strong/75`,
+  opacity washes that lighten the fill toward the page. White on them is **3.64:1 / 3.09:1** by the
+  oklch→sRGB maths here (016's gap report said 3.54 / 2.99, measured against the old `#fcfcfc` text). The
+  **link** variant had the same fault on press: `active:text-primary-strong/80` is **3.35:1** on white.
+- **Tokens** (next to `--primary-strong`, plus Tailwind colours): `--primary-strong-hover: oklch(0.50 0.18 240)`
+  (`#0069bd`, **5.56:1** with white) and `--primary-strong-active: oklch(0.46 0.18 240)` (`#005db0`, **6.57:1**),
+  the prompt's suggested shades.
+  - Primary: `hover:bg-primary-strong-hover active:bg-primary-strong-active`.
+  - Link: press → `active:text-primary-strong-active`; hover stays an underline in the rest colour (4.6:1).
+  - **Outline unchanged:** its `current/10` and `/20` washes measure ≥ 9.7:1 on white (navy text) and ≥ 8.1:1
+    on navy, ink and sky-deep (white text).
+- **Also fixed:** `pages/newsletter-status.blade.php` passed its own colour classes to `<x-ui.button>`
+  (`… hover:bg-primary-strong/90`, a fourth failing wash, and against the "no colour classes on a button" rule).
+  They were identical to the variant at rest, so removing them changes nothing at rest.
+- **Rest is pixel-identical:** full-page homepage at 1440 and 390, before vs after, **0 px** each. Transitions and
+  `motion-reduce:transition-none` unchanged.
+- **Test:** `ButtonStateContrastTest` reads the variant classes from the component and the tokens from
+  `app.css`, composites any opacity wash over its surface as the browser paints it, and asserts ≥ 4.5:1 for each
+  variant's hover and press on light and dark surfaces. Red on `main` with exactly the three failures above, and
+  a planted wash proves it. Its maths reproduces `#0078cc` from the token.
+- **Screenshots:** `ui-review/button-hover-contrast/` — the home hero CTA, the contact submit, and a link button
+  (news article), each at rest, hover and press, before and after (cropped JPEGs, 1440).
+- **Measurement note:** the first "before" capture was taken on a mixed tree (the branch's Blade classes, `main`'s
+  CSS build), so no hover rule matched and before looked like rest. It was discarded and re-taken with the
+  branch stashed and `main` rebuilt.

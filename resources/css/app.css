@@ -23,6 +23,8 @@
     --color-primary: var(--primary);
     --color-primary-foreground: var(--primary-foreground);
     --color-primary-strong: var(--primary-strong);
+    --color-primary-strong-hover: var(--primary-strong-hover);
+    --color-primary-strong-active: var(--primary-strong-active);
     --color-secondary: var(--secondary);
     --color-secondary-foreground: var(--secondary-foreground);
     --color-muted: var(--muted);
@@ -86,6 +88,11 @@
     /* Primary-strong = the same hue, darker, for anything read: small text and
        fills under text (4.6:1 on white). Option B of the contrast decision. */
     --primary-strong: oklch(0.545 0.18 240);
+    /* Hover and press DARKEN the same hue (Ben, 9 Oct 2026; prompt 020). The old
+       opacity washes (/85, /75) lightened the fill toward the page: 3.5 / 3.0:1 under
+       white. These are 5.56:1 and 6.57:1 under white, and as link text on white. */
+    --primary-strong-hover: oklch(0.50 0.18 240);
+    --primary-strong-active: oklch(0.46 0.18 240);
     /* Pure white (was 0.99): on a primary-strong fill, oklch(0.99) is 4.49:1 by axe — 0.01
        short of AA; white is 4.61:1. OVERNIGHT-DEFAULT — ANSWERED 9 Oct (see DECISIONS). */
     --primary-foreground: oklch(1 0 0);

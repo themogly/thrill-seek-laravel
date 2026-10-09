@@ -81,6 +81,7 @@ a raw hex/oklch.
 | `background` / `foreground` | `1 0 0` / `0.15 0.04 250` | white page / near-black navy ink text |
 | `primary` | `0.62 0.18 240` (`#008fe6`) | the bright brand **accent**: rules, borders, focus ring, icons, checkbox accents, icon-only fills, large display text ≥24px — 3.46:1 on white, so **never small text or a fill under text** |
 | `primary-strong` / `primary-foreground` | `0.545 0.18 240` (`#0078cc`) / `1 0 0` | the same hue, darker, for anything **read**: small text, links, eyebrows, dates, nav active/hover, and every fill under text (primary buttons, current step, selected date) — 4.61:1 both ways |
+| `primary-strong-hover` / `-active` | `0.50 0.18 240` / `0.46 0.18 240` | the primary button's hover and press fills, and the link variant's press colour: **darker**, never an opacity wash (5.56:1 / 6.57:1 with white) |
 | `secondary` (deep navy) | `0.28 0.14 255` | dark surfaces, borders, headings on light |
 | `sky-deep` / `sky-bright` | `0.22 0.12 258` / `0.7 0.16 235` | gradient + accents (sky-bright = accent on dark bands) |
 | `ink` | `0.12 0.03 250` | the darkest band (`band-ink`) |
@@ -113,7 +114,8 @@ content). Helpers: `band-ink` (darkest band), `bg-photo-scrim` (text-over-photo)
 - **`<x-ui.button>`** — the ONE button. Variants `primary` (a `primary-strong` fill under white text) /
   `outline` / `link` (`primary-strong` text); sizes
   `default` / `sm` / `lg` / `icon`. States (hover/active/focus-visible/disabled) +
-  reduced-motion baked in. Lead an icon for actions, trail for directional; `size="icon"`
+  reduced-motion baked in. Hover/press **darken** (`primary-strong-hover` / `-active`, prompt 020); outline's
+  `current/10`–`/20` wash stays (≥ 8:1 on light and dark). Lead an icon for actions, trail for directional; `size="icon"`
   needs `aria-label`. Loading: `wire:loading.attr="disabled"` + `<x-ui.loading-label>` in the
   slot. **Never** a hand-styled button.
 - **`<x-ui.loading-label target>`** — the ONE idle/loading label swap inside a Livewire submit
