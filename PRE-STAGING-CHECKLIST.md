@@ -1,63 +1,62 @@
 # Pre-staging readiness gate — go/no-go
 
-Kit gate `gates/pre-staging-gate.md` (identical to the kit copy), run verbatim and report-only as item 15
-of unattended run 2. Read-only: nothing was changed except this file. Every claim is checked against the
-code, git or a command result, not against what a report says.
+Kit gate `gates/pre-staging-gate.md`, run verbatim and report-only as item 9 of unattended run 3. Read-only:
+nothing was changed except this file. Every claim is checked against the code, git or a command result, not
+against what a report says.
 
-- **Commit:** `main` @ `5663177` (`docs: run 2 — 018 launch checklist recorded`), in sync with
-  `origin/main`. Report written on `docs/pre-staging-gate-run2`.
+- **Commit:** `main` @ `3b824b4` (`docs: run 3 — 8 024 table focus recorded`), in sync with `origin/main`.
+  Report written on `docs/pre-staging-gate-run3`.
 - **History:**
-  - The previous gate (`8c96875`) returned ✅ GO.
-  - Since then, run 1 (audits, majors) and run 2 (12 merged items: 019, 005–007 and 009–015, 018) have
-    landed, each merged on green.
+  - The previous gate (`5663177`, run 2) returned ✅ GO with three server-side conditions.
+  - Since then, run 3 merged 8 branches on green: Ben's answers, 016, 008 Phase 2, and 020–024. `git log
+    4ee5960..HEAD --merges` lists all eight.
 
 ## Verdict: ✅ GO for staging
 
 The codebase is clean, complete and safely configured to leave local:
-- the full gate is green on both drivers (476 tests);
+- the full gate is green on both drivers (**520 tests**);
 - 0 known vulnerabilities;
 - `config:cache` and `route:cache` succeed;
 - the local-only routes are provably absent outside `local`;
 - the go-live blockers are in code.
 
-What remains is server config (§5), post-deploy verification (§6) and three branches waiting on Ben (§1),
-none of which blocks staging.
+New since run 2: WCAG AA contrast is met (016 merged; axe 0 nodes on 20 public pages × 2 widths), the
+database refuses money-linked deletes (008), and **the app now noindexes every non-production host itself**
+(022). One of run 2's three conditions is therefore met in code.
 
-**Conditions on the GO**, all server-side and all in `verification/CHECKLIST.md` §0:
+**Conditions on the GO**, both server-side, both in `SETUP.md` "Staging" and `verification/CHECKLIST.md` §0:
 1. Staging behind **basic-auth**, with **`/webhooks/stripe` and `/webhooks/resend` exempted**.
-2. Staging **noindexed at the server**. The app itself doesn't noindex any host (see §4).
-3. The admin site-email setting pointed at a **test inbox** before the first test booking.
+2. **`APP_ENV=staging`** (not `production`), so the app's noindex applies, and the admin site-email setting
+   pointed at a **test inbox** before the first test booking.
 
 ---
 
 ## 1. Repo & branch state
-- `git status`: **clean.** The only ignored local noise is `.playwright-mcp/` (screenshot scratch, excluded),
-  `database/database.sqlite` (pre-MySQL leftover, untracked, the app runs on MySQL), `.DS_Store` and
-  `.phpunit.result.cache`.
-- **No debug leftovers:** no `dd(`/`dump(`/`ray(` in `app`/`routes`/`config`/`database`, no `console.log`
+- `git status`: **clean.** Local-only noise is ignored or excluded: `.playwright-mcp/` (screenshot scratch),
+  `database/database.sqlite` (pre-MySQL leftover, untracked), `.DS_Store`, `.phpunit.result.cache`.
+- **No debug leftovers:** no `dd(`/`dump(`/`ray(` in `app`/`routes`/`config`/`database`, and no `console.log`
   in `resources/js`.
 - **No skipped or incomplete tests.**
-- **Unmerged branches (3), all deliberate, none half-done, none about to deploy:**
+- **Unmerged branches: 1**, deliberate:
 
-  | Branch | Head | vs `main` | What it is | Status |
-  |---|---|---|---|---|
-  | `fix/fk-delete-rules` | `823d4a2` | 1 ahead, 31 behind | 008 **Phase 1 only**: the FK delete-rule proposal table (`audits/reports/fk-delete-rules.md`) | waits for Ben's approval; Phase 2 not built. Merges cleanly. |
-  | `ui/primary-strong-contrast` | `fc0884a` | 1 ahead, 5 behind | 016 brand contrast, option B (axe 173 → 0) | **Ben looks, then merges.** Test-merge: conflict **only in `DECISIONS.md`**, two appends at the end of the log; keep both. |
-  | `ui/feature-split-ratio` | `0a37a7b` | 1 ahead, 4 behind | 017 feature-split 16:10 | **Ben looks, then merges.** Same `DECISIONS.md`-only append conflict. |
+  | Branch | Head | What it is | Status |
+  |---|---|---|---|
+  | `ui/feature-split-ratio` | `0a37a7b` | 017 feature-split 16:10 | **Withdrawn by Ben (9 Oct):** the 1024 imbalance is worse than the side-trim. Not to be merged; deleted in this run's housekeeping. |
 
-- Every other branch (local and remote) is fully merged into `main`. The merged remote branches are
-  deleted in this run's housekeeping.
+- Every other remote branch (`fix/fk-delete-rules`, `ui/primary-strong-contrast` and this run's six) is fully
+  merged into `origin/main` (`git branch -r --no-merged origin/main` lists only 017). They're deleted in this
+  run's housekeeping.
 
-## 2. Build & test health (actual results at `5663177`)
-- **`composer check`: PASS.** Pint clean, phpstan 0 errors, **476 tests / 2104 assertions** (SQLite).
-- **MySQL parity, `php artisan test -c phpunit.mysql.xml`: PASS, 476/476** on MySQL 8. Run because this
-  run's merges touched settings and schema migrations (012, 013) and queries (014).
+## 2. Build & test health (actual results at `3b824b4`)
+- **`composer check`: PASS.** Pint clean, phpstan 0 errors, **520 tests / 2299 assertions** (SQLite).
+- **MySQL parity, `php artisan test -c phpunit.mysql.xml`: PASS, 520/520** on MySQL 8. Required: this run
+  changed foreign keys (008) and added a locking query (021).
 - **`composer audit`:** no advisories.
-- **`npm audit`:** 0 vulnerabilities, both production-only (`--omit=dev`) and all.
-  - The dev-only `shell-quote` criticals noted at the last gate are gone.
+- **`npm audit`:** 0 vulnerabilities (both `--omit=dev` and all).
 - **`npm run build`:** passes.
-- **`composer validate --strict`:** passes. PHP is pinned with `"php": "^8.4.1"` and
-  `config.platform.php = 8.4.1` (019).
+- **`composer validate --strict`:** passes.
+- **axe-core 4.10.2** on the rebuilt `main`, 20 public pages × 1440/390: **0 violations of any rule** (was 173
+  `color-contrast` nodes at run 2's gate).
 
 ## 3. What's actually DONE vs PENDING (verified against the code)
 
@@ -65,118 +64,92 @@ none of which blocks staging.
 
 | Blocker | Evidence |
 |---|---|
-| GDPR export + erasure | `app/Actions/ExportCustomerData.php`, `app/Actions/EraseCustomerData.php`, the Customer resource row actions, the `erased_at` migration |
-| Privacy-scrubbed error monitoring | `config/sentry.php`: `send_default_pii` false, `before_send => [SentryScrubber::class, 'scrub']` (array callable, `config:cache`-safe, proven above). DSN via `SENTRY_LARAVEL_DSN`. |
-| Production database | `mysql` is the default connection (`.env.example` `DB_CONNECTION=mysql`); MySQL parity suite green |
-| Payment + webhook handling | `StripeWebhookController` verifies the signature; `HandleStripeWebhook` dispatches `checkout.session.completed` / `checkout.session.expired`. stripe-php 22 sends API version `2026-09-30.endive`. |
-| No known admin login on servers | `DevAdminSeeder` returns early unless `local`; `DatabaseSeeder` calls it only in `local` (006, guarded by `NoSeededAdminOnServersTest`) |
-| No sample reviews behind a public rating | `TestimonialSeeder` local-only; `AggregateRating` needs 3+ customer-linked reviews (007) |
+| GDPR export + erasure | `app/Actions/ExportCustomerData.php`, `app/Actions/EraseCustomerData.php`; erasure re-proven with the new RESTRICT rules (`MoneyLinkedDeletesTest::test_erasure_still_works_on_a_customer_with_paid_bookings`) |
+| Privacy-scrubbed error monitoring | `config/sentry.php`: `send_default_pii` false; `before_send` is an array callable (`config:cache` succeeds) |
+| Production database | `mysql` default; MySQL parity suite green |
+| Payment + webhook handling | `StripeWebhookController` verifies the signature; `HandleStripeWebhook` dispatches the two handled events |
+| Money-linked records can't be destroyed | 14 FKs RESTRICT (`2026_10_09_140000_restrict_money_linked_deletes`), a model listener on every `GuardsDeletion` model, `GuardedParentsRestrictDeletesTest` |
+| No overbooking | online checkout and reschedule lock the slot and share `TandemDate::isFull()` (`RescheduleCapacityTest`) |
+| No known admin login on servers; no sample reviews behind a rating | `DevAdminSeeder` / `TestimonialSeeder` local-only (006, 007) |
 
-**Run 2 — DONE (merged, each on green):**
-- 019 PHP platform pin (`a7c47ce`);
-- 005 FAQ admin 500 (`fc94134`);
-- 006 no seeded admin on servers (`fc9a0e4`);
-- 007 sample testimonials off servers and an honest rating (`b5d6803`);
-- 009 admin acts email the customer (`088f90e`);
-- 010 voucher payment-success page (`ee6e64c`);
-- 011 CID mail logo (`eff136b`);
-- 012 CMS orphans (`6a7c6e8`);
-- 013 homepage SEO from settings (`31e46bc`);
-- 014 price tokens in CMS copy (`30e8c89`);
-- 015 consistency small fixes (`1ec6b75`);
-- 018 launch checklist tailored (`c23763a`).
+**Run 3 — DONE (merged, each on green):**
+- Ben's answers recorded (`90a9cbc`);
+- 016 `primary-strong` contrast (`98584c7`);
+- 008 Phase 2 FK delete rules (`b10a2c9`);
+- 020 button hover/press (`6f0e021`);
+- 021 reschedule capacity (`eeba9cf`);
+- 022 noindex non-production + SETUP staging (`b22d879`);
+- 023 email/PDF blue (`617ef9b`);
+- 024 scrollable table focus (`32253e1`).
 
 **PENDING (not blockers for staging):**
-- **016 brand contrast:** WCAG AA colour contrast is met only once Ben merges it. Until then axe reports
-  173 `color-contrast` nodes on the public pages. *Not a staging blocker*, but should be in before launch.
-- **017 feature-split ratio:** visual, Ben's call.
-- **008 Phase 2:** database-level FK delete rules. App-level guards (`GuardsDeletion`) already block
-  money-linked deletes in the admin.
+- **017:** withdrawn; nothing to do.
 - **Owner content:**
   - real photos, Hall of Fame, privacy `[Owner: …]` lines, dropzone addresses;
-  - replacing typed prices in existing CMS text with tokens (list in DECISIONS, 014);
-  - the open owner decisions in `RUN-REPORT-2.md`.
+  - replacing typed prices in existing CMS text with tokens (DECISIONS, 014);
+  - the weight surcharges stay typed (Ben, 9 Oct), so change both places by hand.
+- **Open owner decisions:** none left from run 2; any new ones are in `RUN-REPORT-3.md`.
 
 ## 4. Production config readiness
-- **`.env.example` covers every app-specific variable:** `STRIPE_KEY` / `STRIPE_SECRET` /
-  `STRIPE_WEBHOOK_SECRET`, `RESEND_API_KEY` / `RESEND_WEBHOOK_SECRET`, `MAIL_MAILER`, `MAIL_FROM_*`,
-  `MAIL_INBOUND_DOMAIN`, `HORIZON_TOKEN`, `SENTRY_LARAVEL_DSN`, `SETTINGS_CACHE_ENABLED`,
-  `SESSION_SECURE_COOKIE`, plus DB/Redis.
-  - Script check: 184 `env()` names are read in `config/`. The 126 not in `.env.example` are all optional
-    framework/package knobs with defaults (auth, cache/queue alternative drivers, Sentry tuning, Slack,
-    Postmark…). None is app-specific.
-  - **No `env()` call outside `config/`**, so `config:cache` is safe.
-- **Local-only features are gated, proven by behaviour:**
-  - `php artisan route:list --path=dev` shows **0** routes under `APP_ENV=production` and `staging`
-    (3 under `local`);
-  - `DevAdminSeeder` and `TestimonialSeeder` return early outside `local`;
-  - the account-login dev shortcut renders only in `local`.
-- **Safe defaults:**
-  - `config/app.php` defaults to `APP_ENV=production` and `APP_DEBUG=false`. `.env.example` is the local
-    template (`local` / `true` / `MAIL_MAILER=log`), which servers must override per SETUP.
-  - No secrets committed.
-- **Filesystem:** the only path reads are `public_path()` checks for bundled images (`ResponsiveImage`,
-  `MailLogo`), both server-safe. Uploads go to the `public` disk (needs `storage:link`). No SQLite file
-  is used at runtime.
-- **Drivers:** queue and cache use `redis`, sessions `database`. None is `sync`/`array`/`file`.
-- **`php artisan config:cache`: succeeds** (no closures in config); `route:cache` succeeds; both cleared
-  again afterwards.
-- **Flag, staging indexing:** `/robots.txt` (`routes/web.php:91`) allows crawling on every host, and
-  nothing sends `noindex` by environment. Staging must be noindexed and basic-authed **at the server**
-  (condition 2 above).
-  - A small code follow-up could make non-production hosts send `Disallow: /` plus a `noindex` meta.
-  - SETUP.md doesn't mention this yet; `verification/CHECKLIST.md` §0 does.
+- **`.env.example` covers every app-specific variable** (Stripe ×3, Resend ×2, `MAIL_*`, `MAIL_INBOUND_DOMAIN`,
+  `HORIZON_TOKEN`, `SENTRY_LARAVEL_DSN`, `SETTINGS_CACHE_ENABLED`, `SESSION_SECURE_COOKIE`, DB/Redis).
+  - Script check: 182 `env()` names are read in `config/`; the 124 not in `.env.example` are optional
+    framework/package knobs with defaults (e.g. `APP_PREVIOUS_KEYS`, `HORIZON_PATH`, `SETTINGS_CACHE_MEMO`).
+  - **No `env()` call outside `config/`.**
+- **Local-only features are gated, proven by behaviour:** `route:list --path=dev` shows **0** routes under
+  `APP_ENV=production` and `staging` (3 under `local`). The dev seeders return early outside `local`.
+- **Safe defaults:** `config/app.php` defaults to `production` and `APP_DEBUG=false`. No secrets committed.
+- **Indexing (run 2's flag) — resolved in code:** outside `production`, `/robots.txt` is `Disallow: /` and every
+  web response carries `X-Robots-Tag: noindex, nofollow` (022). Production output is byte-identical to before
+  (tested). This depends on **`APP_ENV` being right**: a staging box set to `production` would be indexable.
+- **Filesystem:** no runtime SQLite; uploads on the `public` disk (needs `storage:link`); voucher PDFs on the
+  private `local` disk.
+- **Drivers:** queue and cache use `redis`, sessions `database`.
+- **`php artisan config:cache` and `route:cache`: succeed**, and both were cleared afterwards.
 
 ## 5. Server-side deployment checklist (Ploi / Hetzner — staging first)
-Specifics are in SETUP.md ("Deploying", "Required environment variables", "Queues, Horizon & scheduler").
-1. **PHP 8.4.x** (the lock and the platform pin need ≥ 8.4.1; not 8.3) with `pdo_mysql`, **MySQL 8+**
-   (DB plus a dedicated user), and **Redis**.
+Specifics are in SETUP.md ("Staging" is new this run, plus "Deploying", "Required environment variables",
+"Queues, Horizon & scheduler").
+1. **PHP 8.4.x** (≥ 8.4.1) with `pdo_mysql`, **MySQL 8+**, and **Redis**.
 2. **Env vars:**
-   - `APP_KEY` (generate once and store it in a password manager; never in the deploy script);
-   - `APP_ENV=staging`, `APP_DEBUG=false`, `APP_URL=https://…`;
+   - `APP_KEY` (generate once and keep it in a password manager);
+   - **`APP_ENV=staging`**, `APP_DEBUG=false`, `APP_URL=https://…`;
    - Stripe TEST keys plus `STRIPE_WEBHOOK_SECRET`;
-   - `MAIL_MAILER=resend` with `RESEND_API_KEY` and a verified `MAIL_FROM_ADDRESS` (or `log` to send
-     nothing);
+   - `MAIL_MAILER=resend` with `RESEND_API_KEY` and a verified `MAIL_FROM_ADDRESS` (or `log`);
    - `SETTINGS_CACHE_ENABLED=true`, `SESSION_SECURE_COOKIE=true`, `SENTRY_LARAVEL_DSN`, `HORIZON_TOKEN`.
 3. **Build:** `composer install --no-dev`, then `npm ci && npm run build`.
 4. **`php artisan migrate --force`.** NEVER `migrate:fresh`/`refresh`/`db:wipe`.
-   - This run adds a schema migration (012 drops 3 orphaned columns) and settings migrations (012 removes
-     `home.team_lead`; 013 adds `home.seo_*`).
-   - Then `php artisan settings:clear-cache`: 013 added settings properties, and an unmigrated DB 500s the
-     homepage (`MissingSettings`).
+   - This run adds `2026_10_09_140000_restrict_money_linked_deletes` (FK rules only). It **aborts with a list if
+     any orphaned row exists** and changes nothing; fix the data, then re-run.
+   - Then `php artisan settings:clear-cache`.
 5. **`php artisan storage:link`**, `config:cache`, reload `php8.4-fpm`, and **`horizon:terminate` last.**
-6. **Horizon under Supervisor** (`autorestart=true`). Without it nothing sends.
-7. **`schedule:run` cron** (`* * * * *`). It's **silent if missing**: `bookings:send-reminders` 09:00,
-   `courses:send-reminders` 09:10, `bookings:release-expired-holds` every 15 min.
-8. **Stripe TEST webhook** → `https://…/webhooks/stripe` for `checkout.session.completed` and
-   `checkout.session.expired`.
-   - **Create it with API version `2026-09-30.endive`**, matching stripe-php 22. SETUP.md doesn't say this
-     yet; `verification/CHECKLIST.md` §0 does.
-   - Inbound email is optional on staging: a separate subdomain and secret.
-9. **First admin:** `php artisan make:filament-user --panel=admin`.
-   - Never `db:seed` a server expecting a login.
-   - On any server seeded before October 2026, delete `test@example.com` (SETUP "First run") and unapprove
-     the sample testimonials.
-10. **Basic-auth plus server-level noindex** for staging, exempting `/webhooks/*` (§4 flag).
-11. **SSL** (Let's Encrypt), and **monitoring/heartbeat** for Horizon and the scheduler.
-12. **Staging mail sandboxing:** Admin → General settings → site email (`GeneralSettings::email`, a DB
-    value) = a test inbox.
+6. **Horizon under Supervisor** (`autorestart=true`).
+7. **`schedule:run` cron** (`* * * * *`). It's **silent if missing**: reminders at 09:00 and 09:10, hold release
+   every 15 min.
+8. **Stripe TEST webhook** → `https://…/webhooks/stripe`, for `checkout.session.completed` and
+   `checkout.session.expired`, **created with API version `2026-09-30.endive`** (now in SETUP "Staging").
+9. **First admin:** `php artisan make:filament-user --panel=admin`. On any server seeded before October 2026,
+   delete `test@example.com` and unapprove the sample testimonials.
+10. **Basic-auth** for staging, exempting `/webhooks/stripe` and `/webhooks/resend`. Noindex is now the app's job
+    (a server header as well does no harm).
+11. **SSL** (Let's Encrypt), and monitoring for Horizon and the scheduler.
+12. **Staging mail sandboxing:** Admin → General settings → site email = a test inbox.
 
 ## 6. Can only be verified AFTER deploy (expected-pending, not failures)
-Run the human launch gate **`verification/CHECKLIST.md`**, tailored in this run (018):
-- §0 staging setup;
-- §1 every money path, with the expected Stripe amounts in pence → £;
-- §2 every email in a real inbox (logo with images blocked, links, Reply-To);
+Run the human launch gate **`verification/CHECKLIST.md`**:
+- §0 staging setup (the noindex item now checks the app's header and robots file);
+- §1 every money path;
+- §2 every email in a real inbox (the buttons are now `#0078cc`; check the logo with images blocked);
+- §5 refusals (new: rescheduling into a full slot is refused);
 - §6b real phones;
 - §7 the silent killers;
 - §8 the live flip.
 
 Specifically pending until a server exists:
-- real Stripe webhook delivery (booking → capacity → hold release);
-- email deliverability with DKIM/SPF on the real domain;
+- real Stripe webhook delivery;
+- DKIM/SPF deliverability;
 - SSL;
-- a real scrubbed Sentry event (`php artisan sentry:test`);
+- a real scrubbed Sentry event;
 - the inbound-email round-trip;
-- the Ploi Horizon-stats card;
-- the Gmail/Outlook check of the CID-embedded logo (011);
+- the Gmail/Outlook check of the CID logo and the new button colour;
 - a manual money-path test with a test card.
