@@ -3,8 +3,8 @@
 @inject('home', 'App\Settings\HomePageSettings')
 @inject('general', 'App\Settings\GeneralSettings')
 
-@section('title', 'G-Force Skydiving — One Life. One Adventure. Live It.')
-@section('description', 'UK-based skydiving school offering tandem jumps, AFF courses and advanced coaching. Book your jump today.')
+@section('title', $home->seoTitle())
+@section('description', $home->seoDescription())
 
 @php
     $heroUrl = $home->imageUrl($home->hero_image);

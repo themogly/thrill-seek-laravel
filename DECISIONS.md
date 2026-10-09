@@ -2817,3 +2817,34 @@ Location address, remove `Product::duration`. Each field was re-confirmed unused
 - **Owner content:** enter real dropzone addresses and coordinates in Locations. Until then the events
   carry region and country only.
 - Tests 458 → 462; `composer check` and MySQL green.
+
+## Homepage SEO title/description from the admin (fix/home-seo-settings)
+
+Prompt 013, the CMS-field gate's top reverse-drift item: `home.blade.php` hardcoded the `<title>` and meta
+description, so neither the owner nor General's "Default page title" could change the homepage's.
+
+- **Decision (b): Home gets its own fields** (`HomePageSettings::seo_title` / `seo_description`), edited in
+  a "Search engines & sharing (SEO)" section at the top of Site content → Home page. This matches
+  Tandem/AFF/Coached and the `SimplePagesSettings` pages.
+  - **Why not (a), the General default:** the homepage title is the brand line, while the site-wide default
+    is the fallback for pages that set none (e.g. `/news`). Tying them together would turn every edit to
+    the fallback into a homepage SEO change. A test pins it: editing General's default leaves the homepage
+    alone.
+- **No change on deploy:** settings migration `2026_10_09_130000_add_home_seo` seeds exactly the two former
+  literals. The rendered `<head>` (title, description, OG and Twitter) was byte-identical before/after
+  locally, and the homepage was pixel-identical at 1440 and 390 (two "before" and two "after" captures each,
+  all 0 px).
+- **Read through accessors with a fallback:** `seoTitle()` / `seoDescription()`, the `emailSignoff()`
+  pattern. An empty value or a stale cache that predates the properties renders the old literals (kept as
+  `DEFAULT_SEO_*` constants). The values go through `@section('title', …)`, which escapes them once, as the
+  layout's `{!! !!}` convention expects (tested with `&`).
+- **Gap fixed in passing (left by 012):** removing `team_lead` left an empty "“Meet the team” teaser"
+  section on the Home settings screen, a header with nothing in it. It's removed, and a structural guard
+  (`NoEmptyAdminSectionsTest`) now fails on any `Section::make()` whose children list is empty. Field-less
+  newsletter Builder *blocks* (divider, automatic news) are deliberate and not checked.
+- **Help guide:** one line in "Editing page content & images" saying where the homepage title is edited.
+- **Local dev:** adding a settings property without its stored row makes spatie throw `MissingSettings`
+  (the dev homepage 500'd). So this one additive migration was applied to the dev DB with `--path`, which
+  adds two settings rows and touches no records. 012's column drops are still pending there for Ben's
+  `php artisan migrate`. On servers the deploy runs `migrate` as usual, with the same brief window as any
+  settings addition.
