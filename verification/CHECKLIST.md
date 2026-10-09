@@ -32,9 +32,9 @@ here doesn't match the build you're testing, the build changed: stop and update 
   §2 needs `resend`.
 - [ ] **Basic-auth is ON** for the staging site in Ploi: `curl -I https://<staging-host>/` → `401`
       without credentials. The app has no basic-auth of its own.
-- [ ] **Staging is noindexed at the server.** Add `X-Robots-Tag: noindex, nofollow` in the Ploi nginx
-      config, then `curl -I` shows it. The app's `/robots.txt` allows crawling on every host; it only
-      disallows `/admin` and `/dev/`.
+- [ ] **Staging is noindexed (by the app since prompt 022).** With `APP_ENV=staging`, `curl -I` (with the
+      basic-auth credentials) shows `X-Robots-Tag: noindex, nofollow`, and `/robots.txt` reads
+      `User-agent: *` / `Disallow: /` with no Sitemap line. If `APP_ENV` is wrong, both are missing.
 - [ ] **Basic-auth vs the webhooks:** Stripe and Resend can't send basic-auth. Exempt `/webhooks/stripe`
       and `/webhooks/resend` in the Ploi/nginx auth rules, or the webhook deliveries in §1 will 401.
 - [ ] **Stripe TEST webhook:** Stripe Dashboard (test mode) → Developers → Webhooks → endpoint

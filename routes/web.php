@@ -89,6 +89,12 @@ if (app()->environment('local')) {
 }
 
 Route::get('/robots.txt', function () {
+    // Only production may be crawled (prompt 022): staging and any preview host
+    // shut everything, with no Sitemap line.
+    if (! app()->isProduction()) {
+        return response("User-agent: *\nDisallow: /\n", 200, ['Content-Type' => 'text/plain']);
+    }
+
     // Served dynamically so the Sitemap line is an absolute URL on any host.
     $body = implode("\n", [
         'User-agent: *',
