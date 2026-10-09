@@ -3,9 +3,9 @@
 namespace App\Filament\Pages\Settings;
 
 use App\Settings\HomePageSettings;
+use App\Support\AdminImages;
 use App\Support\ImageCrop;
 use BackedEnum;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -63,7 +63,7 @@ class ManageHomePageSettings extends SettingsPage
                         ->required()
                         ->maxLength(100),
                     ImageCrop::ratio(
-                        FileUpload::make('hero_image')
+                        AdminImages::upload('hero_image')
                             ->label('Background image')
                             ->helperText('Full-width hero — crop to 16:9. Leave empty to keep the current image.')
                             ->disk('public')
@@ -93,7 +93,7 @@ class ManageHomePageSettings extends SettingsPage
                     TextInput::make('about_title')->label('Heading')->required()->maxLength(255),
                     Textarea::make('about_body')->label('Paragraph')->rows(4)->required(),
                     ImageCrop::ratio(
-                        FileUpload::make('about_image_1')
+                        AdminImages::upload('about_image_1')
                             ->label('Left photo')
                             ->helperText('Portrait photo — crop to 3:4. Leave empty to keep the current image.')
                             ->disk('public')
@@ -102,7 +102,7 @@ class ManageHomePageSettings extends SettingsPage
                         '3:4',
                     ),
                     ImageCrop::ratio(
-                        FileUpload::make('about_image_2')
+                        AdminImages::upload('about_image_2')
                             ->label('Right photo')
                             ->helperText('Portrait photo — crop to 3:4. Leave empty to keep the current image.')
                             ->disk('public')

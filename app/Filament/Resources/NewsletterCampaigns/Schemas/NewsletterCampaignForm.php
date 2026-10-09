@@ -4,10 +4,11 @@ namespace App\Filament\Resources\NewsletterCampaigns\Schemas;
 
 use App\Models\CourseDate;
 use App\Models\NewsletterCampaign;
+use App\Support\AdminImages;
+use App\Support\AdminOptions;
 use App\Support\NewsletterStarterTemplates;
 use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Builder\Block;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -95,9 +96,8 @@ class NewsletterCampaignForm
                                 Block::make('image')
                                     ->icon('heroicon-o-photo')
                                     ->schema([
-                                        FileUpload::make('image')
+                                        AdminImages::upload('image')
                                             ->label('Image')
-                                            ->image()
                                             ->disk('public')
                                             ->directory('newsletter')
                                             ->imageResizeMode('contain')
@@ -119,7 +119,7 @@ class NewsletterCampaignForm
                                     ->label('Image + text')
                                     ->icon('heroicon-o-view-columns')
                                     ->schema([
-                                        FileUpload::make('image')->label('Image')->image()->disk('public')->directory('newsletter')->imageResizeMode('contain')->imageResizeTargetWidth('800'),
+                                        AdminImages::upload('image')->label('Image')->disk('public')->directory('newsletter')->imageResizeMode('contain')->imageResizeTargetWidth('800'),
                                         Select::make('image_side')->label('Image on the')->options(['left' => 'Left', 'right' => 'Right'])->default('left'),
                                         TextInput::make('heading')->label('Heading')->maxLength(120),
                                         Textarea::make('text')->label('Text')->rows(3),
@@ -138,11 +138,11 @@ class NewsletterCampaignForm
                                         Select::make('course_date_id')
                                             ->label('Course')
                                             ->helperText('Leave blank to feature the next open course automatically.')
-                                            ->options(fn (): array => CourseDate::upcomingOpen()
-                                                ->with('location')
-                                                ->get()
-                                                ->mapWithKeys(fn (CourseDate $c): array => [$c->id => $c->location->name.' · '.$c->date_range_label])
-                                                ->all()),
+                                            ->options(fn (mixed $state): array => AdminOptions::bookablePlusCurrent(
+                                                CourseDate::upcomingOpen()->with('location'),
+                                                $state,
+                                                fn (CourseDate $c): string => $c->location->name.' · '.$c->date_range_label,
+                                            )),
                                     ]),
                             ]),
                     ]),

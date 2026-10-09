@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Products\Schemas;
 
 use App\Enums\ProductType;
+use App\Support\AdminImages;
 use App\Support\ImageCrop;
 use App\Support\MoneyField;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -63,7 +63,7 @@ class ProductForm
                             ->rows(3)
                             ->columnSpanFull(),
                         ImageCrop::ratio(
-                            FileUpload::make('image')
+                            AdminImages::upload('image')
                                 ->label('Card image')
                                 ->helperText('Shown on the square home-page card — crop to 1:1. Leave empty to keep the current image.')
                                 ->disk('public')

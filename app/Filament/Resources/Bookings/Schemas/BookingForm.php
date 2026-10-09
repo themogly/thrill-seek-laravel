@@ -6,6 +6,7 @@ use App\Enums\BookingStatus;
 use App\Models\Booking;
 use App\Models\TandemDate;
 use App\Support\AdminDates;
+use App\Support\AdminOptions;
 use App\Support\MoneyField;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
@@ -66,15 +67,15 @@ class BookingForm
                         Select::make('tandem_date_id')
                             ->label('Jump slot')
                             ->helperText('Picking a slot sets the date below and confirms the booking.')
-                            ->options(fn (): array => TandemDate::upcoming()
-                                ->with('location')
-                                ->get()
-                                ->mapWithKeys(fn (TandemDate $slot): array => [
-                                    // Location first so otherwise-identical dates at different
-                                    // dropzones are distinguishable.
-                                    $slot->id => $slot->location->name.' · '.$slot->starts_at->format('D j M Y, H:i')." ({$slot->remaining_capacity} of {$slot->capacity} places left)",
-                                ])
-                                ->all())
+                            // Upcoming slots plus the booking's own (which may have passed), so an
+                            // old booking still shows its slot and still saves.
+                            ->options(fn (mixed $state): array => AdminOptions::bookablePlusCurrent(
+                                TandemDate::upcoming()->with('location'),
+                                $state,
+                                // Location first so otherwise-identical dates at different
+                                // dropzones are distinguishable.
+                                fn (TandemDate $slot): string => $slot->location->name.' · '.$slot->starts_at->format('D j M Y, H:i')." ({$slot->remaining_capacity} of {$slot->capacity} places left)",
+                            ))
                             ->placeholder('No slot — set a date manually or leave pending')
                             ->live(),
                         // Create only: a booking the admin creates already confirmed (or confirmed by

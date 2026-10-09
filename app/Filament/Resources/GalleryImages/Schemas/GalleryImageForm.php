@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\GalleryImages\Schemas;
 
+use App\Support\AdminImages;
 use App\Support\ImageCrop;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -14,7 +14,7 @@ class GalleryImageForm
         return $schema
             ->components([
                 ImageCrop::ratio(
-                    FileUpload::make('image')
+                    AdminImages::upload('image')
                         ->label('Image')
                         ->helperText('Shown in the square gallery grid — crop to 1:1. Leave empty to keep the current image.')
                         ->disk('public')

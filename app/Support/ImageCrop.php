@@ -24,7 +24,9 @@ final class ImageCrop
     public static function ratio(FileUpload $field, string $ratio): FileUpload
     {
         return $field
-            ->image()
+            // Not Filament's image() helper: it resets the accepted types to `image/*`,
+            // which lets SVG back in. The field comes from AdminImages::upload().
+            ->acceptedFileTypes(AdminImages::TYPES)
             ->imageEditor()
             // A single ratio option (no free/null) → the crop box is LOCKED to it.
             ->imageEditorAspectRatios([$ratio])

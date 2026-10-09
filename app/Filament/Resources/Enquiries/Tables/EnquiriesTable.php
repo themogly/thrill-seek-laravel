@@ -18,10 +18,11 @@ class EnquiriesTable
     public static function configure(Table $table): Table
     {
         return $table
-            // Needs-attention first: unread (incl. new customer replies) at the top,
-            // then most-recent activity. Columns remain individually sortable.
-            ->modifyQueryUsing(fn (Builder $query): Builder => $query
-                ->with(['product', 'latestMessage'])
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['product', 'latestMessage']))
+            // Needs-attention first by DEFAULT: unread (incl. new customer replies) at the
+            // top, then most-recent activity. A default sort, not a forced order, so
+            // choosing a column sort takes over (prompt 025).
+            ->defaultSort(fn (Builder $query): Builder => $query
                 ->orderByRaw('read_at is null desc')
                 ->orderByRaw('coalesce(last_customer_message_at, created_at) desc'))
             ->columns([

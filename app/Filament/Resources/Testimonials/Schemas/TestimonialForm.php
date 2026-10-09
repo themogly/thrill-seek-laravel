@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\Testimonials\Schemas;
 
+use App\Support\AdminImages;
 use App\Support\ImageCrop;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -31,7 +31,7 @@ class TestimonialForm
                     ->helperText('Shown as stars near the name. Leave blank to hide.')
                     ->options([1 => '1 ★', 2 => '2 ★', 3 => '3 ★', 4 => '4 ★', 5 => '5 ★']),
                 ImageCrop::ratio(
-                    FileUpload::make('avatar')
+                    AdminImages::upload('avatar')
                         ->label('Headshot (optional)')
                         ->helperText('Shown as a small square avatar — crop to 1:1. Leave blank to show the initial-letter badge instead.')
                         ->disk('public')
@@ -39,7 +39,7 @@ class TestimonialForm
                     '1:1',
                 ),
                 ImageCrop::ratio(
-                    FileUpload::make('photo')
+                    AdminImages::upload('photo')
                         ->label('Action photo (optional)')
                         ->helperText('A large jump/action shot — crop to 16:9. When set, the testimonial renders as a full-bleed photo tile.')
                         ->disk('public')

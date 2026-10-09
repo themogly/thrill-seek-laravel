@@ -23,7 +23,7 @@ class ShopItemResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Site content';
 
-    protected static ?int $navigationSort = 15;
+    protected static ?int $navigationSort = 17;
 
     protected static ?string $recordTitleAttribute = 'name';
 

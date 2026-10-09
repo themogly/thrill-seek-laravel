@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\HallOfFame\Schemas;
 
 use App\Support\AdminDates;
+use App\Support\AdminImages;
 use App\Support\ImageCrop;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -30,7 +30,7 @@ class HallOfFameEntryForm
                     ->helperText('A short extra line shown under the milestone.')
                     ->maxLength(255),
                 ImageCrop::ratio(
-                    FileUpload::make('image')
+                    AdminImages::upload('image')
                         ->label('Photo')
                         ->helperText('Shown as a portrait photo tile — crop to 3:4. Leave empty to keep the current photo.')
                         ->disk('public')

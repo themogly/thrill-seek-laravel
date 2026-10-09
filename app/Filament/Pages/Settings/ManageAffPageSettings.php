@@ -3,11 +3,11 @@
 namespace App\Filament\Pages\Settings;
 
 use App\Settings\AffPageSettings;
+use App\Support\AdminImages;
 use App\Support\AdminPriceTokens;
 use App\Support\ImageCrop;
 use App\Support\SiteIcons;
 use BackedEnum;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -48,7 +48,7 @@ class ManageAffPageSettings extends SettingsPage
                     TextInput::make('hero_title')->label('Heading')->required()->maxLength(255),
                     AdminPriceTokens::field(TextInput::make('hero_subtitle')->label('Text under the heading')->maxLength(500)),
                     ImageCrop::ratio(
-                        FileUpload::make('hero_image')
+                        AdminImages::upload('hero_image')
                             ->label('Hero photo')
                             ->helperText('Full-width banner photo — crop to 16:9. Leave empty to keep the current image.')
                             ->disk('public')
@@ -68,7 +68,7 @@ class ManageAffPageSettings extends SettingsPage
                         ->reorderable()
                         ->minItems(1),
                     ImageCrop::ratio(
-                        FileUpload::make('intro_image')
+                        AdminImages::upload('intro_image')
                             ->label('Photo')
                             ->helperText('Shown beside the intro text — crop to 16:10. Leave empty to keep the current image.')
                             ->disk('public')

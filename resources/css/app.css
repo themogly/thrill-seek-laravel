@@ -5,8 +5,9 @@
 @source '../views';
 @source '../../storage/framework/views/*.php';
 @source '../views/**/*.blade.php';
-
-@custom-variant dark (&:is(.dark *));
+/* The admin's own views compile into the Filament theme (resources/css/filament/admin/theme.css), not
+   the public bundle; that's also where their `dark:` classes belong (prompt 025). */
+@source not '../views/filament';
 
 @theme inline {
     --radius-sm: var(--radius);

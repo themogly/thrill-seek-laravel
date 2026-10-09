@@ -23,7 +23,7 @@ class HallOfFameEntryResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Site content';
 
-    protected static ?int $navigationSort = 13;
+    protected static ?int $navigationSort = 15;
 
     protected static ?string $recordTitleAttribute = 'name';
 

@@ -30,7 +30,7 @@ class NewsletterCampaignResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Bookings & sales';
 
-    protected static ?int $navigationSort = 11;
+    protected static ?int $navigationSort = 12;
 
     protected static ?string $modelLabel = 'newsletter';
 

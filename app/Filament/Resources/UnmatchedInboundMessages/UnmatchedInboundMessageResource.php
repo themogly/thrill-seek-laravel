@@ -25,7 +25,7 @@ class UnmatchedInboundMessageResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Bookings & sales';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 3;
 
     protected static ?string $modelLabel = 'unmatched message';
 

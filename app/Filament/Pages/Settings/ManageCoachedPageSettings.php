@@ -3,10 +3,10 @@
 namespace App\Filament\Pages\Settings;
 
 use App\Settings\CoachedPageSettings;
+use App\Support\AdminImages;
 use App\Support\AdminPriceTokens;
 use App\Support\ImageCrop;
 use BackedEnum;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -46,7 +46,7 @@ class ManageCoachedPageSettings extends SettingsPage
                     TextInput::make('hero_title')->label('Heading')->required()->maxLength(255),
                     AdminPriceTokens::field(TextInput::make('hero_subtitle')->label('Text under the heading')->maxLength(500)),
                     ImageCrop::ratio(
-                        FileUpload::make('hero_image')
+                        AdminImages::upload('hero_image')
                             ->label('Hero photo')
                             ->helperText('Full-width banner photo — crop to 16:9. Leave empty to keep the current image.')
                             ->disk('public')
@@ -69,7 +69,7 @@ class ManageCoachedPageSettings extends SettingsPage
                         ->reorderable()
                         ->minItems(1),
                     ImageCrop::ratio(
-                        FileUpload::make('image')
+                        AdminImages::upload('image')
                             ->label('Photo')
                             ->helperText('Shown beside the intro text — crop to 16:10. Leave empty to keep the current image.')
                             ->disk('public')
