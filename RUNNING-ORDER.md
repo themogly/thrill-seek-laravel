@@ -4,12 +4,12 @@ Sequencing instruction, not a branch. It says which prompt to take next and why 
 Written 9 October 2026 to put G-Force through the September 2026 starter kit.
 
 **Merged:** everything through 24 June 2026, then (unattended run 1, `RUN-REPORT-1.md`) 001, 002, email audit, admin audit, accessibility audit, 003, completeness + CMS-field gates, then 004 (dependency refresh) and the four majors Ben asked for.
-**`main` at `599ed39`.** 001 branched from `be9e145`.
+**`main` at `4a4484e`.** 001 branched from `be9e145`.
 **Built, awaiting merge:** none. The run's eight branches are merged but still exist on GitHub, and
 can be deleted.
 **Prompt files:** `prompts/001-kit-sync.md`, `prompts/002-structural-guards.md`,
 `prompts/003-itemised-consistency-audit.md`, `prompts/unattended-run-1.md` (finished — see
-`RUN-REPORT-1.md`), `prompts/004-dependency-refresh.md`. The kit source is `~/Sites/starter-kit/`.
+`RUN-REPORT-1.md`), `prompts/004-dependency-refresh.md`, `prompts/005…019-*.md`, `prompts/unattended-run-2.md`. The kit source is `~/Sites/starter-kit/`.
 **Withdrawn:** the two June prompts that never ran — see *Withdrawn* at the end.
 
 ## The order
@@ -24,9 +24,9 @@ can be deleted.
 | 6 | ✅ merged `5ebe29f` — **003** — itemised consistency audit (report-only) | Never run (`ui-review/CONSISTENCY.md` doesn't exist). It has to see the merged UI after 4–5, which can touch shared components. |
 | 7 | ✅ merged `3ba3657` + `370832f` — `gates/completeness-check.md` + `gates/cms-field-usage-check.md` (kit files) | The June runs predate the later merges. Known example: `Product::duration` is still editable (`ProductForm.php:101`) but isn't rendered in any view. |
 | 7b | ✅ merged `86c35dc` (+ majors `599ed39`) — **004** — dependency refresh (`prompts/004-dependency-refresh.md`) | Ben asked for current Laravel and packages. The lock hadn't moved since 14 June. Lock files only, inside the existing constraints, so the step-8 fixes are built and tested on the packages that will ship. Majors are reported, not done. |
-| 8 | Fix prompts written from the reports of 6 and 7 (numbered when written). **URGENT FIRST (not yet written):** the admin FAQ list 500s whenever FAQs exist (`Faq::scopeForPage` shadows the builder's `forPage` paginator; its test lists an empty table) — the owner can't manage FAQs. See `audits/reports/completeness-check.md` #1. | Report-only passes produce follow-ups. Each one gets a numbered file and goes in here. |
-| 9 | Tailor `verification/CHECKLIST.md` to G-Force (prompt to be written) | 001 copies the kit's checklist in untailored. It has to name G-Force's real money and email paths before anyone walks it. |
-| 10 | `gates/pre-staging-gate.md` (kit file) | Re-run required: the 24 June GO is stale once 2–8 land. |
+| 8 | **019, then 005–017**: fixes from run 1's reports, run as **unattended run 2** (`prompts/unattended-run-2.md`). Order inside: **019** PHP `^8.4.1` + platform pin (the lock already needs it) → **005** FAQ admin 500 (urgent: owner blocked) → **006** no known-password admin on servers (urgent: before staging) → **007** sample testimonials off servers + honest rating → **008** DB delete rules (**checkpoint**: Phase 1 proposal, unmerged) → **009** admin emails toggle → **010** voucher success page → **011** CID mail logo → **012** CMS orphans → **013** homepage SEO from settings → **014** price tokens in CMS copy → **015** consistency small fixes → **016** brand contrast `primary-strong` (**Ben looks, unmerged**) → **017** feature-split ratio (**Ben looks, unmerged**) | Answers to run 1's owner questions (Ben, 9 Oct 2026): 1 toggle default on, 2 option B, 3 admin Blue OK, 4 motion subtle OK, 5 sign-off later, 8 samples off, 9 addresses → JSON-LD and remove duration, 10 sync global skills. 006 was found by chat-Claude, not by a gate: the June security audit and pre-staging gate both missed it. |
+| 9 | **018** — tailor `verification/CHECKLIST.md` (in run 2, after the code prompts) | It has to describe the build that will ship. |
+| 10 | `gates/pre-staging-gate.md` (kit file), last item of run 2 | Re-run required: the 24 June GO is stale. Its NO-GO list will include 008 Phase 2 and the merging of 016/017 until Ben clears them. |
 | 11 | Staging: Ben on the server | `staging-setup-brief-gforce.md` + `PRE-STAGING-CHECKLIST.md` §5. |
 | 12 | `verification/CHECKLIST.md` + `verification/real-device-checks.md`, by hand on staging | What no automated check covers. Use `tester-feedback-triage.md` for the G-Force staff's feedback. |
 
@@ -37,6 +37,7 @@ can be deleted.
 - **3 before 11.** A staging test booking sends real mail through the real worker.
 - **4 and 5 merged before 6.** A consistency audit of a state that's about to change isn't real.
 - **6–9 before 10, and 10 GO before 11.**
+- **006 before 007** (same seeder). **008 Phase 2 only after Ben approves the Phase 1 table.** **016 and 017 never merge without Ben looking.**
 
 ## Protocol
 
@@ -46,7 +47,8 @@ steps (3, 4, 5, 7, 10) run the kit file from `audits/` or `gates/` verbatim. Tha
 
 **One branch, one task.** If a prompt contains two unrelated fixes, split it and say so.
 
-**Ask before merging.** This is not an unattended run.
+**Ask before merging**, except during an authorised unattended run (`prompts/unattended-run-N.md`), where merging each
+branch on green is *required*, apart from the rows that run marks "do not merge".
 
 **Tests:** `composer check` locally, and `phpunit.mysql.xml` against MySQL 8 before any merge that touches
 queries, casts, JSON columns or money.
@@ -115,6 +117,14 @@ These kit files are deliberately **not** queued. Don't pick them up.
   None justifies a re-run now. An optional design-audit sweep before go-live is fine.
 - **`add-motion-layer.md`.** Not adopted. The homepage is signed off and the owner hasn't asked for
   "cinematic".
+- **Follow-ups proposed by run 1 and deliberately not queued yet:**
+  - consistency: C-1, C-2, C-5, C-6, C-9, C-10, C-11, C-15;
+  - admin: A-1 (share-image upload), A-2 (testimonial crop, waiting on Ben's answer), A-3 (owner password
+    reset), A-4 (polish batch);
+  - email: E-1 (List-Unsubscribe).
+  None blocks launch. Each gets a numbered prompt when Ben wants it.
+- **Owner questions still open:** testimonial photo crop (A-2); whether Coached's price eyebrow and intro CTA
+  are intended (C-1); the editable email sign-off ("later").
 - **Owner tasks:** real photos, the voucher/AFF/coaching T&Cs, the solicitor review, the cookie/analytics
   decision. These aren't code.
 
