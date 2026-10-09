@@ -3,8 +3,8 @@
 Sequencing instruction, not a branch. It says which prompt to take next and why that position.
 Written 9 October 2026 to put G-Force through the September 2026 starter kit.
 
-**Merged:** everything through 24 June 2026, then (unattended run 1, `RUN-REPORT-1.md`) 001, 002, email audit, admin audit, accessibility audit, 003.
-**`main` at `5ebe29f`.** 001 branched from `be9e145`.
+**Merged:** everything through 24 June 2026, then (unattended run 1, `RUN-REPORT-1.md`) 001, 002, email audit, admin audit, accessibility audit, 003, completeness + CMS-field gates.
+**`main` at `370832f`.** 001 branched from `be9e145`.
 **Built, awaiting merge:** none. There are no other branches, local or remote.
 **Prompt files:** `prompts/001-kit-sync.md`, `prompts/002-structural-guards.md`,
 `prompts/003-itemised-consistency-audit.md`. The kit source is `~/Sites/starter-kit/`.
@@ -20,8 +20,8 @@ Written 9 October 2026 to put G-Force through the September 2026 starter kit.
 | 4 | ✅ merged `6f9888f` — `audits/admin-audit.md` (kit file) | Never run on G-Force; the owner will live in this panel. Its new singleton-editor check targets G-Force's seven custom settings pages directly. |
 | 5 | ✅ merged `d5863c1` — `audits/accessibility-audit.md` (kit file) | June's axe pass fixed two markup issues (`62b6c30`) and left colour-contrast unresolved, with no decision recorded. |
 | 6 | ✅ merged `5ebe29f` — **003** — itemised consistency audit (report-only) | Never run (`ui-review/CONSISTENCY.md` doesn't exist). It has to see the merged UI after 4–5, which can touch shared components. |
-| 7 | `gates/completeness-check.md` + `gates/cms-field-usage-check.md` (kit files) | The June runs predate the later merges. Known example: `Product::duration` is still editable (`ProductForm.php:101`) but isn't rendered in any view. |
-| 8 | Fix prompts written from the reports of 6 and 7 (numbered when written) | Report-only passes produce follow-ups. Each one gets a numbered file and goes in here. |
+| 7 | ✅ merged `3ba3657` + `370832f` — `gates/completeness-check.md` + `gates/cms-field-usage-check.md` (kit files) | The June runs predate the later merges. Known example: `Product::duration` is still editable (`ProductForm.php:101`) but isn't rendered in any view. |
+| 8 | Fix prompts written from the reports of 6 and 7 (numbered when written). **URGENT FIRST (not yet written):** the admin FAQ list 500s whenever FAQs exist (`Faq::scopeForPage` shadows the builder's `forPage` paginator; its test lists an empty table) — the owner can't manage FAQs. See `audits/reports/completeness-check.md` #1. | Report-only passes produce follow-ups. Each one gets a numbered file and goes in here. |
 | 9 | Tailor `verification/CHECKLIST.md` to G-Force (prompt to be written) | 001 copies the kit's checklist in untailored. It has to name G-Force's real money and email paths before anyone walks it. |
 | 10 | `gates/pre-staging-gate.md` (kit file) | Re-run required: the 24 June GO is stale once 2–8 land. |
 | 11 | Staging: Ben on the server | `staging-setup-brief-gforce.md` + `PRE-STAGING-CHECKLIST.md` §5. |

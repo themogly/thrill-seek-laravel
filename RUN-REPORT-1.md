@@ -134,3 +134,54 @@ wasn't on 001's expected-files list).
 - Owner question from C-1: is Coached's price-as-eyebrow plus its own intro CTA intended?
 - Gap report: none. No view, component, CSS, test or config touched.
 - Visual: none changed. The homepage is the reference and isn't touched.
+
+## 7 — gates · `docs/completeness-check` (merge `3ba3657`) + `docs/cms-field-usage` (merge `370832f`)
+- Report-only. Tests 432 → 432; `composer check` green.
+- **Completeness** (`audits/reports/completeness-check.md`):
+  - **The admin FAQ list returns 500 whenever any FAQ exists.** `Faq::scopeForPage` shadows the query
+    builder's `forPage()` paginator, and `FaqAdminTest` lists an empty table, so it's a false green. This
+    is the only scope collision across all models.
+  - **Sample testimonials feed a published `AggregateRating` (4.8 from 8).**
+  - Three June items are resolved (the Instagram note, `/aff#enquiry`, social URLs).
+- **CMS field usage** (`audits/reports/cms-field-usage.md`):
+  - 10 orphan fields: `team_lead`, `Product::duration`, Location address/coordinates (7),
+    `Location::image`.
+  - Reverse drift: the homepage `<title>`/description are literals, so the "Default page title" setting
+    never reaches the homepage.
+  - The email/meta/logic-only fields are listed so nobody deletes them.
+- Both gates write to `audits/reports/` rather than the kit's root filenames (repo convention); noted in
+  each report.
+
+---
+
+## Run end
+
+**Why the run ended:** finished. All seven in-scope items (RUNNING-ORDER steps 1–7) were built, gated
+and merged in order. No stop condition was hit. Nothing is left on a branch.
+
+**`main` = `370832f`** (on GitHub). Tests 369 → 432; `composer check` green; the MySQL suite was green
+at every merge that touched code.
+
+**Not done, by design:** step 8 onwards (the fix prompts). RUNNING-ORDER step 8 now names the FAQ 500 as
+the urgent first prompt, with its reason.
+
+**Owner questions waiting for Ben** (each answerable in one line):
+1. Should **admin-created Confirmed bookings** and **admin voucher redemptions** email the customer?
+   (Recommended: an "Email the customer" toggle, default on.)
+2. **Brand-colour contrast:** primary `#008fe6` and `destructive` fail AA. A darken
+   (`#0078cc`), B add a darker `primary-strong` token for text/fills, or C accept?
+3. **Admin panel primary = Blue** (`OVERNIGHT-DEFAULT — CONFIRM`): OK?
+4. **Motion ambition recorded as "subtle"** (`OVERNIGHT-DEFAULT — CONFIRM`): OK?
+5. Should the **email sign-off** be editable in the admin?
+6. **Testimonial photos:** one crop ratio for both places, or two crops?
+7. **Coached page:** is the price-as-eyebrow plus its own intro CTA intended?
+8. **Sample testimonials:** replace or unapprove before launch? (They feed a published review rating.)
+9. **`Product::duration` and Location addresses:** re-surface them on the site, or remove them from the
+   admin?
+10. **Your global skills:** sync `frontend-design` and install `admin-design`/`laravel-craft`/
+    `web-app-security` from the kit? (These affect your other projects.)
+
+**Housekeeping notes:**
+- The local dev DB holds audit test records, all named "Audit …" (an enquiry, 2 bookings, payments,
+  a subscriber, a redeemed voucher, a failed job).
+- `audits/reports/a11y/` committed 8.9 MB of full-page PNGs; worth slimming.
