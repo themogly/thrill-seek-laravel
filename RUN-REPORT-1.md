@@ -60,3 +60,39 @@ wasn't on 001's expected-files list).
   - **E-2** CID-embedded mail logo.
   - **E-3** the payment-success page after a gift-voucher purchase.
   - **E-4** the owner decision.
+
+## 4 — admin audit · `admin/audit-pass` · merge `6f9888f`
+- Tests 399 → 425. `composer check` green; `phpunit.mysql.xml` 425/425 green.
+- **All seven settings pages work by doing** (load, save, notify, persist), so the kit's new
+  singleton check found nothing.
+- **P1, verified by doing:**
+  - Deleting a product cascade-deleted its course dates.
+  - Deleting a booking orphaned its paid payment.
+  - Course and voucher deletes were unguarded.
+  - **A redeemed voucher could be saved back to Active and spent again.**
+  - Fixed with one shared guard (`GuardsDeletion` + `AdminActions::guardedDelete()`, server-refused,
+    tooltip says why) and a locked voucher form.
+- **P2 fixed:**
+  - Booking "Awaiting payment" is webhook-only.
+  - The three page disciplines are locked.
+  - A published news article needs a date.
+  - A sent newsletter is read-only. A disabled form alone still saved; the test caught it, and
+    `beforeSave()` now halts.
+  - The AFF deposit is required.
+  - Capacity has a floor at current bookings.
+- **P3:** stock AccountWidget removed; panel primary Blue (white text measured 5.26:1; old amber was
+  3.19:1).
+- Gap report in DECISIONS ("Admin audit"): the guard pattern extended to Tandem dates, Locations and
+  Disciplines; the FK cascade was left for its own prompt; local audit data noted.
+- `OVERNIGHT-DEFAULT — CONFIRM`: admin primary colour = Blue.
+- Owner questions:
+  - Should the email sign-off be editable?
+  - Is the admin blue OK?
+  - Testimonial photo: one crop or two?
+- Visual (admin only; the homepage wasn't touched; public pages 200×2):
+  `audits/reports/admin-audit-dashboard-after.png`, `admin-audit-product-edit-after.png`.
+- Proposed prompts:
+  - **A-1** share-image upload.
+  - **A-2** testimonial crop.
+  - **A-3** owner password reset.
+  - **A-4** admin polish batch (incl. the product→course-date FK cascade).
