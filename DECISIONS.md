@@ -3396,3 +3396,50 @@ Prompt 027, written in run 3 under Ben's "also fix anything outstanding". This i
   - an unknown or customer email sends nothing and gets the same notice (red with Filament's own page class);
   - the emailed token resets the password, and the new one logs in;
   - the email renders in the brand theme.
+
+## Phones never scroll sideways (fix/aff-mobile-overflow)
+
+Prompt 028. **Premise confirmed by measuring** on `main` (`469ede6`, rebuilt): `/aff` at 375 and 390 had a
+document width of **451px**. The culprit was the pay card's grid item (435px), and every other page was fine.
+The cause was as the prompt said: the `lg` button "Choose a course & pay deposit" is `whitespace-nowrap` (371px),
+the card adds `p-8`, and the grid's implicit `auto` track grew to fit it, stretching the enquiry form with it.
+
+- **The shared button wraps below `sm`** (`components/ui/button.blade.php`).
+  - `whitespace-nowrap` becomes `sm:whitespace-nowrap`, with `text-center text-balance`.
+  - Each size's fixed height becomes a minimum below `sm` (`min-h-11 py-2` / `min-h-9 py-1.5` / `min-h-14 py-3`)
+    and stays fixed from `sm` up (`sm:h-11` / `sm:h-9` / `sm:h-14`). One line of text inside the minimum is
+    exactly the old height, and the fixed height from `sm` up stops a button stretching in a flex row.
+  - **Why the button and not the card:** it covers every long CTA site-wide, now and later. A full-width
+    mobile button was rejected because it would change every short CTA (the homepage's included).
+- **Grids that hold cards side by side start from `grid-cols-1`** (a `minmax(0, 1fr)` track: the `min-w-0`
+  the prompt asked for, applied to the track). That covers children that are Livewire roots without editing
+  them. Applied to `/aff`, `/tandem` (pay card + form), `/contact`, the account dashboard and booking detail.
+  The homepage is signed off, so it's untouched.
+- **Measured, not read** (a Playwright walk of all 17 pages, the sitemap plus the 4 extras, recording every
+  button's box, before and after, both on rebuilt assets):
+  - **1024 and 1440: every button identical.** The homepage is identical at every width, and its full-page
+    pixel diff is 0 px at 390 and at 1440.
+  - Three buttons wrap at phone width, and each was already too wide for its box:
+    - the AFF pay button (the fix);
+    - "Choose a date & book" on `/tandem` at 375 only (282px in a 279px card); at 390 it's unchanged;
+    - "Buy for £260 — delivered by email" on `/vouchers` (the label ran into the button's side padding).
+  - "Book a session" and "Learn to skydive" don't change.
+  - Crops are in `ui-review/aff-mobile-overflow/`.
+- **The guard:** `tests/Browser/NoSidewaysScrollTest` (a new `Browser` testsuite in both phpunit configs, which
+  the suite-collection guard requires).
+  - It migrates and seeds a throwaway SQLite file and serves the app from it with `php -S`.
+  - It loads every `/sitemap.xml` URL plus `/book/tandem`, `/book/aff`, `/vouchers` and `/account/login` in
+    Chromium at 375×667 (`tests/Browser/no-sideways-scroll.mjs`, the project's Playwright).
+  - It fails on `scrollWidth > clientWidth`, naming the widest element past the edge that isn't inside an
+    `overflow-x` region. It also fails on a failed same-origin asset (a page without its stylesheet isn't the
+    real layout) and on a non-200.
+  - **Red on `main`:** "/aff: 451px wide in a 375px screen — section… > div.grid.gap-12.lg:grid-cols-2 > div:
+    right edge 451px, 435px wide". Its second test proves it with a planted 600px element (caught, by id) and a
+    900px table inside an `overflow-x` region (allowed).
+  - It takes about 5 seconds.
+- **OVERNIGHT-DEFAULT — CONFIRM:** the browser test runs inside `composer check`, so the gate now needs
+  Playwright's Chromium and assets built from the current tree. It refuses a build older than `resources/`
+  (and a cached config, which would point the served app at the real database), rather than measure a stale
+  stylesheet. The alternative is a separate `composer test:browser`; it was rejected because an opt-in gate
+  is the one that stops being run. Recorded in CLAUDE.md's quality bar.
+- `false-green.md` #29, "Rendered, never laid out".

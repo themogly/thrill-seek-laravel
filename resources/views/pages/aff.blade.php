@@ -143,7 +143,7 @@
     <x-site.faq-section :faqs="$faqs" />
 
     <x-site.section>
-        <div class="grid gap-12 lg:grid-cols-2">
+        <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
             @php $payEnabled = app(App\Settings\GeneralSettings::class)->online_payments_enabled; @endphp
             <div data-reveal>
                 <x-site.pay-card

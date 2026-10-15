@@ -10,7 +10,7 @@
     <x-site.page-hero :title="$pages->contact_hero_title" :subtitle="$pages->contact_hero_subtitle" />
 
     <x-site.section>
-        <div class="grid gap-12 lg:grid-cols-[2fr_1fr]">
+        <div class="grid grid-cols-1 gap-12 lg:grid-cols-[2fr_1fr]">
             <livewire:contact-form />
 
             <div class="space-y-6">

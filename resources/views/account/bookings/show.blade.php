@@ -11,7 +11,7 @@
     <x-site.section>
         <x-account.nav />
 
-        <div class="mt-8 grid gap-6 lg:grid-cols-3">
+        <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
             {{-- Details --}}
             <div class="border-2 border-border p-6 lg:col-span-2">
                 <h2 class="font-display text-2xl uppercase tracking-wide">Jump details</h2>
