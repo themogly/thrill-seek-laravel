@@ -10,9 +10,13 @@
      Icons: an <x-icon> in the slot is auto-sized to 16px with a gap. LEAD the icon
      for action buttons that aid scanning ("▶ Play"), TRAIL it for directional/
      destination actions ("Continue →"). An icon-only button (size="icon") MUST
-     carry an `aria-label`. Never style a one-off button; extend here if needed. --}}
+     carry an `aria-label`. Never style a one-off button; extend here if needed.
+     Wrapping (prompt 028): below `sm` a long label wraps (centred, balanced) and the
+     box grows from its minimum height, so a CTA can never push a phone screen sideways;
+     from `sm` up labels stay on one line and every size renders exactly as before
+     (one line of text inside the min-height = the old fixed height). --}}
 @php
-    $base = 'inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold uppercase tracking-widest cursor-pointer transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0';
+    $base = 'inline-flex items-center justify-center gap-2 text-center text-balance sm:whitespace-nowrap font-bold uppercase tracking-widest cursor-pointer transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0';
 
     $variants = [
         'primary' => 'bg-primary-strong text-primary-foreground hover:bg-primary-strong-hover active:bg-primary-strong-active',
@@ -21,9 +25,9 @@
     ];
 
     $sizes = [
-        'default' => 'h-11 px-6 text-sm',
-        'sm' => 'h-9 px-4 text-xs',
-        'lg' => 'h-14 px-10 text-base',
+        'default' => 'min-h-11 px-6 py-2 text-sm sm:h-11',
+        'sm' => 'min-h-9 px-4 py-1.5 text-xs sm:h-9',
+        'lg' => 'min-h-14 px-10 py-3 text-base sm:h-14',
         'icon' => 'h-11 w-11',
     ];
 

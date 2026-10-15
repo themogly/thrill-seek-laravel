@@ -118,6 +118,10 @@ content). Helpers: `band-ink` (darkest band), `bg-photo-scrim` (text-over-photo)
   `current/10`–`/20` wash stays (≥ 8:1 on light and dark). Lead an icon for actions, trail for directional; `size="icon"`
   needs `aria-label`. Loading: `wire:loading.attr="disabled"` + `<x-ui.loading-label>` in the
   slot. **Never** a hand-styled button.
+  **Long labels wrap on phones** (prompt 028): below `sm` the label wraps, centred and balanced, and the box
+  grows from its size's minimum height; from `sm` up it stays on one line at the old fixed height. A CTA can
+  never push a phone screen sideways (guard: `NoSidewaysScrollTest`). A grid holding cards side by side
+  starts from `grid-cols-1` (a `minmax(0, 1fr)` track), so one wide child can't stretch its siblings.
 - **`<x-ui.table-scroll label>`** — the ONE horizontal scroll region for a table wider than the screen
   (prompt 024): focusable (`tabindex="0"`), a named `role="region"` (`label`, e.g. "Payments"), and the standard
   focus ring on keyboard focus only. Never wrap a table in a bare `overflow-x-auto` (guard:

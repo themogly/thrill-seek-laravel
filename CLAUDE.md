@@ -260,6 +260,10 @@ that manages all site content, enquiries, payments and bookings.
   ship a test that walks the whole category (every model with an object cast, every
   Livewire view, "exactly one implementation of X") — and **prove the guard guards** by
   making it fail on purpose before trusting it.
+- **Layout is tested in a real browser**: `tests/Browser/NoSidewaysScrollTest` (part of `composer check`) seeds a
+  throwaway SQLite file, serves the app and loads every sitemap URL in Playwright's Chromium at 375px. It
+  needs `npx playwright install chromium` and assets built from the current tree (`npm run build`, or
+  `npm run dev` running): it refuses a build older than `resources/` rather than measure a stale stylesheet.
 - **The suite must collect every `tests/*` directory.** A directory in no phpunit
   testsuite silently never runs. Guard: `SuiteCollectsEveryTestDirectoryTest` (both configs).
 - **A measurement is only as good as the tree and build it was taken on.** Before

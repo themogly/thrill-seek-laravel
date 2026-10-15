@@ -32,6 +32,13 @@ refused.
 made it a button, and pressing it opened two PIN pads. *Guard:* a UI verdict requires the control pressed
 on the build under review. "The code says" is a hypothesis.
 
+**29. Rendered, never laid out.** The suite rendered every page's HTML and axe passed every page, while `/aff`
+was 451px wide on a 375px phone: a `whitespace-nowrap` button in a card stretched its grid track. HTML
+assertions never compute a box; axe doesn't check overflow; the screenshots of that card were cropped to the
+card, so the page edge was never in frame. *Guard:* lay the real pages out in a browser and assert
+`scrollWidth <= clientWidth` on every sitemap URL at phone width, naming the element that pokes out
+(`NoSidewaysScrollTest`); a screenshot meant to prove a fit includes the page edge.
+
 ## B. The check ran somewhere the defect does not exist
 
 **6. In-process state vs the real request.** A middleware read the session; its tests seeded the session
